@@ -41,22 +41,31 @@ import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
 import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefSet;
+import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeListener;
+import org.mastodon.graph.Vertex;
+import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
+import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
+import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
+import org.mastodon.model.HasLabel;
 import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.NavigationEtiquette;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
-import org.mastodon.views.grapher.datagraph.DataGraphContextLayout;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenEntities;
@@ -70,7 +79,7 @@ import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TransformListener;
 import bdv.viewer.render.PainterThread;
 
-public class DataDisplayPanel extends JPanel implements
+public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends JPanel implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
 		HighlightListener,
@@ -88,7 +97,7 @@ public class DataDisplayPanel extends JPanel implements
 
 	private final long animationMilleseconds;
 
-	private final DataGraph< ?, ? > graph;
+	private final DataGraph< V, E > graph;
 
 	/**
 	 * Canvas used for displaying the data graph.
@@ -107,12 +116,7 @@ public class DataDisplayPanel extends JPanel implements
 	/**
 	 * layout the {@link DataGraph} into layout coordinates.
 	 */
-	private final DataGraphLayout< ?, ? > layout;
-
-	/**
-	 * TODO
-	 */
-	private final DataGraphContextLayout contextLayout;
+	private final DataGraphLayout< V, E > layout;
 
 	/**
 	 * determine how layouted vertices and edges are colored.
@@ -185,9 +189,17 @@ public class DataDisplayPanel extends JPanel implements
 
 	private Context< DataVertex > context;
 
+	private final SelectionModel< DataVertex, DataEdge > selection;
+
+	/**
+	 * If <code>true</code> the display will be updated live when the window
+	 * target of context changes.
+	 */
+	private boolean trackContext;
+
 	public DataDisplayPanel(
-			final DataGraph< ?, ? > graph,
-			final DataGraphLayout< ?, ? > layout,
+			final DataGraph< V, E > graph,
+			final DataGraphLayout< V, E > layout,
 			final HighlightModel< DataVertex, DataEdge > highlight,
 			final FocusModel< DataVertex, DataEdge > focus,
 			final SelectionModel< DataVertex, DataEdge > selection,
@@ -197,6 +209,7 @@ public class DataDisplayPanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.layout = layout;
+		this.selection = selection;
 
 		final Values options = optional.values;
 		animationMilleseconds = options.getAnimationDurationMillis();
@@ -238,7 +251,6 @@ public class DataDisplayPanel extends JPanel implements
 			}
 		} );
 
-		contextLayout = new DataGraphContextLayout( layout, RefCollections.createRefSet( graph.vertices() ) );
 		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
@@ -355,7 +367,6 @@ public class DataDisplayPanel extends JPanel implements
 			{
 				if ( context != null )
 				{
-					contextLayout.buildContext( context );
 					layoutMinX = layout.getCurrentLayoutMinX();
 					layoutMaxX = layout.getCurrentLayoutMaxX();
 					layoutMinY = layout.getCurrentLayoutMinY();
@@ -371,22 +382,11 @@ public class DataDisplayPanel extends JPanel implements
 			}
 			else if ( flags.contextChanged )
 			{
-				if ( context == null )
-				{
-					layout.layout();
-					layoutMinX = layout.getCurrentLayoutMinX();
-					layoutMaxX = layout.getCurrentLayoutMaxX();
-					layoutMinY = layout.getCurrentLayoutMinY();
-					layoutMaxY = layout.getCurrentLayoutMaxY();
-				}
-				else
-				{
-					contextLayout.buildContext( context );
-					layoutMinX = layout.getCurrentLayoutMinX();
-					layoutMaxX = layout.getCurrentLayoutMaxX();
-					layoutMinY = layout.getCurrentLayoutMinY();
-					layoutMaxY = layout.getCurrentLayoutMaxY();
-				}
+				layout.layout();
+				layoutMinX = layout.getCurrentLayoutMinX();
+				layoutMaxX = layout.getCurrentLayoutMaxX();
+				layoutMinY = layout.getCurrentLayoutMinY();
+				layoutMaxY = layout.getCurrentLayoutMaxY();
 				entityAnimator.startAnimation( transform, animationMilleseconds );
 			}
 			else if ( flags.entitiesAttributesChanged )
@@ -466,6 +466,9 @@ public class DataDisplayPanel extends JPanel implements
 		if ( this.context == null && context == null )
 			return;
 
+		if ( trackContext )
+			layout.setVertices( fromContext() );
+
 		this.context = context;
 		flags.setContextChanged();
 		painterThread.requestRepaint();
@@ -479,7 +482,7 @@ public class DataDisplayPanel extends JPanel implements
 	public void setNavigationEtiquette( final NavigationEtiquette navigationEtiquette )
 	{
 		this.navigationEtiquette = navigationEtiquette;
-		switch( navigationEtiquette )
+		switch ( navigationEtiquette )
 		{
 		case MINIMAL:
 			navigationBehaviour = new MinimalNavigationBehaviour( transformEventHandler, 100, 100 );
@@ -551,7 +554,8 @@ public class DataDisplayPanel extends JPanel implements
 			this.transformEventHandler = transformEventHandler;
 		}
 
-		// With CENTER_IF_INVISIBLE etiquette, only navigate to the specified vertex if not
+		// With CENTER_IF_INVISIBLE etiquette, only navigate to the specified
+		// vertex if not
 		// is currently displayed.
 		@Override
 		public void navigateToVertex( final DataVertex v, final ScreenTransform currentTransform )
@@ -777,7 +781,7 @@ public class DataDisplayPanel extends JPanel implements
 		public void startAnimation( final ScreenTransform transform, final long duration )
 		{
 			reset( duration );
-			if (duration > 0 )
+			if ( duration > 0 )
 			{
 				copyIpStart();
 				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(), colorGenerator );
@@ -803,8 +807,6 @@ public class DataDisplayPanel extends JPanel implements
 						screenEntitiesIpStart,
 						screenEntitiesIpEnd,
 						null );
-				// TODO understand how to use this:
-//						ScreenEntitiesInterpolator.getIncrementalXY( screenEntitiesIpStart, screenEntitiesIpEnd ) );
 			}
 			else
 			{
@@ -855,12 +857,155 @@ public class DataDisplayPanel extends JPanel implements
 		}
 	}
 
+	void plot( final FeatureGraphConfig gc, final FeatureModel featureModel )
+	{
+		trackContext = false;
+
+		// X feature projection.
+		final FeatureSpecPair spx = gc.getXFeature();
+		final String xunits;
+		if ( spx.isEdgeFeature() )
+		{
+			final FeatureProjection< E > xproj = spx.getProjection( featureModel );
+			layout.setXFeatureEdge( xproj, spx.isIncomingEdge() );
+			xunits = xproj.units();
+		}
+		else
+		{
+			final FeatureProjection< V > xproj = spx.getProjection( featureModel );
+			layout.setXFeatureVertex( xproj );
+			xunits = xproj.units();
+		}
+
+		// Y feature projection.
+		final String yunits;
+		final FeatureSpecPair spy = gc.getYFeature();
+		if ( spy.isEdgeFeature() )
+		{
+			final FeatureProjection< E > yproj = spy.getProjection( featureModel );
+			layout.setYFeatureEdge( yproj, spy.isIncomingEdge() );
+			yunits = yproj.units();
+		}
+		else
+		{
+			final FeatureProjection< V > yproj = spy.getProjection( featureModel );
+			layout.setYFeatureVertex( yproj );
+			yunits = yproj.units();
+		}
+
+		// Vertices to plot.
+		final RefSet< DataVertex > selectedVertices = selection.getSelectedVertices();
+		final RefSet< DataEdge > selectedEdges = selection.getSelectedEdges();
+		switch ( gc.itemSource() )
+		{
+		case CONTEXT:
+		{
+			trackContext = true;
+			layout.setVertices( fromContext() );
+			break;
+		}
+		case SELECTION:
+		{
+			layout.setVertices( selection.getSelectedVertices() );
+			break;
+		}
+		case TRACK_OF_SELECTION:
+		{
+			final RefSet< DataVertex > vertices = fromTrackOfSelection( selectedVertices, selectedEdges );
+			layout.setVertices( vertices );
+			break;
+		}
+		case KEEP_CURRENT:
+		default:
+			break;
+		}
+
+		// Draw plot edges.
+		layout.setPaintEdges( gc.drawConnected() );
+
+		String xlabel = gc.getXFeature().toString();
+		if ( !xunits.isEmpty() )
+			xlabel += " (" + xunits + ")";
+		graphOverlay.setXLabel( xlabel );
+
+		String ylabel = gc.getYFeature().toString();
+		if ( !yunits.isEmpty() )
+			ylabel += " (" + yunits + ")";
+		graphOverlay.setYLabel( ylabel );
+
+		graphChanged();
+	}
+
+	private RefSet< DataVertex > fromContext()
+	{
+		final Iterable< DataVertex > iterable;
+		if ( context != null )
+		{
+			iterable = context.getInsideVertices( context.getTimepoint() );
+		}
+		else
+			iterable = graph.vertices();
+
+		final RefSet< DataVertex > vertices = RefCollections.createRefSet( graph.vertices() );
+		for ( final DataVertex v : iterable )
+			vertices.add( v );
+		return vertices;
+	}
+
+	private RefSet< DataVertex > fromTrackOfSelection(
+			final RefSet< DataVertex > selectedVertices,
+			final RefSet< DataEdge > selectedEdges )
+	{
+		final RefSet< DataVertex > toSearch = RefCollections.createRefSet( graph.vertices() );
+		toSearch.addAll( selectedVertices );
+		final DataVertex ref = graph.vertexRef();
+		for ( final DataEdge e : selectedEdges )
+		{
+			toSearch.add( e.getSource( ref ) );
+			toSearch.add( e.getTarget( ref ) );
+		}
+		graph.releaseRef( ref );
+
+		// Prepare the iterator.
+		final RefSet< DataVertex > set = RefCollections.createRefSet( graph.vertices() );
+		final DepthFirstSearch< DataVertex, DataEdge > search = new DepthFirstSearch<>( graph, SearchDirection.UNDIRECTED );
+		search.setTraversalListener( new SearchListener< DataVertex, DataEdge, DepthFirstSearch< DataVertex, DataEdge > >()
+		{
+			@Override
+			public void processVertexLate( final DataVertex vertex, final DepthFirstSearch< DataVertex, DataEdge > search )
+			{}
+
+			@Override
+			public void processVertexEarly( final DataVertex vertex, final DepthFirstSearch< DataVertex, DataEdge > search )
+			{
+				set.add( vertex );
+			}
+
+			@Override
+			public void processEdge( final DataEdge edge, final DataVertex from, final DataVertex to, final DepthFirstSearch< DataVertex, DataEdge > search )
+			{}
+
+			@Override
+			public void crossComponent( final DataVertex from, final DataVertex to, final DepthFirstSearch< DataVertex, DataEdge > search )
+			{}
+		} );
+
+		for ( final DataVertex v : toSearch )
+			if ( !set.contains( v ) )
+				search.start( v );
+		return set;
+	}
+
 	static class Flags
 	{
 		private boolean transformChanged;
+
 		private boolean selectionChanged;
+
 		private boolean graphChanged;
+
 		private boolean contextChanged;
+
 		private boolean entitiesAttributesChanged;
 
 		public Flags()
@@ -920,7 +1065,7 @@ public class DataDisplayPanel extends JPanel implements
 		@Override
 		public String toString()
 		{
-			final StringBuilder str = new StringBuilder(super.toString());
+			final StringBuilder str = new StringBuilder( super.toString() );
 			str.append( '\n' );
 			str.append( "  - transformChanged: " + transformChanged + "\n" );
 			str.append( "  - selectionChanged: " + selectionChanged + "\n" );

@@ -81,6 +81,7 @@ import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.DataDisplayZoom;
 import org.mastodon.views.grapher.display.FeatureGraphConfig;
+import org.mastodon.views.grapher.display.FeatureGraphConfig.GraphDataItemsSource;
 import org.mastodon.views.grapher.display.FeatureSpecPair;
 import org.mastodon.views.grapher.display.OffsetAxes;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
@@ -171,12 +172,12 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				groupHandle,
 				contextChooser,
 				options );
-		final DataDisplayPanel dataDisplayPanel = frame.getDataDisplayPanel();
+		final DataDisplayPanel< Spot, Link > dataDisplayPanel = frame.getDataDisplayPanel();
 
 		// If they are available, set some sensible defaults for the feature.
 		final FeatureSpecPair spvx = new FeatureSpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next(), false, false );
 		final FeatureSpecPair spvy = new FeatureSpecPair( SpotQuickMeanIntensityFeature.SPEC, SpotQuickMeanIntensityFeature.PROJECTION_SPEC, 0, false, false );
-		final FeatureGraphConfig gcv = new FeatureGraphConfig( spvx, spvy, false, true, true );
+		final FeatureGraphConfig gcv = new FeatureGraphConfig( spvx, spvy, GraphDataItemsSource.TRACK_OF_SELECTION, true );
 		frame.getVertexSidePanel().setGraphConfig( gcv );
 
 		// Restore settings panel visibility.

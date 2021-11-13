@@ -40,16 +40,10 @@ import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.app.ui.ViewFrame;
-import org.mastodon.collection.RefCollections;
-import org.mastodon.collection.RefSet;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureModel.FeatureModelListener;
-import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
-import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
-import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
@@ -57,7 +51,6 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.ui.context.ContextChooserPanel;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.util.FeatureUtils;
 import org.mastodon.views.context.ContextChooser;
@@ -71,11 +64,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 {
 	private static final long serialVersionUID = 1L;
 
-	private final DataDisplayPanel dataDisplayPanel;
-
-	private final DataGraph< V, E > viewGraph;
-
-	private final SelectionModel< DataVertex, DataEdge > selectionModel;
+	private final DataDisplayPanel< V, E > dataDisplayPanel;
 
 	private final GrapherSidePanel sidePanel;
 
@@ -94,8 +83,19 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final DataDisplayOptions optional )
 	{
 		super( "Data" );
-		this.viewGraph = graph;
-		this.selectionModel = selection;
+
+		/*
+		 * Plot panel.
+		 */
+
+		dataDisplayPanel = new DataDisplayPanel<>(
+				graph,
+				layout,
+				highlight,
+				focus,
+				selection,
+				navigation,
+				optional );
 
 		/*
 		 * Get the classes of the model vertices and edges. We need them to
@@ -109,27 +109,14 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		 * Side panel.
 		 */
 
-		sidePanel = new GrapherSidePanel( nSources );
-		sidePanel.btnPlot.addActionListener( e -> plotVertices( sidePanel.getGraphConfig(), featureModel ) );
+		sidePanel = new GrapherSidePanel( nSources, contextChooser );
+		sidePanel.btnPlot.addActionListener( e -> dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel ) );
 
 		final FeatureModelListener featureModelListener = () -> sidePanel.setFeatures(
 				FeatureUtils.collectFeatureMap( featureModel, vertexClass ),
 				FeatureUtils.collectFeatureMap( featureModel, edgeClass ) );
 		featureModel.listeners().add( featureModelListener );
 		featureModelListener.featureModelChanged();
-
-		/*
-		 * Plot panel.
-		 */
-
-		dataDisplayPanel = new DataDisplayPanel(
-				graph,
-				layout,
-				highlight,
-				focus,
-				selection,
-				navigation,
-				optional );
 
 		/*
 		 * Main panel is a split pane.
@@ -151,8 +138,8 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		settingsPanel.add( navigationLocksPanel );
 		settingsPanel.add( Box.createHorizontalGlue() );
 
-		final ContextChooserPanel< ? > contextChooserPanel = new ContextChooserPanel<>( contextChooser );
-		settingsPanel.add( contextChooserPanel );
+//		final ContextChooserPanel< ? > contextChooserPanel = new ContextChooserPanel<>( contextChooser );
+//		settingsPanel.add( contextChooserPanel );
 
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
@@ -176,7 +163,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		setLocation( optional.values.getX(), optional.values.getY() );
 	}
 
-	public DataDisplayPanel getDataDisplayPanel()
+	public DataDisplayPanel< V, E > getDataDisplayPanel()
 	{
 		return dataDisplayPanel;
 	}
@@ -184,120 +171,5 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 	public GrapherSidePanel getVertexSidePanel()
 	{
 		return sidePanel;
-	}
-
-	private void plotVertices( final FeatureGraphConfig gc, final FeatureModel featureModel )
-	{
-		@SuppressWarnings( "unchecked" )
-		final DataGraphLayout< V, E > layout = ( DataGraphLayout< V, E > ) dataDisplayPanel.getDataGraphLayout();
-
-		// X feature projection.
-		final FeatureSpecPair spx = gc.getXFeature();
-		final String xunits;
-		if ( spx.isEdgeFeature() )
-		{
-			final FeatureProjection< E > xproj = spx.getProjection( featureModel );
-			layout.setXFeatureEdge( xproj, spx.isIncomingEdge() );
-			xunits = xproj.units();
-		}
-		else
-		{
-			final FeatureProjection< V > xproj = spx.getProjection( featureModel );
-			layout.setXFeatureVertex( xproj );
-			xunits = xproj.units();
-		}
-
-		// Y feature projection.
-		final String yunits;
-		final FeatureSpecPair spy = gc.getYFeature();
-		if ( spy.isEdgeFeature() )
-		{
-			final FeatureProjection< E > yproj = spy.getProjection( featureModel );
-			layout.setYFeatureEdge( yproj, spy.isIncomingEdge() );
-			yunits = yproj.units();
-		}
-		else
-		{
-			final FeatureProjection< V > yproj = spy.getProjection( featureModel );
-			layout.setYFeatureVertex( yproj );
-			yunits = yproj.units();
-		}
-
-		// Vertices to plot.
-		if ( !gc.keepCurrent() )
-		{
-			final RefSet< DataVertex > vertices = buildVerticesList(
-					selectionModel.getSelectedVertices(),
-					selectionModel.getSelectedEdges(),
-					gc.graphTrackOfSelection() );
-			layout.setVertices( vertices );
-		}
-
-		// Draw plot edges.
-		layout.setPaintEdges( gc.drawConnected() );
-
-		String xlabel = gc.getXFeature().toString();
-		if ( !xunits.isEmpty() )
-			xlabel += " (" + xunits + ")";
-		dataDisplayPanel.getGraphOverlay().setXLabel( xlabel );
-
-		String ylabel = gc.getYFeature().toString();
-		if ( !yunits.isEmpty() )
-			ylabel += " (" + yunits + ")";
-		dataDisplayPanel.getGraphOverlay().setYLabel( ylabel );
-
-		dataDisplayPanel.graphChanged();
-	}
-
-	private RefSet< DataVertex > buildVerticesList(
-			final RefSet< DataVertex > selectedVertices,
-			final RefSet< DataEdge > selectedEdges,
-			final boolean includeTrack )
-	{
-		if ( !includeTrack )
-		{
-			final RefSet< DataVertex > set = RefCollections.createRefSet( viewGraph.vertices(), selectedVertices.size() );
-			set.addAll( selectedVertices );
-			return set;
-		}
-
-		final RefSet< DataVertex > toSearch = RefCollections.createRefSet( viewGraph.vertices() );
-		toSearch.addAll( selectedVertices );
-		final DataVertex ref = viewGraph.vertexRef();
-		for ( final DataEdge e : selectedEdges )
-		{
-			toSearch.add( e.getSource( ref ) );
-			toSearch.add( e.getTarget( ref ) );
-		}
-		viewGraph.releaseRef( ref );
-
-		// Prepare the iterator.
-		final RefSet< DataVertex > set = RefCollections.createRefSet( viewGraph.vertices() );
-		final DepthFirstSearch< DataVertex, DataEdge > search = new DepthFirstSearch<>( viewGraph, SearchDirection.UNDIRECTED );
-		search.setTraversalListener( new SearchListener< DataVertex, DataEdge, DepthFirstSearch< DataVertex, DataEdge > >()
-		{
-			@Override
-			public void processVertexLate( final DataVertex vertex, final DepthFirstSearch< DataVertex, DataEdge > search )
-			{}
-
-			@Override
-			public void processVertexEarly( final DataVertex vertex, final DepthFirstSearch< DataVertex, DataEdge > search )
-			{
-				set.add( vertex );
-			}
-
-			@Override
-			public void processEdge( final DataEdge edge, final DataVertex from, final DataVertex to, final DepthFirstSearch< DataVertex, DataEdge > search )
-			{}
-
-			@Override
-			public void crossComponent( final DataVertex from, final DataVertex to, final DepthFirstSearch< DataVertex, DataEdge > search )
-			{}
-		} );
-
-		for ( final DataVertex v : toSearch )
-			if ( !set.contains( v ) )
-				search.start( v );
-		return set;
 	}
 }

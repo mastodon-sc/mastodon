@@ -35,6 +35,7 @@ import javax.swing.ImageIcon;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.model.HasLabel;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
@@ -59,7 +60,7 @@ import bdv.viewer.TransformListener;
  * @param <E>
  *            the type of edges in the graph.
  */
-public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > >
 		extends AbstractNamedBehaviour
 		implements DragBehaviour, OffsetAxesListener, TransformListener< ScreenTransform >
 {
@@ -85,7 +86,7 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 		}
 	}
 
-	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void install( final Behaviours behaviours, final DataDisplayPanel panel )
+	public static < V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > void install( final Behaviours behaviours, final DataDisplayPanel< V, E > panel )
 	{
 		final DataDisplayZoom< V, E > zoom = new DataDisplayZoom<>( panel );
 
@@ -104,7 +105,7 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 	public static final Color ZOOM_GRAPH_OVERLAY_COLOR = Color.BLUE.darker();
 
-	private final DataDisplayPanel panel;
+	private final DataDisplayPanel< V, E > panel;
 
 	private final InertialScreenTransformEventHandler transformEventHandler;
 
@@ -116,7 +117,7 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 	private final ZoomOverlay overlay;
 
-	private DataDisplayZoom( final DataDisplayPanel panel )
+	private DataDisplayZoom( final DataDisplayPanel< V, E > panel )
 	{
 		super( TOGGLE_ZOOM );
 		this.panel = panel;

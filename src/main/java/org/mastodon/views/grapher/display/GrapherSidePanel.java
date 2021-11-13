@@ -1,9 +1,10 @@
 package org.mastodon.views.grapher.display;
 
-import java.awt.FlowLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Label;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
@@ -33,7 +36,11 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProject.ProjectReader;
 import org.mastodon.mamut.project.MamutProjectIO;
+import org.mastodon.ui.context.ContextChooserPanel;
+import org.mastodon.ui.util.EverythingDisablerAndReenabler;
 import org.mastodon.util.FeatureUtils;
+import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.grapher.display.FeatureGraphConfig.GraphDataItemsSource;
 import org.scijava.Context;
 
 /**
@@ -59,20 +66,24 @@ public class GrapherSidePanel extends JPanel
 
 	private final JRadioButton rdbtnSelection;
 
+	private final JRadioButton rdbtnTrackOfSelection;
+
 	private final JRadioButton rdbtnKeepCurrent;
+
+	private final JRadioButton rdbtnContext;
 
 	final JButton btnPlot;
 
-	public GrapherSidePanel( final int nSources )
+	public GrapherSidePanel( final int nSources, final ContextChooser< ? > contextChooser )
 	{
 		this.nSources = nSources;
 		this.specs = new ArrayList<>();
 
 		final GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 288, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 30, 0, 30, 0, 0, 0, 0, 0 };
+		gridBagLayout.columnWidths = new int[] { 150, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 30, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		setLayout( gridBagLayout );
 
 		final JLabel lblTitle = new JLabel( "Feature selection" );
@@ -94,7 +105,7 @@ public class GrapherSidePanel extends JPanel
 		this.cmbboxXFeature = new JComboBox<>();
 		cmbboxXFeature.setFont( cmbboxXFeature.getFont().deriveFont( cmbboxXFeature.getFont().getSize() - 2f ) );
 		final GridBagConstraints gbcCmbboxXFeature = new GridBagConstraints();
-		gbcCmbboxXFeature.insets = new Insets( 5, 5, 5, 5 );
+		gbcCmbboxXFeature.insets = new Insets( 0, 5, 5, 5 );
 		gbcCmbboxXFeature.fill = GridBagConstraints.HORIZONTAL;
 		gbcCmbboxXFeature.gridx = 0;
 		gbcCmbboxXFeature.gridy = 2;
@@ -112,57 +123,104 @@ public class GrapherSidePanel extends JPanel
 		this.cmbboxYFeature = new JComboBox<>();
 		cmbboxYFeature.setFont( cmbboxYFeature.getFont().deriveFont( cmbboxYFeature.getFont().getSize() - 2f ) );
 		final GridBagConstraints gbcCmbboxYFeature = new GridBagConstraints();
-		gbcCmbboxYFeature.insets = new Insets( 5, 5, 5, 5 );
+		gbcCmbboxYFeature.insets = new Insets( 0, 5, 5, 5 );
 		gbcCmbboxYFeature.fill = GridBagConstraints.HORIZONTAL;
 		gbcCmbboxYFeature.gridx = 0;
 		gbcCmbboxYFeature.gridy = 4;
 		add( cmbboxYFeature, gbcCmbboxYFeature );
 
-		final JPanel panelSelection = new JPanel();
-		final FlowLayout flowLayout = ( FlowLayout ) panelSelection.getLayout();
-		flowLayout.setAlignment( FlowLayout.LEFT );
-		final GridBagConstraints gbcPanelSelection = new GridBagConstraints();
-		gbcPanelSelection.insets = new Insets( 5, 5, 5, 5 );
-		gbcPanelSelection.fill = GridBagConstraints.BOTH;
-		gbcPanelSelection.gridx = 0;
-		gbcPanelSelection.gridy = 5;
-		add( panelSelection, gbcPanelSelection );
-
-		rdbtnSelection = new JRadioButton( "Selection" );
-		rdbtnSelection.setFont( rdbtnSelection.getFont().deriveFont( rdbtnSelection.getFont().getSize() - 2f ) );
-		panelSelection.add( rdbtnSelection );
-
-		final JRadioButton rdbtnTrackOfSelection = new JRadioButton( "Track of selection" );
-		rdbtnTrackOfSelection.setFont( rdbtnTrackOfSelection.getFont().deriveFont( rdbtnTrackOfSelection.getFont().getSize() - 2f ) );
-		panelSelection.add( rdbtnTrackOfSelection );
-
-		rdbtnKeepCurrent = new JRadioButton( "Keep current" );
-		rdbtnKeepCurrent.setFont( rdbtnKeepCurrent.getFont().deriveFont( rdbtnKeepCurrent.getFont().getSize() - 2f ) );
-		panelSelection.add( rdbtnKeepCurrent );
+		final JLabel lblDataItems = new JLabel( "Items to plot:" );
+		lblDataItems.setFont( lblDataItems.getFont().deriveFont( lblDataItems.getFont().getSize() - 2f ) );
+		final GridBagConstraints gbcLblDataItems = new GridBagConstraints();
+		gbcLblDataItems.anchor = GridBagConstraints.WEST;
+		gbcLblDataItems.insets = new Insets( 5, 5, 5, 5 );
+		gbcLblDataItems.gridx = 0;
+		gbcLblDataItems.gridy = 5;
+		add( lblDataItems, gbcLblDataItems );
 
 		final ButtonGroup btngrp = new ButtonGroup();
-		btngrp.add( rdbtnTrackOfSelection );
+
+		rdbtnSelection = new JRadioButton( "Selection" );
+		final GridBagConstraints gbcRdbtnSelection = new GridBagConstraints();
+		gbcRdbtnSelection.anchor = GridBagConstraints.WEST;
+		gbcRdbtnSelection.insets = new Insets( 0, 5, 0, 5 );
+		gbcRdbtnSelection.gridx = 0;
+		gbcRdbtnSelection.gridy = 6;
+		add( rdbtnSelection, gbcRdbtnSelection );
+		rdbtnSelection.setFont( rdbtnSelection.getFont().deriveFont( rdbtnSelection.getFont().getSize() - 2f ) );
 		btngrp.add( rdbtnSelection );
-		btngrp.add( rdbtnKeepCurrent );
+
+		rdbtnTrackOfSelection = new JRadioButton( "Track of selection" );
+		final GridBagConstraints gbcRdbtnTrackOfSelection = new GridBagConstraints();
+		gbcRdbtnTrackOfSelection.anchor = GridBagConstraints.WEST;
+		gbcRdbtnTrackOfSelection.insets = new Insets( 0, 5, 0, 5 );
+		gbcRdbtnTrackOfSelection.gridx = 0;
+		gbcRdbtnTrackOfSelection.gridy = 7;
+		add( rdbtnTrackOfSelection, gbcRdbtnTrackOfSelection );
+		rdbtnTrackOfSelection.setFont( rdbtnTrackOfSelection.getFont().deriveFont( rdbtnTrackOfSelection.getFont().getSize() - 2f ) );
+		btngrp.add( rdbtnTrackOfSelection );
 		rdbtnTrackOfSelection.setSelected( true );
 
-		chkboxConnect = new JCheckBox( "Connect" );
+		rdbtnKeepCurrent = new JRadioButton( "Keep current" );
+		final GridBagConstraints gbcRdbtnKeepCurrent = new GridBagConstraints();
+		gbcRdbtnKeepCurrent.anchor = GridBagConstraints.WEST;
+		gbcRdbtnKeepCurrent.insets = new Insets( 0, 5, 0, 5 );
+		gbcRdbtnKeepCurrent.gridx = 0;
+		gbcRdbtnKeepCurrent.gridy = 8;
+		add( rdbtnKeepCurrent, gbcRdbtnKeepCurrent );
+		rdbtnKeepCurrent.setFont( rdbtnKeepCurrent.getFont().deriveFont( rdbtnKeepCurrent.getFont().getSize() - 2f ) );
+		btngrp.add( rdbtnKeepCurrent );
+
+		rdbtnContext = new JRadioButton( "From context:" );
+		final GridBagConstraints gbcRdbtnContext = new GridBagConstraints();
+		gbcRdbtnContext.anchor = GridBagConstraints.WEST;
+		gbcRdbtnContext.insets = new Insets( 0, 5, 0, 5 );
+		gbcRdbtnContext.gridx = 0;
+		gbcRdbtnContext.gridy = 9;
+		add( rdbtnContext, gbcRdbtnContext );
+		rdbtnContext.setFont( rdbtnContext.getFont().deriveFont( rdbtnContext.getFont().getSize() - 2f ) );
+		btngrp.add( rdbtnContext );
+
+		final ContextChooserPanel< ? > chooserPanel = new ContextChooserPanel<>( contextChooser );
+		final GridBagConstraints gbcChooserPanel = new GridBagConstraints();
+		gbcChooserPanel.fill = GridBagConstraints.BOTH;
+		gbcChooserPanel.insets = new Insets( 0, 5, 5, 5 );
+		gbcChooserPanel.gridx = 0;
+		gbcChooserPanel.gridy = 10;
+		add( chooserPanel, gbcChooserPanel );
+
+		chkboxConnect = new JCheckBox( "Show edges" );
+		final GridBagConstraints gbcChkboxConnect = new GridBagConstraints();
+		gbcChkboxConnect.anchor = GridBagConstraints.WEST;
+		gbcChkboxConnect.insets = new Insets( 5, 5, 5, 5 );
+		gbcChkboxConnect.gridx = 0;
+		gbcChkboxConnect.gridy = 11;
+		add( chkboxConnect, gbcChkboxConnect );
 		chkboxConnect.setSelected( true );
 		chkboxConnect.setFont( chkboxConnect.getFont().deriveFont( chkboxConnect.getFont().getSize() - 2f ) );
-		panelSelection.add( chkboxConnect );
+
+		for ( final Component c : chooserPanel.getComponents() )
+			c.setFont( c.getFont().deriveFont( c.getFont().getSize2D() - 2f ) );
 
 		btnPlot = new JButton( "Plot" );
 		final GridBagConstraints gbcBtnPlot = new GridBagConstraints();
-		gbcBtnPlot.anchor = GridBagConstraints.EAST;
+		gbcBtnPlot.anchor = GridBagConstraints.SOUTHEAST;
 		gbcBtnPlot.gridx = 0;
-		gbcBtnPlot.gridy = 6;
+		gbcBtnPlot.gridy = 12;
 		add( btnPlot, gbcBtnPlot );
 
 		/*
-		 * Listener. After pressing the 'plot' button, we default to 'keep
-		 * current'.
+		 * Listeners.
 		 */
-		btnPlot.addActionListener( e -> rdbtnKeepCurrent.setSelected( true ) );
+		// After pressing the 'plot' button, we default to 'keep current'.
+		btnPlot.addActionListener( e -> {
+			if ( !rdbtnContext.isSelected() )
+				rdbtnKeepCurrent.setSelected( true );
+		} );
+		// show context box only if the right button is selected.
+		final EverythingDisablerAndReenabler contextEnabler = new EverythingDisablerAndReenabler( chooserPanel, new Class[] { Label.class } );
+		contextEnabler.setEnabled( rdbtnContext.isSelected() );
+		rdbtnContext.addChangeListener( e -> contextEnabler.setEnabled( rdbtnContext.isSelected() ) );
 	}
 
 	public < V, E > void setFeatures(
@@ -255,11 +313,17 @@ public class GrapherSidePanel extends JPanel
 	{
 		final FeatureSpecPair xFeature = ( FeatureSpecPair ) cmbboxXFeature.getSelectedItem();
 		final FeatureSpecPair yFeature = ( FeatureSpecPair ) cmbboxYFeature.getSelectedItem();
+		final GraphDataItemsSource itemSource = rdbtnContext.isSelected()
+				? GraphDataItemsSource.CONTEXT
+				: rdbtnKeepCurrent.isSelected()
+						? GraphDataItemsSource.KEEP_CURRENT
+						: rdbtnSelection.isSelected()
+								? GraphDataItemsSource.SELECTION
+								: GraphDataItemsSource.TRACK_OF_SELECTION;
 		return new FeatureGraphConfig(
 				xFeature,
 				yFeature,
-				rdbtnKeepCurrent.isSelected(),
-				!rdbtnSelection.isSelected(),
+				itemSource,
 				chkboxConnect.isSelected() );
 	}
 
@@ -267,8 +331,20 @@ public class GrapherSidePanel extends JPanel
 	{
 		cmbboxXFeature.setSelectedItem( gc.getXFeature() );
 		cmbboxYFeature.setSelectedItem( gc.getYFeature() );
-		rdbtnKeepCurrent.setSelected( gc.keepCurrent() );
-		rdbtnSelection.setSelected( !gc.graphTrackOfSelection() );
+		switch ( gc.itemSource() )
+		{
+		case CONTEXT:
+			rdbtnContext.setSelected( true );
+			break;
+		case KEEP_CURRENT:
+			rdbtnKeepCurrent.setSelected( true );
+			break;
+		case SELECTION:
+			rdbtnSelection.setSelected( true );
+		default:
+			break;
+
+		}
 		chkboxConnect.setSelected( gc.drawConnected() );
 	}
 
@@ -311,12 +387,14 @@ public class GrapherSidePanel extends JPanel
 		return model.getFeatureModel();
 	}
 
-	public static void main( final String[] args )
+	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
 	{
+		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+
 		final FeatureModel fm = demoFM();
 		final Map< FeatureSpec< ?, Spot >, Feature< Spot > > spotFeatures = FeatureUtils.collectFeatureMap( fm, Spot.class );
 		final Map< FeatureSpec< ?, Link >, Feature< Link > > linkFeatures = FeatureUtils.collectFeatureMap( fm, Link.class );
-		final GrapherSidePanel gsp = new GrapherSidePanel( 2 );
+		final GrapherSidePanel gsp = new GrapherSidePanel( 2, new ContextChooser<>( null ) );
 		gsp.setFeatures( spotFeatures, linkFeatures );
 
 		final JFrame frame = new JFrame( "Grapher side panel" );

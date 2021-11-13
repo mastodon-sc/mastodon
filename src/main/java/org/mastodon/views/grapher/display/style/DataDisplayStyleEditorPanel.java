@@ -208,7 +208,8 @@ public class DataDisplayStyleEditorPanel extends JPanel
 			}
 		} );
 
-		final DataDisplayPanel previewPanel = new DataDisplayPanel( graph, layout, highlight, focus, selection, navigation, options );
+		final DataDisplayPanel< DummyVertex, DummyEdge > previewPanel = new DataDisplayPanel<>(
+				graph, layout, highlight, focus, selection, navigation, options );
 		previewPanel.getGraphOverlay().setXLabel( "Frame" );
 		previewPanel.getGraphOverlay().setYLabel( "Intensity (counts)" );
 

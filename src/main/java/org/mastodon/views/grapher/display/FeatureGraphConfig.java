@@ -8,27 +8,28 @@ package org.mastodon.views.grapher.display;
 public class FeatureGraphConfig
 {
 
+	public enum GraphDataItemsSource
+	{
+		SELECTION, TRACK_OF_SELECTION, KEEP_CURRENT, CONTEXT;
+	}
+
 	private final FeatureSpecPair xFeature;
 
 	private final FeatureSpecPair yFeature;
 
-	private final boolean keepCurrent;
-
-	private final boolean trackOfSelection;
+	private final GraphDataItemsSource itemSource;
 
 	private final boolean connect;
 
 	public FeatureGraphConfig(
 			final FeatureSpecPair xFeature,
 			final FeatureSpecPair yFeature,
-			final boolean keepCurrent,
-			final boolean trackOfSelection,
+			final GraphDataItemsSource itemSource,
 			final boolean connect )
 	{
 		this.xFeature = xFeature;
 		this.yFeature = yFeature;
-		this.keepCurrent = keepCurrent;
-		this.trackOfSelection = trackOfSelection;
+		this.itemSource = itemSource;
 		this.connect = connect;
 	}
 
@@ -42,14 +43,9 @@ public class FeatureGraphConfig
 		return yFeature;
 	}
 
-	public boolean graphTrackOfSelection()
+	public GraphDataItemsSource itemSource()
 	{
-		return trackOfSelection;
-	}
-
-	public boolean keepCurrent()
-	{
-		return keepCurrent;
+		return itemSource;
 	}
 
 	public boolean drawConnected()
@@ -63,8 +59,7 @@ public class FeatureGraphConfig
 		return super.toString() +
 				"\n - xFeature: " + xFeature +
 				"\n - yFeature: " + yFeature +
-				"\n - keep current: " + keepCurrent +
-				"\n - track of selection: " + trackOfSelection +
-				"\n - do connect: " + connect;
+				"\n - item source: " + itemSource +
+				"\n - show edge: " + connect;
 	}
 }
