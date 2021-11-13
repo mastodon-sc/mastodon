@@ -292,11 +292,10 @@ public class DataDisplayPanel extends JPanel implements
 				if ( ignoreScrollBarChanges )
 					return;
 
-				final double s = layoutMaxY - ( yScrollBar.getValue() - yScrollBar.getMinimum() ) / yScrollScale;
+				final double s = layoutMaxY + layoutMinY - boundYLayoutBorder - yScrollBar.getValue() / yScrollScale;
 				final ScreenTransform t = screenTransform.get();
 				t.shiftLayoutY( ( s - t.getMaxY() ) );
 				screenTransform.set( t );
-
 				flags.setTransformChanged();
 				painterThread.requestRepaint();
 			}
@@ -412,10 +411,10 @@ public class DataDisplayPanel extends JPanel implements
 		final int xmin = ( int ) ( xScrollScale * ( layoutMinX - boundXLayoutBorder ) );
 		final int xmax = ( int ) ( xScrollScale * ( layoutMaxX + boundXLayoutBorder ) );
 		yScrollScale = 10000.0 / ( layoutMaxY - layoutMinY + 2 );
+		final int yext = ( int ) ( yScrollScale * ( t.getMaxY() - t.getMinY() ) );
 		final int ymin = ( int ) ( yScrollScale * ( layoutMinY - boundYLayoutBorder ) );
 		final int ymax = ( int ) ( yScrollScale * ( layoutMaxY + boundYLayoutBorder ) );
-		final int yext = ( int ) ( yScrollScale * ( t.getMaxY() - t.getMinY() ) );
-		final int yval = ymin + ( int ) ( yScrollScale * ( layoutMaxY - t.getMaxY() ) );
+		final int yval = ( int ) ( yScrollScale * ( layoutMinY - boundYLayoutBorder + layoutMaxY - t.getMaxY() ) );
 		ignoreScrollBarChanges = true;
 		xScrollBar.setValues( xval, xext, xmin, xmax );
 		yScrollBar.setValues( yval, yext, ymin, ymax );
