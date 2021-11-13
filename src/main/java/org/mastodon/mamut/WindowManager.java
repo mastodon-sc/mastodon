@@ -384,6 +384,7 @@ public class WindowManager
 	private synchronized void addGrapherWindow( final MamutViewGrapher grapher )
 	{
 		grapherWindows.add( grapher );
+		grapher.getContextChooser().updateContextProviders( contextProviders );
 		grapher.onClose( () -> {
 			grapherWindows.remove( grapher );
 			grapher.getContextChooser().updateContextProviders( new ArrayList<>() );
