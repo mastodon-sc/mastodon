@@ -592,10 +592,26 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 				vertexStroke( new BasicStroke() );
 	}
 
+	private static final DataDisplayStyle discreet;
+	static
+	{
+		final Color mainColor = new Color( 0, 83, 140 );
+		discreet = df.copy( "discreet" ).
+				autoVertexSize( false ).
+				drawVertexName( false ).
+				edgeColor(mainColor ).
+				vertexFixedSize( 7. ).
+				edgeStroke( new BasicStroke( 0.5f ) ).
+				vertexDrawColor( df.getBackgroundColor() ).
+				vertexDrawShape( VertexDrawShape.SQUARE ).
+				vertexFillColor( mainColor );
+		}
+
 	public static Collection< DataDisplayStyle > defaults;
 	static
 	{
-		defaults = new ArrayList<>( 1 );
+		defaults = new ArrayList<>( 2 );
 		defaults.add( df );
+		defaults.add( discreet );
 	}
 }
