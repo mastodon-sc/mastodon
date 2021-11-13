@@ -39,6 +39,8 @@ import static org.mastodon.app.ui.settings.StyleElements.linkedSliderPanel;
 import static org.mastodon.app.ui.settings.StyleElements.separator;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -46,6 +48,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -62,7 +65,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
+import javax.swing.border.LineBorder;
 
+import org.mastodon.adapter.FocusModelAdapter;
+import org.mastodon.adapter.HighlightModelAdapter;
+import org.mastodon.adapter.RefBimap;
+import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
 import org.mastodon.app.ui.settings.StyleElements.ColorElement;
 import org.mastodon.app.ui.settings.StyleElements.DoubleElement;
@@ -70,7 +78,31 @@ import org.mastodon.app.ui.settings.StyleElements.EnumElement;
 import org.mastodon.app.ui.settings.StyleElements.Separator;
 import org.mastodon.app.ui.settings.StyleElements.StyleElement;
 import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
+import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefSet;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
+import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.graph.GraphIdBimap;
+import org.mastodon.model.DefaultFocusModel;
+import org.mastodon.model.DefaultHighlightModel;
+import org.mastodon.model.DefaultNavigationHandler;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightModel;
+import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.SelectionModel;
+import org.mastodon.views.grapher.datagraph.DataEdge;
+import org.mastodon.views.grapher.datagraph.DataEdgeBimap;
+import org.mastodon.views.grapher.datagraph.DataGraph;
+import org.mastodon.views.grapher.datagraph.DataGraphLayout;
+import org.mastodon.views.grapher.datagraph.DataVertex;
+import org.mastodon.views.grapher.datagraph.DataVertexBimap;
+import org.mastodon.views.grapher.display.DataDisplayOptions;
+import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.PaintGraph.VertexDrawShape;
+import org.mastodon.views.trackscheme.display.style.dummygraph.DummyEdge;
+import org.mastodon.views.trackscheme.display.style.dummygraph.DummyGraph;
+import org.mastodon.views.trackscheme.display.style.dummygraph.DummyVertex;
 
 import bdv.tools.brightness.SliderPanelDouble;
 
@@ -85,6 +117,109 @@ public class DataDisplayStyleEditorPanel extends JPanel
 	public DataDisplayStyleEditorPanel( final DataDisplayStyle style )
 	{
 		super( new BorderLayout() );
+
+		/*
+		 * Preview panel.
+		 */
+
+		final DummyGraph.Examples ex = DummyGraph.Examples.DIVIDING_CELL;
+		final DummyGraph example = ex.getGraph();
+		final GraphIdBimap< DummyVertex, DummyEdge > idmap = example.getIdBimap();
+		final DataGraph< DummyVertex, DummyEdge > graph = new DataGraph<>( example, idmap );
+		final RefBimap< DummyVertex, DataVertex > vertexMap = new DataVertexBimap<>( graph );
+		final RefBimap< DummyEdge, DataEdge > edgeMap = new DataEdgeBimap<>( graph );
+		final HighlightModel< DataVertex, DataEdge > highlight = new HighlightModelAdapter<>( new DefaultHighlightModel<>( idmap ), vertexMap, edgeMap );
+		final FocusModel< DataVertex, DataEdge > focus = new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
+		final SelectionModel< DataVertex, DataEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
+		final NavigationHandler< DataVertex, DataEdge > navigation = new DefaultNavigationHandler<>();
+		final DataDisplayOptions options = DataDisplayOptions.options().style( style );
+
+		// Layout.
+
+		final DataGraphLayout< DummyVertex, DummyEdge > layout = new DataGraphLayout<>( graph, selection );
+		final RefSet< DataVertex > set = RefCollections.createRefSet( graph.vertices(), graph.vertices().size() );
+		set.addAll( graph.vertices() );
+		layout.setVertices( set );
+		layout.setPaintEdges( true );
+		layout.setXFeature( new FeatureProjection< DummyVertex >()
+		{
+
+			private int i = 0;
+
+			@Override
+			public FeatureProjectionKey getKey()
+			{
+				return FeatureProjectionKey.key( new FeatureProjectionSpec( "Frame" ) );
+			}
+
+			@Override
+			public boolean isSet( final DummyVertex obj )
+			{
+				return true;
+			}
+
+			@Override
+			public double value( final DummyVertex obj )
+			{
+				final String label = obj.getLabel();
+				if ( label.endsWith( "C" ) )
+					return obj.getTimepoint() + i++ / 10.;
+				return obj.getTimepoint();
+			}
+
+			@Override
+			public String units()
+			{
+				return "";
+			}
+		} );
+		final Random ran = new Random( 0l );
+		layout.setYFeature( new FeatureProjection< DummyVertex >()
+		{
+
+			@Override
+			public FeatureProjectionKey getKey()
+			{
+				return FeatureProjectionKey.key( new FeatureProjectionSpec( "Intensity" ) );
+			}
+
+			@Override
+			public boolean isSet( final DummyVertex obj )
+			{
+				return true;
+			}
+
+			@Override
+			public double value( final DummyVertex obj )
+			{
+				final String label = obj.getLabel();
+				if ( label.startsWith( "Z" ) || label.startsWith( "C" ) )
+					return ran.nextDouble() * 2.;
+				else if ( label.startsWith( "A" ) )
+					return 3. + ran.nextDouble();
+				else
+					return -5. + ran.nextDouble();
+			}
+
+			@Override
+			public String units()
+			{
+				return "counts";
+			}
+		} );
+
+		final DataDisplayPanel previewPanel = new DataDisplayPanel( graph, layout, highlight, focus, selection, navigation, options );
+		previewPanel.getGraphOverlay().setXLabel( "Frame" );
+		previewPanel.getGraphOverlay().setYLabel( "Intensity (counts)" );
+
+		previewPanel.graphChanged();
+		previewPanel.getDisplay().setFocusable( false );
+		previewPanel.setPreferredSize( new Dimension( 200, 200 ) );
+
+		/*
+		 * Style edditor widgets.
+		 */
+
 		colorChooser = new JColorChooser();
 		styleElements = styleElements( style );
 
@@ -201,6 +336,8 @@ public class DataDisplayStyleEditorPanel extends JPanel
 					}
 				} ) );
 
+		previewPanel.setBorder( new LineBorder( Color.LIGHT_GRAY, 1 ) );
+		add( previewPanel, BorderLayout.CENTER );
 		add( editPanel, BorderLayout.SOUTH );
 	}
 
