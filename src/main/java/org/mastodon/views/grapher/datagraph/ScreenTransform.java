@@ -398,8 +398,8 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 		final double lY = screenToLayoutY( screenCenterY );
 		final double newSizeY = ( maxY - minY ) * scale;
 		scaleY = ( screenHeight - 1 ) / newSizeY;
-		maxY = lY + screenCenterY / scaleY;
-		minY = maxY - newSizeY;
+		minY = lY - ( screenHeight - screenCenterY ) / scaleY;
+		maxY = minY + newSizeY;
 	}
 
 	/**
