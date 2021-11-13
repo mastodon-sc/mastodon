@@ -81,8 +81,8 @@ import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.DataDisplayZoom;
 import org.mastodon.views.grapher.display.FeatureGraphConfig;
-import org.mastodon.views.grapher.display.OffsetAxes;
 import org.mastodon.views.grapher.display.FeatureSpecPair;
+import org.mastodon.views.grapher.display.OffsetAxes;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
@@ -174,8 +174,8 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		final DataDisplayPanel dataDisplayPanel = frame.getDataDisplayPanel();
 
 		// If they are available, set some sensible defaults for the feature.
-		final FeatureSpecPair spvx = new FeatureSpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next() );
-		final FeatureSpecPair spvy = new FeatureSpecPair( SpotQuickMeanIntensityFeature.SPEC, SpotQuickMeanIntensityFeature.PROJECTION_SPEC, 0 );
+		final FeatureSpecPair spvx = new FeatureSpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next(), false, false );
+		final FeatureSpecPair spvy = new FeatureSpecPair( SpotQuickMeanIntensityFeature.SPEC, SpotQuickMeanIntensityFeature.PROJECTION_SPEC, 0, false, false );
 		final FeatureGraphConfig gcv = new FeatureGraphConfig( spvx, spvy, false, true, true );
 		frame.getVertexSidePanel().setGraphConfig( gcv );
 

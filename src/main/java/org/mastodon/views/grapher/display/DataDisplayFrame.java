@@ -29,14 +29,12 @@
 package org.mastodon.views.grapher.display;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -79,9 +77,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 
 	private final SelectionModel< DataVertex, DataEdge > selectionModel;
 
-	private final GrapherSidePanel vertexSidePanel;
-
-	private final GrapherSidePanel edgeSidePanel;
+	private final GrapherSidePanel sidePanel;
 
 	public DataDisplayFrame(
 			final DataGraph< V, E > graph,
@@ -113,24 +109,14 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		 * Side panel.
 		 */
 
-		final JTabbedPane sidePanel = new JTabbedPane( JTabbedPane.TOP );
+		sidePanel = new GrapherSidePanel( nSources );
+		sidePanel.btnPlot.addActionListener( e -> plotVertices( sidePanel.getGraphConfig(), featureModel ) );
 
-		vertexSidePanel = new GrapherSidePanel( nSources );
-		edgeSidePanel = new GrapherSidePanel( nSources );
-		sidePanel.add( vertexClass.getSimpleName(), vertexSidePanel );
-		sidePanel.add( edgeClass.getSimpleName(), edgeSidePanel );
-
-		vertexSidePanel.btnPlot.addActionListener( e -> plotVertices( vertexSidePanel.getGraphConfig(), featureModel ) );
-		edgeSidePanel.btnPlot.addActionListener( e -> plotEdges( edgeSidePanel.getGraphConfig(), featureModel ) );
-
-		final FeatureModelListener featureModelListener = () -> {
-			vertexSidePanel.setFeatures( FeatureUtils.collectFeatureMap( featureModel, vertexClass ) );
-			edgeSidePanel.setFeatures( FeatureUtils.collectFeatureMap( featureModel, edgeClass ) );
-		};
+		final FeatureModelListener featureModelListener = () -> sidePanel.setFeatures(
+				FeatureUtils.collectFeatureMap( featureModel, vertexClass ),
+				FeatureUtils.collectFeatureMap( featureModel, edgeClass ) );
 		featureModel.listeners().add( featureModelListener );
 		featureModelListener.featureModelChanged();
-		sidePanel.setSelectedIndex( 0 );
-		sidePanel.setMinimumSize( new Dimension( 100, 150 ) );
 
 		/*
 		 * Plot panel.
@@ -197,50 +183,70 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 
 	public GrapherSidePanel getVertexSidePanel()
 	{
-		return vertexSidePanel;
-	}
-
-	public GrapherSidePanel getEdgeSidePanel()
-	{
-		return edgeSidePanel;
+		return sidePanel;
 	}
 
 	private void plotVertices( final FeatureGraphConfig gc, final FeatureModel featureModel )
 	{
-		final FeatureProjection< V > xproj = gc.getXFeature().getProjection( featureModel );
-		final FeatureProjection< V > yproj = gc.getYFeature().getProjection( featureModel );
-		final RefSet< DataVertex > vertices = buildVerticesList(
-				selectionModel.getSelectedVertices(),
-				selectionModel.getSelectedEdges(),
-				gc.graphTrackOfSelection() );
-
 		@SuppressWarnings( "unchecked" )
 		final DataGraphLayout< V, E > layout = ( DataGraphLayout< V, E > ) dataDisplayPanel.getDataGraphLayout();
-		layout.setXFeature( xproj );
-		layout.setYFeature( yproj );
-		layout.setPaintEdges( gc.drawConnected() );
+
+		// X feature projection.
+		final FeatureSpecPair spx = gc.getXFeature();
+		final String xunits;
+		if ( spx.isEdgeFeature() )
+		{
+			final FeatureProjection< E > xproj = spx.getProjection( featureModel );
+			layout.setXFeatureEdge( xproj, spx.isIncomingEdge() );
+			xunits = xproj.units();
+		}
+		else
+		{
+			final FeatureProjection< V > xproj = spx.getProjection( featureModel );
+			layout.setXFeatureVertex( xproj );
+			xunits = xproj.units();
+		}
+
+		// Y feature projection.
+		final String yunits;
+		final FeatureSpecPair spy = gc.getYFeature();
+		if ( spy.isEdgeFeature() )
+		{
+			final FeatureProjection< E > yproj = spy.getProjection( featureModel );
+			layout.setYFeatureEdge( yproj, spy.isIncomingEdge() );
+			yunits = yproj.units();
+		}
+		else
+		{
+			final FeatureProjection< V > yproj = spy.getProjection( featureModel );
+			layout.setYFeatureVertex( yproj );
+			yunits = yproj.units();
+		}
+
+		// Vertices to plot.
 		if ( !gc.keepCurrent() )
+		{
+			final RefSet< DataVertex > vertices = buildVerticesList(
+					selectionModel.getSelectedVertices(),
+					selectionModel.getSelectedEdges(),
+					gc.graphTrackOfSelection() );
 			layout.setVertices( vertices );
+		}
+
+		// Draw plot edges.
+		layout.setPaintEdges( gc.drawConnected() );
 
 		String xlabel = gc.getXFeature().toString();
-		final String xunits = xproj.units();
 		if ( !xunits.isEmpty() )
 			xlabel += " (" + xunits + ")";
 		dataDisplayPanel.getGraphOverlay().setXLabel( xlabel );
 
 		String ylabel = gc.getYFeature().toString();
-		final String yunits = yproj.units();
 		if ( !yunits.isEmpty() )
 			ylabel += " (" + yunits + ")";
 		dataDisplayPanel.getGraphOverlay().setYLabel( ylabel );
 
 		dataDisplayPanel.graphChanged();
-	}
-
-	private void plotEdges( final FeatureGraphConfig graphConfig, final FeatureModel featureModel )
-	{
-		// TODO Auto-generated method stub
-		System.out.println( "plot edges" ); // DEBUG
 	}
 
 	private RefSet< DataVertex > buildVerticesList(

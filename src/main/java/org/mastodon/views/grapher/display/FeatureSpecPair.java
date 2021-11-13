@@ -26,31 +26,60 @@ public class FeatureSpecPair implements Comparable< FeatureSpecPair >
 
 	private final int c2;
 
-	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps )
+	/**
+	 * <code>true</code> if this spec pair is created for an edge feature,
+	 * <code>false</code> for vertex feature.
+	 */
+	private final boolean isEdgeFeature;
+
+	/**
+	 * <code>true</code> if this spec pair is for an edge feature, and its value
+	 * will be read from the incoming edge of a vertex. If <code>false</code> it
+	 * will be read from the outgoing edge of a vertex.
+	 */
+	private final boolean incoming;
+
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final boolean isEdgeFeature, final boolean incoming )
 	{
 		assert f.getMultiplicity() == Multiplicity.SINGLE;
 		this.featureSpec = f;
 		this.projectionSpec = ps;
 		this.c1 = -1;
 		this.c2 = -1;
+		this.isEdgeFeature = isEdgeFeature;
+		this.incoming = incoming;
 	}
 
-	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1 )
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1, final boolean isEdgeFeature, final boolean incoming )
 	{
 		assert f.getMultiplicity() == Multiplicity.ON_SOURCES;
 		this.featureSpec = f;
 		this.projectionSpec = ps;
 		this.c1 = c1;
 		this.c2 = -1;
+		this.isEdgeFeature = isEdgeFeature;
+		this.incoming = incoming;
 	}
 
-	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1, final int c2 )
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1, final int c2, final boolean isEdgeFeature, final boolean incoming )
 	{
 		assert f.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS;
 		this.featureSpec = f;
 		this.projectionSpec = ps;
 		this.c1 = c1;
 		this.c2 = c2;
+		this.isEdgeFeature = isEdgeFeature;
+		this.incoming = incoming;
+	}
+
+	public boolean isEdgeFeature()
+	{
+		return isEdgeFeature;
+	}
+
+	public boolean isIncomingEdge()
+	{
+		return incoming;
 	}
 
 	@Override
@@ -59,11 +88,19 @@ public class FeatureSpecPair implements Comparable< FeatureSpecPair >
 		if ( featureSpec == null || projectionSpec == null )
 			return 1;
 
-		final int c = featureSpec.getKey().compareTo( o.featureSpec.getKey() );
-		if ( c != 0 )
-			return c;
+		final int c3 = Boolean.compare( isEdgeFeature, o.isEdgeFeature );
+		if ( c3 != 0 )
+			return c3;
 
-		return projectionKey().toString().compareTo( o.projectionKey().toString() );
+		final int c1 = featureSpec.getKey().compareTo( o.featureSpec.getKey() );
+		if ( c1 != 0 )
+			return c1;
+
+		final int c2 = projectionKey().toString().compareTo( o.projectionKey().toString() );
+		if ( c2 != 0 )
+			return c2;
+
+		return Boolean.compare( incoming, o.incoming );
 	}
 
 	@Override
@@ -80,9 +117,13 @@ public class FeatureSpecPair implements Comparable< FeatureSpecPair >
 
 		final int size = featureSpec.getProjectionSpecs().size();
 		if ( featureSpec.getMultiplicity().equals( Multiplicity.SINGLE ) && size == 1 )
-			return featureSpec.getKey();
+			return featureSpec.getKey() + ( isEdgeFeature
+					? incoming ? " - incoming" : " - outgoing"
+					: "" );
 
-		return featureSpec.getKey() + " - " + projectionKey();
+		return featureSpec.getKey() + " - " + projectionKey() + ( isEdgeFeature
+				? incoming ? " - incoming" : " - outgoing"
+				: "" );
 	}
 
 	public FeatureProjectionKey projectionKey()

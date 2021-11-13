@@ -8,6 +8,7 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.Edges;
 import org.mastodon.graph.Vertex;
 import org.mastodon.kdtree.ClipConvexPolytopeKDTree;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearchOnKDTree;
@@ -32,9 +33,15 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 
 	private final Listeners.List< LayoutListener > listeners;
 
-	private FeatureProjection< V > yp;
+	private FeatureProjection< V > ypVertex;
 
-	private FeatureProjection< V > xp;
+	private FeatureProjection< V > xpVertex;
+
+	private FeatureProjection< E > xpEdge;
+
+	private FeatureProjection< E > ypEdge;
+
+	private boolean incomingEdge;
 
 	private RefSet< DataVertex > vertices;
 
@@ -66,15 +73,32 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		this.vertices = RefCollections.createRefSet( dataGraph.vertices() );
 	}
 
-	public void setXFeature( final FeatureProjection< V > xproj )
+	public void setXFeatureVertex( final FeatureProjection< V > xproj )
 	{
-		this.xp = xproj;
+		this.xpVertex = xproj;
+		this.xpEdge = null;
 	}
 
-	public void setYFeature( final FeatureProjection< V > yproj )
+	public void setYFeatureVertex( final FeatureProjection< V > yproj )
 	{
-		this.yp = yproj;
+		this.ypVertex = yproj;
+		this.ypEdge = null;
 	}
+
+	public void setXFeatureEdge( final FeatureProjection< E > xproj, final boolean incoming )
+	{
+		this.xpEdge = xproj;
+		this.incomingEdge = incoming;
+		this.xpVertex = null;
+	}
+
+	public void setYFeatureEdge( final FeatureProjection< E > yproj, final boolean incoming )
+	{
+		this.ypEdge = yproj;
+		this.incomingEdge = incoming;
+		this.ypVertex = null;
+	}
+
 
 	/**
 	 * Specify what vertices to layout.
@@ -110,19 +134,18 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 	{
 		if ( vertices.isEmpty() )
 		{
-			currentLayoutMinX = 0.;
+			currentLayoutMinX = -1.;
 			currentLayoutMaxX = 1.;
-			currentLayoutMinY = 0.;
+			currentLayoutMinY = -1.;
 			currentLayoutMaxY = 1.;
 		}
 		else
 		{
-
 			currentLayoutMinX = Double.POSITIVE_INFINITY;
 			currentLayoutMaxX = Double.NEGATIVE_INFINITY;
 			currentLayoutMinY = Double.POSITIVE_INFINITY;
 			currentLayoutMaxY = Double.NEGATIVE_INFINITY;
-			if ( xp != null && yp != null )
+			if ( ( xpVertex != null || xpEdge != null ) && ( ypVertex != null || ypEdge != null ) )
 			{
 				final V ref = dataGraph.idmap.vertexIdBimap().createRef();
 				for ( final DataVertex dv : vertices )
@@ -130,13 +153,13 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 					final int id = dv.getModelVertexId();
 					final V v = dataGraph.idmap.getVertex( id, ref );
 
-					final double x = xp.value( v );
+					final double x = getXFeatureValue( v );
 					if ( x > currentLayoutMaxX )
 						currentLayoutMaxX = x;
 					if ( x < currentLayoutMinX )
 						currentLayoutMinX = x;
 
-					final double y = yp.value( v );
+					final double y = getYFeatureValue( v );
 					if ( y > currentLayoutMaxY )
 						currentLayoutMaxY = y;
 					if ( y < currentLayoutMinY )
@@ -163,6 +186,33 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		}
 
 		notifyListeners();
+	}
+
+	private double getXFeatureValue( final V v )
+	{
+		return getFeatureValue( v, xpVertex, xpEdge );
+	}
+
+	private double getYFeatureValue( final V v )
+	{
+		return getFeatureValue( v, ypVertex, ypEdge );
+	}
+
+	private double getFeatureValue( final V v, final FeatureProjection< V > xpv, final FeatureProjection< E > xpe )
+	{
+		if ( xpv != null )
+			return xpv.value( v );
+
+		if ( xpe != null )
+		{
+			final Edges< E > edges = ( incomingEdge )
+					? v.incomingEdges()
+					: v.outgoingEdges();
+			if ( edges.size() != 1 )
+				return Double.NaN;
+			return xpe.value( edges.iterator().next() );
+		}
+		return Double.NaN;
 	}
 
 	private void notifyListeners()
@@ -310,6 +360,14 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		// Create screen vertices and edges.
 		for ( final DataVertex v1 : inside )
 		{
+			final double x1 = v1.getLayoutX();
+			if ( Double.isNaN( x1 ) )
+				continue;
+
+			final double y1 = v1.getLayoutY();
+			if ( Double.isNaN( y1 ) )
+				continue;
+
 			if ( v1.getScreenVertexIndex() < 0 )
 			{
 				final int v1si = screenVertices.size();
@@ -318,8 +376,6 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 				final String label1 = v1.getLabel();
 				final boolean selected1 = selection.isSelected( v1 );
 
-				final double x1 = v1.getLayoutX();
-				final double y1 = v1.getLayoutY();
 				final double sx1 = transform.layoutToScreenX( x1 ) + decorationsOffsetX;
 				final double sy1 = transform.layoutToScreenY( y1 );
 				screenVertexPool.create( sv ).init( id1, label1, sx1, sy1, selected1, colorGenerator.color( v1 ) );
@@ -340,6 +396,14 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 
 					if ( v2.getScreenVertexIndex() < 0 )
 					{
+						final double x2 = v2.getLayoutX();
+						if ( Double.isNaN( x2 ) )
+							continue;
+
+						final double y2 = v2.getLayoutY();
+						if ( Double.isNaN( y2 ) )
+							continue;
+
 						// not visited. We have to create it.
 						final int v2si = screenVertices.size();
 						v2.setScreenVertexIndex( v2si );
@@ -347,8 +411,6 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 						final String label2 = v2.getLabel();
 						final boolean selected2 = selection.isSelected( v2 );
 
-						final double x2 = v2.getLayoutX();
-						final double y2 = v2.getLayoutY();
 						final double sx2 = transform.layoutToScreenX( x2 ) + decorationsOffsetX;
 						final double sy2 = transform.layoutToScreenY( y2 );
 						screenVertexPool.create( sv ).init( id2, label2, sx2, sy2, selected2, colorGenerator.color( v2 ) );

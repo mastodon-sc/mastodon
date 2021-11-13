@@ -165,12 +165,50 @@ public class GrapherSidePanel extends JPanel
 		btnPlot.addActionListener( e -> rdbtnKeepCurrent.setSelected( true ) );
 	}
 
-	public < O > void setFeatures( final Map< FeatureSpec< ?, O >, Feature< O > > features )
+	public < V, E > void setFeatures(
+			final Map< FeatureSpec< ?, V >, Feature< V > > vertexFeatures,
+			final Map< FeatureSpec< ?, E >, Feature< E > > edgeFeatures )
 	{
 		specs.clear();
-		if ( features != null )
+		if ( vertexFeatures != null )
 		{
-			for ( final FeatureSpec< ?, O > fs : features.keySet() )
+			for ( final FeatureSpec< ?, V > fs : vertexFeatures.keySet() )
+			{
+				final Multiplicity multiplicity = fs.getMultiplicity();
+				switch ( fs.getMultiplicity() )
+				{
+				case ON_SOURCES:
+					for ( final FeatureProjectionSpec ps : fs.getProjectionSpecs() )
+					{
+						for ( int c = 0; c < nSources; c++ )
+							specs.add( new FeatureSpecPair( fs, ps, c, false, false ) );
+					}
+					break;
+				case ON_SOURCE_PAIRS:
+					for ( final FeatureProjectionSpec ps : fs.getProjectionSpecs() )
+					{
+						for ( int c1 = 0; c1 < nSources; c1++ )
+						{
+							for ( int c2 = 0; c2 < nSources; c2++ )
+								specs.add( new FeatureSpecPair( fs, ps, c1, c2, false, false ) );
+						}
+					}
+					break;
+				case SINGLE:
+					for ( final FeatureProjectionSpec ps : fs.getProjectionSpecs() )
+					{
+						specs.add(  new FeatureSpecPair( fs, ps, false, false ) );
+					}
+					break;
+				default:
+					throw new IllegalArgumentException( "Unknown multiplicity: " + multiplicity );
+				}
+
+			}
+		}
+		if ( edgeFeatures != null )
+		{
+			for ( final FeatureSpec< ?, E > fs : edgeFeatures.keySet() )
 			{
 				final Multiplicity multiplicity = fs.getMultiplicity();
 				switch ( fs.getMultiplicity() )
@@ -180,8 +218,8 @@ public class GrapherSidePanel extends JPanel
 					{
 						for ( int c = 0; c < nSources; c++ )
 						{
-							final FeatureSpecPair sp = new FeatureSpecPair( fs, ps, c );
-							specs.add( sp );
+							specs.add( new FeatureSpecPair( fs, ps, c, true, true ) );
+							specs.add( new FeatureSpecPair( fs, ps, c, true, false ) );
 						}
 					}
 					break;
@@ -189,21 +227,18 @@ public class GrapherSidePanel extends JPanel
 					for ( final FeatureProjectionSpec ps : fs.getProjectionSpecs() )
 					{
 						for ( int c1 = 0; c1 < nSources; c1++ )
-						{
 							for ( int c2 = 0; c2 < nSources; c2++ )
 							{
-								final FeatureSpecPair sp = new FeatureSpecPair( fs, ps, c1, c2 );
-								specs.add( sp );
+								specs.add( new FeatureSpecPair( fs, ps, c1, c2, true, true ) );
+								specs.add( new FeatureSpecPair( fs, ps, c1, c2, true, false ) );
 							}
-						}
-
 					}
 					break;
 				case SINGLE:
 					for ( final FeatureProjectionSpec ps : fs.getProjectionSpecs() )
 					{
-						final FeatureSpecPair sp = new FeatureSpecPair( fs, ps );
-						specs.add( sp );
+						specs.add( new FeatureSpecPair( fs, ps, true, true ) );
+						specs.add( new FeatureSpecPair( fs, ps, true, false ) );
 					}
 					break;
 				default:
@@ -212,6 +247,7 @@ public class GrapherSidePanel extends JPanel
 
 			}
 		}
+		specs.sort( null );
 		refreshComboBoxes();
 	}
 
@@ -279,8 +315,9 @@ public class GrapherSidePanel extends JPanel
 	{
 		final FeatureModel fm = demoFM();
 		final Map< FeatureSpec< ?, Spot >, Feature< Spot > > spotFeatures = FeatureUtils.collectFeatureMap( fm, Spot.class );
+		final Map< FeatureSpec< ?, Link >, Feature< Link > > linkFeatures = FeatureUtils.collectFeatureMap( fm, Link.class );
 		final GrapherSidePanel gsp = new GrapherSidePanel( 2 );
-		gsp.setFeatures( spotFeatures );
+		gsp.setFeatures( spotFeatures, linkFeatures );
 
 		final JFrame frame = new JFrame( "Grapher side panel" );
 		frame.getContentPane().add( gsp );

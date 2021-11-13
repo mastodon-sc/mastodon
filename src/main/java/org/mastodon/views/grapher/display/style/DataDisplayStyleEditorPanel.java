@@ -141,7 +141,7 @@ public class DataDisplayStyleEditorPanel extends JPanel
 		set.addAll( graph.vertices() );
 		layout.setVertices( set );
 		layout.setPaintEdges( true );
-		layout.setXFeature( new FeatureProjection< DummyVertex >()
+		layout.setXFeatureVertex( new FeatureProjection< DummyVertex >()
 		{
 
 			private int i = 0;
@@ -174,7 +174,7 @@ public class DataDisplayStyleEditorPanel extends JPanel
 			}
 		} );
 		final Random ran = new Random( 0l );
-		layout.setYFeature( new FeatureProjection< DummyVertex >()
+		layout.setYFeatureVertex( new FeatureProjection< DummyVertex >()
 		{
 
 			@Override
