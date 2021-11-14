@@ -35,13 +35,15 @@ import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.GRAPHER_TRANSFORM_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,6 +88,7 @@ import org.mastodon.views.grapher.display.FeatureSpecPair;
 import org.mastodon.views.grapher.display.OffsetAxes;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
@@ -104,6 +107,10 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 	 * is bound to this instance/window
 	 */
 	private final ColoringModel coloringModel;
+
+	private final DataDisplayPanel< Spot, Link > dataDisplayPanel;
+
+	private final ColorBarOverlay colorbarOverlay;
 
 	public MamutViewGrapher( final MamutAppModel appModel )
 	{
@@ -137,28 +144,15 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		/*
 		 * Show the frame
 		 */
+
 		final DataDisplayStyle forwardDefaultStyle = appModel.getDataDisplayStyleManager().getForwardDefaultStyle();
 		coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final DataDisplayOptions options = DataDisplayOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
-
-		// Restore position
-		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
-		if ( null != pos && pos.length == 4 )
-			options
-					.x( pos[ 0 ] )
-					.y( pos[ 1 ] )
-					.width( pos[ 2 ] )
-					.height( pos[ 3 ] );
-
-		// Restore group handle.
-		final Integer groupID = ( Integer ) guiState.get( GROUP_HANDLE_ID_KEY );
-		if ( null != groupID )
-			groupHandle.setGroupId( groupID.intValue() );
-
 		final AutoNavigateFocusModel< DataVertex, DataEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
+
 		final DataDisplayFrame< Spot, Link > frame = new DataDisplayFrame< Spot, Link >(
 				viewGraph,
 				appModel.getModel().getFeatureModel(),
@@ -172,7 +166,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				groupHandle,
 				contextChooser,
 				options );
-		final DataDisplayPanel< Spot, Link > dataDisplayPanel = frame.getDataDisplayPanel();
+		dataDisplayPanel = frame.getDataDisplayPanel();
 
 		// If they are available, set some sensible defaults for the feature.
 		final FeatureSpecPair spvx = new FeatureSpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next(), false, false );
@@ -180,14 +174,25 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		final FeatureGraphConfig gcv = new FeatureGraphConfig( spvx, spvy, GraphDataItemsSource.TRACK_OF_SELECTION, true );
 		frame.getVertexSidePanel().setGraphConfig( gcv );
 
+		// Restore position
+		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
+		if ( null != pos && pos.length == 4 )
+			frame.setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
+		else
+		{
+			frame.setSize( options.values.getWidth(), options.values.getHeight() );
+			frame.setLocationRelativeTo( null );
+		}
+
+		// Restore group handle.
+		final Integer groupID = ( Integer ) guiState.get( GROUP_HANDLE_ID_KEY );
+		if ( null != groupID )
+			groupHandle.setGroupId( groupID.intValue() );
+
 		// Restore settings panel visibility.
 		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
 		if ( null != settingsPanelVisible )
 			frame.setSettingsPanelVisible( settingsPanelVisible.booleanValue() );
-
-		// Default location.
-		if ( null == pos || pos.length != 4 )
-			frame.setLocationRelativeTo( null );
 
 		dataDisplayPanel.graphChanged();
 		contextListener.setContextListener( dataDisplayPanel );
@@ -198,8 +203,8 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 
 		setFrame( frame );
 
-		// Transform. // TODO!
-		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( TRACKSCHEME_TRANSFORM_KEY );
+		// Transform.
+		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( GRAPHER_TRANSFORM_KEY );
 		if ( null != tLoaded )
 			dataDisplayPanel.getScreenTransform().set( tLoaded );
 
@@ -245,21 +250,22 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		appModel.getPlugins().addMenus( menu );
 
 		/*
-		 * Coloring
+		 * Coloring & colobar.
 		 */
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> dataDisplayPanel.entitiesAttributesChanged() );
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> dataDisplayPanel.entitiesAttributesChanged() );
-		final ColorBarOverlay colorBarOverlay = new ColorBarOverlay( coloringModel, () -> dataDisplayPanel.getBackground() );
+		colorbarOverlay = new ColorBarOverlay( coloringModel, () -> dataDisplayPanel.getBackground() );
 		final OffsetAxes offset = dataDisplayPanel.getOffsetAxes();
-		offset.listeners().add( ( w, h ) -> {
-			colorBarOverlay.setLeftXOffset(  w );
-			// Because *for now* we paint the axis at the top:
-			colorBarOverlay.setTopYOffset( h );
-		} );
-		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle,
-				() -> dataDisplayPanel.repaint() );
+		offset.listeners().add( ( w, h ) -> colorbarOverlay.setInsets( 15, w + 15, h + 15, 15 ) );
+		registerColorbarOverlay( colorbarOverlay, colorbarMenuHandle, () -> dataDisplayPanel.repaint() );
+
+		// Restore colorbar state.
+		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
+		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
+		colorbarOverlay.setVisible( colorbarVisible );
+		colorbarOverlay.setPosition( colorbarPosition );
 
 		// Listen to label changes.
 		model.getGraph().addVertexLabelListener( v -> dataDisplayPanel.entitiesAttributesChanged() );
@@ -300,7 +306,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				}
 			}
 		}
-		dataDisplayPanel.getDisplay().overlays().add( colorBarOverlay );
+		dataDisplayPanel.getDisplay().overlays().add( colorbarOverlay );
 
 		layout.layout();
 		frame.setVisible( true );
@@ -311,5 +317,20 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
+	}
+
+	public DataDisplayPanel< Spot, Link > getDataDisplayPanel()
+	{
+		return dataDisplayPanel;
+	}
+
+	public ColoringModel getColoringModel()
+	{
+		return coloringModel;
+	}
+
+	public ColorBarOverlay getColorBarOverlay()
+	{
+		return colorbarOverlay;
 	}
 }

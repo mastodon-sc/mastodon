@@ -47,8 +47,11 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
+import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.trackscheme.ScreenTransform;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 
 import bdv.viewer.ViewerState;
@@ -106,6 +109,12 @@ class MamutViewStateSerialization
 	 * {@link ScreenTransform} instance.
 	 */
 	static final String TRACKSCHEME_TRANSFORM_KEY = "TrackSchemeTransform";
+
+	/**
+	 * Key for the transform in a Grapher view. Value is a Grapher
+	 * ScreenTransform instance.
+	 */
+	static final String GRAPHER_TRANSFORM_KEY = "GrapherTransform";
 
 	/**
 	 * Key that specifies whether a table only display the selection or the
@@ -169,6 +178,17 @@ class MamutViewStateSerialization
 	static final String CHOSEN_CONTEXT_PROVIDER_KEY = "ContextProvider";
 
 	/**
+	 * Key that specifies whether the colorbar is visible.
+	 */
+	static final String COLORBAR_VISIBLE_KEY = "ColorbarVisible";
+
+	/**
+	 * Key that specifies the colorbar position. Values are {@link Position}
+	 * enum values.
+	 */
+	static final String COLORBAR_POSITION_KEY = "ColorbarPosition";
+
+	/**
 	 * Serializes a GUI state map into a XML element.
 	 *
 	 * @param guiState
@@ -177,7 +197,9 @@ class MamutViewStateSerialization
 	 */
 	static Element toXml( final MamutView< ?, ?, ? > view )
 	{
+		System.out.println( "Serializing " + view ); // DEBUG
 		final Map< String, Object > guiState = getGuiState( view );
+		System.out.println( "Guistate: " + guiState ); // DEBUG
 
 		final Element element = new Element( WINDOW_TAG );
 		for ( final Entry< String, Object > entry : guiState.entrySet() )
@@ -212,6 +234,23 @@ class MamutViewStateSerialization
 						t.getScreenWidth(),
 						t.getScreenHeight()
 				} );
+			}
+			else if ( value instanceof org.mastodon.views.grapher.datagraph.ScreenTransform )
+			{
+				final org.mastodon.views.grapher.datagraph.ScreenTransform t = ( org.mastodon.views.grapher.datagraph.ScreenTransform ) value;
+				el = XmlHelpers.doubleArrayElement( entry.getKey(), new double[] {
+						t.getMinX(),
+						t.getMaxX(),
+						t.getMinY(),
+						t.getMaxY(),
+						t.getScreenWidth(),
+						t.getScreenHeight()
+				} );
+			}
+			else if ( value instanceof Position )
+			{
+				el = new Element( entry.getKey() );
+				el.setText( ( ( Position ) value ).name() );
 			}
 			else if ( value instanceof Element )
 			{
@@ -263,8 +302,30 @@ class MamutViewStateSerialization
 			getGuiStateTrackScheme( ( MamutViewTrackScheme ) view, guiState );
 		else if ( view instanceof MamutViewTable )
 			getGuiStateTable( ( MamutViewTable ) view, guiState );
+		else if ( view instanceof MamutViewGrapher )
+			getGuiStateGrapher( ( MamutViewGrapher ) view, guiState );
 
 		return guiState;
+	}
+
+	private static void getGuiStateGrapher( final MamutViewGrapher view, final Map< String, Object > guiState )
+	{
+		final DataDisplayPanel< Spot, Link > dataDisplayPanel = view.getDataDisplayPanel();
+
+		// Transform.
+		final org.mastodon.views.grapher.datagraph.ScreenTransform t = dataDisplayPanel.getScreenTransform().get();
+		guiState.put( GRAPHER_TRANSFORM_KEY, t );
+
+		// Coloring.
+		final ColoringModel coloringModel = view.getColoringModel();
+		getColoringState( coloringModel, guiState );
+
+		// Colorbar.
+		final ColorBarOverlay colorBarOverlay = view.getColorBarOverlay();
+		getColorBarOverlayState( colorBarOverlay, guiState );
+
+		// Context provider.
+		guiState.put( CHOSEN_CONTEXT_PROVIDER_KEY, view.getContextChooser().getChosenProvider().getName() );
 	}
 
 	/**
@@ -380,6 +441,12 @@ class MamutViewStateSerialization
 				guiState.put( FEATURE_COLOR_MODE_KEY, coloringModel.getFeatureColorMode().getName() );
 	}
 
+	private static void getColorBarOverlayState( final ColorBarOverlay colorBarOverlay, final Map< String, Object > guiState )
+	{
+		guiState.put( COLORBAR_VISIBLE_KEY, colorBarOverlay.isVisible() );
+		guiState.put( COLORBAR_POSITION_KEY, colorBarOverlay.getPosition() );
+	}
+
 	/**
 	 * Deserializes a GUI state from XML and recreate view windows as specified.
 	 * 
@@ -432,6 +499,17 @@ class MamutViewStateSerialization
 				break;
 			}
 
+			case "MamutViewGrapher":
+			{
+				final MamutViewGrapher grapher = windowManager.createGrapher( guiState );
+
+				// Deal with context chooser.
+				final String desiredProvider = ( String ) guiState.get( CHOSEN_CONTEXT_PROVIDER_KEY );
+				if ( null != desiredProvider )
+					contextChosers.put( grapher.getContextChooser(), desiredProvider );
+				break;
+			}
+
 			default:
 				System.err.println( "Unknown window type: " + typeStr + "." );
 				continue;
@@ -479,9 +557,17 @@ class MamutViewStateSerialization
 				value = el.getTextTrim();
 				break;
 			case TRACKSCHEME_TRANSFORM_KEY:
+			{
 				final double[] arr = XmlHelpers.getDoubleArray( viewEl, key );
 				value = new ScreenTransform( arr[ 0 ], arr[ 1 ], arr[ 2 ], arr[ 3 ], ( int ) arr[ 4 ], ( int ) arr[ 5 ] );
 				break;
+			}
+			case GRAPHER_TRANSFORM_KEY:
+			{
+				final double[] arr = XmlHelpers.getDoubleArray( viewEl, key );
+				value = new org.mastodon.views.grapher.datagraph.ScreenTransform( arr[ 0 ], arr[ 1 ], arr[ 2 ], arr[ 3 ], ( int ) arr[ 4 ], ( int ) arr[ 5 ] );
+				break;
+			}
 			case TABLE_VERTEX_TABLE_VISIBLE_POS:
 			case TABLE_EDGE_TABLE_VISIBLE_POS:
 				value = XmlHelpers.getIntArray( viewEl, key );
@@ -490,7 +576,12 @@ class MamutViewStateSerialization
 			case TABLE_DISPLAYING_VERTEX_TABLE:
 			case NO_COLORING_KEY:
 			case SETTINGS_PANEL_VISIBLE_KEY:
+			case COLORBAR_VISIBLE_KEY:
 				value = XmlHelpers.getBoolean( viewEl, key );
+				break;
+			case COLORBAR_POSITION_KEY:
+				final String str = XmlHelpers.getText( viewEl, key );
+				value = Position.valueOf( str );
 				break;
 			case GROUP_HANDLE_ID_KEY:
 				value = XmlHelpers.getInt( viewEl, key );

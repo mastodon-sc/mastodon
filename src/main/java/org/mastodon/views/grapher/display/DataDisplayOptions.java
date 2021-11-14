@@ -198,9 +198,9 @@ public class DataDisplayOptions
 
 		private int y = 0;
 
-		private int width = 600;
+		private int width = 700;
 
-		private int height = 400;
+		private int height = 450;
 
 		private long animationDurationMillis = 500;
 
