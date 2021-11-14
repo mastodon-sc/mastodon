@@ -314,22 +314,22 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		dataDisplayPanel.getDisplay().requestFocusInWindow();
 	}
 
-	public ContextChooser< Spot > getContextChooser()
+	ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
 	}
 
-	public DataDisplayPanel< Spot, Link > getDataDisplayPanel()
+	DataDisplayPanel< Spot, Link > getDataDisplayPanel()
 	{
 		return dataDisplayPanel;
 	}
 
-	public ColoringModel getColoringModel()
+	ColoringModel getColoringModel()
 	{
 		return coloringModel;
 	}
 
-	public ColorBarOverlay getColorBarOverlay()
+	ColorBarOverlay getColorBarOverlay()
 	{
 		return colorbarOverlay;
 	}
