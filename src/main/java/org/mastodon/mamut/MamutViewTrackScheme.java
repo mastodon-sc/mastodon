@@ -244,12 +244,8 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 		final ColorBarOverlay colorBarOverlay = new ColorBarOverlay( coloringModel, () -> frame.getTrackschemePanel().getBackground() );
-		frame.getTrackschemePanel().getOffsetHeaders().listeners().add( ( w, h ) -> {
-			colorBarOverlay.setLeftXOffset( w );
-			colorBarOverlay.setTopYOffset( h );
-		} );
-		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle,
-				() -> frame.getTrackschemePanel().repaint() );
+		frame.getTrackschemePanel().getOffsetHeaders().listeners().add( ( w, h ) -> colorBarOverlay.setInsets( h + 15, w + 15, 15, 15 ) );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> frame.getTrackschemePanel().repaint() );
 
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );

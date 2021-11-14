@@ -58,10 +58,6 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private static final int DEFAULT_WIDTH = 70;
 
-	private static final int X_CORNER_SPACE = 10 + 5; // 5 for the border
-
-	private static final int Y_CORNER_SPACE = 10 + 15;
-
 	private static final int COLORBARS_SPACING = 10;
 
 	private static final String VERTEX_HEADER = "V";
@@ -70,6 +66,9 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private static final String BOTH_HEADER = "V/E";
 
+	/**
+	 * Inside space between the box border and the bar or text.
+	 */
 	private static final int INSET = 5;
 
 	/**
@@ -98,31 +97,31 @@ public class ColorBarOverlay implements OverlayRenderer
 			return str;
 		}
 
-		public int xOrigin( final int canvasWidth, final int barWidth, final int xLeftOffset )
+		public int xOrigin( final int canvasWidth, final int barWidth, final int[] insets )
 		{
 			switch ( this )
 			{
 			default:
 			case BOTTOM_LEFT:
 			case TOP_LEFT:
-				return X_CORNER_SPACE + xLeftOffset;
+				return insets[ 1 ];
 			case BOTTOM_RIGHT:
 			case TOP_RIGHT:
-				return canvasWidth - barWidth - X_CORNER_SPACE;
+				return canvasWidth - barWidth - insets[ 3 ];
 			}
 		}
 
-		public int yOrigin( final int canvasHeight, final int barHeight, final int yTopOffset )
+		public int yOrigin( final int canvasHeight, final int barHeight, final int[] insets )
 		{
 			switch ( this )
 			{
 			default:
 			case TOP_LEFT:
 			case TOP_RIGHT:
-				return Y_CORNER_SPACE + yTopOffset;
+				return insets[ 0 ];
 			case BOTTOM_LEFT:
 			case BOTTOM_RIGHT:
-				return canvasHeight - barHeight - Y_CORNER_SPACE;
+				return canvasHeight - barHeight - insets[ 2 ];
 			}
 		}
 	}
@@ -137,18 +136,21 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private int canvasHeight;
 
-	private int xLeftOffset = 0;
-
-	private int yTopOffset = 0;
-
 	private boolean visible = DEFAULT_VISIBLE;
 
 	private final Supplier< Color > bgColorSupplier;
+
+	/**
+	 * Space between the panel border and the overlay border. 4 elements: top,
+	 * left, bottom, right.
+	 */
+	private final int[] insets;
 
 	public ColorBarOverlay( final ColoringModel coloringModel, final Supplier< Color > bgColorSupplier )
 	{
 		this.coloringModel = coloringModel;
 		this.bgColorSupplier = bgColorSupplier;
+		this.insets = new int[] { 15, 15, 15, 15 };
 	}
 
 	@Override
@@ -176,8 +178,8 @@ public class ColorBarOverlay implements OverlayRenderer
 	{
 		final int totalWidth = totalWidth( tagSet, g );
 		final int totalHeight = totalHeight( tagSet, g );
-		int x = position.xOrigin( canvasWidth, totalWidth, xLeftOffset );
-		int y = position.yOrigin( canvasHeight, totalHeight, yTopOffset );
+		int x = position.xOrigin( canvasWidth, totalWidth, insets );
+		int y = position.yOrigin( canvasHeight, totalHeight, insets );
 		final FontMetrics fm = g.getFontMetrics();
 		final int height = fm.getHeight();
 
@@ -228,8 +230,8 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private void draw( final FeatureColorMode featureColorMode, final Graphics g )
 	{
-		final int x = position.xOrigin( canvasWidth, totalWidth( featureColorMode, g ), xLeftOffset );
-		final int y = position.yOrigin( canvasHeight, totalHeight( featureColorMode, g ), yTopOffset );
+		final int x = position.xOrigin( canvasWidth, totalWidth( featureColorMode, g ), insets );
+		final int y = position.yOrigin( canvasHeight, totalHeight( featureColorMode, g ), insets );
 		final String vertexColorMap = featureColorMode.getVertexColorMap();
 		final String vertexProjectionKey = toString( featureColorMode.getVertexFeatureProjection() );
 		final double vertexRangeMin = featureColorMode.getVertexRangeMin();
@@ -242,17 +244,9 @@ public class ColorBarOverlay implements OverlayRenderer
 		{
 			final int[] wh = computeWidthHeight( BOTH_HEADER, vertexProjectionKey, g.getFontMetrics() );
 			g.setColor( bgColor );
-			g.fillRect(
-					x - INSET,
-					y - INSET - wh[ 1 ] / 3,
-					wh[ 0 ] + 2 * INSET,
-					wh[ 1 ] + 2 * INSET );
+			g.fillRect( x, y, wh[ 0 ], wh[ 1 ] );
 			g.setColor( lineColor );
-			g.drawRect(
-					x - INSET,
-					y - INSET - wh[ 1 ] / 3,
-					wh[ 0 ] + 2 * INSET,
-					wh[ 1 ] + 2 * INSET );
+			g.drawRect( x, y, wh[ 0 ], wh[ 1 ] );
 
 			draw( x, y, vertexColorMap, BOTH_HEADER, vertexProjectionKey, vertexRangeMin, vertexRangeMax, g );
 		}
@@ -390,27 +384,28 @@ public class ColorBarOverlay implements OverlayRenderer
 	private int totalHeight( final FeatureColorMode featureColorMode, final Graphics g )
 	{
 		final FontMetrics fm = g.getFontMetrics();
-		return 3 * fm.getHeight() + 2;
+		// The bar has the same height that of a string.
+		return 3 * fm.getHeight() + 2 + 2 * INSET;
 	}
 
 	private int totalWidth( final FeatureColorMode featureColorMode, final Graphics g )
 	{
 		final FontMetrics fm = g.getFontMetrics();
-		int totalWidth = 0;
 		if ( areVandEequal( featureColorMode ) )
 		{
-			totalWidth += fm.stringWidth( BOTH_HEADER ) + 2;
-			totalWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
+			int stringWidth = fm.stringWidth( BOTH_HEADER ) + 2;
+			stringWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
+			return 2 * INSET + stringWidth;
 		}
 		else
 		{
-			totalWidth += fm.stringWidth( VERTEX_HEADER ) + 2;
-			totalWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
-			totalWidth += COLORBARS_SPACING;
-			totalWidth += fm.stringWidth( EDGE_HEADER ) + 2;
-			totalWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getEdgeFeatureProjection() ) ) );
+			int stringWidth = fm.stringWidth( VERTEX_HEADER ) + 2;
+			stringWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
+			stringWidth += COLORBARS_SPACING;
+			stringWidth += fm.stringWidth( EDGE_HEADER ) + 2;
+			stringWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getEdgeFeatureProjection() ) ) );
+			return 2 * INSET + stringWidth;
 		}
-		return totalWidth;
 	}
 
 	@Override
@@ -430,13 +425,21 @@ public class ColorBarOverlay implements OverlayRenderer
 		this.position = position;
 	}
 
-	public void setLeftXOffset( final int xLeftOffset )
+	public void setInsets( final int top, final int left, final int bottom, final int right )
 	{
-		this.xLeftOffset = xLeftOffset;
+		insets[ 0 ] = top;
+		insets[ 1 ] = left;
+		insets[ 2 ] = bottom;
+		insets[ 3 ] = right;
 	}
 
-	public void setTopYOffset( final int yTopOffset )
+	public boolean isVisible()
 	{
-		this.yTopOffset = yTopOffset;
+		return visible;
+	}
+
+	public Position getPosition()
+	{
+		return position;
 	}
 }
