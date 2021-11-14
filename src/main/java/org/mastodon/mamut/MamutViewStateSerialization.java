@@ -197,10 +197,7 @@ class MamutViewStateSerialization
 	 */
 	static Element toXml( final MamutView< ?, ?, ? > view )
 	{
-		System.out.println( "Serializing " + view ); // DEBUG
 		final Map< String, Object > guiState = getGuiState( view );
-		System.out.println( "Guistate: " + guiState ); // DEBUG
-
 		final Element element = new Element( WINDOW_TAG );
 		for ( final Entry< String, Object > entry : guiState.entrySet() )
 		{
