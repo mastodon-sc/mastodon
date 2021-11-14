@@ -48,6 +48,8 @@ public class ScreenEntitiesInterpolator
 
 	private final IntRefHashMap< ScreenEdge > idToStartEdge;
 
+	private final IntRefHashMap< ScreenEdge > idToEndEdge;
+
 	private final ScreenTransform incrementalStartTransform;
 
 	/**
@@ -92,6 +94,10 @@ public class ScreenEntitiesInterpolator
 		idToStartEdge = new IntRefHashMap< ScreenEdge >( start.getEdgePool(), -1, start.getEdges().size() );
 		for ( final ScreenEdge e : start.getEdges() )
 			idToStartEdge.put( e.getDataEdgeId(), e );
+
+		idToEndEdge = new IntRefHashMap< ScreenEdge >( end.getEdgePool(), -1, end.getEdges().size() );
+		for ( final ScreenEdge e : end.getEdges() )
+			idToEndEdge.put( e.getDataEdgeId(), e );
 
 		this.incrementalStartTransform = incrementalStartTransform;
 	}
@@ -145,6 +151,7 @@ public class ScreenEntitiesInterpolator
 		// are added.
 		final ScreenEdge eCurrent = current.getEdgePool().createRef();
 		final ScreenEdge eStart = start.getEdgePool().createRef();
+		final ScreenEdge eEnd = end.getEdgePool().createRef();
 		for ( final ScreenEdge e : end.getEdges() )
 		{
 			final int sourceIndex = end.getVertices().get( e.getSourceScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
@@ -165,6 +172,36 @@ public class ScreenEntitiesInterpolator
 					eCurrent.setInterpolationCompletionRatio( accelRatio );
 				}
 			}
+			else
+			{
+				// appearing?
+				eCurrent.setTransition( APPEAR );
+				eCurrent.setInterpolationCompletionRatio( accelRatio );
+			}
+		}
+		for ( final ScreenEdge e : start.getEdges() )
+		{
+			if ( idToEndEdge.get( e.getDataEdgeId(), eEnd ) == null )
+			{
+				final int sourceIndex = start.getVertices().get( e.getSourceScreenVertexIndex(), vStart ).getInterpolatedScreenVertexIndex();
+				if ( sourceIndex >= current.getVertices().size() )
+					continue;
+				// No matching current vertex. Don't paint.
+
+				final int targetIndex = start.getVertices().get( e.getTargetScreenVertexIndex(), vStart ).getInterpolatedScreenVertexIndex();
+				if ( targetIndex >= current.getVertices().size() )
+					continue;
+
+				final boolean endSelected = e.isSelected();
+				current.getEdges().add( current.getEdgePool().create( eCurrent ).init(
+						e.getDataEdgeId(),
+						sourceIndex,
+						targetIndex,
+						endSelected,
+						e.getColor() ) );
+				eCurrent.setTransition( DISAPPEAR );
+				eCurrent.setInterpolationCompletionRatio( accelRatio );
+			}
 		}
 
 		// Interpolate screenTransform
@@ -179,7 +216,8 @@ public class ScreenEntitiesInterpolator
 		start.getVertexPool().releaseRef( vStart );
 		end.getVertexPool().releaseRef( vEnd );
 		current.getEdgePool().releaseRef( eCurrent );
-		current.getEdgePool().releaseRef( eStart );
+		start.getEdgePool().releaseRef( eStart );
+		end.getEdgePool().releaseRef( eEnd );
 	}
 
 	private void interpolate( final ScreenVertex vStart, final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )
@@ -207,6 +245,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setColor( vEnd.getColor() );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 		vEnd.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
+		vStart.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
 
 	private void disappear( final ScreenVertex vStart, final double ratio, final ScreenVertex vCurrent )
@@ -227,6 +266,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setTransition( DISAPPEAR );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 		vCurrent.setColor( vStart.getColor() );
+		vStart.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
 
 	private void appear( final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )
