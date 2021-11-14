@@ -393,6 +393,10 @@ class MamutViewStateSerialization
 		final ColoringModel coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
 
+		// Colorbar.
+		final ColorBarOverlay colorBarOverlay = view.getColorBarOverlay();
+		getColorBarOverlayState( colorBarOverlay, guiState );
+
 		// Context provider.
 		guiState.put( CHOSEN_CONTEXT_PROVIDER_KEY, view.getContextChooser().getChosenProvider().getName() );
 	}
