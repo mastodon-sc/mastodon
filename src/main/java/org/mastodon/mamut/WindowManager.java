@@ -411,6 +411,7 @@ public class WindowManager
 		forEachBdvView( action );
 		forEachTrackSchemeView( action );
 		forEachTableView( action );
+		forEachGrapherView( action );
 	}
 
 	public MamutViewBdv createBigDataViewer()
