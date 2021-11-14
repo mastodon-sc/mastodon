@@ -58,7 +58,7 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private static final int DEFAULT_WIDTH = 70;
 
-	private static final int COLORBARS_SPACING = 10;
+	private static final int COLORBARS_SPACING = 20;
 
 	private static final String VERTEX_HEADER = "V";
 
@@ -67,9 +67,14 @@ public class ColorBarOverlay implements OverlayRenderer
 	private static final String BOTH_HEADER = "V/E";
 
 	/**
-	 * Inside space between the box border and the bar or text.
+	 * Inside horizontal space between the box border and the bar or text.
 	 */
-	private static final int INSET = 5;
+	private static final int HINSET = 10;
+
+	/**
+	 * Inside vertical space between the box border and the bar or text.
+	 */
+	private static final int VINSET = 5;
 
 	/**
 	 * Specifies the {@link ColorBarOverlay} position in the display.
@@ -176,29 +181,29 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private void draw( final TagSet tagSet, final Graphics g )
 	{
-		final int totalWidth = totalWidth( tagSet, g );
-		final int totalHeight = totalHeight( tagSet, g );
-		int x = position.xOrigin( canvasWidth, totalWidth, insets );
-		int y = position.yOrigin( canvasHeight, totalHeight, insets );
-		final FontMetrics fm = g.getFontMetrics();
-		final int height = fm.getHeight();
+		final int tw = totalWidth( tagSet, g );
+		final int th = totalHeight( tagSet, g );
+		int x = position.xOrigin( canvasWidth, tw, insets );
+		int y = position.yOrigin( canvasHeight, th, insets );
 
 		final Color panelBGColor = bgColorSupplier.get();
 		final Color bgColor = new Color( panelBGColor.getRed(), panelBGColor.getGreen(), panelBGColor.getBlue(), 130 );
 		final Color lineColor = panelBGColor.darker().darker();
 		g.setColor( bgColor );
-		g.fillRect(
-				x - INSET,
-				y - INSET - totalHeight / 3,
-				totalWidth + 2 * INSET,
-				( int ) ( totalHeight + 1.66 * INSET ) );
-		g.setColor( lineColor );
-		g.drawRect(
-				x - INSET,
-				y - INSET - totalHeight / 3,
-				totalWidth + 2 * INSET,
-				( int ) ( totalHeight + 1.66 * INSET ) );
 
+		final FontMetrics fm = g.getFontMetrics();
+		final int height = fm.getHeight();
+		final int ascent = fm.getAscent();
+
+		g.setColor( bgColor );
+		g.fillRect( x, y, tw, th );
+		g.setColor( lineColor );
+		g.drawRect( x, y, tw, th );
+
+		y += VINSET;
+		x += HINSET;
+		
+		y += ascent;
 		g.setColor( Color.BLACK );
 		g.drawString( tagSet.getName(), x, y );
 
@@ -216,13 +221,13 @@ public class ColorBarOverlay implements OverlayRenderer
 	private int totalHeight( final TagSet tagSet, final Graphics g )
 	{
 		final FontMetrics fm = g.getFontMetrics();
-		return 2 * fm.getHeight() + 2;
+		return 2 * fm.getHeight() + 2 + 2 * VINSET;
 	}
 
 	private int totalWidth( final TagSet tagSet, final Graphics g )
 	{
 		final FontMetrics fm = g.getFontMetrics();
-		int totalWidth = 0;
+		int totalWidth = 2 * HINSET;
 		for ( final Tag tag : tagSet.getTags() )
 			totalWidth += fm.stringWidth( tag.label() ) + 2 + fm.getHeight() + 5;
 		return totalWidth;
@@ -230,8 +235,10 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private void draw( final FeatureColorMode featureColorMode, final Graphics g )
 	{
-		final int x = position.xOrigin( canvasWidth, totalWidth( featureColorMode, g ), insets );
-		final int y = position.yOrigin( canvasHeight, totalHeight( featureColorMode, g ), insets );
+		final int tw = totalWidth( featureColorMode, g );
+		final int th = totalHeight( featureColorMode, g );
+		final int x = position.xOrigin( canvasWidth, tw, insets );
+		final int y = position.yOrigin( canvasHeight, th, insets );
 		final String vertexColorMap = featureColorMode.getVertexColorMap();
 		final String vertexProjectionKey = toString( featureColorMode.getVertexFeatureProjection() );
 		final double vertexRangeMin = featureColorMode.getVertexRangeMin();
@@ -240,33 +247,16 @@ public class ColorBarOverlay implements OverlayRenderer
 		final Color bgColor = new Color( panelBGColor.getRed(), panelBGColor.getGreen(), panelBGColor.getBlue(), 130 );
 		final Color lineColor = panelBGColor.darker().darker();
 
+		g.setColor( bgColor );
+		g.fillRect( x, y, tw, th );
+		g.setColor( lineColor );
+		g.drawRect( x, y, tw, th );
 		if ( areVandEequal( featureColorMode ) )
 		{
-			final int[] wh = computeWidthHeight( BOTH_HEADER, vertexProjectionKey, g.getFontMetrics() );
-			g.setColor( bgColor );
-			g.fillRect( x, y, wh[ 0 ], wh[ 1 ] );
-			g.setColor( lineColor );
-			g.drawRect( x, y, wh[ 0 ], wh[ 1 ] );
-
 			draw( x, y, vertexColorMap, BOTH_HEADER, vertexProjectionKey, vertexRangeMin, vertexRangeMax, g );
 		}
 		else
 		{
-			final int[] wh1 = computeWidthHeight( VERTEX_HEADER, vertexProjectionKey, g.getFontMetrics() );
-			final int[] wh2 = computeWidthHeight( EDGE_HEADER, vertexProjectionKey, g.getFontMetrics() );
-			g.setColor( bgColor );
-			g.fillRect(
-					x - INSET,
-					y - INSET - wh1[ 1 ] / 3,
-					wh1[ 0 ] + wh2[ 0 ] + COLORBARS_SPACING + 2 * INSET,
-					wh1[ 1 ] + 2 * INSET );
-			g.setColor( lineColor );
-			g.drawRect(
-					x - INSET,
-					y - INSET - wh1[ 1 ] / 3,
-					wh1[ 0 ] + wh2[ 0 ] + COLORBARS_SPACING + 2 * INSET,
-					wh1[ 1 ] + 2 * INSET );
-
 			final int xShift = draw( x, y, vertexColorMap, VERTEX_HEADER, vertexProjectionKey, vertexRangeMin, vertexRangeMax, g );
 			final String edgeColorMap = featureColorMode.getEdgeColorMap();
 			final String edgeProjectionKey = toString( featureColorMode.getEdgeFeatureProjection() );
@@ -316,17 +306,6 @@ public class ColorBarOverlay implements OverlayRenderer
 		return sb.toString();
 	}
 
-	private int[] computeWidthHeight(
-			final String header,
-			final String featureName,
-			final FontMetrics fm )
-	{
-		final int localWidth = Math.max( minWidth, fm.stringWidth( featureName ) );
-		final int height = fm.getHeight();
-		final int vWidth = fm.stringWidth( header ) + 2;
-		return new int[] { localWidth + vWidth, 3 * height };
-	}
-
 	private int draw(
 			final int xOrigin,
 			final int yOrigin,
@@ -341,42 +320,53 @@ public class ColorBarOverlay implements OverlayRenderer
 		final int localWidth = Math.max( minWidth, fm.stringWidth( featureName ) );
 		final int lw = ( int ) ( 0.85 * localWidth );
 		final int height = fm.getHeight();
+		final int ascent = fm.getAscent();
 
 		int x = xOrigin;
-		final int y = yOrigin;
+		int y = yOrigin;
 
+		x += HINSET;
+		y += VINSET;
+
+		// Colorbar header width.
+		final int vWidth = fm.stringWidth( header );
+
+		// Feature name.
+		y += ascent;
 		g.setColor( Color.BLACK );
-		g.drawString( header, x, y + height );
-		final int vWidth = fm.stringWidth( header ) + 2;
-		x += vWidth;
+		g.drawString( featureName, x + vWidth, y );
+
+		// Colorbar header.
+		y += height + 2;
+		g.setColor( Color.BLACK );
+		g.drawString( header, x, y );
+
+		// Colorbar.
+		x += vWidth + 2;
 		final ColorMap vCmap = ColorMap.getColorMap( strCmap );
 		for ( int i = 0; i < lw; i++ )
 		{
 			g.setColor( new Color( vCmap.get( ( double ) i / lw ), true ) );
-			g.drawLine( x + i, y, x + i, y + height );
+			g.drawLine( x + i, y - height, x + i, y );
 		}
+		// No value patch.
 		g.setColor( new Color( vCmap.get( Double.NaN ) ) );
-		g.fillRect( ( int ) ( x + 0.9 * localWidth ), y, ( int ) ( 0.1 * localWidth ), height );
-
-		// Feature name.
-		g.setColor( Color.BLACK );
-		final int xf = xOrigin + vWidth;
-		final int yf = yOrigin - fm.getDescent();
-		g.drawString( featureName, xf, yf );
+		g.fillRect( ( int ) ( x + 0.9 * localWidth ), y - height, ( int ) ( 0.1 * localWidth ), height );
 
 		// Ticks.
-		final int xt = xOrigin + vWidth;
-		final int yt = yOrigin + height;
-		g.drawLine( xt, yt, xt, yt + 2 );
-		g.drawLine( xt + lw / 2, yt, xt + lw / 2, yt + 2 );
-		g.drawLine( xt + lw - 1, yt, xt + lw - 1, yt + 2 );
+		g.drawLine( x, y, x, y + 2 );
+		g.drawLine( x + lw / 2, y, x + lw / 2, y + 2 );
+		g.drawLine( x + lw - 1, y, x + lw - 1, y + 2 );
+
+		// Tick labels.
+		y += 2;
 		final String strVMin = String.format( "%.1f", rangeMin );
 		final int stringWidthVMin = fm.stringWidth( strVMin );
-		g.drawString( strVMin, xt - stringWidthVMin / 2, yt + 2 + height );
+		g.drawString( strVMin, x - stringWidthVMin / 2, y + ascent );
 
 		final String strVMax = String.format( "%.1f", rangeMax );
 		final int stringWidthVMax = fm.stringWidth( strVMax );
-		g.drawString( strVMax, xt + lw - 1 - stringWidthVMax / 2, yt + 2 + height );
+		g.drawString( strVMax, x + lw - 1 - stringWidthVMax / 2, y + ascent );
 
 		return localWidth + vWidth;
 	}
@@ -385,7 +375,7 @@ public class ColorBarOverlay implements OverlayRenderer
 	{
 		final FontMetrics fm = g.getFontMetrics();
 		// The bar has the same height that of a string.
-		return 3 * fm.getHeight() + 2 + 2 * INSET;
+		return fm.getAscent() + 2 * fm.getHeight() + 2 + 2 * VINSET;
 	}
 
 	private int totalWidth( final FeatureColorMode featureColorMode, final Graphics g )
@@ -395,7 +385,7 @@ public class ColorBarOverlay implements OverlayRenderer
 		{
 			int stringWidth = fm.stringWidth( BOTH_HEADER ) + 2;
 			stringWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
-			return 2 * INSET + stringWidth;
+			return 2 * HINSET + stringWidth;
 		}
 		else
 		{
@@ -404,7 +394,7 @@ public class ColorBarOverlay implements OverlayRenderer
 			stringWidth += COLORBARS_SPACING;
 			stringWidth += fm.stringWidth( EDGE_HEADER ) + 2;
 			stringWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getEdgeFeatureProjection() ) ) );
-			return 2 * INSET + stringWidth;
+			return 2 * HINSET + stringWidth;
 		}
 	}
 
