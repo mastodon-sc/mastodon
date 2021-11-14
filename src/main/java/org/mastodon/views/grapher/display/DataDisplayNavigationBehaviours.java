@@ -124,11 +124,6 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 	 */
 	private int headerWidth;
 
-	/**
-	 * Current height of horizontal header.
-	 */
-	private int headerHeight;
-
 	private final ClickFocusBehaviour focusVertexBehaviour;
 
 	private final ClickNavigateBehaviour navigateToVertexBehaviour;
@@ -297,7 +292,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < headerWidth || y > screenTransform.getScreenHeight() - headerHeight )
+			if ( x < headerWidth || y > screenTransform.getScreenHeight() )
 				return;
 
 			lock.readLock().lock();
@@ -328,7 +323,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < headerWidth || y > screenTransform.getScreenHeight() - headerHeight )
+			if ( x < headerWidth || y > screenTransform.getScreenHeight() )
 				return;
 
 			lock.readLock().lock();
@@ -362,7 +357,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < headerWidth || y > screenTransform.getScreenHeight() - headerHeight )
+			if ( x < headerWidth || y > screenTransform.getScreenHeight() )
 				return;
 
 			lock.readLock().lock();
@@ -415,7 +410,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 			oX = x;
 			oY = y;
 			dragging = false;
-			ignore = x < headerWidth || y > screenTransform.getScreenHeight() - headerHeight;
+			ignore = x < headerWidth || y > screenTransform.getScreenHeight();
 		}
 
 		@Override
@@ -489,6 +484,5 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 	public void updateAxesSize( final int width, final int height )
 	{
 		headerWidth = width;
-		headerHeight = height;
 	}
 }

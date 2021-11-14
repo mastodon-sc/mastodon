@@ -59,11 +59,6 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	private int headerWidth;
 
 	/**
-	 * Current height of horizontal header.
-	 */
-	private int headerHeight;
-
-	/**
 	 * The height of the panel items are painted in.
 	 */
 	private int screenHeight;
@@ -106,12 +101,11 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	public void updateAxesSize( final int width, final int height )
 	{
 		headerWidth = width;
-		headerHeight = height;
 	}
 
 	private void highlight()
 	{
-		if ( x < headerWidth || y > screenHeight - headerHeight )
+		if ( x < headerWidth || y > screenHeight )
 			highlight.clearHighlight();
 		else
 		{
