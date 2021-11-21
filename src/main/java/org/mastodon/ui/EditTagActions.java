@@ -28,8 +28,6 @@
  */
 package org.mastodon.ui;
 
-import bdv.viewer.InteractiveDisplayCanvas;
-import bdv.viewer.OverlayRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -69,6 +67,8 @@ import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.tools.bookmarks.BookmarksEditor;
+import bdv.viewer.InteractiveDisplayCanvas;
+import bdv.viewer.OverlayRenderer;
 
 /**
  * <p>
@@ -291,20 +291,6 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		};
 		inputMap.put( abortKey, "abort tags" );
 		actionMap.put( "abort tags", abortAction );
-		// Remove labels.
-		final KeyStroke removeKey = KeyStroke.getKeyStroke( KeyEvent.VK_0, 0 );
-		final Action removeAction = new AbstractAction( "remove labels" )
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				removeLabels();
-			}
-
-			private static final long serialVersionUID = 1L;
-		};
-		inputMap.put( removeKey, "remove labels" );
-		actionMap.put( "remove labels", removeAction );
 
 		// Prepare tag map.
 
@@ -319,10 +305,29 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 				{
 					selectTag( tagSet.getTags().get( i - 1 ) );
 				}
+				else if ( i == 0 )
+				{
+					removeLabels();
+				}
 			} );
 		}
 		else
 		{
+			// Remove labels.
+			final KeyStroke removeKey = KeyStroke.getKeyStroke( KeyEvent.VK_0, 0 );
+			final Action removeAction = new AbstractAction( "remove labels" )
+			{
+				@Override
+				public void actionPerformed( final ActionEvent e )
+				{
+					removeLabels();
+				}
+
+				private static final long serialVersionUID = 1L;
+			};
+			inputMap.put( removeKey, "remove labels" );
+			actionMap.put( "remove labels", removeAction );
+
 			int i = 1;
 			for ( final Tag tag : tagSet.getTags() )
 			{
