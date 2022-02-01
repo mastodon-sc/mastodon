@@ -39,8 +39,12 @@ import static org.mastodon.mamut.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATT
 import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
+import org.embl.mobie.io.ome.zarr.openers.OMEZarrS3Opener;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -82,16 +86,17 @@ import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
-import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.viewer.ViewerOptions;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.SpimDataIOException;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 
 public class ProjectManager
 {
 	public static final String CREATE_PROJECT = "create new project";
+	public static final String CREATE_PROJECT_FROM_URL = "create new project from url";
 	public static final String LOAD_PROJECT = "load project";
 	public static final String SAVE_PROJECT = "save project";
 	public static final String SAVE_PROJECT_AS = "save project as";
@@ -101,6 +106,7 @@ public class ProjectManager
 	public static final String EXPORT_MAMUT = "export mamut";
 
 	static final String[] CREATE_PROJECT_KEYS = new String[] { "not mapped" };
+	static final String[] CREATE_PROJECT_FROM_URL_KEYS = new String[] { "not mapped" };
 	static final String[] LOAD_PROJECT_KEYS = new String[] { "not mapped" };
 	static final String[] SAVE_PROJECT_KEYS = new String[] { "not mapped" };
 	static final String[] SAVE_PROJECT_AS_KEYS = new String[] { "not mapped" };
@@ -112,6 +118,9 @@ public class ProjectManager
 	private static final String GUI_TAG = "MamutGui";
 
 	private static final String WINDOWS_TAG = "Windows";
+
+	private static final String OMEZARRS3_OPENER_TAG = "OMEZarrS3Opener";
+	private static final String URL_TAG = "url";
 
 	/*
 	 * Command descriptions for all provided commands
@@ -128,6 +137,7 @@ public class ProjectManager
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
 			descriptions.add( CREATE_PROJECT, CREATE_PROJECT_KEYS, "Create a new project." );
+			descriptions.add( CREATE_PROJECT_FROM_URL, CREATE_PROJECT_FROM_URL_KEYS, "Create a new project from URL." );
 			descriptions.add( LOAD_PROJECT, LOAD_PROJECT_KEYS, "Load a project." );
 			descriptions.add( SAVE_PROJECT, SAVE_PROJECT_KEYS, "Save the current project." );
 			descriptions.add( SAVE_PROJECT_AS, SAVE_PROJECT_AS_KEYS, "Save the current project in a new file." );
@@ -149,6 +159,8 @@ public class ProjectManager
 	private File proposedProjectRoot;
 
 	private final AbstractNamedAction createProjectAction;
+
+	private final AbstractNamedAction createProjectFromUrlAction;
 
 	private final AbstractNamedAction loadProjectAction;
 
@@ -172,6 +184,7 @@ public class ProjectManager
 		simiImportDialog = new SimiImportDialog( null );
 
 		createProjectAction = new RunnableAction( CREATE_PROJECT, this::createProject );
+		createProjectFromUrlAction = new RunnableAction( CREATE_PROJECT_FROM_URL, this::createProjectFromUrl );
 		loadProjectAction = new RunnableAction( LOAD_PROJECT, this::loadProject );
 		saveProjectAction = new RunnableAction( SAVE_PROJECT, this::saveProject );
 		saveProjectAsAction = new RunnableAction( SAVE_PROJECT_AS, this::saveProjectAs );
@@ -203,6 +216,7 @@ public class ProjectManager
 	public void install( final Actions actions )
 	{
 		actions.namedAction( createProjectAction, CREATE_PROJECT_KEYS );
+		actions.namedAction( createProjectFromUrlAction, CREATE_PROJECT_FROM_URL_KEYS );
 		actions.namedAction( loadProjectAction, LOAD_PROJECT_KEYS );
 		actions.namedAction( saveProjectAction, SAVE_PROJECT_KEYS );
 		actions.namedAction( saveProjectAsAction, SAVE_PROJECT_AS_KEYS );
@@ -224,6 +238,46 @@ public class ProjectManager
 				NEW_ICON_MEDIUM.getImage() );
 		if ( file == null )
 			return;
+
+		try
+		{
+			open( new MamutProject( null, file ) );
+		}
+		catch ( final IOException | SpimDataException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void createProjectFromUrl()
+	{
+		final Component parent = null; // TODO
+		final String urlString = JOptionPane.showInputDialog( parent, "Please input a url for image data" );
+		if ( urlString == null )
+			return;
+
+		final File file = FileChooser.chooseFile(
+				parent,
+				null,
+				new XmlFileFilter(),
+				"Save BigDataViewer File",
+				FileChooser.DialogType.SAVE,
+				NEW_ICON_MEDIUM.getImage() );
+		if ( file == null )
+			return;
+
+		final Element elem = new Element( OMEZARRS3_OPENER_TAG );
+		elem.addContent( new Element( URL_TAG ).setText( urlString ) );
+		final Document doc = new Document( elem );
+		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
+		try (final FileWriter fileWriter = new FileWriter( file ))
+		{
+			xout.output( doc, fileWriter );
+		}
+		catch ( IOException e )
+		{
+			e.printStackTrace();
+		}
 
 		try
 		{
@@ -338,6 +392,33 @@ public class ProjectManager
 		updateEnabledActions();
 	}
 
+	private static AbstractSpimData< ? > loadSpimData( final String xmlFilename ) throws SpimDataException
+	{
+		final SAXBuilder sax = new SAXBuilder();
+		Document doc;
+		try
+		{
+			doc = sax.build( xmlFilename );
+		}
+		catch ( final Exception e )
+		{
+			throw new SpimDataIOException( e );
+		}
+		final Element root = doc.getRootElement();
+		if ( root.getName().equals( "OMEZarrS3Opener" ) )
+		{
+			try
+			{
+				return OMEZarrS3Opener.readURL( root.getChildText( "url" ) );
+			}
+			catch ( final IOException e )
+			{
+				throw new SpimDataIOException( e );
+			}
+		}
+		return new XmlIoSpimDataMinimal().load( xmlFilename );
+	}
+
 	/**
 	 * Opens a project. If {@code project.getProjectRoot() == null} this is a
 	 * new project and data structures are initialized as empty. The image data
@@ -357,12 +438,12 @@ public class ProjectManager
 		 * Load SpimData
 		 */
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
-		SpimDataMinimal spimData = DummySpimData.tryCreate( project.getDatasetXmlFile().getName() );
+		AbstractSpimData< ? > spimData = DummySpimData.tryCreate( project.getDatasetXmlFile().getName() );
 		if ( spimData == null )
 		{
 			try
 			{
-				spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+				spimData = loadSpimData( spimDataXmlFilename );
 			}
 			catch ( final SpimDataIOException e )
 			{
