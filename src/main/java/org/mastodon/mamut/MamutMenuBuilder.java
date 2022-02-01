@@ -51,6 +51,7 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 	static
 	{
 		menuTexts.put( ProjectManager.CREATE_PROJECT, "New Project" );
+		menuTexts.put( ProjectManager.CREATE_PROJECT_FROM_URL, "New Project From URL" );
 		menuTexts.put( ProjectManager.LOAD_PROJECT, "Load Project" );
 		menuTexts.put( ProjectManager.SAVE_PROJECT, "Save Project" );
 		menuTexts.put( ProjectManager.IMPORT_TGMM, "Import TGMM tracks" );

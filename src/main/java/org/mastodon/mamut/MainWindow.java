@@ -258,6 +258,7 @@ public class MainWindow extends JFrame
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						item( ProjectManager.CREATE_PROJECT ),
+						item( ProjectManager.CREATE_PROJECT_FROM_URL ),
 						item( ProjectManager.LOAD_PROJECT ),
 						item( ProjectManager.SAVE_PROJECT ),
 						separator(),
