@@ -39,7 +39,6 @@ import static org.mastodon.mamut.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATT
 import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -93,8 +92,10 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.viewer.ViewerOptions;
+import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.SpimDataIOException;
+import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 
@@ -261,6 +262,51 @@ public class ProjectManager
 		if ( urlString == null )
 			return;
 
+		SpimData spimData = null;
+		try
+		{
+			spimData = OMEZarrS3Opener.readURL( urlString );
+		}
+		catch ( final RuntimeException e )
+		{
+			final JLabel lblUsername = new JLabel( "Username" );
+			final JTextField textFieldUsername = new JTextField();
+			final JLabel lblPassword = new JLabel( "Password" );
+			final JPasswordField passwordField = new JPasswordField();
+			final Object[] ob = { lblUsername, textFieldUsername, lblPassword, passwordField };
+			int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
+
+			if ( result == JOptionPane.OK_OPTION )
+			{
+				final String username = textFieldUsername.getText();
+				final char[] password = passwordField.getPassword();
+				try
+				{
+					S3Utils.setS3AccessAndSecretKey( new String[] { username, new String( password ) } );
+				}
+				finally
+				{
+					Arrays.fill( password, '0' );
+				}
+				try
+				{
+					spimData = OMEZarrS3Opener.readURL( urlString );
+				}
+				catch ( final Exception e1 )
+				{
+					e1.printStackTrace();
+				}
+			}
+			else
+			{
+				return;
+			}
+		}
+		catch ( final Exception e )
+		{
+			e.printStackTrace();
+		}
+
 		final File file = FileChooser.chooseFile(
 				parent,
 				null,
@@ -271,21 +317,11 @@ public class ProjectManager
 		if ( file == null )
 			return;
 
-		final Element elem = new Element( OMEZARRS3_OPENER_TAG );
-		elem.addContent( new Element( URL_TAG ).setText( urlString ) );
-		final Document doc = new Document( elem );
-		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
-		try (final FileWriter fileWriter = new FileWriter( file ))
-		{
-			xout.output( doc, fileWriter );
-		}
-		catch ( IOException e )
-		{
-			e.printStackTrace();
-		}
-
+		final XmlIoSpimData xmlIoSpimData = new XmlIoSpimData();
+		spimData.setBasePath( file.getParentFile() );
 		try
 		{
+			xmlIoSpimData.save( spimData, file.getAbsolutePath() );
 			open( new MamutProject( null, file ) );
 		}
 		catch ( final IOException | SpimDataException e )
@@ -397,65 +433,6 @@ public class ProjectManager
 		updateEnabledActions();
 	}
 
-	private static AbstractSpimData< ? > loadSpimData( final String xmlFilename ) throws SpimDataException
-	{
-		final SAXBuilder sax = new SAXBuilder();
-		Document doc;
-		try
-		{
-			doc = sax.build( xmlFilename );
-		}
-		catch ( final Exception e )
-		{
-			throw new SpimDataIOException( e );
-		}
-		final Element root = doc.getRootElement();
-		if ( root.getName().equals( "OMEZarrS3Opener" ) )
-		{
-			try
-			{
-				return OMEZarrS3Opener.readURL( root.getChildText( "url" ) );
-			}
-			catch ( final RuntimeException e )
-			{
-				final JLabel lblUsername = new JLabel( "Username" );
-				final JTextField textFieldUsername = new JTextField();
-				final JLabel lblPassword = new JLabel( "Password" );
-				final JPasswordField passwordField = new JPasswordField();
-				final Object[] ob = { lblUsername, textFieldUsername, lblPassword, passwordField };
-				int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
-
-				if ( result == JOptionPane.OK_OPTION )
-				{
-					final String username = textFieldUsername.getText();
-					final char[] password = passwordField.getPassword();
-					try
-					{
-						S3Utils.setS3AccessAndSecretKey( new String[] { username, new String( password ) } );
-					}
-					finally
-					{
-						Arrays.fill( password, '0' );
-					}
-					try
-					{
-						return OMEZarrS3Opener.readURL( root.getChildText( "url" ) );
-					}
-					catch ( final Exception e1 )
-					{
-						throw new SpimDataIOException( e1 );
-					}
-				}
-				throw new SpimDataIOException( e );
-			}
-			catch ( final Exception e )
-			{
-				throw new SpimDataIOException( e );
-			}
-		}
-		return new XmlIoSpimDataMinimal().load( xmlFilename );
-	}
-
 	/**
 	 * Opens a project. If {@code project.getProjectRoot() == null} this is a
 	 * new project and data structures are initialized as empty. The image data
@@ -480,7 +457,7 @@ public class ProjectManager
 		{
 			try
 			{
-				spimData = loadSpimData( spimDataXmlFilename );
+				spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 			}
 			catch ( final SpimDataIOException e )
 			{
