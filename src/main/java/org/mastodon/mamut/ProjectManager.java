@@ -41,10 +41,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import org.embl.mobie.io.ome.zarr.openers.OMEZarrS3Opener;
+import org.embl.mobie.io.util.S3Utils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -411,7 +416,39 @@ public class ProjectManager
 			{
 				return OMEZarrS3Opener.readURL( root.getChildText( "url" ) );
 			}
-			catch ( final IOException e )
+			catch ( final RuntimeException e )
+			{
+				final JLabel lblUsername = new JLabel( "Username" );
+				final JTextField textFieldUsername = new JTextField();
+				final JLabel lblPassword = new JLabel( "Password" );
+				final JPasswordField passwordField = new JPasswordField();
+				final Object[] ob = { lblUsername, textFieldUsername, lblPassword, passwordField };
+				int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
+
+				if ( result == JOptionPane.OK_OPTION )
+				{
+					final String username = textFieldUsername.getText();
+					final char[] password = passwordField.getPassword();
+					try
+					{
+						S3Utils.setS3AccessAndSecretKey( new String[] { username, new String( password ) } );
+					}
+					finally
+					{
+						Arrays.fill( password, '0' );
+					}
+					try
+					{
+						return OMEZarrS3Opener.readURL( root.getChildText( "url" ) );
+					}
+					catch ( final Exception e1 )
+					{
+						throw new SpimDataIOException( e1 );
+					}
+				}
+				throw new SpimDataIOException( e );
+			}
+			catch ( final Exception e )
 			{
 				throw new SpimDataIOException( e );
 			}
