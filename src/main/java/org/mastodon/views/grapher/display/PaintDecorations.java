@@ -125,12 +125,15 @@ public class PaintDecorations
 	{
 		final ScreenTransform screenTransform = new ScreenTransform();
 		screenEntities.getScreenTransform( screenTransform );
-		final double xScale = screenTransform.getScaleX();
 		final double minX = screenTransform.getMinX();
 		final double maxX = screenTransform.getMaxX();
-		final double yScale = screenTransform.getScaleY();
 		final double minY = screenTransform.getMinY();
 		final double maxY = screenTransform.getMaxY();
+		
+		double xScale = screenTransform.getScaleX();
+		double yScale = screenTransform.getScaleY();
+		xScale = Double.isNaN( xScale ) ? 1. : xScale;
+		yScale = Double.isNaN( yScale ) ? 1. : yScale;
 
 		final boolean isVisibleYAxis = axesWidth > 0;
 		final boolean isVisibleXAxis = axesHeight > 0;
