@@ -157,6 +157,11 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
+		final JButton grapherButton = new JButton( actionMap.get( WindowManager.NEW_GRAPHER_VIEW ) );
+		prepareButton( grapherButton, "grapher", FEATURES_ICON_MEDIUM );
+		button_gbc_left.gridy = gridy;
+		buttonsPanel.add( grapherButton, button_gbc_left );
+
 		final JButton featureComputationButton = new JButton( actionMap.get( WindowManager.COMPUTE_FEATURE_DIALOG ) );
 		prepareButton( featureComputationButton, "compute features", FEATURES_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;

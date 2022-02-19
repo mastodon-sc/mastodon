@@ -39,6 +39,7 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
@@ -59,6 +60,8 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
 
+	private final DataDisplayStyleManager dataDisplayStyleManager;
+
 	private final RenderSettingsManager renderSettingsManager;
 
 	private final FeatureColorModeManager featureColorModeManager;
@@ -67,11 +70,13 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final int maxTimepoint;
 
+
 	public MamutAppModel(
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,
 			final KeyPressedManager keyPressedManager,
 			final TrackSchemeStyleManager trackSchemeStyleManager,
+			final DataDisplayStyleManager dataDisplayStyleManager,
 			final RenderSettingsManager renderSettingsManager,
 			final FeatureColorModeManager featureColorModeManager,
 			final KeymapManager keymapManager,
@@ -90,6 +95,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
 		this.trackSchemeStyleManager = trackSchemeStyleManager;
+		this.dataDisplayStyleManager = dataDisplayStyleManager;
 		this.renderSettingsManager = renderSettingsManager;
 		this.featureColorModeManager = featureColorModeManager;
 		this.minTimepoint = 0;
@@ -100,6 +106,11 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		 * it would be confusing to have different labels in TrackScheme. If
 		 * this is changed in the future, then probably only in the model files.
 		 */
+	}
+
+	public DataDisplayStyleManager getDataDisplayStyleManager()
+	{
+		return dataDisplayStyleManager;
 	}
 
 	public TrackSchemeStyleManager getTrackSchemeStyleManager()

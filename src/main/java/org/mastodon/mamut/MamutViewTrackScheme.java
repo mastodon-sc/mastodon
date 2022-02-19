@@ -35,6 +35,8 @@ import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
@@ -60,7 +62,6 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraphTrackSchemeProperties;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.AutoNavigateFocusModel;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
@@ -77,6 +78,7 @@ import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.views.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
@@ -102,6 +104,8 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 	 * is bound to this instance/window
 	 */
 	private final ColoringModel coloringModel;
+
+	private final ColorBarOverlay colorBarOverlay;
 
 	public MamutViewTrackScheme( final MamutAppModel appModel )
 	{
@@ -243,14 +247,21 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
-		final ColorBarOverlay colorBarOverlay = new ColorBarOverlay( coloringModel, () -> frame.getTrackschemePanel().getBackground() );
-		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle,
-				() -> frame.getTrackschemePanel().repaint() );
+		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> frame.getTrackschemePanel().getBackground() );
+		frame.getTrackschemePanel().getOffsetHeaders().listeners().add( ( w, h ) -> colorBarOverlay.setInsets( h + 15, w + 15, 15, 15 ) );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> frame.getTrackschemePanel().repaint() );
 
-		registerTagSetMenu( tagSetMenuHandle,
-				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+		// Listen to user changing the tag-set menu.
+		registerTagSetMenu( tagSetMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
+		// Listen to vertex labels being changed.
 		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+
+		// Restore colorbar state.
+		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
+		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
+		colorBarOverlay.setVisible( colorbarVisible );
+		colorBarOverlay.setPosition( colorbarPosition );
 
 		// Restore coloring.
 		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
@@ -298,24 +309,14 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 	}
 
-	public ContextChooser< Spot > getContextChooser()
+	ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
 	}
 
-	public GraphColorGeneratorAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > getGraphColorGeneratorAdapter()
-	{
-		return coloringAdapter;
-	}
-
-	public ColoringModel getColoringModel()
+	ColoringModel getColoringModel()
 	{
 		return coloringModel;
-	}
-
-	public TimepointModel getTimepointModel()
-	{
-		return timepointModel;
 	}
 
 	/**
@@ -326,5 +327,10 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 	TrackSchemePanel getTrackschemePanel()
 	{
 		return ( ( TrackSchemeFrame ) getFrame() ).getTrackschemePanel();
+	}
+
+	ColorBarOverlay getColorBarOverlay()
+	{
+		return colorBarOverlay;
 	}
 }

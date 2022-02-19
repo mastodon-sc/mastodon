@@ -54,4 +54,9 @@ public interface KeyConfigContexts
 	 */
 	String TABLE = "table";
 
+	/**
+	 * The action or behaviour applies to the grapher views.
+	 */
+	String GRAPHER = "grapher";
+
 }

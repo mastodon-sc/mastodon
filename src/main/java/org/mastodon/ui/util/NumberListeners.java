@@ -152,7 +152,7 @@ public class NumberListeners
 		private void setup()
 		{
 			// Digit keys.
-			for ( int i = 1; i < 10; i++ )
+			for ( int i = 0; i < 10; i++ )
 			{
 				final String actionName = "digit " + i;
 				final int digit = i;

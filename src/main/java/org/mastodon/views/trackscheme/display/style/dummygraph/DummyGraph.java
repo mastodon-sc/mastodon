@@ -40,8 +40,8 @@ import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.graph.object.AbstractObjectGraph;
 import org.mastodon.graph.object.AbstractObjectIdGraph;
-import org.mastodon.model.SelectionModel;
 import org.mastodon.model.DefaultSelectionModel;
+import org.mastodon.model.SelectionModel;
 
 public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > implements ListenableGraph< DummyVertex, DummyEdge >
 {
@@ -71,7 +71,8 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > 
 
 	public static enum Examples
 	{
-		CELEGANS( CElegansExample.graph, CElegansExample.selectedVertices, CElegansExample.selectedEdges );
+		CELEGANS( CElegansExample.graph, CElegansExample.selectedVertices, CElegansExample.selectedEdges ),
+		DIVIDING_CELL( DividingCellExample.graph, DividingCellExample.selectedVertices, DividingCellExample.selectedEdges );
 
 		private final DummyGraph graph;
 
@@ -94,6 +95,76 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > 
 		{
 			return selectionModel;
 		}
+	}
+
+	private static final class DividingCellExample
+	{
+		private static final DummyGraph graph;
+
+		private static final Collection< DummyVertex > selectedVertices;
+
+		private static final Collection< DummyEdge > selectedEdges;
+
+		static
+		{
+			graph = new DummyGraph();
+			selectedVertices = new ArrayList<>();
+			selectedEdges = new ArrayList<>();
+
+			DummyVertex previous = null;
+			for ( int tp = 0; tp < 11; tp++ )
+			{
+				if ( tp == 6 )
+				{
+					for ( int j = 0; j < 10; j++ )
+					{
+						final DummyVertex v = graph.addVertex().init( "Z" + j + "C", tp );
+						graph.addEdge( previous, v );
+						previous = v;
+					}
+				}
+				else
+				{
+					final DummyVertex v = graph.addVertex().init( "Z" + tp, tp );
+					if ( previous != null )
+						graph.addEdge( previous, v );
+
+					previous = v;
+				}
+			}
+
+			DummyVertex previous1 = previous;
+			DummyVertex previous2 = previous;
+			for ( int tp = 11; tp < 17; tp++ )
+			{
+				final DummyVertex v1 = graph.addVertex().init( "AB" + tp, tp );
+				graph.addEdge( previous1, v1 );
+				previous1 = v1;
+
+				if ( tp == 13 )
+				{
+					DummyVertex previous2bis = previous2;
+					for ( int j = 0; j < 10; j++ )
+					{
+						final DummyVertex v2 = graph.addVertex().init( "P" + j + "C", tp );
+						final DummyEdge e2 = graph.addEdge( previous2bis, v2 );
+						selectedVertices.add( v2 );
+						selectedEdges.add( e2 );
+						previous2bis = v2;
+					}
+					previous2 = previous2bis;
+				}
+				else
+				{
+					final DummyVertex v2 = graph.addVertex().init( "P" + tp, tp );
+					final DummyEdge e2 = graph.addEdge( previous2, v2 );
+					selectedVertices.add( v2 );
+					selectedEdges.add( e2 );
+					previous2 = v2;
+				}
+			}
+		}
+
 	}
 
 	private static final class CElegansExample
@@ -222,7 +293,6 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > 
 			addFork( graph, daughterP, level - 1 );
 		}
 	}
-
 
 	@Override
 	public boolean addGraphListener( final GraphListener< DummyVertex, DummyEdge > listener )

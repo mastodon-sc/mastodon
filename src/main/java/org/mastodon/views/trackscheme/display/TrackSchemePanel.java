@@ -753,8 +753,7 @@ public class TrackSchemePanel extends JPanel implements
 		throw new UnsupportedOperationException("TODO: this shouldn't be called. Should go through TrackSchemeOptions.getTrackSchemeOverlayFactory.");
 	}
 
-	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
-	protected OffsetHeaders getOffsetHeaders()
+	public OffsetHeaders getOffsetHeaders()
 	{
 		return offsetHeaders;
 	}

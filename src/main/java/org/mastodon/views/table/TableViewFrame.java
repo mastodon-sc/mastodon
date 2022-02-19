@@ -29,13 +29,10 @@
 package org.mastodon.views.table;
 
 import java.awt.BorderLayout;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.JTabbedPane;
@@ -74,10 +71,10 @@ import org.mastodon.ui.coloring.ColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.context.ContextChooserPanel;
 import org.mastodon.undo.UndoPointMarker;
+import org.mastodon.util.FeatureUtils;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextListener;
-import org.scijava.ui.behaviour.util.InputActionBindings;
 
 public class TableViewFrame<
 		M extends MastodonAppModel< ?, V, E >,
@@ -228,7 +225,8 @@ public class TableViewFrame<
 
 		@SuppressWarnings( "unchecked" )
 		final Class< V > vertexClass = ( Class< V > ) viewGraph.vertexRef().getClass();
-		final Map< FeatureSpec< ?, V >, Feature< V > > vertexFeatures = collectFeatureMap( featureModel, vertexClass );
+		final Map< FeatureSpec< ?, V >, Feature< V > > vertexFeatures =
+				FeatureUtils.collectFeatureMap( featureModel, vertexClass );
 		vertexTable.setFeatures( vertexFeatures );
 		vertexTable.setTagSets( tagSets );
 
@@ -306,7 +304,8 @@ public class TableViewFrame<
 
 		@SuppressWarnings( "unchecked" )
 		final Class< E > edgeClass = ( Class< E > ) viewGraph.edgeRef().getClass();
-		final Map< FeatureSpec< ?, E >, Feature< E > > edgeFeatures = collectFeatureMap( featureModel, edgeClass);
+		final Map< FeatureSpec< ?, E >, Feature< E > > edgeFeatures =
+				FeatureUtils.collectFeatureMap( featureModel, edgeClass );
 		edgeTable.setFeatures( edgeFeatures );
 		edgeTable.setTagSets( tagSets );
 
@@ -335,11 +334,6 @@ public class TableViewFrame<
 		pane.add( "Vertices", vertexTable );
 		pane.add( "Edges", edgeTable );
 		add( pane, BorderLayout.CENTER );
-	}
-
-	public InputActionBindings getKeybindings()
-	{
-		return keybindings;
 	}
 
 	/**
@@ -425,11 +419,11 @@ public class TableViewFrame<
 	public void featureModelChanged()
 	{
 		ignoreTableSelectionChange = true;
-		final Map< ?, ? > map1 = collectFeatureMap( featureModel, vref.getClass() );
+		final Map< ?, ? > map1 = FeatureUtils.collectFeatureMap( featureModel, vref.getClass() );
 		@SuppressWarnings( "unchecked" )
 		final Map< FeatureSpec< ?, V >, Feature< V > > vertexFeatures =  ( Map< FeatureSpec< ?, V >, Feature< V > > ) map1;
 		vertexTable.setFeatures( vertexFeatures );
-		final Map< ?, ? > map2 = collectFeatureMap( featureModel, eref.getClass() );
+		final Map< ?, ? > map2 = FeatureUtils.collectFeatureMap( featureModel, eref.getClass() );
 		@SuppressWarnings( "unchecked" )
 		final Map< FeatureSpec< ?, E >, Feature< E > >  edgeFeatures = ( Map< FeatureSpec< ?, E >, Feature< E > > ) map2;
 		edgeTable.setFeatures( edgeFeatures );
@@ -502,22 +496,5 @@ public class TableViewFrame<
 	public ContextChooser< V > getContextChooser()
 	{
 		return contextChooser;
-	}
-
-	private static final < O > Map< FeatureSpec< ?, O >, Feature< O > > collectFeatureMap( final FeatureModel featureModel, final Class< O > clazz )
-	{
-		final Set< FeatureSpec< ?, ? > > featureSpecs = featureModel.getFeatureSpecs().stream()
-				.filter( ( fs ) -> fs.getTargetClass().isAssignableFrom( clazz ) )
-				.collect( Collectors.toSet() );
-		final Map< FeatureSpec< ?, O >, Feature< O > > featureMap = new HashMap<>();
-		for ( final FeatureSpec< ?, ? > fs : featureSpecs )
-		{
-			@SuppressWarnings( "unchecked" )
-			final Feature< O > feature = ( Feature< O > ) featureModel.getFeature( fs );
-			@SuppressWarnings( "unchecked" )
-			final FeatureSpec< ?, O > featureSpec = ( FeatureSpec< ?, O > ) fs;
-			featureMap.put( featureSpec, feature );
-		}
-		return featureMap;
 	}
 }

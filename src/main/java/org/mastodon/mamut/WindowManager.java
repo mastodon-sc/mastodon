@@ -69,6 +69,8 @@ import org.mastodon.util.ToggleDialogAction;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextProvider;
+import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
+import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Context;
@@ -90,6 +92,7 @@ public class WindowManager
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 	public static final String NEW_TABLE_VIEW = "new full table view";
 	public static final String NEW_SELECTION_TABLE_VIEW = "new selection table view";
+	public static final String NEW_GRAPHER_VIEW = "new grapher view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
@@ -98,6 +101,7 @@ public class WindowManager
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_GRAPHER_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
@@ -154,9 +158,16 @@ public class WindowManager
 	 */
 	private final List< MamutViewTable > tableWindows = new ArrayList<>();
 
+	/**
+	 * All currently open Grapher windows.
+	 */
+	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
+
 	private final KeyPressedManager keyPressedManager;
 
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
+
+	private final DataDisplayStyleManager dataDisplayStyleManager;
 
 	private final RenderSettingsManager renderSettingsManager;
 
@@ -175,6 +186,8 @@ public class WindowManager
 	private final AbstractNamedAction newTableViewAction;
 
 	private final AbstractNamedAction newSelectionTableViewAction;
+
+	private final AbstractNamedAction newGrapherViewAction;
 
 	private final AbstractNamedAction editTagSetsAction;
 
@@ -196,6 +209,7 @@ public class WindowManager
 
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
+		dataDisplayStyleManager = new DataDisplayStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
 		featureColorModeManager = new FeatureColorModeManager();
 		featureProjectionsManager = new MamutFeatureProjectionsManager(
@@ -230,6 +244,7 @@ public class WindowManager
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
 		newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
 		newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
+		newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
 
@@ -237,12 +252,14 @@ public class WindowManager
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( newTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
 		globalAppActions.namedAction( newSelectionTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
+		globalAppActions.namedAction( newGrapherViewAction, NEW_GRAPHER_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
+		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", dataDisplayStyleManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
 		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager ) );
 
@@ -327,6 +344,8 @@ public class WindowManager
 			tsw.getContextChooser().updateContextProviders( contextProviders );
 		for ( final MamutViewTable tw : tableWindows )
 			tw.getContextChooser().updateContextProviders( contextProviders );
+		for ( final MamutViewGrapher gw : grapherWindows )
+			gw.getContextChooser().updateContextProviders( contextProviders );
 		w.onClose( () -> {
 			bdvWindows.remove( w );
 			contextProviders.remove( w.getContextProvider() );
@@ -362,9 +381,24 @@ public class WindowManager
 		} );
 	}
 
+	private synchronized void addGrapherWindow( final MamutViewGrapher grapher )
+	{
+		grapherWindows.add( grapher );
+		grapher.getContextChooser().updateContextProviders( contextProviders );
+		grapher.onClose( () -> {
+			grapherWindows.remove( grapher );
+			grapher.getContextChooser().updateContextProviders( new ArrayList<>() );
+		} );
+	}
+
 	public void forEachTableView( final Consumer< ? super MamutViewTable > action )
 	{
 		tableWindows.forEach( action );
+	}
+
+	public void forEachGrapherView( final Consumer< ? super MamutViewGrapher > action )
+	{
+		grapherWindows.forEach( action );
 	}
 
 	public void forEachTrackSchemeView( final Consumer< ? super MamutViewTrackScheme > action )
@@ -377,6 +411,7 @@ public class WindowManager
 		forEachBdvView( action );
 		forEachTrackSchemeView( action );
 		forEachTableView( action );
+		forEachGrapherView( action );
 	}
 
 	public MamutViewBdv createBigDataViewer()
@@ -424,7 +459,6 @@ public class WindowManager
 			return view;
 		}
 		return null;
-
 	}
 
 	/**
@@ -443,6 +477,24 @@ public class WindowManager
 		final Map< String, Object > guiState = Collections.singletonMap(
 				MamutViewStateSerialization.TABLE_SELECTION_ONLY, Boolean.valueOf( selectionOnly ) );
 		return createTable( guiState );
+	}
+
+	public MamutViewGrapher createGrapher()
+	{
+		return createGrapher( new HashMap<>() );
+	}
+
+	public MamutViewGrapher createGrapher( final Map< String, Object > guiState )
+	{
+		if ( appModel != null )
+		{
+			final MamutViewGrapher view = new MamutViewGrapher( appModel, guiState );
+			view.getFrame().setIconImages( FEATURES_ICON );
+			addGrapherWindow( view );
+			return view;
+		}
+		return null;
+
 	}
 
 	public void editTagSets()
@@ -469,6 +521,8 @@ public class WindowManager
 		for ( final MamutViewTrackScheme w : tsWindows )
 			windows.add( w.getFrame() );
 		for ( final MamutViewTable w : tableWindows )
+			windows.add( w.getFrame() );
+		for ( final MamutViewGrapher w : grapherWindows )
 			windows.add( w.getFrame() );
 		windows.add( tagSetDialog );
 		windows.add( featureComputationDialog );
@@ -499,6 +553,11 @@ public class WindowManager
 	TrackSchemeStyleManager getTrackSchemeStyleManager()
 	{
 		return trackSchemeStyleManager;
+	}
+
+	public DataDisplayStyleManager getDataDisplayStyleManager()
+	{
+		return dataDisplayStyleManager;
 	}
 
 	RenderSettingsManager getRenderSettingsManager()

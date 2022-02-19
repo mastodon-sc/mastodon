@@ -52,8 +52,6 @@ import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
-import org.scijava.ui.behaviour.util.InputActionBindings;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 public class TrackSchemeFrame extends ViewFrame
 {
@@ -117,15 +115,5 @@ public class TrackSchemeFrame extends ViewFrame
 	public TrackSchemePanel getTrackschemePanel()
 	{
 		return trackschemePanel;
-	}
-
-	public InputActionBindings getKeybindings()
-	{
-		return keybindings;
-	}
-
-	public TriggerBehaviourBindings getTriggerbindings()
-	{
-		return triggerbindings;
 	}
 }
