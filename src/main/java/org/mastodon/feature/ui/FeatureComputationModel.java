@@ -115,7 +115,7 @@ public class FeatureComputationModel
 	public Collection< FeatureSpec< ?, ? > > getFeatureSpecs( final Class< ? > target )
 	{
 		final Collection< FeatureSpec< ?, ? > > fs = featureSpecsTargetMap.get( target );
-		return null == fs ? null : Collections.unmodifiableCollection( fs );
+		return null == fs ? Collections.emptyList() : Collections.unmodifiableCollection( fs );
 	}
 
 	public FeatureSpec< ?, ? > getFeatureSpec( final String featureKey )
