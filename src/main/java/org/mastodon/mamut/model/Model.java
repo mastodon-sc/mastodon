@@ -41,10 +41,14 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
+import org.mastodon.mamut.model.branch.BranchEdge;
+import org.mastodon.mamut.model.branch.BranchVertex;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.model.AbstractModel;
 import org.mastodon.model.tag.DefaultTagSetModel;
@@ -80,6 +84,9 @@ import net.imglib2.RealLocalizable;
  */
 public class Model extends AbstractModel< ModelGraph, Spot, Link > implements UndoPointMarker
 {
+
+	private static final int initialCapacity = 1024;
+
 	/*
 	 * SpatioTemporalIndex of model spots
 	 */
@@ -97,6 +104,10 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final String timeUnits;
 
+	private final ModelBranchGraph branchGraph;
+
+	private final SpatioTemporalIndexImp< BranchVertex, BranchEdge > branchIndex;
+
 	public Model()
 	{
 		this( "pixel", "frame" );
@@ -104,7 +115,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	public Model( final String spaceUnits, final String timeUnits )
 	{
-		super( new ModelGraph() );
+		super( new ModelGraph( initialCapacity ) );
 		this.spaceUnits = spaceUnits;
 		this.timeUnits = timeUnits;
 		final SpatioTemporalIndexImp< Spot, Link > theIndex = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
@@ -116,7 +127,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		index = theIndex;
 		lock = modelGraph.getLock();
 
-		final int initialCapacity = 1024;
+		branchGraph = new ModelBranchGraph( modelGraph, initialCapacity );
+		branchIndex = new SpatioTemporalIndexImp<>( branchGraph, branchGraph.getGraphIdBimap().vertexIdBimap() );
 
 		final List< Property< Spot > > vertexUndoableProperties = new ArrayList<>();
 		vertexUndoableProperties.add( modelGraph.getVertexPool().positionProperty() );
@@ -223,6 +235,11 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		return index;
 	}
 
+	public SpatioTemporalIndex< BranchVertex > getBranchGraphSpatioTemporalIndex()
+	{
+		return branchIndex;
+	}
+
 	public void undo()
 	{
 		lock.writeLock().lock();
@@ -255,6 +272,16 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public void setUndoPoint()
 	{
 		undoRecorder.setUndoPoint();
+	}
+
+	public ModelBranchGraph getBranchGraph()
+	{
+		return branchGraph;
+	}
+
+	public GraphIdBimap< BranchVertex, BranchEdge > getBranchGraphIdBimap()
+	{
+		return branchGraph.getGraphIdBimap();
 	}
 
 	public FeatureModel getFeatureModel()

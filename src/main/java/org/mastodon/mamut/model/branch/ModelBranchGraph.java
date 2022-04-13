@@ -22,7 +22,12 @@ public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchVertex, 
 
 	public ModelBranchGraph( final ModelGraph graph )
 	{
-		super( graph, new BranchEdgePool( 1000, new BranchVertexPool( 1000, graph.vertices().getRefPool() ) ) );
+		super( graph, new BranchEdgePool( 1024, new BranchVertexPool( 1024, graph.vertices().getRefPool() ) ) );
+	}
+
+	public ModelBranchGraph( final ModelGraph graph, final int initialCapacity )
+	{
+		super( graph, new BranchEdgePool( initialCapacity, new BranchVertexPool( initialCapacity, graph.vertices().getRefPool() ) ) );
 	}
 
 	@Override
