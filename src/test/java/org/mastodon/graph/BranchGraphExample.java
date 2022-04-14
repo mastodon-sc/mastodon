@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.MamutViewBranchBdv;
+import org.mastodon.mamut.MamutViewBranchTrackScheme;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelUtils;
@@ -37,6 +38,7 @@ public class BranchGraphExample
 			System.out.println( bg ); // DEBUG
 
 			new MamutViewBranchBdv( appModel );
+			new MamutViewBranchTrackScheme( appModel );
 
 
 		}
