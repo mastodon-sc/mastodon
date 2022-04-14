@@ -87,8 +87,11 @@ public class TrackSchemeFrame extends ViewFrame
 		settingsPanel.add( navigationLocksPanel );
 		settingsPanel.add( Box.createHorizontalGlue() );
 
-		final ContextChooserPanel< ? > contextChooserPanel = new ContextChooserPanel<>( contextChooser );
-		settingsPanel.add( contextChooserPanel );
+		if ( contextChooser != null )
+		{
+			final ContextChooserPanel< ? > contextChooserPanel = new ContextChooserPanel<>( contextChooser );
+			settingsPanel.add( contextChooserPanel );
+		}
 
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
