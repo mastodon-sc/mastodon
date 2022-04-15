@@ -36,6 +36,17 @@ public class OverlayBranchGraphWrapper<
 		this.graphWrapper = graphWrapper;
 	}
 
+	/**
+	 * Exposes the overlay graph wrapper for the core graph (not the branch
+	 * graph wrapper).
+	 * 
+	 * @return the overlay graph wrapper.
+	 */
+	public OverlayGraphWrapper< V, E > getGraphWrapper()
+	{
+		return graphWrapper;
+	}
+
 	@Override
 	public OverlayEdgeWrapper< V, E > getLinkedEdge( final OverlayEdgeWrapper< BV, BE > obe, final OverlayEdgeWrapper< V, E > edge )
 	{
