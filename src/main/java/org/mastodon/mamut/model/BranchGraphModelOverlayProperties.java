@@ -1,7 +1,7 @@
 package org.mastodon.mamut.model;
 
-import org.mastodon.mamut.model.branch.BranchEdge;
-import org.mastodon.mamut.model.branch.BranchVertex;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.views.bdv.overlay.OverlayGraph;
 import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
@@ -13,7 +13,7 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez
  */
-public class BranchGraphModelOverlayProperties implements OverlayProperties< BranchVertex, BranchEdge >
+public class BranchGraphModelOverlayProperties implements OverlayProperties< BranchSpot, BranchLink >
 {
 	private final ModelBranchGraph branchGraph;
 
@@ -32,19 +32,19 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	}
 
 	@Override
-	public void localize( final BranchVertex v, final double[] position )
+	public void localize( final BranchSpot v, final double[] position )
 	{
 		v.localize( position );
 	}
 
 	@Override
-	public double getDoublePosition( final BranchVertex v, final int d )
+	public double getDoublePosition( final BranchSpot v, final int d )
 	{
 		return v.getDoublePosition( d );
 	}
 
 	@Override
-	public void getCovariance( final BranchVertex v, final double[][] mat )
+	public void getCovariance( final BranchSpot v, final double[][] mat )
 	{
 		final Spot ref = graph.vertexRef();
 		branchGraph.getLinkedVertex( v, ref ).getCovariance( mat );
@@ -52,7 +52,7 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	}
 
 	@Override
-	public double getBoundingSphereRadiusSquared( final BranchVertex v )
+	public double getBoundingSphereRadiusSquared( final BranchSpot v )
 	{
 		final Spot ref = graph.vertexRef();
 		final double r2 = branchGraph.getLinkedVertex( v, ref ).getBoundingSphereRadiusSquared();
@@ -61,19 +61,19 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	}
 
 	@Override
-	public int getTimepoint( final BranchVertex v )
+	public int getTimepoint( final BranchSpot v )
 	{
 		return v.getTimepoint();
 	}
 
 	@Override
-	public String getLabel( final BranchVertex v )
+	public String getLabel( final BranchSpot v )
 	{
 		return v.getLabel();
 	}
 
 	@Override
-	public void setLabel( final BranchVertex v, final String label )
+	public void setLabel( final BranchSpot v, final String label )
 	{
 		v.setLabel( label );
 	}
@@ -93,31 +93,31 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	}
 
 	@Override
-	public void setPosition( final BranchVertex v, final double position, final int d )
+	public void setPosition( final BranchSpot v, final double position, final int d )
 	{}
 
 	@Override
-	public void setPosition( final BranchVertex v, final double[] position )
+	public void setPosition( final BranchSpot v, final double[] position )
 	{}
 
 	@Override
-	public void setCovariance( final BranchVertex v, final double[][] mat )
+	public void setCovariance( final BranchSpot v, final double[][] mat )
 	{}
 
 	@Override
-	public BranchEdge addEdge( final BranchVertex source, final BranchVertex target, final BranchEdge ref )
+	public BranchLink addEdge( final BranchSpot source, final BranchSpot target, final BranchLink ref )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
 
 	@Override
-	public void removeEdge( final BranchEdge e )
+	public void removeEdge( final BranchLink e )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
 
 	@Override
-	public void removeVertex( final BranchVertex v )
+	public void removeVertex( final BranchSpot v )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
@@ -127,31 +127,31 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	{}
 
 	@Override
-	public BranchVertex addVertex( final BranchVertex ref )
+	public BranchSpot addVertex( final BranchSpot ref )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
 
 	@Override
-	public BranchVertex initVertex( final BranchVertex v, final int timepoint, final double[] position, final double radius )
+	public BranchSpot initVertex( final BranchSpot v, final int timepoint, final double[] position, final double radius )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
 
 	@Override
-	public BranchVertex initVertex( final BranchVertex v, final int timepoint, final double[] position, final double[][] covariance )
+	public BranchSpot initVertex( final BranchSpot v, final int timepoint, final double[] position, final double[][] covariance )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
 
 	@Override
-	public BranchEdge insertEdge( final BranchVertex source, final int sourceOutIndex, final BranchVertex target, final int targetInIndex, final BranchEdge ref )
+	public BranchLink insertEdge( final BranchSpot source, final int sourceOutIndex, final BranchSpot target, final int targetInIndex, final BranchLink ref )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
 
 	@Override
-	public BranchEdge initEdge( final BranchEdge e )
+	public BranchLink initEdge( final BranchLink e )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}

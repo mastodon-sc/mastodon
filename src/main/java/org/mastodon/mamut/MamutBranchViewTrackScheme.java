@@ -11,8 +11,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.branch.BranchEdge;
-import org.mastodon.mamut.model.branch.BranchVertex;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
@@ -38,16 +38,16 @@ import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.views.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 
-public class MamutViewBranchTrackScheme extends MamutBranchView< TrackSchemeGraph< BranchVertex, BranchEdge >, TrackSchemeVertex, TrackSchemeEdge >
+public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGraph< BranchSpot, BranchLink >, TrackSchemeVertex, TrackSchemeEdge >
 
 {
 
-	public MamutViewBranchTrackScheme( final MamutAppModel appModel )
+	public MamutBranchViewTrackScheme( final MamutAppModel appModel )
 	{
 		this( appModel, new HashMap<>() );
 	}
 
-	public MamutViewBranchTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel, createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
 
@@ -128,14 +128,14 @@ public class MamutViewBranchTrackScheme extends MamutBranchView< TrackSchemeGrap
 	}
 
 
-	private static TrackSchemeGraph< BranchVertex, BranchEdge > createViewGraph( final MamutAppModel appModel )
+	private static TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final MamutAppModel appModel )
 	{
 		final Model model = appModel.getModel();
 		final ModelBranchGraph graph = model.getBranchGraph();
-		final GraphIdBimap< BranchVertex, BranchEdge > idmap = graph.getGraphIdBimap();
-		final ModelGraphProperties< BranchVertex, BranchEdge > properties = new DefaultModelGraphProperties<>();
-		final TrackSchemeGraph< BranchVertex, BranchEdge > trackSchemeGraph =
-				new TrackSchemeGraph< BranchVertex, BranchEdge >( graph, idmap, properties );
+		final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
+		final ModelGraphProperties< BranchSpot, BranchLink > properties = new DefaultModelGraphProperties<>();
+		final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph =
+				new TrackSchemeGraph< BranchSpot, BranchLink >( graph, idmap, properties );
 		return trackSchemeGraph;
 	}
 

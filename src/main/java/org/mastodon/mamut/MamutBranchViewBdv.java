@@ -39,8 +39,8 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.ModelOverlayProperties;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchEdge;
-import org.mastodon.mamut.model.branch.BranchVertex;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
@@ -66,20 +66,20 @@ import bdv.tools.InitializeViewerState;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerPanel;
 
-public class MamutViewBranchBdv extends MamutBranchView< 
-	OverlayBranchGraphWrapper< BranchVertex, BranchEdge, Spot, Link >, 
-	OverlayVertexWrapper< BranchVertex, BranchEdge >, 
-	OverlayEdgeWrapper< BranchVertex, BranchEdge > >
+public class MamutBranchViewBdv extends MamutBranchView< 
+	OverlayBranchGraphWrapper< BranchSpot, BranchLink, Spot, Link >, 
+	OverlayVertexWrapper< BranchSpot, BranchLink >, 
+	OverlayEdgeWrapper< BranchSpot, BranchLink > >
 {
 
 	private static int bdvName = 1;
 
-	public MamutViewBranchBdv( final MamutAppModel appModel )
+	public MamutBranchViewBdv( final MamutAppModel appModel )
 	{
 		this( appModel, new HashMap<>() );
 	}
 
-	public MamutViewBranchBdv( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutBranchViewBdv( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel, createViewBranchGraph( appModel ), new String[] { KeyConfigContexts.BIGDATAVIEWER } );
 		
@@ -94,12 +94,12 @@ public class MamutViewBranchBdv extends MamutBranchView<
 		final ViewerPanel viewer = bdv.getViewer();
 
 		// Coloring.
-		final GraphColorGeneratorAdapter< BranchVertex, BranchEdge, OverlayVertexWrapper< BranchVertex, BranchEdge >, OverlayEdgeWrapper< BranchVertex, BranchEdge > > coloring =
+		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, OverlayVertexWrapper< BranchSpot, BranchLink >, OverlayEdgeWrapper< BranchSpot, BranchLink > > coloring =
 				new GraphColorGeneratorAdapter<>( vertexMap, edgeMap );
 
 		// Renderer.
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = viewGraph.getGraphWrapper();
-		final OverlayGraphRenderer< OverlayVertexWrapper< BranchVertex, BranchEdge >, OverlayEdgeWrapper< BranchVertex, BranchEdge > > tracksOverlay =
+		final OverlayGraphRenderer< OverlayVertexWrapper< BranchSpot, BranchLink >, OverlayEdgeWrapper< BranchSpot, BranchLink > > tracksOverlay =
 				new OverlayBranchGraphRenderer<>(
 						viewGraph,
 						overlayGraph,
@@ -123,7 +123,7 @@ public class MamutViewBranchBdv extends MamutBranchView<
 		graph.addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
 
 		// Forward navigation to view.
-		final OverlayNavigation< OverlayVertexWrapper< BranchVertex, BranchEdge >, OverlayEdgeWrapper< BranchVertex, BranchEdge > > overlayNavigation =
+		final OverlayNavigation< OverlayVertexWrapper< BranchSpot, BranchLink >, OverlayEdgeWrapper< BranchSpot, BranchLink > > overlayNavigation =
 				new OverlayNavigation<>( viewer, viewGraph );
 		navigationHandler.listeners().add( overlayNavigation );
 
@@ -144,14 +144,14 @@ public class MamutViewBranchBdv extends MamutBranchView<
 		viewerFrame.setVisible( true );
 	}
 
-	private static OverlayBranchGraphWrapper< BranchVertex, BranchEdge, Spot, Link > createViewBranchGraph( final MamutAppModel appModel )
+	private static OverlayBranchGraphWrapper< BranchSpot, BranchLink, Spot, Link > createViewBranchGraph( final MamutAppModel appModel )
 	{
 		// Model.
 		final Model model = appModel.getModel();
 
 		// Branch graph.
 		final ModelBranchGraph branchGraph = model.getBranchGraph();
-		final GraphIdBimap< BranchVertex, BranchEdge > branchGraphIdBimap = model.getBranchGraphIdBimap();
+		final GraphIdBimap< BranchSpot, BranchLink > branchGraphIdBimap = model.getBranchGraphIdBimap();
 
 		// Graph.
 		final ModelGraph graph = model.getGraph();
@@ -166,9 +166,9 @@ public class MamutViewBranchBdv extends MamutBranchView<
 				appModel.getModel().getGraph().getLock(),
 				new ModelOverlayProperties( graph, radiusStats ) );
 
-		final OverlayProperties< BranchVertex, BranchEdge > properties =
+		final OverlayProperties< BranchSpot, BranchLink > properties =
 				new BranchGraphModelOverlayProperties( branchGraph, graph, radiusStats );
-		final OverlayBranchGraphWrapper< BranchVertex, BranchEdge, Spot, Link > overlayBranchGraph = new OverlayBranchGraphWrapper<>(
+		final OverlayBranchGraphWrapper< BranchSpot, BranchLink, Spot, Link > overlayBranchGraph = new OverlayBranchGraphWrapper<>(
 				branchGraph,
 				branchGraphIdBimap,
 				model.getBranchGraphSpatioTemporalIndex(),

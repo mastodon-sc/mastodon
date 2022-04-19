@@ -46,8 +46,8 @@ import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
-import org.mastodon.mamut.model.branch.BranchEdge;
-import org.mastodon.mamut.model.branch.BranchVertex;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.model.AbstractModel;
@@ -106,7 +106,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final ModelBranchGraph branchGraph;
 
-	private final SpatioTemporalIndexImp< BranchVertex, BranchEdge > branchIndex;
+	private final SpatioTemporalIndexImp< BranchSpot, BranchLink > branchIndex;
 
 	public Model()
 	{
@@ -235,7 +235,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		return index;
 	}
 
-	public SpatioTemporalIndex< BranchVertex > getBranchGraphSpatioTemporalIndex()
+	public SpatioTemporalIndex< BranchSpot > getBranchGraphSpatioTemporalIndex()
 	{
 		return branchIndex;
 	}
@@ -279,7 +279,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		return branchGraph;
 	}
 
-	public GraphIdBimap< BranchVertex, BranchEdge > getBranchGraphIdBimap()
+	public GraphIdBimap< BranchSpot, BranchLink > getBranchGraphIdBimap()
 	{
 		return branchGraph.getGraphIdBimap();
 	}

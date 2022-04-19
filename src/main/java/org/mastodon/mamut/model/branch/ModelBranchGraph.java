@@ -17,27 +17,27 @@ import net.imglib2.RealLocalizable;
  * @author Jean-Yves Tinevez.
  *
  */
-public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchVertex, BranchEdge, BranchVertexPool, BranchEdgePool, ByteMappedElement >
+public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchSpot, BranchLink, BranchSpotPool, BranchLinkPool, ByteMappedElement >
 {
 
 	public ModelBranchGraph( final ModelGraph graph )
 	{
-		super( graph, new BranchEdgePool( 1024, new BranchVertexPool( 1024, graph.vertices().getRefPool() ) ) );
+		super( graph, new BranchLinkPool( 1024, new BranchSpotPool( 1024, graph.vertices().getRefPool() ) ) );
 	}
 
 	public ModelBranchGraph( final ModelGraph graph, final int initialCapacity )
 	{
-		super( graph, new BranchEdgePool( initialCapacity, new BranchVertexPool( initialCapacity, graph.vertices().getRefPool() ) ) );
+		super( graph, new BranchLinkPool( initialCapacity, new BranchSpotPool( initialCapacity, graph.vertices().getRefPool() ) ) );
 	}
 
 	@Override
-	public BranchVertex init( final BranchVertex bv, final Spot v )
+	public BranchSpot init( final BranchSpot bv, final Spot v )
 	{
 		return bv.init( v );
 	}
 
 	@Override
-	public BranchEdge init( final BranchEdge be, final Link e )
+	public BranchLink init( final BranchLink be, final Link e )
 	{
 		return be.init();
 	}

@@ -9,7 +9,7 @@ import org.mastodon.spatial.HasTimepoint;
 
 import net.imglib2.RealLocalizable;
 
-public class BranchVertex extends AbstractListenableVertex< BranchVertex, BranchEdge, BranchVertexPool, ByteMappedElement >
+public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink, BranchSpotPool, ByteMappedElement >
 		implements HasTimepoint, HasLabel, RealLocalizable
 {
 
@@ -17,7 +17,7 @@ public class BranchVertex extends AbstractListenableVertex< BranchVertex, Branch
 
 	private final IntAttributeValue spotID;
 
-	protected BranchVertex( final BranchVertexPool vertexPool, final RefPool< Spot > vertexBimap )
+	protected BranchSpot( final BranchSpotPool vertexPool, final RefPool< Spot > vertexBimap )
 	{
 		super( vertexPool );
 		this.vertexBimap = vertexBimap;
@@ -43,7 +43,7 @@ public class BranchVertex extends AbstractListenableVertex< BranchVertex, Branch
 		spotID.set( id );
 	}
 
-	public BranchVertex init( final Spot spot )
+	public BranchSpot init( final Spot spot )
 	{
 		setLinkedVertexId( vertexBimap.getId( spot ) );
 		initDone();

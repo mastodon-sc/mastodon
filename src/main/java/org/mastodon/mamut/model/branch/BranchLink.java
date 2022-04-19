@@ -3,15 +3,15 @@ package org.mastodon.mamut.model.branch;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.pool.ByteMappedElement;
 
-public class BranchEdge extends AbstractListenableEdge< BranchEdge, BranchVertex, BranchEdgePool, ByteMappedElement >
+public class BranchLink extends AbstractListenableEdge< BranchLink, BranchSpot, BranchLinkPool, ByteMappedElement >
 {
 
-	BranchEdge( final BranchEdgePool pool )
+	BranchLink( final BranchLinkPool pool )
 	{
 		super( pool );
 	}
 
-	public BranchEdge init()
+	public BranchLink init()
 	{
 		super.initDone();
 		return this;
