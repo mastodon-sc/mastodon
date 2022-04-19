@@ -219,4 +219,9 @@ public class MamutBranchView<
 		runOnClose.forEach( Runnable::run );
 		runOnClose.clear();
 	}
+
+	public ViewFrame getFrame()
+	{
+		return frame;
+	}
 }

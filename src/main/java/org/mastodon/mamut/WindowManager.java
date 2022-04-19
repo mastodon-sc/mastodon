@@ -106,6 +106,12 @@ public class WindowManager
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 
+	static final String NEW_BRANCH_BDV_VIEW = "new branch bdv view";
+	static final String NEW_BRANCH_TRACKSCHEME_VIEW = "new branch trackscheme view";
+
+	static final String[] NEW_BRANCH_BDV_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+
 	/*
 	 * Command descriptions for all provided commands
 	 */
@@ -189,6 +195,10 @@ public class WindowManager
 
 	private final AbstractNamedAction newGrapherViewAction;
 
+	private final AbstractNamedAction newBranchBdvViewAction;
+
+	private final AbstractNamedAction newBranchTrackSchemeViewAction;
+
 	private final AbstractNamedAction editTagSetsAction;
 
 	private final AbstractNamedAction featureComputationAction;
@@ -247,6 +257,8 @@ public class WindowManager
 		newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
+		newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
+		newBranchTrackSchemeViewAction = new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
@@ -255,6 +267,8 @@ public class WindowManager
 		globalAppActions.namedAction( newGrapherViewAction, NEW_GRAPHER_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
+		globalAppActions.namedAction( newBranchBdvViewAction, NEW_BRANCH_BDV_VIEW_KEYS );
+		globalAppActions.namedAction( newBranchTrackSchemeViewAction, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS );
 
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
@@ -494,7 +508,41 @@ public class WindowManager
 			return view;
 		}
 		return null;
+	}
 
+	public MamutBranchViewBdv createBranchBigDataViewer()
+	{
+		return createBranchBigDataViewer( new HashMap<>() );
+	}
+
+	public MamutBranchViewBdv createBranchBigDataViewer( final Map< String, Object > guiState )
+	{
+		if ( appModel != null )
+		{
+			final MamutBranchViewBdv view = new MamutBranchViewBdv( appModel, guiState );
+			view.getFrame().setIconImages( BDV_VIEW_ICON );
+//			addBdvWindow( view ); TODO
+//			bdvViewCreatedListeners.list.forEach( l -> l.bdvViewCreated( view ) ); // TODO
+			return view;
+		}
+		return null;
+	}
+
+	public MamutBranchViewTrackScheme createBranchTrackScheme()
+	{
+		return createBranchTrackScheme( new HashMap<>() );
+	}
+
+	public MamutBranchViewTrackScheme createBranchTrackScheme( final Map< String, Object > guiState )
+	{
+		if ( appModel != null )
+		{
+			final MamutBranchViewTrackScheme view = new MamutBranchViewTrackScheme( appModel, guiState );
+			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+//			addTsWindow( view ); TODO
+			return view;
+		}
+		return null;
 	}
 
 	public void editTagSets()
