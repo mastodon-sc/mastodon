@@ -4,11 +4,8 @@ import java.io.IOException;
 
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.MamutBranchViewBdv;
-import org.mastodon.mamut.MamutBranchViewTrackScheme;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelUtils;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProjectIO;
@@ -30,17 +27,16 @@ public class BranchGraphExample
 			new MainWindow( wm ).setVisible( true );
 
 			final Model model = appModel.getModel();
-
-			final String str = ModelUtils.dump( model );
-			System.out.println( str ); // DEBUG
-
 			final ModelBranchGraph bg = new ModelBranchGraph( model.getGraph() );
-			System.out.println( bg ); // DEBUG
-
-			new MamutBranchViewBdv( appModel );
-			new MamutBranchViewTrackScheme( appModel );
 
 
+//			new MamutBranchViewBdv( appModel );
+//			final MamutBranchViewTrackScheme view = new MamutBranchViewTrackScheme( appModel );
+//			new MamutBranchViewTrackSchemeHierarchy( appModel );
+
+			model.getGraph().addGraphChangeListener( () -> {
+				System.out.println( bg );
+			} );
 		}
 		catch ( final Exception e1 )
 		{

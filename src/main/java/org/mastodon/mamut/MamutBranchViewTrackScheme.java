@@ -39,7 +39,6 @@ import org.mastodon.views.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 
 public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGraph< BranchSpot, BranchLink >, TrackSchemeVertex, TrackSchemeEdge >
-
 {
 
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel )
@@ -49,7 +48,12 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		super( appModel, createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
+		this( appModel, guiState, new BranchTimeTrackSchemeFactory() );
+	}
+
+	protected MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState, final BranchTrackSchemeFactory factory )
+	{
+		super( appModel, factory.createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		// TrackScheme options.
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
@@ -127,18 +131,6 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 	}
 
-
-	private static TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final MamutAppModel appModel )
-	{
-		final Model model = appModel.getModel();
-		final ModelBranchGraph graph = model.getBranchGraph();
-		final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
-		final ModelGraphProperties< BranchSpot, BranchLink > properties = new DefaultModelGraphProperties<>();
-		final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph =
-				new TrackSchemeGraph< BranchSpot, BranchLink >( graph, idmap, properties );
-		return trackSchemeGraph;
-	}
-
 	public static class BranchTrackSchemeOverlayFactory extends TrackSchemeOverlayFactory
 	{
 		@Override
@@ -151,4 +143,36 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(), new PaintBranchGraph(), options );
 		}
 	}
+
+	/**
+	 * Interface for classes that will generate a TrackScheme graph, based on
+	 * the branch graph, to be displayed in this view. This offers flexibility
+	 * as to how TrackScheme interprets the Y coordinates.
+	 */
+	public static interface BranchTrackSchemeFactory
+	{
+		public TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final MamutAppModel appModel );
+	}
+
+	/**
+	 * A {@link BranchTrackSchemeFactory} that returns a TrackScheme graph where
+	 * the Y coordinates of nodes are taken from the time-point they belong to.
+	 */
+	public static class BranchTimeTrackSchemeFactory implements BranchTrackSchemeFactory
+	{
+
+		@Override
+		public TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final MamutAppModel appModel )
+		{
+			final Model model = appModel.getModel();
+			final ModelBranchGraph graph = model.getBranchGraph();
+			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
+			final ModelGraphProperties< BranchSpot, BranchLink > properties = new DefaultModelGraphProperties<>();
+			final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph =
+					new TrackSchemeGraph< BranchSpot, BranchLink >( graph, idmap, properties );
+			return trackSchemeGraph;
+		}
+
+	}
+
 }
