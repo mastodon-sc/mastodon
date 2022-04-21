@@ -52,7 +52,8 @@ public class BranchGraphSelectionAdapter<
 	public boolean isSelected( final BV vertex )
 	{
 		final V vRef = graph.vertexRef();
-		final boolean selected = selection.isSelected( branchGraph.getLinkedVertex( vertex, vRef ) );
+		final V v = branchGraph.getLinkedVertex( vertex, vRef );
+		final boolean selected = v == null ? false : selection.isSelected( v );
 		graph.releaseRef( vRef );
 
 		return selected;
