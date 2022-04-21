@@ -18,7 +18,6 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
-import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -27,7 +26,6 @@ import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.views.trackscheme.display.PaintBranchGraph;
 import org.mastodon.views.trackscheme.display.PaintDecorations;
-import org.mastodon.views.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions;
@@ -87,6 +85,9 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 				groupHandle,
 				null,
 				options );
+
+		// Forward graph change event to panel.
+		appModel.getModel().getGraph().addGraphChangeListener( () -> frame.getTrackschemePanel().graphChanged() );
 		setFrame( frame );
 
 		// Restore settings panel visibility.
@@ -109,12 +110,9 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		if ( null != tLoaded )
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
 
-		// Behaviors.
-		final ReentrantReadWriteLock lock = model.getGraph().getLock();
-		HighlightBehaviours.install( viewBehaviours, viewGraph, lock, viewGraph, highlightModel, model );
-		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(), viewGraph, lock, viewGraph, model );
 
 		// Actions.
+		final ReentrantReadWriteLock lock = model.getGraph().getLock();
 		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
 		FocusActions.install( viewActions, viewGraph, lock, focusModel, selectionModel );
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
@@ -129,6 +127,12 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 		// Give focus to the display so that it can receive key presses immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
+	}
+
+	@Override
+	public TrackSchemeFrame getFrame()
+	{
+		return ( TrackSchemeFrame ) super.getFrame();
 	}
 
 	public static class BranchTrackSchemeOverlayFactory extends TrackSchemeOverlayFactory
