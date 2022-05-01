@@ -86,8 +86,6 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 				null,
 				options );
 
-		// Forward graph change event to panel.
-		appModel.getModel().getGraph().addGraphChangeListener( () -> frame.getTrackschemePanel().graphChanged() );
 		setFrame( frame );
 
 		// Restore settings panel visibility.
@@ -99,9 +97,6 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		if ( null == pos || pos.length != 4 )
 			frame.setLocationRelativeTo( null );
 
-		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
-		frame.getTrackschemePanel().graphChanged();
-
 		final TrackSchemeStyle.UpdateListener updateListener = () -> frame.getTrackschemePanel().repaint();
 		forwardDefaultStyle.updateListeners().add( updateListener );
 
@@ -109,7 +104,6 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( TRACKSCHEME_TRANSFORM_KEY );
 		if ( null != tLoaded )
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
-
 
 		// Actions.
 		final ReentrantReadWriteLock lock = model.getGraph().getLock();
@@ -121,6 +115,13 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
 		frame.getTrackschemePanel().getNavigationBehaviours().install( viewBehaviours );
 		frame.getTrackschemePanel().getTransformEventHandler().install( viewBehaviours );
+
+		// Forward graph change event to panel.
+		viewGraph.graphChangeListeners().add( () -> frame.getTrackschemePanel().graphChanged() );
+
+		// Time range and display refresh.
+		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
+		frame.getTrackschemePanel().graphChanged();
 
 		frame.setVisible( true );
 		frame.getTrackschemePanel().repaint();
@@ -173,7 +174,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
 			final ModelGraphProperties< BranchSpot, BranchLink > properties = new DefaultModelGraphProperties<>();
 			final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph =
-					new TrackSchemeGraph< BranchSpot, BranchLink >( graph, idmap, properties );
+					new TrackSchemeGraph< >( graph, idmap, properties );
 			return trackSchemeGraph;
 		}
 
