@@ -56,7 +56,8 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		// TrackScheme options.
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
-				.trackSchemeOverlayFactory( new BranchTrackSchemeOverlayFactory() );
+				.trackSchemeOverlayFactory( new BranchTrackSchemeOverlayFactory() )
+				.paintLongEdges( true );
 				
 		// Restore position
 		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
