@@ -75,6 +75,9 @@ public class BranchGraphSelectionAdapter<
 		 */
 
 		E e = branchGraph.getLinkedEdge( edge, eRef );
+		if ( e == null )
+			return false;
+
 		if ( !selection.isSelected( e ) )
 		{
 			selected = false;
