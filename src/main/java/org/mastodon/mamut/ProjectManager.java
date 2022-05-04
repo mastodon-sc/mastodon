@@ -707,6 +707,8 @@ public class ProjectManager
 		final Element windows = new Element( WINDOWS_TAG );
 		windowManager.forEachView( ( view ) -> windows.addContent(
 				MamutViewStateSerialization.toXml( view ) ) );
+		windowManager.forEachBranchView( ( view ) -> windows.addContent(
+				MamutViewStateSerialization.toXml( view ) ) );
 		guiRoot.addContent( windows );
 		final Document doc = new Document( guiRoot );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );

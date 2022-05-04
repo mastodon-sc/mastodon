@@ -41,6 +41,8 @@ import java.util.Map.Entry;
 import javax.swing.JViewport;
 
 import org.jdom2.Element;
+import org.mastodon.app.IMastodonView;
+import org.mastodon.app.ui.IMastodonFrameView;
 import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
@@ -195,7 +197,7 @@ class MamutViewStateSerialization
 	 *            the GUI state to serialize.
 	 * @return a new XML element.
 	 */
-	static Element toXml( final MamutView< ?, ?, ? > view )
+	static < V extends IMastodonFrameView & IMastodonView > Element toXml( final V view )
 	{
 		final Map< String, Object > guiState = getGuiState( view );
 		final Element element = new Element( WINDOW_TAG );
@@ -271,7 +273,7 @@ class MamutViewStateSerialization
 	 *            the view.
 	 * @return a new {@link Map}.
 	 */
-	private static Map< String, Object > getGuiState( final MamutView< ?, ?, ? > view )
+	private static < V extends IMastodonFrameView & IMastodonView > Map< String, Object > getGuiState( final V view )
 	{
 		final Map< String, Object > guiState = new LinkedHashMap<>();
 
@@ -297,6 +299,8 @@ class MamutViewStateSerialization
 			getGuiStateBdv( ( MamutViewBdv ) view, guiState );
 		else if ( view instanceof MamutViewTrackScheme )
 			getGuiStateTrackScheme( ( MamutViewTrackScheme ) view, guiState );
+		else if ( view instanceof MamutBranchViewTrackScheme )
+			getGuiStateBranchTrackScheme( ( MamutBranchViewTrackScheme ) view, guiState );
 		else if ( view instanceof MamutViewTable )
 			getGuiStateTable( ( MamutViewTable ) view, guiState );
 		else if ( view instanceof MamutViewGrapher )
@@ -402,6 +406,33 @@ class MamutViewStateSerialization
 	}
 
 	/**
+	 * Stores the {@link MamutBranchViewTrackScheme} GUI state in the specified
+	 * map.
+	 * 
+	 * @param view
+	 *            the {@link MamutBranchViewTrackScheme}.
+	 * @param guiState
+	 *            the map to store info into.
+	 */
+	private static void getGuiStateBranchTrackScheme( final MamutBranchViewTrackScheme view, final Map< String, Object > guiState )
+	{
+		final TrackSchemePanel trackschemePanel = view.getFrame().getTrackschemePanel();
+
+		// Edit position to reflect the fact that we store the TrackScheme panel
+		// width and height.
+		final Point point = view.getFrame().getLocation();
+		guiState.put( FRAME_POSITION_KEY, new int[] {
+				point.x,
+				point.y,
+				trackschemePanel.getDisplay().getWidth(),
+				trackschemePanel.getDisplay().getHeight() } );
+
+		// Transform.
+		final ScreenTransform t = trackschemePanel.getScreenTransform().get();
+		guiState.put( TRACKSCHEME_TRANSFORM_KEY, t );
+	}
+
+	/**
 	 * Stores the {@link MamutViewBdv} GUI state in the specified map.
 	 * 
 	 * @param view
@@ -486,6 +517,12 @@ class MamutViewStateSerialization
 				final String desiredProvider = ( String ) guiState.get( CHOSEN_CONTEXT_PROVIDER_KEY );
 				if ( null != desiredProvider )
 					contextChosers.put( ts.getContextChooser(), desiredProvider );
+				break;
+			}
+
+			case "MamutBranchViewTrackScheme":
+			{
+				windowManager.createBranchTrackScheme( guiState );
 				break;
 			}
 
