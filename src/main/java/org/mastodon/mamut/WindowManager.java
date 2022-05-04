@@ -66,7 +66,6 @@ import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
 import org.mastodon.util.ToggleDialogAction;
-import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
@@ -144,29 +143,22 @@ public class WindowManager
 
 	private final MamutPlugins plugins;
 
-	/**
-	 * All currently open BigDataViewer windows.
-	 */
+	/** All currently open BigDataViewer windows. */
 	private final List< MamutViewBdv > bdvWindows = new ArrayList<>();
 
-	/**
-	 * The {@link ContextProvider}s of all currently open BigDataViewer windows.
-	 */
+	/** The {@link ContextProvider}s of all currently open BigDataViewer windows. */
 	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
 
-	/**
-	 * All currently open TrackScheme windows.
-	 */
+	/** All currently open TrackScheme windows. */
 	private final List< MamutViewTrackScheme > tsWindows = new ArrayList<>();
 
-	/**
-	 * All currently open Table windows.
-	 */
+	/** All currently open TrackScheme windows. */
+	private final List< MamutBranchViewTrackScheme > btsWindows = new ArrayList<>();
+
+	/** All currently open Table windows. */
 	private final List< MamutViewTable > tableWindows = new ArrayList<>();
 
-	/**
-	 * All currently open Grapher windows.
-	 */
+	/** All currently open Grapher windows. */
 	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
 
 	private final KeyPressedManager keyPressedManager;
@@ -272,7 +264,7 @@ public class WindowManager
 
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
-		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
+//		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", dataDisplayStyleManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
 		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager ) );
@@ -385,6 +377,12 @@ public class WindowManager
 		} );
 	}
 
+	private synchronized void addBTsWindow( final MamutBranchViewTrackScheme w )
+	{
+		btsWindows.add( w );
+		w.onClose( () -> btsWindows.remove( w ) );
+	}
+
 	private synchronized void addTableWindow( final MamutViewTable table )
 	{
 		tableWindows.add( table );
@@ -420,12 +418,22 @@ public class WindowManager
 		tsWindows.forEach( action );
 	}
 
+	public void forEachBranchTrackSchemeView( final Consumer< ? super MamutBranchViewTrackScheme > action )
+	{
+		btsWindows.forEach( action );
+	}
+
 	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
 	{
 		forEachBdvView( action );
 		forEachTrackSchemeView( action );
 		forEachTableView( action );
 		forEachGrapherView( action );
+	}
+
+	public void forEachBranchView( final Consumer< ? super MamutBranchView< ?, ?, ? > > action )
+	{
+		forEachBranchTrackSchemeView( action );
 	}
 
 	public MamutViewBdv createBigDataViewer()
@@ -539,7 +547,7 @@ public class WindowManager
 		{
 			final MamutBranchViewTrackScheme view = new MamutBranchViewTrackScheme( appModel, guiState );
 			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
-//			addTsWindow( view ); TODO
+			addBTsWindow( view );
 			return view;
 		}
 		return null;
@@ -567,6 +575,8 @@ public class WindowManager
 		for ( final MamutViewBdv w : bdvWindows )
 			windows.add( w.getFrame() );
 		for ( final MamutViewTrackScheme w : tsWindows )
+			windows.add( w.getFrame() );
+		for ( final MamutBranchViewTrackScheme w : btsWindows )
 			windows.add( w.getFrame() );
 		for ( final MamutViewTable w : tableWindows )
 			windows.add( w.getFrame() );
