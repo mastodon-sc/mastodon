@@ -74,6 +74,7 @@ public class MastodonView<
 		ME extends AbstractListenableEdge< ME, MV, ?, ? >,
 		V extends Vertex< E >,
 		E extends Edge< V > >
+	implements IMastodonView
 {
 	protected final M appModel;
 
@@ -134,6 +135,7 @@ public class MastodonView<
 	 * @param runnable
 	 *            the {@link Runnable} to add.
 	 */
+	@Override
 	public synchronized void onClose( final Runnable runnable )
 	{
 		runOnClose.add( runnable );
@@ -150,6 +152,7 @@ public class MastodonView<
 	 * 
 	 * @return the {@link GroupHandle} of this view.
 	 */
+	@Override
 	public GroupHandle getGroupHandle()
 	{
 		return groupHandle;

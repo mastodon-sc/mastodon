@@ -38,7 +38,9 @@ import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
+import org.mastodon.app.IMastodonView;
 import org.mastodon.app.ViewGraph;
+import org.mastodon.app.ui.IMastodonFrameView;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
@@ -68,6 +70,7 @@ public class MamutBranchView<
 	VG extends ViewGraph< BranchSpot, BranchLink, V, E >, 
 	V extends Vertex< E >, 
 	E extends Edge< V > >
+		implements IMastodonFrameView, IMastodonView
 {
 
 	protected final MamutAppModel appModel;
@@ -209,6 +212,7 @@ public class MamutBranchView<
 	 * @param runnable
 	 *            the {@link Runnable} to add.
 	 */
+	@Override
 	public synchronized void onClose( final Runnable runnable )
 	{
 		runOnClose.add( runnable );
@@ -220,8 +224,15 @@ public class MamutBranchView<
 		runOnClose.clear();
 	}
 
+	@Override
 	public ViewFrame getFrame()
 	{
 		return frame;
+	}
+
+	@Override
+	public GroupHandle getGroupHandle()
+	{
+		return groupHandle;
 	}
 }
