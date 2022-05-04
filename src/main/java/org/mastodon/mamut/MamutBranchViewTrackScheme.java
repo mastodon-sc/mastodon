@@ -1,5 +1,12 @@
 package org.mastodon.mamut;
 
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
@@ -9,6 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.swing.ActionMap;
+
+import org.mastodon.app.ui.MastodonFrameViewActions;
+import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
@@ -18,6 +30,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
+import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -119,6 +132,40 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 		// Forward graph change event to panel.
 		viewGraph.graphChangeListeners().add( () -> frame.getTrackschemePanel().graphChanged() );
+
+		// Menus.
+		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), appModel.getKeymap(), keyConfigContexts );
+		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
+
+		final JMenuHandle coloringMenuHandle = new JMenuHandle();
+		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
+		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
+
+		MainWindow.addMenus( menu, actionMap );
+		MamutMenuBuilder.build( menu, actionMap,
+				viewMenu(
+						colorMenu( coloringMenuHandle ),
+						colorbarMenu( colorbarMenuHandle ),
+						separator(),
+						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
+				editMenu(
+						item( SelectionActions.SELECT_WHOLE_TRACK ),
+						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
+						item( SelectionActions.SELECT_TRACK_UPWARD ),
+						separator(),
+						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_CHILD ),
+						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_PARENT ),
+						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_LEFT ),
+						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_RIGHT ),
+						separator(),
+						item( TrackSchemeNavigationActions.NAVIGATE_CHILD ),
+						item( TrackSchemeNavigationActions.NAVIGATE_PARENT ),
+						item( TrackSchemeNavigationActions.NAVIGATE_LEFT ),
+						item( TrackSchemeNavigationActions.NAVIGATE_RIGHT ),
+						separator(),
+						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL ),
+						tagSetMenu( tagSetMenuHandle ) ) );
+		appModel.getPlugins().addMenus( menu );
 
 		// Time range and display refresh.
 		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
