@@ -47,6 +47,8 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.SpotPool;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 import org.scijava.service.AbstractService;
 
@@ -62,7 +64,7 @@ public class MamutFeatureComputation
 		final MyFeatureComputerService myComputerService = new MyFeatureComputerService( computerService, appModel.getModel().getFeatureModel() );
 
 		// Controller.
-		final Collection< Class< ? > > targets = Arrays.asList( Spot.class, Link.class );
+		final Collection< Class< ? > > targets = Arrays.asList( Spot.class, Link.class, BranchSpot.class, BranchLink.class );
 		final FeatureComputationController controller = new FeatureComputationController( myComputerService, targets );
 		computerService.computationStatusListeners().add( controller.getComputationStatusListener() );
 
