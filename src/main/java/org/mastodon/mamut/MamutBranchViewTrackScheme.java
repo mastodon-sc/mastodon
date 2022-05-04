@@ -17,8 +17,10 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.ActionMap;
+import javax.swing.JPanel;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
+import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;
@@ -118,6 +120,10 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( TRACKSCHEME_TRANSFORM_KEY );
 		if ( null != tLoaded )
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
+
+		// Search vertex label.
+		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getTrackschemePanel() );
+		frame.getSettingsPanel().add( searchPanel );
 
 		// Actions.
 		final ReentrantReadWriteLock lock = model.getGraph().getLock();
