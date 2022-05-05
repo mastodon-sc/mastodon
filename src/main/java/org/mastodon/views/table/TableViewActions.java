@@ -36,10 +36,9 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
-import org.mastodon.app.MastodonAppModel;
 import org.mastodon.app.ViewGraph;
-import org.mastodon.graph.ref.AbstractListenableEdge;
-import org.mastodon.model.AbstractSpot;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -51,7 +50,9 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 
 import com.opencsv.CSVWriter;
 
-public class TableViewActions< M extends MastodonAppModel< ?, V, E >, VG extends ViewGraph< V, E, V, E >, V extends AbstractSpot< V, E, ?, ?, ? >, E extends AbstractListenableEdge< E, V, ?, ? > >
+public class TableViewActions< 
+	V extends Vertex< E >, 
+	E extends Edge< V > >
 {
 
 	public static final String EDIT_LABEL = "edit vertex label";
@@ -89,7 +90,7 @@ public class TableViewActions< M extends MastodonAppModel< ?, V, E >, VG extends
 		}
 	}
 
-	private TableViewActions( final TableViewFrame< M, VG, V, E > tableView )
+	private TableViewActions( final TableViewFrame< V, E > tableView )
 	{
 		this.editLabel = new RunnableAction( EDIT_LABEL, tableView::editCurrentLabel );
 		this.toggleTag = new RunnableAction( TOGGLE_TAG, tableView::toggleTag );
@@ -100,8 +101,6 @@ public class TableViewActions< M extends MastodonAppModel< ?, V, E >, VG extends
 	 * Create table-view actions and install them in the specified
 	 * {@link Actions}.
 	 *
-	 * @param <M>
-	 *            the type of the {@link MastodonAppModel}.
 	 * @param <VG>
 	 *            the type of the view graph used.
 	 * @param <V>
@@ -113,11 +112,13 @@ public class TableViewActions< M extends MastodonAppModel< ?, V, E >, VG extends
 	 * @param frame
 	 *            Actions are targeted at this table view.
 	 */
-	public static < M extends MastodonAppModel< ?, V, E >, VG extends ViewGraph< V, E, V, E >, V extends AbstractSpot< V, E, ?, ?, ? >, E extends AbstractListenableEdge< E, V, ?, ? > > void install(
-			final Actions actions,
-			final TableViewFrame< M, VG, V, E > frame )
+	public static < 
+			VG extends ViewGraph< V, E, V, E >, 
+			V extends Vertex< E >, 
+			E extends Edge< V > >
+			void install( final Actions actions, final TableViewFrame< V, E > frame )
 	{
-		final TableViewActions< M, VG, V, E > tva = new TableViewActions<>( frame );
+		final TableViewActions< V, E > tva = new TableViewActions<>( frame );
 		actions.namedAction( tva.editLabel, EDIT_LABEL_KEYS );
 		actions.namedAction( tva.toggleTag, TOGGLE_TAG_KEYS );
 		actions.namedAction( tva.exportToCSV, EXPORT_TO_CSV_KEYS );
@@ -125,8 +126,8 @@ public class TableViewActions< M extends MastodonAppModel< ?, V, E >, VG extends
 
 	private static File csvFile;
 
-	private static final < M extends MastodonAppModel< ?, V, E >, VG extends ViewGraph< V, E, V, E >, V extends AbstractSpot< V, E, ?, ?, ? >, E extends AbstractListenableEdge< E, V, ?, ? > >
-			void exportToCSV( final TableViewFrame< M, VG, V, E > frame )
+	private static final < V extends Vertex< E >, E extends Edge< V > >
+			void exportToCSV( final TableViewFrame< V, E > frame )
 	{
 		final Component parent = frame;
 		final String filename = ( csvFile == null )

@@ -41,21 +41,19 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mastodon.RefPool;
-import org.mastodon.app.MastodonAppModel;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.app.ui.ViewFrame;
+import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.ref.RefArrayList;
-import org.mastodon.collection.ref.RefSetImp;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureModel.FeatureModelListener;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.ref.AbstractListenableEdge;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
-import org.mastodon.model.AbstractSpot;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightListener;
@@ -77,10 +75,8 @@ import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextListener;
 
 public class TableViewFrame<
-		M extends MastodonAppModel< ?, V, E >,
-		VG extends ViewGraph< V, E, V, E >,
-		V extends AbstractSpot< V, E, ?, ?, ? >,
-		E extends AbstractListenableEdge< E, V, ?, ? > >
+		V extends Vertex< E >, 
+		E extends Edge< V > >
 	extends ViewFrame
 	implements
 		SelectionListener,
@@ -123,15 +119,17 @@ public class TableViewFrame<
 
 	private final JTabbedPane pane;
 
-	private final RefArrayList< V > filterByVertices;
+	private final RefList< V > filterByVertices;
 
-	private final RefSetImp< E > filterByEdges;
+	private final RefSet< E > filterByEdges;
 
 	private final ContextChooser< V > contextChooser;
 
 	public TableViewFrame(
-			final M appModel,
-			final VG viewGraph,
+			final ReadOnlyGraph< V, E > viewGraph,
+			final HighlightModel< V, E > highlightModel,
+			final FocusModel< V, E > focusModel,
+			final SelectionModel< V, E > selectionModel,
 			final FeatureModel featureModel,
 			final TagSetModel< V, E > tagSetModel,
 			final Function< V, String > vertexLabelGenerator,
@@ -144,17 +142,16 @@ public class TableViewFrame<
 			final GraphColorGenerator< V, E > coloring )
 	{
 		super( "Feature and tag table" );
+		this.highlightModel = highlightModel;
+		this.focusModel = focusModel;
 		this.featureModel = featureModel;
+		this.selectionModel = selectionModel;
 		this.tagSetModel = tagSetModel;
-		this.selectionModel = appModel.getSelectionModel();
-		this.focusModel = appModel.getFocusModel();
-		this.highlightModel = appModel.getHighlightModel();
-		final GraphIdBimap< V, E > graphIdBimap = appModel.getModel().getGraphIdBimap();
-		this.vref = graphIdBimap.vertexIdBimap().createRef();
-		this.eref = graphIdBimap.edgeIdBimap().createRef();
+		this.vref = viewGraph.vertexRef();
+		this.eref = viewGraph.edgeRef();
 		final List< TagSet > tagSets = tagSetModel.getTagSetStructure().getTagSets();
-		this.filterByVertices = new RefArrayList<>( graphIdBimap.vertexIdBimap() );
-		this.filterByEdges = new RefSetImp<>( graphIdBimap.edgeIdBimap() );
+		this.filterByVertices = RefCollections.createRefList( viewGraph.vertices() );
+		this.filterByEdges = RefCollections.createRefSet( viewGraph.edges() );
 
 		/*
 		 * Settings panel.
@@ -174,7 +171,7 @@ public class TableViewFrame<
 		 */
 
 		final ObjTags< V > vertexTags = tagSetModel.getVertexTags();
-		final RefPool< V > vertexIdBimap = graphIdBimap.vertexIdBimap();
+		final RefPool< V > vertexIdBimap = RefCollections.tryGetRefPool( viewGraph.vertices() );
 		vertexTable = new FeatureTagTablePanel<>(
 				vertexTags,
 				vertexIdBimap,
@@ -235,14 +232,14 @@ public class TableViewFrame<
 		 */
 
 		final ObjTags< E > edgeTags = tagSetModel.getEdgeTags();
-		final RefPool< E > edgeIdBimap = graphIdBimap.edgeIdBimap();
+		final RefPool< E > edgeIdBimap = RefCollections.tryGetRefPool( viewGraph.edges() );
 
 		final ColorGenerator< E > edgeColorGenerator = new ColorGenerator< E >()
 		{
 
-			private final V vTmpS = graphIdBimap.vertexIdBimap().createRef();
+			private final V vTmpS = viewGraph.vertexRef();
 
-			private final V vTmpT = graphIdBimap.vertexIdBimap().createRef();
+			private final V vTmpT = viewGraph.vertexRef();
 
 			@Override
 			public int color( final E edge )

@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import javax.swing.ActionMap;
@@ -96,30 +97,38 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	public MamutViewTable( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		super( appModel, IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() ), CONTEXTS );
+		super( appModel, createViewGraph( appModel ), CONTEXTS );
 		this.selectionOnly = ( boolean ) guiState.getOrDefault( TABLE_SELECTION_ONLY, false );
-
+		final ModelGraph graph = appModel.getModel().getGraph();
+		
 		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloring = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
-		final TableViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > frame = new TableViewFrame<>(
-				appModel,
-				viewGraph,
+		final Function< Spot, String > vertexLabelGenerator = ( v ) -> v.getLabel();
+		final Function< Link, String > edgeLabelGenerator = new Function< Link, String >()
+		{
+
+			private final Spot ref = appModel.getModel().getGraph().vertexRef();
+
+			@Override
+			public String apply( final Link t )
+			{
+				return t.getSource( ref ).getLabel() + " \u2192 " + t.getTarget( ref ).getLabel();
+			}
+		};
+		final BiConsumer< Spot, String > vertexLabelSetter = ( v, lbl ) -> v.setLabel( lbl );
+		final BiConsumer< Link, String > edgeLabelSetter = null;
+
+		final TableViewFrame< Spot, Link > frame = new TableViewFrame<>(
+				graph,
+				highlightModel,
+				focusModel,
+				selectionModel,
 				appModel.getModel().getFeatureModel(),
 				appModel.getModel().getTagSetModel(),
-				( v ) -> v.getLabel(),
-				new Function< Link, String >()
-				{
-
-					private final Spot ref = appModel.getModel().getGraph().vertexRef();
-
-					@Override
-					public String apply( final Link t )
-					{
-						return t.getSource( ref ).getLabel() + " \u2192 " + t.getTarget( ref ).getLabel();
-					}
-				},
-				( v, lbl ) -> v.setLabel( lbl ),
-				null,
+				vertexLabelGenerator,
+				edgeLabelGenerator,
+				vertexLabelSetter,
+				edgeLabelSetter,
 				groupHandle,
 				navigationHandler,
 				appModel.getModel(),
@@ -260,7 +269,6 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		else
 		{
 			// Pass and listen to the full graph.
-			final ModelGraph graph = appModel.getModel().getGraph();
 			final GraphChangeListener graphChangeListener = () -> {
 				vertexTable.setRows( graph.vertices() );
 				edgeTable.setRows( graph.edges() );
@@ -297,23 +305,23 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 		final int[] visibleRectVertexTable = ( int[] ) guiState.get( TABLE_VERTEX_TABLE_VISIBLE_POS );
 		if ( null != visibleRectVertexTable )
-			frame.getVertexTable().getScrollPane().getViewport().setViewPosition( new Point( 
+			frame.getVertexTable().getScrollPane().getViewport().setViewPosition( new Point(
 					visibleRectVertexTable[ 0 ],
 					visibleRectVertexTable[ 1 ] ) );
 
 		final int[] visibleRectEdgeTable = ( int[] ) guiState.get( TABLE_EDGE_TABLE_VISIBLE_POS );
 		if ( null != visibleRectEdgeTable )
-			frame.getEdgeTable().getScrollPane().getViewport().setViewPosition( new Point( 
+			frame.getEdgeTable().getScrollPane().getViewport().setViewPosition( new Point(
 					visibleRectEdgeTable[ 0 ],
 					visibleRectEdgeTable[ 1 ] ) );
 	}
 
 	@Override
-	public TableViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > getFrame()
+	public TableViewFrame< Spot, Link > getFrame()
 	{
 		final ViewFrame f = super.getFrame();
 		@SuppressWarnings( "unchecked" )
-		final TableViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > vf = ( TableViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > ) f;
+		final TableViewFrame< Spot, Link > vf = ( TableViewFrame< Spot, Link > ) f;
 		return vf;
 	}
 
@@ -331,4 +339,10 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	{
 		return selectionOnly;
 	}
+
+	private static ViewGraph< Spot, Link, Spot, Link > createViewGraph( final MamutAppModel appModel )
+	{
+		return IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() );
+	}
+
 }
