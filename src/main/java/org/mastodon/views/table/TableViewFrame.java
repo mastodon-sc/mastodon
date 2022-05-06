@@ -62,7 +62,6 @@ import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.tag.ObjTags;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.ColorGenerator;
@@ -170,15 +169,15 @@ public class TableViewFrame<
 		 * Vertices
 		 */
 
-		final ObjTags< V > vertexTags = tagSetModel.getVertexTags();
-		final RefPool< V > vertexIdBimap = RefCollections.tryGetRefPool( viewGraph.vertices() );
-		vertexTable = new FeatureTagTablePanel<>(
-				vertexTags,
-				vertexIdBimap,
-				vertexLabelGenerator,
-				vertexLabelSetter,
-				undoPointMarker,
-				( v ) -> coloring.color( v ) );
+		final RefPool< V > vertices = RefCollections.tryGetRefPool( viewGraph.vertices() );
+		vertexTable = TablePanelBuilder
+				.create( vertices )
+				.tags( tagSetModel.getVertexTags() )
+				.labelSetter( vertexLabelSetter )
+				.labelGetter( vertexLabelGenerator )
+				.undo( undoPointMarker )
+				.coloring( v -> coloring.color( v ) )
+				.get();
 		final JTable vt = vertexTable.getTable();
 
 		vt.getSelectionModel().addListSelectionListener( new ListSelectionListener()
@@ -231,8 +230,7 @@ public class TableViewFrame<
 		 * Edges
 		 */
 
-		final ObjTags< E > edgeTags = tagSetModel.getEdgeTags();
-		final RefPool< E > edgeIdBimap = RefCollections.tryGetRefPool( viewGraph.edges() );
+		final RefPool< E > edges = RefCollections.tryGetRefPool( viewGraph.edges() );
 
 		final ColorGenerator< E > edgeColorGenerator = new ColorGenerator< E >()
 		{
@@ -250,13 +248,14 @@ public class TableViewFrame<
 			}
 		};
 
-		edgeTable = new FeatureTagTablePanel<>(
-				edgeTags,
-				edgeIdBimap,
-				edgeLabelGenerator,
-				edgeLabelSetter,
-				undoPointMarker,
-				edgeColorGenerator );
+		edgeTable = TablePanelBuilder
+				.create( edges )
+				.tags( tagSetModel.getEdgeTags() )
+				.labelGetter( edgeLabelGenerator )
+				.labelSetter( edgeLabelSetter )
+				.undo( undoPointMarker )
+				.coloring( edgeColorGenerator )
+				.get();
 		final JTable et = edgeTable.getTable();
 		et.getSelectionModel().addListSelectionListener( new ListSelectionListener()
 		{
