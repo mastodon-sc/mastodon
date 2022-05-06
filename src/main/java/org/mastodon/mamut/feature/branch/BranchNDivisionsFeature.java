@@ -45,9 +45,9 @@ import org.scijava.plugin.Plugin;
 public class BranchNDivisionsFeature implements Feature< BranchSpot >
 {
 
-	public static final String KEY = "Branch N divisions";
+	public static final String KEY = "Branch N successors";
 
-	private static final String HELP_STRING = "Computes the number of successirt of a branch spot.";
+	private static final String HELP_STRING = "Computes the number of successors of a branch spot.";
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
 
@@ -115,7 +115,7 @@ public class BranchNDivisionsFeature implements Feature< BranchSpot >
 		@Override
 		public double value( final BranchSpot obj )
 		{
-			return obj.edges().size();
+			return obj.outgoingEdges().size();
 		}
 
 		@Override
