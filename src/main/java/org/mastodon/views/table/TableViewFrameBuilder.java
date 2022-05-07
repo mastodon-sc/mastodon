@@ -320,7 +320,7 @@ public class TableViewFrameBuilder
 					ignoreSelectionChange = true;
 
 					// Send changes in table selection to the selection model.
-					if ( !graphBuilder.selectionTable )
+					if ( !graphBuilder.selectionTable && graphBuilder.selectionModel != null )
 					{
 						graphBuilder.selectionModel.pauseListeners();
 						final RefSet< VV > selectedVertices = graphBuilder.selectionModel.getSelectedVertices();
@@ -376,8 +376,11 @@ public class TableViewFrameBuilder
 				graphChangeListener.graphChanged();
 
 				// Listen to selection changes.
-				selectionChanged();
-				runOnClose.add( () -> selectionModel.listeners().remove( this ) );
+				if ( selectionModel != null )
+				{
+					selectionChanged();
+					runOnClose.add( () -> selectionModel.listeners().remove( this ) );
+				}
 			}
 
 			// Features.
