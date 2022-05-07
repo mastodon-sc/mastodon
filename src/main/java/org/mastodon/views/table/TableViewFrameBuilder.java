@@ -1,6 +1,7 @@
 package org.mastodon.views.table;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -10,9 +11,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import javax.swing.Box;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -89,7 +92,7 @@ public class TableViewFrameBuilder
 		return this;
 	}
 
-	public ViewFrame get()
+	public MyTableViewFrame get()
 	{
 		final MyTableViewFrame frame = new MyTableViewFrame( title );
 		frame.addWindowListener( new WindowAdapter()
@@ -192,7 +195,7 @@ public class TableViewFrameBuilder
 			this.tagSetModel = graphBuilder.tagSetModel;
 			this.filterByVertices = RefCollections.createRefList( graphBuilder.graph.vertices() );
 			this.filterByEdges = RefCollections.createRefSet( graphBuilder.graph.edges() );
-			this.mirrorSelection = graphBuilder.selectionTable;
+			this.mirrorSelection = !graphBuilder.selectionTable;
 			this.vref1 = graphBuilder.graph.vertexRef();
 			this.vref2 = graphBuilder.graph.vertexRef();
 			this.eref = graphBuilder.graph.edgeRef();
@@ -467,10 +470,6 @@ public class TableViewFrameBuilder
 				tagSetModel.listeners().add( this );
 				runOnClose.add( () -> tagSetModel.listeners().remove( this ) );
 			}
-
-			/*
-			 * Menus and co.
-			 */
 		}
 
 		@Override
@@ -609,9 +608,9 @@ public class TableViewFrameBuilder
 
 		private Function< E, String > edgeLabelGenerator;
 
-		private BiConsumer< V, String > vertexLabelSetter = ( o, str ) -> {};
+		private BiConsumer< V, String > vertexLabelSetter = null;
 
-		private BiConsumer< E, String > edgeLabelSetter = ( o, str ) -> {};
+		private BiConsumer< E, String > edgeLabelSetter = null;
 
 		private NavigationHandler< V, E > navigationHandler;
 
@@ -741,7 +740,7 @@ public class TableViewFrameBuilder
 	 * THE FRAME CLASS>
 	 */
 
-	private static class MyTableViewFrame extends ViewFrame
+	public static class MyTableViewFrame extends ViewFrame
 	{
 
 		private static final long serialVersionUID = 1L;
@@ -753,6 +752,27 @@ public class TableViewFrameBuilder
 			super( windowTitle );
 			this.pane = new JTabbedPane( JTabbedPane.LEFT );
 			add( pane, BorderLayout.CENTER );
+
+			SwingUtilities.replaceUIActionMap( pane, keybindings.getConcatenatedActionMap() );
+			SwingUtilities.replaceUIInputMap( pane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+		}
+
+		public FeatureTagTablePanel< ? > getCurrentlyDisplayedTable()
+		{
+			final Component c = pane.getSelectedComponent();
+			if ( c == null )
+				return null;
+			return ( FeatureTagTablePanel< ? > ) c;
+		}
+
+		public void editCurrentLabel()
+		{
+			getCurrentlyDisplayedTable().editCurrentLabel();
+		}
+
+		public void toggleCurrentTag()
+		{
+			getCurrentlyDisplayedTable().toggleCurrentTag();
 		}
 	}
 }
