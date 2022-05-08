@@ -2,8 +2,11 @@ package org.mastodon.graph;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.app.IdentityViewGraph;
 import org.mastodon.app.ViewGraph;
@@ -14,9 +17,19 @@ import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProjectIO;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.SelectionModel;
+import org.mastodon.model.branch.BranchGraphFocusAdapter;
+import org.mastodon.model.branch.BranchGraphHighlightAdapter;
+import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
+import org.mastodon.model.branch.BranchGraphSelectionAdapter;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
@@ -56,6 +69,7 @@ public class BranchGraphExample
 
 	public static void main( final String[] args ) throws IOException
 	{
+		setSystemLookAndFeelAndLocale();
 		try (final Context context = new Context())
 		{
 			final String projectPath = "samples/test_branchgraph.mastodon";
@@ -69,62 +83,111 @@ public class BranchGraphExample
 //			final ModelBranchGraph gb = wm.getAppModel().getModel().getBranchGraph();
 //			gb.addGraphChangeListener( () -> System.out.println( gb ) );
 
-			final MamutAppModel appModel = wm.getAppModel();
-			final ModelGraph graph = appModel.getModel().getGraph();
-			final ViewGraph< Spot, Link, Spot, Link > viewGraph = IdentityViewGraph.wrap( graph, appModel.getModel().getGraphIdBimap() );
-			final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
-
-			final GroupHandle groupHandle = appModel.getGroupManager().createGroupHandle();
-			final NavigationHandler< Spot, Link > navigationHandler = groupHandle.getModel( appModel.NAVIGATION );
-
-			final TableViewFrameBuilder builder = new TableViewFrameBuilder();
-			final MyTableViewFrame frame = builder
-					.groupHandle( groupHandle )
-					.undo( appModel.getModel() )
-					.addGraph( appModel.getModel().getGraph() )
-						.selectionModel( appModel.getSelectionModel() )
-						.highlightModel( appModel.getHighlightModel() )
-						.focusModel( appModel.getFocusModel() )
-						.featureModel( appModel.getModel().getFeatureModel() )
-						.tagSetModel( appModel.getModel().getTagSetModel() )
-						.navigationHandler( navigationHandler )
-						.coloring( coloringAdapter )
-						.vertexLabelGetter( s -> s.getLabel() )
-						.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
-						.listenToContext( true )
-						.done()
-					.addGraph( appModel.getModel().getBranchGraph() )
-						.vertexLabelGetter( s -> s.getLabel() )
-						.featureModel( appModel.getModel().getFeatureModel() )
-						.done()
-					.get();
-			
-			/*
-			 * Table actions.
-			 */
-			
 			csvExportPath = projectPath;
-
-			final RunnableAction editLabel = new RunnableAction( EDIT_LABEL, frame::editCurrentLabel );
-			final RunnableAction toggleTag = new RunnableAction( TOGGLE_TAG, frame::toggleCurrentTag );
-			final RunnableAction exportToCSV = new RunnableAction( EXPORT_TO_CSV, () -> exportToCSV( frame.getCurrentlyDisplayedTable() ) );
-
-			final Keymap keymap = appModel.getKeymap();
-			final Actions viewActions = new Actions( keymap.getConfig(), KEYCONFIG_CONTEXTS );
-			viewActions.install( frame.getKeybindings(), "view" );
-
-			viewActions.namedAction( editLabel, EDIT_LABEL_KEYS );
-			viewActions.namedAction( toggleTag, TOGGLE_TAG_KEYS );
-			viewActions.namedAction( exportToCSV, EXPORT_TO_CSV_KEYS );
-
-			frame.setSize( 400, 400 );
-			frame.setLocationRelativeTo( null );
-			frame.setVisible( true );
+			new Thread( () -> createBranchTable( wm.getAppModel() ) ).start();
 		}
 		catch ( final Exception e1 )
 		{
 			e1.printStackTrace();
 		}
+	}
+
+	private static MyTableViewFrame createBranchTable( final MamutAppModel appModel )
+	{
+		final ModelGraph graph = appModel.getModel().getGraph();
+		final ViewGraph< Spot, Link, Spot, Link > viewGraph = IdentityViewGraph.wrap( graph, appModel.getModel().getGraphIdBimap() );
+		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+
+		final GroupHandle groupHandle = appModel.getGroupManager().createGroupHandle();
+		final NavigationHandler< Spot, Link > navigationHandler = groupHandle.getModel( appModel.NAVIGATION );
+
+		final TableViewFrameBuilder builder = new TableViewFrameBuilder();
+		final MyTableViewFrame frame = builder
+				.groupHandle( groupHandle )
+				.undo( appModel.getModel() )
+				.addGraph( appModel.getModel().getGraph() )
+					.selectionModel( appModel.getSelectionModel() )
+					.highlightModel( appModel.getHighlightModel() )
+					.focusModel( appModel.getFocusModel() )
+					.featureModel( appModel.getModel().getFeatureModel() )
+					.tagSetModel( appModel.getModel().getTagSetModel() )
+					.navigationHandler( navigationHandler )
+					.coloring( coloringAdapter )
+					.vertexLabelGetter( s -> s.getLabel() )
+					.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
+					.listenToContext( true )
+					.done()
+				.addGraph( appModel.getModel().getBranchGraph() )
+					.vertexLabelGetter( s -> s.getLabel() )
+					.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
+					.featureModel( appModel.getModel().getFeatureModel() )
+					.selectionModel( branchSelectionModel( appModel ) )
+					.highlightModel( branchHighlightModel( appModel ) )
+					.focusModel( branchFocusfocusModel( appModel ) )
+					.navigationHandler( branchGraphNavigation( appModel, navigationHandler ) )
+					.done()
+				.get();
+
+		/*
+		 * Table actions.
+		 */
+
+		final RunnableAction editLabel = new RunnableAction( EDIT_LABEL, frame::editCurrentLabel );
+		final RunnableAction toggleTag = new RunnableAction( TOGGLE_TAG, frame::toggleCurrentTag );
+		final RunnableAction exportToCSV = new RunnableAction( EXPORT_TO_CSV, () -> exportToCSV( frame.getCurrentlyDisplayedTable() ) );
+
+		final Keymap keymap = appModel.getKeymap();
+		final Actions viewActions = new Actions( keymap.getConfig(), KEYCONFIG_CONTEXTS );
+		viewActions.install( frame.getKeybindings(), "view" );
+
+		viewActions.namedAction( editLabel, EDIT_LABEL_KEYS );
+		viewActions.namedAction( toggleTag, TOGGLE_TAG_KEYS );
+		viewActions.namedAction( exportToCSV, EXPORT_TO_CSV_KEYS );
+
+		frame.setSize( 400, 400 );
+		frame.setLocationRelativeTo( null );
+		frame.setVisible( true );
+
+		return frame;
+	}
+
+	private static NavigationHandler< BranchSpot, BranchLink > branchGraphNavigation( final MamutAppModel appModel, final NavigationHandler< Spot, Link > navigationHandler )
+	{
+		final ModelGraph graph = appModel.getModel().getGraph();
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final NavigationHandler< BranchSpot, BranchLink > branchGraphNavigation =
+				new BranchGraphNavigationHandlerAdapter<>( branchGraph, graph, navigationHandler );
+		return branchGraphNavigation;
+	}
+
+	private static HighlightModel< BranchSpot, BranchLink > branchHighlightModel( final MamutAppModel appModel )
+	{
+		final ModelGraph graph = appModel.getModel().getGraph();
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final HighlightModel< Spot, Link > graphHighlightModel = appModel.getHighlightModel();
+		final HighlightModel< BranchSpot, BranchLink > branchHighlightModel =
+				new BranchGraphHighlightAdapter<>( branchGraph, graph, graphHighlightModel );
+		return branchHighlightModel;
+	}
+
+	private static FocusModel< BranchSpot, BranchLink > branchFocusfocusModel( final MamutAppModel appModel )
+	{
+		final ModelGraph graph = appModel.getModel().getGraph();
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final FocusModel< Spot, Link > graphFocusModel = appModel.getFocusModel();
+		final FocusModel< BranchSpot, BranchLink > branchFocusfocusModel =
+				new BranchGraphFocusAdapter<>( branchGraph, graph, graphFocusModel );
+		return branchFocusfocusModel;
+	}
+
+	private static SelectionModel< BranchSpot, BranchLink > branchSelectionModel( final MamutAppModel appModel )
+	{
+		final ModelGraph graph = appModel.getModel().getGraph();
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final SelectionModel< Spot, Link > graphSelectionModel = appModel.getSelectionModel();
+		final SelectionModel< BranchSpot, BranchLink > branchSelectionModel =
+				new BranchGraphSelectionAdapter<>( branchGraph, graph, graphSelectionModel );
+		return branchSelectionModel;
 	}
 
 	/*
@@ -181,6 +244,19 @@ public class BranchGraphExample
 					"Could not save to file " + path + ":\n" + e.getMessage(),
 					"Error exporting vertices to CSV",
 					JOptionPane.ERROR_MESSAGE );
+			e.printStackTrace();
+		}
+	}
+
+	private static final void setSystemLookAndFeelAndLocale()
+	{
+		Locale.setDefault( Locale.ROOT );
+		try
+		{
+			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+		}
+		catch ( ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e )
+		{
 			e.printStackTrace();
 		}
 	}
