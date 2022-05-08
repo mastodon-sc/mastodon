@@ -730,7 +730,7 @@ public class TableViewFrameBuilder
 		public TableViewFrameBuilder done()
 		{
 			if ( selectionTable && selectionModel == null )
-				throw new IllegalArgumentException( "Cannot mirror selection if the selection model is null." );
+				throw new IllegalArgumentException( "Cannot create a selection table if the selection model is null." );
 
 			return parentBuilder;
 		}
