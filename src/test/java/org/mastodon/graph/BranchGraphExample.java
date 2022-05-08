@@ -30,6 +30,8 @@ import org.mastodon.model.branch.BranchGraphFocusAdapter;
 import org.mastodon.model.branch.BranchGraphHighlightAdapter;
 import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.model.branch.BranchGraphSelectionAdapter;
+import org.mastodon.model.branch.BranchGraphTagSetAdapter;
+import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
@@ -94,6 +96,10 @@ public class BranchGraphExample
 
 	private static MyTableViewFrame createBranchTable( final MamutAppModel appModel )
 	{
+		// Rebuild the branch graph.
+		appModel.getModel().getBranchGraph().graphRebuilt();
+
+		// Build the global table view.
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ViewGraph< Spot, Link, Spot, Link > viewGraph = IdentityViewGraph.wrap( graph, appModel.getModel().getGraphIdBimap() );
 		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
@@ -121,6 +127,7 @@ public class BranchGraphExample
 					.vertexLabelGetter( s -> s.getLabel() )
 					.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
 					.featureModel( appModel.getModel().getFeatureModel() )
+					.tagSetModel( branchTagSetModel( appModel ) )
 					.selectionModel( branchSelectionModel( appModel ) )
 					.highlightModel( branchHighlightModel( appModel ) )
 					.focusModel( branchFocusfocusModel( appModel ) )
@@ -149,6 +156,16 @@ public class BranchGraphExample
 		frame.setVisible( true );
 
 		return frame;
+	}
+
+	private static TagSetModel< BranchSpot, BranchLink > branchTagSetModel( final MamutAppModel appModel )
+	{
+		final ModelGraph graph = appModel.getModel().getGraph();
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
+		final BranchGraphTagSetAdapter< Spot, Link, BranchSpot, BranchLink > branchGraphTagSetModel =
+				new BranchGraphTagSetAdapter<>( branchGraph, graph, tagSetModel );
+		return branchGraphTagSetModel;
 	}
 
 	private static NavigationHandler< BranchSpot, BranchLink > branchGraphNavigation( final MamutAppModel appModel, final NavigationHandler< Spot, Link > navigationHandler )
