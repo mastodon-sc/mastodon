@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
@@ -16,13 +17,14 @@ import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.scijava.listeners.Listeners;
 
-public class BranchGraphTagSetAdapter< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+public class BranchGraphTagSetAdapter< 
+	V extends Vertex< E >, 
+	E extends Edge< V >, 
+	BV extends Vertex< BE >, 
+	BE extends Edge< BV > >
+		extends AbstractBranchGraphAdapter< V, E, BV, BE >
 		implements TagSetModel< BV, BE >
 {
-
-	private final BranchGraph< BV, BE, V, E > branchGraph;
-
-	private final ReadOnlyGraph< V, E > graph;
 
 	private final TagSetModel< V, E > tagsetModel;
 
@@ -33,10 +35,10 @@ public class BranchGraphTagSetAdapter< V extends Vertex< E >, E extends Edge< V 
 	public BranchGraphTagSetAdapter(
 			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
+			final GraphIdBimap< V, E > idmap,
 			final TagSetModel< V, E > tagsetModel )
 	{
-		this.branchGraph = branchGraph;
-		this.graph = graph;
+		super( branchGraph, graph, idmap );
 		this.tagsetModel = tagsetModel;
 		this.vertexTags = tagsetModel.getVertexTags();
 		this.edgeTags = tagsetModel.getEdgeTags();

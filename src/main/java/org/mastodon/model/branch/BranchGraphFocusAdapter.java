@@ -1,6 +1,7 @@
 package org.mastodon.model.branch;
 
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
@@ -13,22 +14,19 @@ public class BranchGraphFocusAdapter<
 	E extends Edge< V >,
 	BV extends Vertex< BE >,
 	BE extends Edge< BV > >
+		extends AbstractBranchGraphAdapter< V, E, BV, BE >
 		implements FocusModel< BV, BE >
 {
-
-	private final BranchGraph< BV, BE, V, E > branchGraph;
-
-	private final ReadOnlyGraph< V, E > graph;
 
 	private final FocusModel< V, E > focus;
 
 	public BranchGraphFocusAdapter(
 			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
+			final GraphIdBimap< V, E > idmap,
 			final FocusModel< V, E > focus )
 	{
-		this.branchGraph = branchGraph;
-		this.graph = graph;
+		super( branchGraph, graph, idmap );
 		this.focus = focus;
 	}
 

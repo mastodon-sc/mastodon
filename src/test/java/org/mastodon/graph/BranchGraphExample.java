@@ -74,9 +74,9 @@ public class BranchGraphExample
 		setSystemLookAndFeelAndLocale();
 		try (final Context context = new Context())
 		{
-			final String projectPath = "samples/test_branchgraph.mastodon";
+//			final String projectPath = "samples/test_branchgraph.mastodon";
 //			final String projectPath = "samples/mette_e1.mastodon";
-//			final String projectPath = "samples/mette_e1_small.mastodon";
+			final String projectPath = "samples/mette_e1_small.mastodon";
 			final MamutProject project = new MamutProjectIO().load( projectPath );
 
 			final WindowManager wm = new WindowManager( context );
@@ -164,7 +164,7 @@ public class BranchGraphExample
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final BranchGraphTagSetAdapter< Spot, Link, BranchSpot, BranchLink > branchGraphTagSetModel =
-				new BranchGraphTagSetAdapter<>( branchGraph, graph, tagSetModel );
+				new BranchGraphTagSetAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), tagSetModel );
 		return branchGraphTagSetModel;
 	}
 
@@ -173,7 +173,7 @@ public class BranchGraphExample
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final NavigationHandler< BranchSpot, BranchLink > branchGraphNavigation =
-				new BranchGraphNavigationHandlerAdapter<>( branchGraph, graph, navigationHandler );
+				new BranchGraphNavigationHandlerAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), navigationHandler );
 		return branchGraphNavigation;
 	}
 
@@ -183,7 +183,7 @@ public class BranchGraphExample
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final HighlightModel< Spot, Link > graphHighlightModel = appModel.getHighlightModel();
 		final HighlightModel< BranchSpot, BranchLink > branchHighlightModel =
-				new BranchGraphHighlightAdapter<>( branchGraph, graph, graphHighlightModel );
+				new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphHighlightModel );
 		return branchHighlightModel;
 	}
 
@@ -193,7 +193,7 @@ public class BranchGraphExample
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final FocusModel< Spot, Link > graphFocusModel = appModel.getFocusModel();
 		final FocusModel< BranchSpot, BranchLink > branchFocusfocusModel =
-				new BranchGraphFocusAdapter<>( branchGraph, graph, graphFocusModel );
+				new BranchGraphFocusAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphFocusModel );
 		return branchFocusfocusModel;
 	}
 
@@ -203,7 +203,7 @@ public class BranchGraphExample
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final SelectionModel< Spot, Link > graphSelectionModel = appModel.getSelectionModel();
 		final SelectionModel< BranchSpot, BranchLink > branchSelectionModel =
-				new BranchGraphSelectionAdapter<>( branchGraph, graph, graphSelectionModel );
+				new BranchGraphSelectionAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphSelectionModel );
 		return branchSelectionModel;
 	}
 

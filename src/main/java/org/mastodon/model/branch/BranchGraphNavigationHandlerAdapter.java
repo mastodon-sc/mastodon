@@ -1,6 +1,7 @@
 package org.mastodon.model.branch;
 
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
@@ -13,12 +14,9 @@ public class BranchGraphNavigationHandlerAdapter<
 	E extends Edge< V >, 
 	BV extends Vertex< BE >, 
 	BE extends Edge< BV > >
+		extends AbstractBranchGraphAdapter< V, E, BV, BE >
 		implements NavigationHandler< BV, BE >
 {
-
-	private final BranchGraph< BV, BE, V, E > branchGraph;
-
-	private final ReadOnlyGraph< V, E > graph;
 
 	private final NavigationHandler< V, E > navigation;
 
@@ -27,10 +25,10 @@ public class BranchGraphNavigationHandlerAdapter<
 	public BranchGraphNavigationHandlerAdapter(
 			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
+			final GraphIdBimap< V, E > idBimap,
 			final NavigationHandler< V, E > navigation )
 	{
-		this.branchGraph = branchGraph;
-		this.graph = graph;
+		super( branchGraph, graph, idBimap );
 		this.navigation = navigation;
 		this.listeners = new MyListeners( navigation.listeners() );
 	}
@@ -40,7 +38,8 @@ public class BranchGraphNavigationHandlerAdapter<
 	{
 		final V vref = graph.vertexRef();
 		final V v = branchGraph.getLinkedVertex( vertex, vref );
-		navigation.notifyNavigateToVertex( v );
+		if ( isValid( v ) )
+			navigation.notifyNavigateToVertex( v );
 		graph.releaseRef( vref );
 	}
 
@@ -49,7 +48,8 @@ public class BranchGraphNavigationHandlerAdapter<
 	{
 		final E eref = graph.edgeRef();
 		final E e = branchGraph.getLinkedEdge( edge, eref );
-		navigation.notifyNavigateToEdge( e );
+		if ( isValid( e ) )
+			navigation.notifyNavigateToEdge( e );
 		graph.releaseRef( eref );
 	}
 

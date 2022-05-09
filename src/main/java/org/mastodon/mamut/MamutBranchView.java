@@ -124,25 +124,25 @@ public class MamutBranchView<
 		// Highlight.
 		final HighlightModel< Spot, Link > graphHighlightModel = appModel.getHighlightModel();
 		final HighlightModel< BranchSpot, BranchLink > branchHighlightModel =
-				new BranchGraphHighlightAdapter<>( branchGraph, graph, graphHighlightModel );
+				new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphHighlightModel );
 		this.highlightModel = new HighlightModelAdapter<>( branchHighlightModel, vertexMap, edgeMap );
 
 		// Focus
 		final FocusModel< Spot, Link > graphFocusModel = appModel.getFocusModel();
 		final FocusModel< BranchSpot, BranchLink > branchFocusfocusModel =
-				new BranchGraphFocusAdapter<>( branchGraph, graph, graphFocusModel );
+				new BranchGraphFocusAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphFocusModel );
 		this.focusModel = new FocusModelAdapter<>( branchFocusfocusModel, vertexMap, edgeMap );
 
 		// Selection
 		final SelectionModel< Spot, Link > graphSelectionModel = appModel.getSelectionModel();
 		final SelectionModel< BranchSpot, BranchLink > branchSelectionModel =
-				new BranchGraphSelectionAdapter<>( branchGraph, graph, graphSelectionModel );
+				new BranchGraphSelectionAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphSelectionModel );
 		selectionModel = new SelectionModelAdapter<>( branchSelectionModel, vertexMap, edgeMap );
 
 		// Navigation.
 		final NavigationHandler< Spot, Link > graphNavigationHandler = groupHandle.getModel( appModel.NAVIGATION );
 		final NavigationHandler< BranchSpot, BranchLink > branchGraphNavigation =
-				new BranchGraphNavigationHandlerAdapter<>( branchGraph, graph, graphNavigationHandler );
+				new BranchGraphNavigationHandlerAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphNavigationHandler );
 		this.navigationHandler = new NavigationHandlerAdapter<>( branchGraphNavigation, vertexMap, edgeMap );
 
 		// Time-point.
