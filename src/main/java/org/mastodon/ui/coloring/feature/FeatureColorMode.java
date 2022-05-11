@@ -63,30 +63,69 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		 * Each edge has a color that depends on a numerical feature defined for
 		 * this edge.
 		 */
-		EDGE( "Edge", TargetType.EDGE ),
+		EDGE( "Edge", TargetType.EDGE,
+				"Each edge has a color that depends on a numerical feature defined for this edge." ),
 		/**
 		 * Edges have a color determined by a numerical feature of their source
 		 * vertex.
 		 */
-		SOURCE_VERTEX( "Source vertex", TargetType.VERTEX ),
+		SOURCE_VERTEX( "Source vertex", TargetType.VERTEX,
+				"Edges have a color determined by a numerical feature of their source vertex." ),
 		/**
 		 * Edges have a color determined by a numerical feature of their target
 		 * vertex.
 		 */
-		TARGET_VERTEX( "Target vertex", TargetType.VERTEX ),
+		TARGET_VERTEX( "Target vertex", TargetType.VERTEX,
+				"Edges have a color determined by a numerical feature of their target vertex." ),
 		/**
 		 * Edges are painted with a default color.
 		 */
-		NONE( "Default", null );
+		NONE( "Default", null, "Edges are painted with a default color." ),
+		/**
+		 * Edges have a color determined by a numerical feature of the branch
+		 * vertex in the branch 'up' (backward in time) that is linked to their
+		 * source vertex.
+		 */
+		SOURCE_BRANCH_VERTEX_UP( "Source branch-vertex up", TargetType.BRANCH_VERTEX,
+				"Edges have a color determined by a numerical feature of the branch-"
+						+ "vertex in the branch 'up' (backward in time) that is linked to their "
+						+ "source vertex." ),
+		/**
+		 * Edges have a color determined by a numerical feature of the branch
+		 * vertex in the branch 'up' (backward in time) that is linked to their
+		 * target vertex.
+		 */
+		TARGET_BRANCH_VERTEX_UP( "Target branch-vertex up", TargetType.BRANCH_VERTEX,
+				"Edges have a color determined by a numerical feature of the branch-vertex in "
+						+ "the branch 'up' (backward in time) that is linked to their target vertex." ),
+		/**
+		 * Edges have a color determined by a numerical feature of the branch
+		 * vertex in the branch 'down' (forward in time) that is linked to their
+		 * source vertex.
+		 */
+		SOURCE_BRANCH_VERTEX_DOWN( "Source branch-vertex down", TargetType.BRANCH_VERTEX,
+				"Edges have a color determined by a numerical feature of the branch-vertex "
+						+ "in the branch 'down' (forward in time) that is linked to their source vertex." ),
+		/**
+		 * Edges have a color determined by a numerical feature of the branch
+		 * vertex in the branch 'down' (forward in time) that is linked to their
+		 * target vertex.
+		 */
+		TARGET_BRANCH_VERTEX_DOWN( "Target branch-vertex down", TargetType.BRANCH_VERTEX,
+				"Edges have a color determined by a numerical feature of the branch-vertex "
+						+ "in the branch 'down' (forward in time) that is linked to their target vertex." );
 
 		private final String label;
 
 		private final TargetType targetType;
 
-		private EdgeColorMode( final String label, final TargetType targetType )
+		private final String tooltip;
+
+		private EdgeColorMode( final String label, final TargetType targetType, final String tooltip )
 		{
 			this.label = label;
 			this.targetType = targetType;
+			this.tooltip = tooltip;
 		}
 
 		@Override
@@ -98,6 +137,16 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		public TargetType targetType()
 		{
 			return targetType;
+		}
+
+		public static String[] tooltips()
+		{
+			final EdgeColorMode[] vals = values();
+			final String[] tooltips = new String[ vals.length ];
+			for ( int i = 0; i < vals.length; i++ )
+				tooltips[ i ] = vals[ i ].tooltip;
+
+			return tooltips;
 		}
 	}
 
@@ -110,30 +159,57 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		 * Each vertex has a color determined by a numerical feature defined for
 		 * this vertex.
 		 */
-		VERTEX( "Vertex", TargetType.VERTEX ),
+		VERTEX( "Vertex", TargetType.VERTEX,
+				"Each vertex has a color determined by a numerical feature defined for this vertex." ),
 		/**
 		 * Vertices have a color determined by a numerical feature of their
 		 * incoming edge, iff they have exactly one incoming edge.
 		 */
-		INCOMING_EDGE( "Incoming edge", TargetType.EDGE ),
+		INCOMING_EDGE( "Incoming edge", TargetType.EDGE,
+				"Vertices have a color determined by a numerical feature of their "
+						+ "incoming edge, iff they have exactly one incoming edge." ),
 		/**
 		 * Vertices have a color determined by a numerical feature of their
 		 * outgoing edge, iff they have exactly one outgoing edge.
 		 */
-		OUTGOING_EDGE( "Outgoing edge", TargetType.EDGE ),
+		OUTGOING_EDGE( "Outgoing edge", TargetType.EDGE,
+				"Vertices have a color determined by a numerical feature of their "
+						+ "outgoing edge, iff they have exactly one outgoing edge." ),
 		/**
 		 * Vertices are painted with a default color.
 		 */
-		NONE( "Default", null );
+		NONE( "Default", null,
+				"Vertices are painted with a default color." ),
+		/**
+		 * Each vertex has a color determined by a numerical feature defined for
+		 * the branch vertex 'up' in the branch (backward in time) it is linked
+		 * to.
+		 */
+		BRANCH_VERTEX_UP( "Branch-vertex up", TargetType.BRANCH_VERTEX,
+				"Each vertex has a color determined by a numerical feature defined "
+						+ "for the branch vertex 'up' in the branch (backward in time) it "
+						+ "is linked to." ),
+		/**
+		 * Each vertex has a color determined by a numerical feature defined for
+		 * the branch vertex 'down' in the branch (forward in time) it is linked
+		 * to.
+		 */
+		BRANCH_VERTEX_DOWN( "Branch-vertex down", TargetType.BRANCH_VERTEX,
+				"Each vertex has a color determined by a numerical feature defined for "
+						+ "the branch vertex 'down' in the branch (forward in time) it is "
+						+ "linked to." );
 
 		private final String label;
 
+		private final String tooltip;
+
 		private final TargetType targetType;
 
-		private VertexColorMode( final String label, final TargetType targetType )
+		private VertexColorMode( final String label, final TargetType targetType, final String tooltip )
 		{
 			this.label = label;
 			this.targetType = targetType;
+			this.tooltip = tooltip;
 		}
 
 		@Override
@@ -145,6 +221,16 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		public TargetType targetType()
 		{
 			return targetType;
+		}
+
+		public static String[] tooltips()
+		{
+			final VertexColorMode[] vals = values();
+			final String[] tooltips = new String[ vals.length ];
+			for ( int i = 0; i < vals.length; i++ )
+				tooltips[ i ] = vals[ i ].tooltip;
+
+			return tooltips;
 		}
 	}
 
