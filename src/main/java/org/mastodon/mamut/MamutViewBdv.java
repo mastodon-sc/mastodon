@@ -63,6 +63,8 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.ModelOverlayProperties;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
@@ -120,7 +122,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 	 * A reference on a supervising instance of the {@code ColoringModel} that
 	 * is bound to this instance/window.
 	 */
-	private final ColoringModel coloringModel;
+	private final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel;
 
 	public MamutViewBdv( final MamutAppModel appModel )
 	{
@@ -372,7 +374,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		viewer.requestRepaint();
 	}
 
-	public ColoringModel getColoringModel()
+	public ColoringModel< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}

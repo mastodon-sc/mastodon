@@ -52,13 +52,13 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 {
 	private final JMenu menu;
 
-	private final ColoringModel coloringModel;
+	private final ColoringModel< ?, ?, ?, ? > coloringModel;
 
 	private final ArrayList< Runnable > cleanup;
 
 	public ColoringMenu(
 			final JMenu menu,
-			final ColoringModel coloringModel )
+			final ColoringModel< ?, ?, ?, ? > coloringModel )
 	{
 		this.menu = menu;
 		this.coloringModel = coloringModel;

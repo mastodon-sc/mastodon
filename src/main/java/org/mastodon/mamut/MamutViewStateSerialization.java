@@ -46,6 +46,8 @@ import org.mastodon.app.ui.IMastodonFrameView;
 import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
@@ -318,7 +320,7 @@ class MamutViewStateSerialization
 		guiState.put( GRAPHER_TRANSFORM_KEY, t );
 
 		// Coloring.
-		final ColoringModel coloringModel = view.getColoringModel();
+		final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
 
 		// Colorbar.
@@ -361,7 +363,7 @@ class MamutViewStateSerialization
 		guiState.put( TABLE_DISPLAYING_VERTEX_TABLE, isVertexTableDisplayed );
 
 		// Coloring.
-		final ColoringModel coloringModel = view.getColoringModel();
+		final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
 
 		// Context provider.
@@ -394,7 +396,7 @@ class MamutViewStateSerialization
 		guiState.put( TRACKSCHEME_TRANSFORM_KEY, t );
 
 		// Coloring.
-		final ColoringModel coloringModel = view.getColoringModel();
+		final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
 
 		// Colorbar.
@@ -450,7 +452,7 @@ class MamutViewStateSerialization
 		view.getViewerPanelMamut().state().getViewerTransform( t );
 		guiState.put( BDV_TRANSFORM_KEY, t );
 		// Coloring.
-		final ColoringModel coloringModel = view.getColoringModel();
+		final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
 	}
 
@@ -462,7 +464,7 @@ class MamutViewStateSerialization
 	 * @param guiState
 	 *            the map to store it to.
 	 */
-	private static void getColoringState( final ColoringModel coloringModel, final Map< String, Object > guiState )
+	private static void getColoringState( final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel, final Map< String, Object > guiState )
 	{
 		final boolean noColoring = coloringModel.noColoring();
 		guiState.put( NO_COLORING_KEY, noColoring );

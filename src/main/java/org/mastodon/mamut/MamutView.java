@@ -41,7 +41,11 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.TagSetMenu;
@@ -78,7 +82,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 *
 	 * @return reference on the underlying {@code ColoringModel}
 	 */
-	protected ColoringModel registerColoring(
+	protected ColoringModel< Spot, Link, BranchSpot, BranchLink > registerColoring(
 			final GraphColorGeneratorAdapter< Spot, Link, V, E > colorGeneratorAdapter,
 			final JMenuHandle menuHandle,
 			final Runnable refresh )
@@ -86,7 +90,9 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
 		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
-		final ColoringModel coloringModel = new ColoringModel( tagSetModel, featureColorModeManager, featureModel );
+		final ModelGraph graph = appModel.getModel().getGraph();
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel = new ColoringModel<>( tagSetModel, featureColorModeManager, featureModel, graph, branchGraph );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
 
 		tagSetModel.listeners().add( coloringModel );

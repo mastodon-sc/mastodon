@@ -66,6 +66,8 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.SpotPool;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
@@ -85,7 +87,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	private static final String[] CONTEXTS = new String[] { KeyConfigContexts.TABLE };
 
-	private final ColoringModel coloringModel;
+	private final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel;
 
 	private final boolean selectionOnly;
 
@@ -330,7 +332,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return getFrame().getContextChooser();
 	}
 
-	public ColoringModel getColoringModel()
+	public ColoringModel< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}

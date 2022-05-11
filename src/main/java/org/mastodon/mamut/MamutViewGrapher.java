@@ -62,6 +62,8 @@ import org.mastodon.mamut.feature.SpotQuickMeanIntensityFeature;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
@@ -106,7 +108,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 	 * a reference on a supervising instance of the {@code ColoringModel} that
 	 * is bound to this instance/window
 	 */
-	private final ColoringModel coloringModel;
+	private final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel;
 
 	private final DataDisplayPanel< Spot, Link > dataDisplayPanel;
 
@@ -324,7 +326,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		return dataDisplayPanel;
 	}
 
-	ColoringModel getColoringModel()
+	ColoringModel< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
