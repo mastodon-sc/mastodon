@@ -37,7 +37,6 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
-import org.mastodon.model.branch.BranchGraphVertexBimap;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
@@ -82,8 +81,6 @@ public class ColoringModel<
 
 	private final BranchGraph< BV, BE, V, E > branchGraph;
 
-	private final BranchGraphVertexBimap< V, BV > vertexMap;
-
 	private final ReadOnlyGraph< V, E > graph;
 
 	public ColoringModel(
@@ -99,7 +96,6 @@ public class ColoringModel<
 		this.branchGraph = branchGraph;
 		this.projections = new ProjectionsFromFeatureModel( featureModel );
 		this.listeners = new Listeners.SynchronizedList<>();
-		this.vertexMap = new BranchGraphVertexBimap<>( branchGraph, graph );
 	}
 
 	public Listeners< ColoringChangedListener > listeners()
@@ -250,20 +246,20 @@ public class ColoringModel<
 				break;
 			case BRANCH_VERTEX_UP:
 			{
-				vertexColorGenerator = new BranchUpFeatureColorGenerator< V, E, BV >(
+				vertexColorGenerator = new BranchUpFeatureColorGenerator<>(
 						( FeatureProjection< BV > ) vertexProjection,
-						vertexMap,
 						graph,
+						branchGraph,
 						ColorMap.getColorMap( vertexColorMap ),
 						vertexRangeMin, vertexRangeMax );
 				break;
 			}
 			case BRANCH_VERTEX_DOWN:
 			{
-				vertexColorGenerator = new BranchDownFeatureColorGenerator< V, E, BV >(
+				vertexColorGenerator = new BranchDownFeatureColorGenerator<>(
 						( FeatureProjection< BV > ) vertexProjection,
-						vertexMap,
 						graph,
+						branchGraph,
 						ColorMap.getColorMap( vertexColorMap ),
 						vertexRangeMin, vertexRangeMax );
 				break;
@@ -309,8 +305,8 @@ public class ColoringModel<
 			case SOURCE_BRANCH_VERTEX_UP:
 				edgeColorGenerator = new BranchUpFeatureColorGeneratorSourceVertex<>(
 						( FeatureProjection< BV > ) edgeProjection,
-						vertexMap,
 						graph,
+						branchGraph,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin,
 						edgeRangeMax );
@@ -318,8 +314,8 @@ public class ColoringModel<
 			case TARGET_BRANCH_VERTEX_UP:
 				edgeColorGenerator = new BranchUpFeatureColorGeneratorTargetVertex<>(
 						( FeatureProjection< BV > ) edgeProjection,
-						vertexMap,
 						graph,
+						branchGraph,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin,
 						edgeRangeMax );
@@ -327,8 +323,8 @@ public class ColoringModel<
 			case SOURCE_BRANCH_VERTEX_DOWN:
 				edgeColorGenerator = new BranchDownFeatureColorGeneratorSourceVertex<>(
 						( FeatureProjection< BV > ) edgeProjection,
-						vertexMap,
 						graph,
+						branchGraph,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin,
 						edgeRangeMax );
@@ -336,8 +332,8 @@ public class ColoringModel<
 			case TARGET_BRANCH_VERTEX_DOWN:
 				edgeColorGenerator = new BranchDownFeatureColorGeneratorTargetVertex<>(
 						( FeatureProjection< BV > ) edgeProjection,
-						vertexMap,
 						graph,
+						branchGraph,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin,
 						edgeRangeMax );

@@ -28,26 +28,26 @@
  */
 package org.mastodon.ui.coloring;
 
-import org.mastodon.adapter.RefBimap;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraph;
 
-public class BranchUpFeatureColorGeneratorTargetVertex< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< ? > >
-		extends AbstractBranchColorGenerator< V, E, BV >
+public class BranchUpFeatureColorGeneratorTargetVertex< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+		extends AbstractBranchColorGenerator< V, E, BV, BE >
 		implements EdgeColorGenerator< V, E >
 {
 
 	public BranchUpFeatureColorGeneratorTargetVertex(
 			final FeatureProjection< BV > featureProjection,
-			final RefBimap< V, BV > mapping,
 			final ReadOnlyGraph< V, E > graph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ColorMap colorMap,
 			final double min,
 			final double max )
 	{
-		super( featureProjection, mapping, graph, colorMap, min, max );
+		super( featureProjection, graph, branchGraph, colorMap, min, max );
 	}
 
 	@Override

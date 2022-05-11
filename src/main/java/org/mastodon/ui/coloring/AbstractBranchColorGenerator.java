@@ -1,11 +1,10 @@
 package org.mastodon.ui.coloring;
 
-import org.mastodon.adapter.RefBimap;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
-import org.mastodon.graph.Edges;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraph;
 
 /**
  * Mother class for color generators that return a color for a vertex based on
@@ -20,87 +19,87 @@ import org.mastodon.graph.Vertex;
  * @param <BV>
  *            the type of vertices in he branch graph.
  */
-public abstract class AbstractBranchColorGenerator< V extends Vertex< E >, E extends Edge< V >, BV >
+public abstract class AbstractBranchColorGenerator< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
 {
 
 	protected final FeatureColorGenerator< BV > colorGenerator;
 
-	protected final RefBimap< V, BV > mapping;
-
 	protected final ReadOnlyGraph< V, E > graph;
+
+	protected final BranchGraph< BV, BE, V, E > branchGraph;
 
 	public AbstractBranchColorGenerator(
 			final FeatureProjection< BV > featureProjection,
-			final RefBimap< V, BV > mapping,
 			final ReadOnlyGraph< V, E > graph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ColorMap colorMap,
 			final double min,
 			final double max )
 	{
 		this.graph = graph;
+		this.branchGraph = branchGraph;
 		this.colorGenerator = new FeatureColorGenerator<>( featureProjection, colorMap, min, max );
-		this.mapping = mapping;
 	}
 
 	protected final int downwardFromVertex( final V v )
 	{
-		final BV bvref = mapping.reusableRightRef();
-		final E eref = graph.edgeRef();
+		final BV bvref = branchGraph.vertexRef();
 		try
 		{
-			final BV o = mapping.getRight( v, bvref );
-			if ( o == null )
-			{
-				// Iterate till we find a linked branch vertex.
-				Edges< E > ie = v.outgoingEdges();
-				while ( ie.size() == 1 )
-				{
-					final V source = ie.get( 0, eref ).getTarget( mapping.reusableLeftRef( bvref ) );
-					final BV obj = mapping.getRight( source, bvref );
-					if ( obj != null )
-						return colorGenerator.color( obj );
 
-					ie = source.outgoingEdges();
-				}
-				return 0;
+			final BV bv = branchGraph.getBranchVertex( v, bvref );
+			if ( bv != null )
+				return colorGenerator.color( bv );
+
+			final BE beref = branchGraph.edgeRef();
+			try
+			{
+				final BE be = branchGraph.getBranchEdge( v, beref );
+				if ( be == null )
+					return 0;
+
+				final BV target = be.getTarget( bvref );
+				return colorGenerator.color( target );
 			}
-			return colorGenerator.color( o );
+			finally
+			{
+				branchGraph.releaseRef( beref );
+			}
 		}
 		finally
 		{
-			mapping.releaseRef( bvref );
-			graph.releaseRef( eref );
+			branchGraph.releaseRef( bvref );
 		}
 	}
 
 	protected final int upwardFromVertex( final V v )
 	{
-		final BV bvref = mapping.reusableRightRef();
-		final E eref = graph.edgeRef();
+		final BV bvref = branchGraph.vertexRef();
 		try
 		{
-			final BV o = mapping.getRight( v, bvref );
-			if ( o == null )
-			{
-				// Iterate till we find a linked branch vertex.
-				Edges< E > ie = v.incomingEdges();
-				while ( ie.size() == 1 )
-				{
-					final V source = ie.get( 0, eref ).getSource( mapping.reusableLeftRef( bvref ) );
-					final BV obj = mapping.getRight( source, bvref );
-					if ( obj != null )
-						return colorGenerator.color( obj );
 
-					ie = source.incomingEdges();
-				}
-				return 0;
+			final BV bv = branchGraph.getBranchVertex( v, bvref );
+			if ( bv != null )
+				return colorGenerator.color( bv );
+
+			final BE beref = branchGraph.edgeRef();
+			try
+			{
+				final BE be = branchGraph.getBranchEdge( v, beref );
+				if ( be == null )
+					return 0;
+
+				final BV target = be.getSource( bvref );
+				return colorGenerator.color( target );
 			}
-			return colorGenerator.color( o );
+			finally
+			{
+				branchGraph.releaseRef( beref );
+			}
 		}
 		finally
 		{
-			mapping.releaseRef( bvref );
-			graph.releaseRef( eref );
+			branchGraph.releaseRef( bvref );
 		}
 	}
 }

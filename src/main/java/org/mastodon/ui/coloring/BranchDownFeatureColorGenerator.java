@@ -28,32 +28,26 @@
  */
 package org.mastodon.ui.coloring;
 
-import org.mastodon.adapter.RefBimap;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraph;
 
-/**
- * A color generator that fetches based on a projection defined for another type
- * of objects, that can be mapped from another type.
- * 
- * @author Jean-Yves Tinevez
- */
-public class BranchDownFeatureColorGenerator< V extends Vertex< E >, E extends Edge< V >, BV >
-		extends AbstractBranchColorGenerator< V, E, BV >
+public class BranchDownFeatureColorGenerator< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+		extends AbstractBranchColorGenerator< V, E, BV, BE >
 		implements ColorGenerator< V >
 {
 
 	public BranchDownFeatureColorGenerator(
 			final FeatureProjection< BV > featureProjection,
-			final RefBimap< V, BV > mapping,
 			final ReadOnlyGraph< V, E > graph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ColorMap colorMap,
 			final double min,
 			final double max )
 	{
-		super( featureProjection, mapping, graph, colorMap, min, max );
+		super( featureProjection, graph, branchGraph, colorMap, min, max );
 	}
 
 	@Override
