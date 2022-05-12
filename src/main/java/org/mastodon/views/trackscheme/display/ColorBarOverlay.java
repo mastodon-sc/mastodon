@@ -37,7 +37,6 @@ import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.ColorMap;
 import org.mastodon.ui.coloring.ColoringModel;
-import org.mastodon.ui.coloring.ColoringModelWithBranchGraph;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureProjectionId;
 
@@ -45,7 +44,7 @@ import bdv.viewer.OverlayRenderer;
 
 /**
  * An {@link OverlayRenderer} that displays a color-bar for the
- * {@link FeatureColorMode} currently selected in the {@link ColoringModelWithBranchGraph}
+ * {@link FeatureColorMode} currently selected in the {@link ColoringModel}
  * provided at construction.
  *
  * @author Jean-Yves Tinevez

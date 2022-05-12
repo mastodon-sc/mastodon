@@ -49,7 +49,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColoringMenu;
-import org.mastodon.ui.coloring.ColoringModelWithBranchGraph;
+import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
@@ -81,7 +81,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 *
 	 * @return reference on the underlying {@code ColoringModel}
 	 */
-	protected ColoringModelWithBranchGraph< Spot, Link, BranchSpot, BranchLink > registerColoring(
+	protected ColoringModelMain< Spot, Link, BranchSpot, BranchLink > registerColoring(
 			final GraphColorGeneratorAdapter< Spot, Link, V, E > colorGeneratorAdapter,
 			final JMenuHandle menuHandle,
 			final Runnable refresh )
@@ -90,7 +90,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
 		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		final ColoringModelWithBranchGraph< Spot, Link, BranchSpot, BranchLink > coloringModel = new ColoringModelWithBranchGraph<>( tagSetModel, featureColorModeManager, featureModel, branchGraph );
+		final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel = new ColoringModelMain<>( tagSetModel, featureColorModeManager, featureModel, branchGraph );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
 
 		tagSetModel.listeners().add( coloringModel );
@@ -106,7 +106,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		featureModel.listeners().add( coloringMenu );
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
 
-		final ColoringModelWithBranchGraph.ColoringChangedListener coloringChangedListener = () -> {
+		final ColoringModelMain.ColoringChangedListener coloringChangedListener = () -> {
 			if ( coloringModel.noColoring() )
 				colorGeneratorAdapter.setColorGenerator( null );
 			else if ( coloringModel.getTagSet() != null )

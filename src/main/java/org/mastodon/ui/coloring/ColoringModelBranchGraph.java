@@ -35,35 +35,25 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
+import org.mastodon.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
+import org.mastodon.ui.coloring.feature.FeatureColorMode.VertexColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.coloring.feature.Projections;
 import org.mastodon.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.scijava.listeners.Listeners;
 
 /**
- * ColoringModel knows which coloring scheme is currently active. Possible
- * options are: none, by a tag set, by a feature.
- * <p>
- * This particular implementation also offers coloring of vertices and edges
- * based on the features defined for the branch graph it is associated with. The
- * branch graph instance needs to be specified.
- * <p>
- * Notifies listeners when coloring is changed.
- * <p>
- * Listens for disappearing tag sets or features.
+ * A ColoringModel that excludes modes defined for core-graph objects. The only
+ * modes this coloring models return as valid are the ones defined for the
+ * branch-graph objects.
  *
  * @author Tobias Pietzsch
  * @author Jean-Yves Tinevez
  */
-public class ColoringModelWithBranchGraph<
-	V extends Vertex<E>,
-	E extends Edge<V>,
-	BV extends Vertex<BE>,
-	BE extends Edge< BV > >
+public class ColoringModelBranchGraph< V extends Vertex< E >, E extends Edge< V > >
 		implements TagSetModel.TagSetModelListener, FeatureColorModeManager.FeatureColorModesListener, ColoringModel
 {
 
@@ -79,17 +69,13 @@ public class ColoringModelWithBranchGraph<
 
 	private final Listeners.List< ColoringChangedListener > listeners;
 
-	private final BranchGraph< BV, BE, V, E > branchGraph;
-
-	public ColoringModelWithBranchGraph(
+	public ColoringModelBranchGraph(
 			final TagSetModel< ?, ? > tagSetModel,
 			final FeatureColorModeManager featureColorModeManager,
-			final FeatureModel featureModel,
-			final BranchGraph< BV, BE, V, E > branchGraph )
+			final FeatureModel featureModel )
 	{
 		this.tagSetModel = tagSetModel;
 		this.featureColorModeManager = featureColorModeManager;
-		this.branchGraph = branchGraph;
 		this.projections = new ProjectionsFromFeatureModel( featureModel );
 		this.listeners = new Listeners.SynchronizedList<>();
 	}
@@ -199,13 +185,31 @@ public class ColoringModelWithBranchGraph<
 	@Override
 	public boolean isValid( final FeatureColorMode mode )
 	{
-		if ( mode.getVertexColorMode() != FeatureColorMode.VertexColorMode.NONE
-				&& null == projections.getFeatureProjection( mode.getVertexFeatureProjection() ) )
-			return false;
+		final VertexColorMode vmode = mode.getVertexColorMode();
+		if ( vmode != FeatureColorMode.VertexColorMode.NONE )
+		{
+			// Forbid modes for which we don't have the projection.
+			if ( null == projections.getFeatureProjection( mode.getVertexFeatureProjection() ) )
+				return false;
 
-		if ( mode.getEdgeColorMode() != FeatureColorMode.EdgeColorMode.NONE
-				&& null == projections.getFeatureProjection( mode.getEdgeFeatureProjection() ) )
-			return false;
+			// Forbid modes that are not defined on branch objects.
+			if ( vmode == VertexColorMode.INCOMING_EDGE ||
+					vmode == VertexColorMode.OUTGOING_EDGE ||
+					vmode == VertexColorMode.VERTEX )
+				return false;
+		}
+
+		final EdgeColorMode emode = mode.getEdgeColorMode();
+		if ( emode != FeatureColorMode.EdgeColorMode.NONE )
+		{
+			if ( null == projections.getFeatureProjection( mode.getEdgeFeatureProjection() ) )
+				return false;
+
+			if ( emode == EdgeColorMode.EDGE ||
+					emode == EdgeColorMode.SOURCE_VERTEX ||
+					emode == EdgeColorMode.TARGET_VERTEX )
+				return false;
+		}
 
 		return true;
 	}
@@ -221,6 +225,7 @@ public class ColoringModelWithBranchGraph<
 		// Vertex.
 		final ColorGenerator< V > vertexColorGenerator;
 		final FeatureProjection< ? > vertexProjection = projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
+
 		if ( null == vertexProjection )
 			vertexColorGenerator = new DefaultColorGenerator<>();
 		else
@@ -231,18 +236,22 @@ public class ColoringModelWithBranchGraph<
 			switch ( fcm.getVertexColorMode() )
 			{
 			case INCOMING_EDGE:
+			case INCOMING_BRANCH_EDGE:
 				vertexColorGenerator = new FeatureColorGeneratorIncomingEdge<>(
 						( FeatureProjection< E > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
 						vertexRangeMin, vertexRangeMax );
 				break;
 			case OUTGOING_EDGE:
+			case OUTGOING_BRANCH_EDGE:
 				vertexColorGenerator = new FeatureColorGeneratorOutgoingEdge<>(
 						( FeatureProjection< E > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
 						vertexRangeMin, vertexRangeMax );
 				break;
 			case VERTEX:
+			case BRANCH_VERTEX_DOWN:
+			case BRANCH_VERTEX_UP:
 				vertexColorGenerator = new FeatureColorGenerator<>(
 						( FeatureProjection< V > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
@@ -250,34 +259,6 @@ public class ColoringModelWithBranchGraph<
 				break;
 			case NONE:
 				vertexColorGenerator = new DefaultColorGenerator<>();
-				break;
-			case BRANCH_VERTEX_UP:
-				vertexColorGenerator = new BranchUpFeatureColorGenerator<>(
-						( FeatureProjection< BV > ) vertexProjection,
-						branchGraph,
-						ColorMap.getColorMap( vertexColorMap ),
-						vertexRangeMin, vertexRangeMax );
-				break;
-			case BRANCH_VERTEX_DOWN:
-				vertexColorGenerator = new BranchDownFeatureColorGenerator<>(
-						( FeatureProjection< BV > ) vertexProjection,
-						branchGraph,
-						ColorMap.getColorMap( vertexColorMap ),
-						vertexRangeMin, vertexRangeMax );
-				break;
-			case INCOMING_BRANCH_EDGE:
-				vertexColorGenerator = new BranchFeatureColorGeneratorIncomingEdge<>(
-						( FeatureProjection< BE > ) vertexProjection,
-						branchGraph,
-						ColorMap.getColorMap( vertexColorMap ),
-						vertexRangeMin, vertexRangeMax );
-				break;
-			case OUTGOING_BRANCH_EDGE:
-				vertexColorGenerator = new BranchFeatureColorGeneratorIncomingEdge<>(
-						( FeatureProjection< BE > ) vertexProjection,
-						branchGraph,
-						ColorMap.getColorMap( vertexColorMap ),
-						vertexRangeMin, vertexRangeMax );
 				break;
 			default:
 				throw new IllegalArgumentException( "Unknown vertex color mode: " + fcm.getVertexColorMode() );
@@ -297,18 +278,23 @@ public class ColoringModelWithBranchGraph<
 			switch ( fcm.getEdgeColorMode() )
 			{
 			case SOURCE_VERTEX:
+			case SOURCE_BRANCH_VERTEX_DOWN:
+			case SOURCE_BRANCH_VERTEX_UP:
 				edgeColorGenerator = new FeatureColorGeneratorSourceVertex<>(
 						( FeatureProjection< V > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin, edgeRangeMax );
 				break;
 			case TARGET_VERTEX:
+			case TARGET_BRANCH_VERTEX_DOWN:
+			case TARGET_BRANCH_VERTEX_UP:
 				edgeColorGenerator = new FeatureColorGeneratorTargetVertex<>(
 						( FeatureProjection< V > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin, edgeRangeMax );
 				break;
 			case EDGE:
+			case BRANCH_EDGE:
 				edgeColorGenerator = new FeatureEdgeColorGenerator<>(
 						( FeatureProjection< E > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),
@@ -316,46 +302,6 @@ public class ColoringModelWithBranchGraph<
 				break;
 			case NONE:
 				edgeColorGenerator = new DefaultEdgeColorGenerator<>();
-				break;
-			case SOURCE_BRANCH_VERTEX_UP:
-				edgeColorGenerator = new BranchUpFeatureColorGeneratorSourceVertex<>(
-						( FeatureProjection< BV > ) edgeProjection,
-						branchGraph,
-						ColorMap.getColorMap( edgeColorMap ),
-						edgeRangeMin,
-						edgeRangeMax );
-				break;
-			case TARGET_BRANCH_VERTEX_UP:
-				edgeColorGenerator = new BranchUpFeatureColorGeneratorTargetVertex<>(
-						( FeatureProjection< BV > ) edgeProjection,
-						branchGraph,
-						ColorMap.getColorMap( edgeColorMap ),
-						edgeRangeMin,
-						edgeRangeMax );
-				break;
-			case SOURCE_BRANCH_VERTEX_DOWN:
-				edgeColorGenerator = new BranchDownFeatureColorGeneratorSourceVertex<>(
-						( FeatureProjection< BV > ) edgeProjection,
-						branchGraph,
-						ColorMap.getColorMap( edgeColorMap ),
-						edgeRangeMin,
-						edgeRangeMax );
-				break;
-			case TARGET_BRANCH_VERTEX_DOWN:
-				edgeColorGenerator = new BranchDownFeatureColorGeneratorTargetVertex<>(
-						( FeatureProjection< BV > ) edgeProjection,
-						branchGraph,
-						ColorMap.getColorMap( edgeColorMap ),
-						edgeRangeMin,
-						edgeRangeMax );
-				break;
-			case BRANCH_EDGE:
-				edgeColorGenerator = new BranchEdgeFeatureColorGenerator<>(
-						( FeatureProjection< BE > ) edgeProjection,
-						branchGraph,
-						ColorMap.getColorMap( edgeColorMap ),
-						edgeRangeMin,
-						edgeRangeMax );
 				break;
 			default:
 				throw new IllegalArgumentException( "Unknown edge color mode: " + fcm.getEdgeColorMode() );
