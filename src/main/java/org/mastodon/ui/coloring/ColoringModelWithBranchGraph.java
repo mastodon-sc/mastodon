@@ -265,7 +265,14 @@ public class ColoringModelWithBranchGraph<
 						ColorMap.getColorMap( vertexColorMap ),
 						vertexRangeMin, vertexRangeMax );
 				break;
-			case BRANCH_EDGE:
+			case INCOMING_BRANCH_EDGE:
+				vertexColorGenerator = new BranchFeatureColorGeneratorIncomingEdge<>(
+						( FeatureProjection< BE > ) vertexProjection,
+						branchGraph,
+						ColorMap.getColorMap( vertexColorMap ),
+						vertexRangeMin, vertexRangeMax );
+				break;
+			case OUTGOING_BRANCH_EDGE:
 				vertexColorGenerator = new BranchFeatureColorGeneratorIncomingEdge<>(
 						( FeatureProjection< BE > ) vertexProjection,
 						branchGraph,

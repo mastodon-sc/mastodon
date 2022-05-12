@@ -44,9 +44,7 @@ import org.mastodon.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.scijava.listeners.Listeners;
 
 /**
- * A basic ColoringModel for a graph. The only feature color mode supported are
- * those based on the features defined on the vertices and edges of the graph.
- * The modes that rely on the branch graph are ignored.
+ * A basic ColoringModel for a graph.
  *
  * @author Tobias Pietzsch
  */
@@ -205,6 +203,7 @@ public class ColoringModelGraph<
 		// Vertex.
 		final ColorGenerator< V > vertexColorGenerator;
 		final FeatureProjection< ? > vertexProjection = projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
+
 		if ( null == vertexProjection )
 			vertexColorGenerator = new DefaultColorGenerator<>();
 		else
@@ -215,27 +214,28 @@ public class ColoringModelGraph<
 			switch ( fcm.getVertexColorMode() )
 			{
 			case INCOMING_EDGE:
+			case INCOMING_BRANCH_EDGE:
 				vertexColorGenerator = new FeatureColorGeneratorIncomingEdge<>(
 						( FeatureProjection< E > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
 						vertexRangeMin, vertexRangeMax );
 				break;
 			case OUTGOING_EDGE:
+			case OUTGOING_BRANCH_EDGE:
 				vertexColorGenerator = new FeatureColorGeneratorOutgoingEdge<>(
 						( FeatureProjection< E > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
 						vertexRangeMin, vertexRangeMax );
 				break;
 			case VERTEX:
+			case BRANCH_VERTEX_DOWN:
+			case BRANCH_VERTEX_UP:
 				vertexColorGenerator = new FeatureColorGenerator<>(
 						( FeatureProjection< V > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
 						vertexRangeMin, vertexRangeMax );
 				break;
 			case NONE:
-			case BRANCH_EDGE:
-			case BRANCH_VERTEX_DOWN:
-			case BRANCH_VERTEX_UP:
 				vertexColorGenerator = new DefaultColorGenerator<>();
 				break;
 			default:
@@ -256,29 +256,29 @@ public class ColoringModelGraph<
 			switch ( fcm.getEdgeColorMode() )
 			{
 			case SOURCE_VERTEX:
+			case SOURCE_BRANCH_VERTEX_DOWN:
+			case SOURCE_BRANCH_VERTEX_UP:
 				edgeColorGenerator = new FeatureColorGeneratorSourceVertex<>(
 						( FeatureProjection< V > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin, edgeRangeMax );
 				break;
 			case TARGET_VERTEX:
+			case TARGET_BRANCH_VERTEX_DOWN:
+			case TARGET_BRANCH_VERTEX_UP:
 				edgeColorGenerator = new FeatureColorGeneratorTargetVertex<>(
 						( FeatureProjection< V > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin, edgeRangeMax );
 				break;
 			case EDGE:
+			case BRANCH_EDGE:
 				edgeColorGenerator = new FeatureEdgeColorGenerator<>(
 						( FeatureProjection< E > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin, edgeRangeMax );
 				break;
 			case NONE:
-			case BRANCH_EDGE:
-			case SOURCE_BRANCH_VERTEX_DOWN:
-			case SOURCE_BRANCH_VERTEX_UP:
-			case TARGET_BRANCH_VERTEX_DOWN:
-			case TARGET_BRANCH_VERTEX_UP:
 				edgeColorGenerator = new DefaultEdgeColorGenerator<>();
 				break;
 			default:

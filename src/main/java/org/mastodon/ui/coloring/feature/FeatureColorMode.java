@@ -206,12 +206,20 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 						+ "linked to." ),
 		/**
 		 * Vertices have a color determined by a numerical feature of the
-		 * incoming brancu-edge they are linked to, iff they have exactly one
+		 * incoming branch-edge they are linked to, iff they have exactly one
 		 * such edge.
 		 */
-		BRANCH_EDGE( "Branch-edge", TargetType.BRANCH_EDGE,
-				"Vertices have a color determined by a numerical feature of the branch-edge"
-						+ "they are linked to." );
+		INCOMING_BRANCH_EDGE( "Incoming branch-edge", TargetType.BRANCH_EDGE,
+				"Vertices have a color determined by a numerical feature of the incoming branch-edge "
+						+ "they are linked to, iff they have exactly one such edge." ),
+		/**
+		 * Vertices have a color determined by a numerical feature of the
+		 * outgoing branch-edge they are linked to, iff they have exactly one
+		 * such edge.
+		 */
+		OUTGOING_BRANCH_EDGE( "Outgoing branch-edge", TargetType.BRANCH_EDGE,
+				"Vertices have a color determined by a numerical feature of the outgoing branch-edge "
+						+ "they are linked to, iff they have exactly one such edge." );
 
 		private final String label;
 
