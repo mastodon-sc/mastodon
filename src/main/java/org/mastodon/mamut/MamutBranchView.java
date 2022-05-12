@@ -32,6 +32,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
+
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
@@ -42,6 +47,8 @@ import org.mastodon.app.IMastodonView;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.IMastodonFrameView;
 import org.mastodon.app.ui.ViewFrame;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
@@ -59,8 +66,20 @@ import org.mastodon.model.branch.BranchGraphFocusAdapter;
 import org.mastodon.model.branch.BranchGraphHighlightAdapter;
 import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.model.branch.BranchGraphSelectionAdapter;
+import org.mastodon.model.branch.BranchGraphTagSetAdapter;
+import org.mastodon.model.tag.TagSetModel;
+import org.mastodon.ui.coloring.ColoringMenu;
+import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelBranchGraph;
+import org.mastodon.ui.coloring.ColoringModelMain;
+import org.mastodon.ui.coloring.GraphColorGenerator;
+import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.Keymap.UpdateListener;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.WrappedActionMap;
@@ -103,6 +122,7 @@ public class MamutBranchView<
 
 	protected final RefBimap< BranchLink, E > edgeMap;
 
+	protected final TagSetModel< BranchSpot, BranchLink > tagSetModel;
 
 	public MamutBranchView( final MamutAppModel appModel, final VG viewGraph, final String[] keyConfigContexts )
 	{
@@ -114,7 +134,7 @@ public class MamutBranchView<
 		this.vertexMap = viewGraph.getVertexMap();
 		this.edgeMap = viewGraph.getEdgeMap();
 
-		// Granp handle.
+		// Group handle.
 		this.groupHandle = appModel.getGroupManager().createGroupHandle();
 
 		// Graphs.
@@ -147,6 +167,9 @@ public class MamutBranchView<
 
 		// Time-point.
 		this.timepointModel = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
+
+		// Tag-set.
+		this.tagSetModel = branchTagSetModel( appModel );
 
 		// Closing runnables.
 		this.runOnClose = new ArrayList<>();
@@ -205,6 +228,79 @@ public class MamutBranchView<
 		onClose( () -> keymap.updateListeners().remove( updateListener ) );
 	}
 
+	protected final ColoringModel registerBranchColoring(
+			final GraphColorGeneratorAdapter< BranchSpot, BranchLink, V, E > colorGeneratorAdapter,
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
+		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
+		final ColoringModelBranchGraph< ?, ? > coloringModel = new ColoringModelBranchGraph<>( tagSetModel, featureColorModeManager, featureModel );
+		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
+
+		tagSetModel.listeners().add( coloringModel );
+		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
+		tagSetModel.listeners().add( coloringMenu );
+		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
+
+		featureColorModeManager.listeners().add( coloringModel );
+		onClose( () -> featureColorModeManager.listeners().remove( coloringModel ) );
+		featureColorModeManager.listeners().add( coloringMenu );
+		onClose( () -> featureColorModeManager.listeners().remove( coloringMenu ) );
+
+		featureModel.listeners().add( coloringMenu );
+		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
+
+		@SuppressWarnings( "unchecked" )
+		final ColoringModelMain.ColoringChangedListener coloringChangedListener = () -> {
+			if ( coloringModel.noColoring() )
+				colorGeneratorAdapter.setColorGenerator( null );
+			else if ( coloringModel.getTagSet() != null )
+				colorGeneratorAdapter.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
+			else if ( coloringModel.getFeatureColorMode() != null )
+				colorGeneratorAdapter.setColorGenerator( ( GraphColorGenerator< BranchSpot, BranchLink > ) coloringModel.getFeatureGraphColorGenerator() );
+			refresh.run();
+		};
+		coloringModel.listeners().add( coloringChangedListener );
+
+		return coloringModel;
+	}
+
+	protected void registerColorbarOverlay(
+			final ColorBarOverlay colorBarOverlay,
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		menuHandle.getMenu().add( new JSeparator() );
+		final JCheckBoxMenuItem toggleOverlay = new JCheckBoxMenuItem( "Show colorbar", ColorBarOverlay.DEFAULT_VISIBLE );
+		toggleOverlay.addActionListener( ( l ) -> {
+			colorBarOverlay.setVisible( toggleOverlay.isSelected() );
+			refresh.run();
+		} );
+		menuHandle.getMenu().add( toggleOverlay );
+
+		menuHandle.getMenu().add( new JSeparator() );
+		menuHandle.getMenu().add( "Position:" ).setEnabled( false );
+
+		final ButtonGroup buttonGroup = new ButtonGroup();
+		for ( final Position position : Position.values() )
+		{
+			final JRadioButtonMenuItem positionItem = new JRadioButtonMenuItem( position.toString() );
+			positionItem.addActionListener( ( l ) -> {
+				if ( positionItem.isSelected() )
+				{
+					colorBarOverlay.setPosition( position );
+					refresh.run();
+				}
+			} );
+			buttonGroup.add( positionItem );
+			menuHandle.getMenu().add( positionItem );
+
+			if ( position.equals( ColorBarOverlay.DEFAULT_POSITION ) )
+				positionItem.setSelected( true );
+		}
+	}
+
 	/**
 	 * Adds the specified {@link Runnable} to the list of runnables to execute
 	 * when this view is closed.
@@ -234,5 +330,15 @@ public class MamutBranchView<
 	public GroupHandle getGroupHandle()
 	{
 		return groupHandle;
+	}
+
+	private static TagSetModel< BranchSpot, BranchLink > branchTagSetModel( final MamutAppModel appModel )
+	{
+		final ModelGraph graph = appModel.getModel().getGraph();
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
+		final BranchGraphTagSetAdapter< Spot, Link, BranchSpot, BranchLink > branchGraphTagSetModel =
+				new BranchGraphTagSetAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), tagSetModel );
+		return branchGraphTagSetModel;
 	}
 }

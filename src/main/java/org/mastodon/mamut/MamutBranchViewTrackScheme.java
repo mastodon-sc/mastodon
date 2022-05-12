@@ -2,11 +2,13 @@ package org.mastodon.mamut;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.branchColorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
@@ -24,7 +26,9 @@ import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
@@ -33,11 +37,16 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
+import org.mastodon.ui.TagSetMenu;
+import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.views.trackscheme.display.PaintBranchGraph;
 import org.mastodon.views.trackscheme.display.PaintDecorations;
@@ -54,6 +63,10 @@ import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGraph< BranchSpot, BranchLink >, TrackSchemeVertex, TrackSchemeEdge >
 {
 
+	private final ColorBarOverlay colorBarOverlay;
+
+	private final ColoringModel coloringModel;
+
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel )
 	{
 		this( appModel, new HashMap<>() );
@@ -69,10 +82,13 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		super( appModel, factory.createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		// TrackScheme options.
+		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter =
+				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.trackSchemeOverlayFactory( new BranchTrackSchemeOverlayFactory() )
-				.paintLongEdges( true );
+				.paintLongEdges( true )
+				.graphColorGenerator( coloringAdapter );
 				
 		// Restore position
 		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
@@ -150,7 +166,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				viewMenu(
-						colorMenu( coloringMenuHandle ),
+						branchColorMenu( coloringMenuHandle ),
 						colorbarMenu( colorbarMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
@@ -173,18 +189,49 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 						tagSetMenu( tagSetMenuHandle ) ) );
 		appModel.getPlugins().addMenus( menu );
 
+		coloringModel = registerBranchColoring( coloringAdapter, coloringMenuHandle,
+				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> frame.getTrackschemePanel().getBackground() );
+		frame.getTrackschemePanel().getOffsetHeaders().listeners().add( ( w, h ) -> colorBarOverlay.setInsets( h + 15, w + 15, 15, 15 ) );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> frame.getTrackschemePanel().repaint() );
+
+		// Listen to user changing the tag-set menu.
+		registerTagSetMenu( tagSetMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+
 		// Listen to vertex labels being changed.
 		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+
+		// Restore colorbar state.
+		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
+		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
+		colorBarOverlay.setVisible( colorbarVisible );
+		colorBarOverlay.setPosition( colorbarPosition );
+		frame.getTrackschemePanel().getDisplay().overlays().add( colorBarOverlay );
 
 		// Time range and display refresh.
 		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
 		frame.getTrackschemePanel().graphChanged();
+
 
 		frame.setVisible( true );
 		frame.getTrackschemePanel().repaint();
 
 		// Give focus to the display so that it can receive key presses immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
+	}
+
+	protected void registerTagSetMenu(
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		final Model model = appModel.getModel();
+		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu<>(
+				menuHandle.getMenu(),
+				model.getTagSetModel(),
+				appModel.getSelectionModel(),
+				model.getGraph().getLock(), model );
+		tagSetModel.listeners().add( tagSetMenu );
+		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 	}
 
 	@Override
