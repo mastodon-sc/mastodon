@@ -35,7 +35,6 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.views.trackscheme.ScreenVertex.ScreenVertexPool;
-import org.mastodon.views.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
@@ -79,16 +78,13 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayout
 
 		final RefList< ScreenVertex > screenVertices = screenEntities.getVertices();
 		final RefList< ScreenEdge > screenEdges = screenEntities.getEdges();
-		final RefList< ScreenVertexRange > vertexRanges = screenEntities.getRanges();
 		final ScreenVertexPool screenVertexPool = screenEntities.getVertexPool();
 		final ScreenEdgePool screenEdgePool = screenEntities.getEdgePool();
-		final ScreenVertexRangePool screenRangePool = screenEntities.getRangePool();
 
 		final TrackSchemeVertex v1 = graph.vertexRef();
 		final TrackSchemeVertex v2 = graph.vertexRef();
 		final ScreenVertex sv = screenVertexPool.createRef();
 		final ScreenEdge se = screenEdgePool.createRef();
-		final ScreenVertexRange sr = screenRangePool.createRef();
 
 		final double allowedMinD = 2.0 / xScale;
 
@@ -100,7 +96,6 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayout
 			// screen y of vertices of timepoint
 			final double y = ( timepoint - minY ) * yScale + decorationsOffsetY;
 			// screen y of vertices of (timepoint-1)
-			final double prevY = ( timepoint - 1 - minY ) * yScale + decorationsOffsetY;
 			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
 			// largest index of vertex with layoutX <= minX
 			int minIndex = vertexList.binarySearch( minX );
@@ -124,72 +119,55 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayout
 				denseRanges = new TIntArrayList();
 			denseRanges.add( maxIndex + 1 );
 
-			final TIntIterator riter = denseRanges.iterator();
-			int nextRangeStart = riter.next();
-
 			double prevX = Double.NEGATIVE_INFINITY;
 			double minVertexScreenDist = yScale;
 			for ( int i = minIndex; i <= maxIndex; ++i )
 			{
-				if ( i < nextRangeStart )
+				vertexList.get( i, v1 );
+				final int v1si = screenVertices.size();
+				v1.setScreenVertexIndex( v1si );
+				final int id = v1.getInternalPoolIndex();
+				final String label = v1.getLabel();
+				final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
+				final boolean selected = selection.isSelected( v1 );
+				final boolean ghost = v1.isGhost();
+				screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, colorGenerator.color( v1 ) );
+				screenVertices.add( sv );
+
+				minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
+				prevX = x;
+
+				for ( final TrackSchemeEdge edge : v1.incomingEdges() )
 				{
-					vertexList.get( i, v1 );
-					final int v1si = screenVertices.size();
-					v1.setScreenVertexIndex( v1si );
-					final int id = v1.getInternalPoolIndex();
-					final String label = v1.getLabel();
-					final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-					final boolean selected = selection.isSelected( v1 );
-					final boolean ghost = v1.isGhost();
-					screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, colorGenerator.color( v1 ) );
-					screenVertices.add( sv );
+					edge.getSource( v2 );
+					int v2si = v2.getScreenVertexIndex();
 
-					minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
-					prevX = x;
-
-					for ( final TrackSchemeEdge edge : v1.incomingEdges() )
+					// TODO: additionally to checking for id ref
+					// consistency, the following should be decided by
+					// layout timestamp
+					if ( v2si < 0 || v2si >= screenVertices.size() || screenVertices.get( v2si, sv ).getTrackSchemeVertexId() != v2.getInternalPoolIndex() )
 					{
-						edge.getSource( v2 );
-						int v2si = v2.getScreenVertexIndex();
-
-						// TODO: additionally to checking for id ref
-						// consistency, the following should be decided by
-						// layout timestamp
-						if ( v2si < 0 || v2si >= screenVertices.size() || screenVertices.get( v2si, sv ).getTrackSchemeVertexId() != v2.getInternalPoolIndex() )
-						{
-							// ScreenVertex for v2 not found. Adding one...
-							v2si = screenVertices.size();
-							v2.setScreenVertexIndex( v2si );
-							final int nid = v2.getInternalPoolIndex();
-							final String nlabel = v2.getLabel();
-							final double nx = ( v2.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-							final double ny = ( v2.getTimepoint() - minY ) * yScale + decorationsOffsetY;
-							final boolean nselected = selection.isSelected( v2 );
-							final boolean nghost = v2.isGhost();
-							screenVertexPool.create( sv ).init( nid, nlabel, nx, ny, nselected, nghost, colorGenerator.color( v2 ) );
-							screenVertices.add( sv );
-						}
-
-						final int eid = edge.getInternalPoolIndex();
-						final int sourceScreenVertexIndex = v2si;
-						final int targetScreenVertexIndex = v1si;
-						final boolean eselected = selection.isSelected( edge );
-						screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( edge, v2, v1 ) );
-						screenEdges.add( se );
-						final int sei = se.getInternalPoolIndex();
-						edge.setScreenEdgeIndex( sei );
+						// ScreenVertex for v2 not found. Adding one...
+						v2si = screenVertices.size();
+						v2.setScreenVertexIndex( v2si );
+						final int nid = v2.getInternalPoolIndex();
+						final String nlabel = v2.getLabel();
+						final double nx = ( v2.getLayoutX() - minX ) * xScale + decorationsOffsetX;
+						final double ny = ( v2.getTimepoint() - minY ) * yScale + decorationsOffsetY;
+						final boolean nselected = selection.isSelected( v2 );
+						final boolean nghost = v2.isGhost();
+						screenVertexPool.create( sv ).init( nid, nlabel, nx, ny, nselected, nghost, colorGenerator.color( v2 ) );
+						screenVertices.add( sv );
 					}
-				}
-				else
-				{
-					final int rangeMinIndex = nextRangeStart;
-					final int rangeMaxIndex = riter.next();
-					nextRangeStart = riter.next();
-					i = rangeMaxIndex;
-					final double svMinX = ( vertexList.get( rangeMinIndex, v1 ).getLayoutX() - minX ) * xScale + decorationsOffsetX;
-					final double svMaxX = ( vertexList.get( rangeMaxIndex, v1 ).getLayoutX() - minX ) * xScale + decorationsOffsetX;
-					vertexRanges.add( screenRangePool.create( sr ).init( svMinX, svMaxX, prevY, y ) );
-					minVertexScreenDist = 0; // TODO: WHY = 0?
+
+					final int eid = edge.getInternalPoolIndex();
+					final int sourceScreenVertexIndex = v2si;
+					final int targetScreenVertexIndex = v1si;
+					final boolean eselected = selection.isSelected( edge );
+					screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( edge, v2, v1 ) );
+					screenEdges.add( se );
+					final int sei = se.getInternalPoolIndex();
+					edge.setScreenEdgeIndex( sei );
 				}
 			}
 			for ( int i = timepointStartScreenVertexIndex; i < screenVertices.size(); ++i )
