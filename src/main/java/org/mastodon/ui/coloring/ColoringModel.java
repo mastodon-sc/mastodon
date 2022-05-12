@@ -1,10 +1,15 @@
 package org.mastodon.ui.coloring;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
-import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.ui.coloring.feature.Projections;
+import org.mastodon.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.scijava.listeners.Listeners;
 
 /**
@@ -21,7 +26,7 @@ import org.scijava.listeners.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public interface ColoringModel
+public abstract class ColoringModel
 {
 
 	public interface ColoringChangedListener
@@ -29,21 +34,110 @@ public interface ColoringModel
 		void coloringChanged();
 	}
 
-	void colorByNone();
+	private final TagSetModel< ?, ? > tagSetModel;
 
-	void colorByTagSet( TagSet tagSet );
+	private TagSetStructure.TagSet tagSet;
 
-	TagSet getTagSet();
+	protected FeatureColorMode featureColorMode;
 
-	void colorByFeature( FeatureColorMode featureColorMode );
+	private final FeatureColorModeManager featureColorModeManager;
 
-	FeatureColorMode getFeatureColorMode();
+	protected final Projections projections;
 
-	boolean noColoring();
+	private final Listeners.List< ColoringChangedListener > listeners;
 
-	TagSetStructure getTagSetStructure();
+	public ColoringModel(
+			final TagSetModel< ?, ? > tagSetModel,
+			final FeatureColorModeManager featureColorModeManager,
+			final FeatureModel featureModel )
+	{
+		this.tagSetModel = tagSetModel;
+		this.featureColorModeManager = featureColorModeManager;
+		this.projections = new ProjectionsFromFeatureModel( featureModel );
+		this.listeners = new Listeners.SynchronizedList<>();
+	}
 
-	FeatureColorModeManager getFeatureColorModeManager();
+	public Listeners< ColoringChangedListener > listeners()
+	{
+		return listeners;
+	}
+
+	public void colorByNone()
+	{
+		tagSet = null;
+		featureColorMode = null;
+		listeners.list.forEach( ColoringChangedListener::coloringChanged );
+	}
+
+	public void colorByTagSet( final TagSetStructure.TagSet tagSet )
+	{
+		this.tagSet = tagSet;
+		this.featureColorMode = null;
+		listeners.list.forEach( ColoringChangedListener::coloringChanged );
+	}
+
+	public TagSetStructure.TagSet getTagSet()
+	{
+		return tagSet;
+	}
+
+	public void colorByFeature( final FeatureColorMode featureColorMode )
+	{
+		this.featureColorMode = featureColorMode;
+		this.tagSet = null;
+		listeners.list.forEach( ColoringChangedListener::coloringChanged );
+	}
+
+	public FeatureColorMode getFeatureColorMode()
+	{
+		return featureColorMode;
+	}
+
+	public boolean noColoring()
+	{
+		return tagSet == null && featureColorMode == null;
+	}
+
+	public void tagSetStructureChanged()
+	{
+		if ( tagSet != null )
+		{
+			final int id = tagSet.id();
+			final TagSetStructure tss = tagSetModel.getTagSetStructure();
+			final Optional< TagSetStructure.TagSet > ts = tss.getTagSets().stream().filter( t -> t.id() == id ).findFirst();
+			if ( ts.isPresent() )
+				colorByTagSet( ts.get() );
+			else
+				colorByNone();
+		}
+	}
+
+	public void featureColorModesChanged()
+	{
+		if ( featureColorMode != null )
+		{
+			final String name = featureColorMode.getName();
+			final Optional< FeatureColorMode > mode = Stream.concat(
+					featureColorModeManager.getBuiltinStyles().stream(),
+					featureColorModeManager.getUserStyles().stream() )
+					.filter( m -> m.getName().equals( name ) && isValid( m ) )
+					.findFirst();
+			if ( mode.isPresent() )
+				colorByFeature( mode.get() );
+			else
+				colorByNone();
+		}
+	}
+
+	public TagSetStructure getTagSetStructure()
+	{
+		return tagSetModel.getTagSetStructure();
+	}
+
+	public FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
+	}
 
 	/**
 	 * Returns {@code true} if the specified color mode is valid against the
@@ -54,10 +148,17 @@ public interface ColoringModel
 	 *            the color mode
 	 * @return {@code true} if the color mode is valid.
 	 */
-	boolean isValid( FeatureColorMode mode );
+	public abstract boolean isValid( FeatureColorMode mode );
 
-	GraphColorGenerator< ?, ? > getFeatureGraphColorGenerator();
-
-	Listeners< ColoringChangedListener > listeners();
-
+	/**
+	 * Returns a {@link GraphColorGenerator} that can color graph objects based
+	 * on the feature color mode defined in this model.
+	 * <p>
+	 * The {@link #isValid(FeatureColorMode)} method must return
+	 * <code>true</code> only for the modes that are defined for the graph
+	 * objects to color with this model.
+	 * 
+	 * @return a {@link GraphColorGenerator}.
+	 */
+	public abstract GraphColorGenerator< ?, ? > getFeatureGraphColorGenerator();
 }
