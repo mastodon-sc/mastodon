@@ -31,7 +31,9 @@ package org.mastodon.views.trackscheme.display;
 import static org.mastodon.views.trackscheme.ScreenVertex.Transition.APPEAR;
 import static org.mastodon.views.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Stroke;
 
 import org.mastodon.util.GeometryUtil;
 import org.mastodon.views.trackscheme.ScreenEdge;
@@ -40,6 +42,14 @@ import org.mastodon.views.trackscheme.ScreenVertex.Transition;
 
 public class PaintBranchGraph extends PaintGraph
 {
+
+	private final Stroke edgeStroke = new BasicStroke( 1.5f );
+
+	@Override
+	public void beforeDrawEdges()
+	{
+		g2.setStroke( edgeStroke );
+	}
 
 	@Override
 	public void drawEdge( final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
@@ -77,7 +87,7 @@ public class PaintBranchGraph extends PaintGraph
 		g2.drawLine( tx, sy, tx, ty );
 
 		if ( highlighted || ghost )
-			g2.setStroke( style.getEdgeStroke() );
+			g2.setStroke( edgeStroke );
 	}
 
 	@Override
