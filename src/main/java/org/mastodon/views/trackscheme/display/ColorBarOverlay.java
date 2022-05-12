@@ -33,14 +33,11 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.util.function.Supplier;
 
-import org.mastodon.mamut.model.Link;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchLink;
-import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.ColorMap;
 import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelWithBranchGraph;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureProjectionId;
 
@@ -48,7 +45,7 @@ import bdv.viewer.OverlayRenderer;
 
 /**
  * An {@link OverlayRenderer} that displays a color-bar for the
- * {@link FeatureColorMode} currently selected in the {@link ColoringModel}
+ * {@link FeatureColorMode} currently selected in the {@link ColoringModelWithBranchGraph}
  * provided at construction.
  *
  * @author Jean-Yves Tinevez
@@ -139,7 +136,7 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private Position position = DEFAULT_POSITION;
 
-	private final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel;
+	private final ColoringModel coloringModel;
 
 	private int canvasWidth;
 
@@ -155,7 +152,7 @@ public class ColorBarOverlay implements OverlayRenderer
 	 */
 	private final int[] insets;
 
-	public ColorBarOverlay( final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel, final Supplier< Color > bgColorSupplier )
+	public ColorBarOverlay( final ColoringModel coloringModel, final Supplier< Color > bgColorSupplier )
 	{
 		this.coloringModel = coloringModel;
 		this.bgColorSupplier = bgColorSupplier;

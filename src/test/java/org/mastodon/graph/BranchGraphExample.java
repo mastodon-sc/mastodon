@@ -3,6 +3,7 @@ package org.mastodon.graph;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -10,6 +11,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.app.IdentityViewGraph;
 import org.mastodon.app.ViewGraph;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutAppModel;
@@ -32,7 +35,13 @@ import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.model.branch.BranchGraphSelectionAdapter;
 import org.mastodon.model.branch.BranchGraphTagSetAdapter;
 import org.mastodon.model.tag.TagSetModel;
+import org.mastodon.ui.coloring.BranchGraphColoringModel;
+import org.mastodon.ui.coloring.ColoringMenu;
+import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelWithBranchGraph;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -75,15 +84,14 @@ public class BranchGraphExample
 		try (final Context context = new Context())
 		{
 //			final String projectPath = "samples/test_branchgraph.mastodon";
-//			final String projectPath = "samples/mette_e1.mastodon";
-			final String projectPath = "samples/mette_e1_small.mastodon";
+			final String projectPath = "samples/mette_e1.mastodon";
+//			final String projectPath = "samples/mette_e1_small.mastodon";
 			final MamutProject project = new MamutProjectIO().load( projectPath );
 
 			final WindowManager wm = new WindowManager( context );
 			wm.getProjectManager().open( project );
+			wm.getAppModel().getModel().getBranchGraph().graphRebuilt();
 			new MainWindow( wm ).setVisible( true );
-//			final ModelBranchGraph gb = wm.getAppModel().getModel().getBranchGraph();
-//			gb.addGraphChangeListener( () -> System.out.println( gb ) );
 
 			csvExportPath = projectPath;
 			new Thread( () -> createBranchTable( wm.getAppModel() ) ).start();
@@ -97,7 +105,16 @@ public class BranchGraphExample
 	private static MyTableViewFrame createBranchTable( final MamutAppModel appModel )
 	{
 		// Rebuild the branch graph.
-		appModel.getModel().getBranchGraph().graphRebuilt();
+		final ReadLock lock = appModel.getModel().getGraph().getLock().readLock();
+		lock.lock();
+		try
+		{
+			appModel.getModel().getBranchGraph().graphRebuilt();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 
 		// Build the global table view.
 		final ModelGraph graph = appModel.getModel().getGraph();
@@ -156,6 +173,52 @@ public class BranchGraphExample
 		frame.setVisible( true );
 
 		return frame;
+	}
+
+	private static final ColoringModel registerColoring(
+			final MamutAppModel appModel,
+			final GraphColorGeneratorAdapter< BranchSpot, BranchLink, BranchSpot, BranchLink > colorGeneratorAdapter,
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
+		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
+		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final BranchGraphColoringModel< BranchSpot, BranchLink > coloringModel = new BranchGraphColoringModel<>( tagSetModel, featureColorModeManager, featureModel );
+		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
+
+		tagSetModel.listeners().add( coloringModel );
+		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
+		tagSetModel.listeners().add( coloringMenu );
+		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
+
+		featureColorModeManager.listeners().add( coloringModel );
+		onClose( () -> featureColorModeManager.listeners().remove( coloringModel ) );
+		featureColorModeManager.listeners().add( coloringMenu );
+		onClose( () -> featureColorModeManager.listeners().remove( coloringMenu ) );
+
+		featureModel.listeners().add( coloringMenu );
+		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
+
+		final ColoringModelWithBranchGraph.ColoringChangedListener coloringChangedListener = () -> {
+			if ( coloringModel.noColoring() )
+				colorGeneratorAdapter.setColorGenerator( null );
+			else if ( coloringModel.getTagSet() != null )
+				colorGeneratorAdapter.setColorGenerator( new TagSetGraphColorGenerator<>( branchTagSetModel( appModel ), coloringModel.getTagSet() ) );
+			else if ( coloringModel.getFeatureColorMode() != null )
+				colorGeneratorAdapter.setColorGenerator( coloringModel.getFeatureGraphColorGenerator() );
+			refresh.run();
+		};
+		coloringModel.listeners().add( coloringChangedListener );
+
+		return coloringModel;
+	}
+
+	private static void onClose( final Runnable runnable )
+	{
+		// TODO Auto-generated method stub
+		System.out.println( "added " + runnable ); // DEBUG
 	}
 
 	private static TagSetModel< BranchSpot, BranchLink > branchTagSetModel( final MamutAppModel appModel )

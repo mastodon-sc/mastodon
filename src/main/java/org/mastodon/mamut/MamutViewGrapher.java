@@ -69,7 +69,7 @@ import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
-import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelWithBranchGraph;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -108,7 +108,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 	 * a reference on a supervising instance of the {@code ColoringModel} that
 	 * is bound to this instance/window
 	 */
-	private final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel;
+	private final ColoringModelWithBranchGraph< Spot, Link, BranchSpot, BranchLink > coloringModel;
 
 	private final DataDisplayPanel< Spot, Link > dataDisplayPanel;
 
@@ -326,7 +326,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		return dataDisplayPanel;
 	}
 
-	ColoringModel< Spot, Link, BranchSpot, BranchLink > getColoringModel()
+	ColoringModelWithBranchGraph< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}

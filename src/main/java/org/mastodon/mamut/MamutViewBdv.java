@@ -74,7 +74,7 @@ import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
-import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelWithBranchGraph;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
@@ -122,7 +122,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 	 * A reference on a supervising instance of the {@code ColoringModel} that
 	 * is bound to this instance/window.
 	 */
-	private final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel;
+	private final ColoringModelWithBranchGraph< Spot, Link, BranchSpot, BranchLink > coloringModel;
 
 	public MamutViewBdv( final MamutAppModel appModel )
 	{
@@ -374,7 +374,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		viewer.requestRepaint();
 	}
 
-	public ColoringModel< Spot, Link, BranchSpot, BranchLink > getColoringModel()
+	public ColoringModelWithBranchGraph< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}

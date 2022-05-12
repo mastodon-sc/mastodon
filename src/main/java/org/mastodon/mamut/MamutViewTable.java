@@ -73,7 +73,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.SelectionActions;
-import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelWithBranchGraph;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -87,7 +87,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	private static final String[] CONTEXTS = new String[] { KeyConfigContexts.TABLE };
 
-	private final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel;
+	private final ColoringModelWithBranchGraph< Spot, Link, BranchSpot, BranchLink > coloringModel;
 
 	private final boolean selectionOnly;
 
@@ -332,7 +332,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return getFrame().getContextChooser();
 	}
 
-	public ColoringModel< Spot, Link, BranchSpot, BranchLink > getColoringModel()
+	ColoringModelWithBranchGraph< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
