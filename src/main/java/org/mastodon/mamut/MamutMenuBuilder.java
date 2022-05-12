@@ -118,6 +118,11 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		return ViewMenuBuilder.menu( "Coloring", handle );
 	}
 
+	public static MenuItem branchColorMenu( final JMenuHandle handle )
+	{
+		return ViewMenuBuilder.menu( "Branch coloring", handle );
+	}
+
 	public static MenuItem tagSetMenu( final JMenuHandle handle )
 	{
 		return ViewMenuBuilder.menu( "Tags", handle );
