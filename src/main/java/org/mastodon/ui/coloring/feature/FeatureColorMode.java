@@ -114,6 +114,10 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		TARGET_BRANCH_VERTEX_DOWN( "Target branch-vertex down", TargetType.BRANCH_VERTEX,
 				"Edges have a color determined by a numerical feature of the branch-vertex "
 						+ "in the branch 'down' (forward in time) that is linked to their target vertex." ),
+		/**
+		 * Edges have a color determined by a numerical feature of the
+		 * branch-link they are linked to.
+		 */
 		BRANCH_EDGE( "Branch-edge", TargetType.BRANCH_EDGE,
 				"Edges have a color determined by a numerical feature of the branch-link they are linked to." );
 
@@ -201,8 +205,9 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 						+ "the branch vertex 'down' in the branch (forward in time) it is "
 						+ "linked to." ),
 		/**
-		 * Vertices have a color determined by a numerical feature of their
-		 * incoming edge, iff they have exactly one incoming edge.
+		 * Vertices have a color determined by a numerical feature of the
+		 * incoming brancu-edge they are linked to, iff they have exactly one
+		 * such edge.
 		 */
 		BRANCH_EDGE( "Branch-edge", TargetType.BRANCH_EDGE,
 				"Vertices have a color determined by a numerical feature of the branch-edge"

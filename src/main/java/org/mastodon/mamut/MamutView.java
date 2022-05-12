@@ -41,7 +41,6 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -90,9 +89,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
 		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
-		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel = new ColoringModel<>( tagSetModel, featureColorModeManager, featureModel, graph, branchGraph );
+		final ColoringModel< Spot, Link, BranchSpot, BranchLink > coloringModel = new ColoringModel<>( tagSetModel, featureColorModeManager, featureModel, branchGraph );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
 
 		tagSetModel.listeners().add( coloringModel );
