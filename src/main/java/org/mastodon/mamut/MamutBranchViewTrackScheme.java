@@ -31,9 +31,7 @@ import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
@@ -44,7 +42,6 @@ import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
-import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
@@ -212,7 +209,6 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		// Listen to vertex labels being changed.
 		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
-
 		// Restore colorbar state.
 		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
 		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
@@ -266,20 +262,6 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 		// Give focus to the display so that it can receive key presses immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
-	}
-
-	protected void registerTagSetMenu(
-			final JMenuHandle menuHandle,
-			final Runnable refresh )
-	{
-		final Model model = appModel.getModel();
-		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu<>(
-				menuHandle.getMenu(),
-				model.getTagSetModel(),
-				appModel.getSelectionModel(),
-				model.getGraph().getLock(), model );
-		tagSetModel.listeners().add( tagSetMenu );
-		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 	}
 
 	@Override

@@ -53,6 +53,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
@@ -68,6 +69,7 @@ import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.model.branch.BranchGraphSelectionAdapter;
 import org.mastodon.model.branch.BranchGraphTagSetAdapter;
 import org.mastodon.model.tag.TagSetModel;
+import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColoringMenu;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.ColoringModelBranchGraph;
@@ -299,6 +301,20 @@ public class MamutBranchView<
 			if ( position.equals( ColorBarOverlay.DEFAULT_POSITION ) )
 				positionItem.setSelected( true );
 		}
+	}
+
+	protected void registerTagSetMenu(
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		final Model model = appModel.getModel();
+		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu<>(
+				menuHandle.getMenu(),
+				model.getTagSetModel(),
+				appModel.getSelectionModel(),
+				model.getGraph().getLock(), model );
+		tagSetModel.listeners().add( tagSetMenu );
+		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 	}
 
 	/**
