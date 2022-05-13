@@ -9,7 +9,6 @@ import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import javax.swing.ActionMap;
 import javax.swing.JOptionPane;
@@ -99,14 +98,14 @@ public class BranchGraphExample
 		setSystemLookAndFeelAndLocale();
 		try (final Context context = new Context())
 		{
-			final String projectPath = "samples/test_branchgraph.mastodon";
-//			final String projectPath = "samples/mette_e1.mastodon";
+//			final String projectPath = "samples/test_branchgraph.mastodon";
+			final String projectPath = "samples/mette_e1.mastodon";
 //			final String projectPath = "samples/mette_e1_small.mastodon";
 			final MamutProject project = new MamutProjectIO().load( projectPath );
 
 			final WindowManager wm = new WindowManager( context );
 			wm.getProjectManager().open( project );
-			wm.getAppModel().getModel().getBranchGraph().graphRebuilt();
+			wm.getAppModel().getBranchGraphSync().sync();
 			new MainWindow( wm ).setVisible( true );
 
 			csvExportPath = projectPath;
@@ -120,28 +119,15 @@ public class BranchGraphExample
 
 	private static MyTableViewFrame createBranchTable( final MamutAppModel appModel )
 	{
-		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		// Rebuild the branch graph.
-		final ReadLock lock = appModel.getModel().getGraph().getLock().readLock();
-		lock.lock();
-		try
-		{
-			branchGraph.graphRebuilt();
-		}
-		finally
-		{
-			lock.unlock();
-		}
-
 		// Build the global table view.
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ViewGraph< Spot, Link, Spot, Link > viewGraph = IdentityViewGraph.wrap( graph, appModel.getModel().getGraphIdBimap() );
 		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final ViewGraph< BranchSpot, BranchLink, BranchSpot, BranchLink > viewBranchGraph = IdentityViewGraph.wrap( branchGraph, branchGraph.getGraphIdBimap() );
 		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, BranchSpot, BranchLink > branchColoringAdapter = new GraphColorGeneratorAdapter<>( viewBranchGraph.getVertexMap(), viewBranchGraph.getEdgeMap() );
 
-		
 		final GroupHandle groupHandle = appModel.getGroupManager().createGroupHandle();
 		final NavigationHandler< Spot, Link > navigationHandler = groupHandle.getModel( appModel.NAVIGATION );
 
