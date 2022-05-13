@@ -9,12 +9,17 @@ import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.TRACKSCHEME_TRANSFORM_KEY;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -35,12 +40,14 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
+import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -205,17 +212,54 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		// Listen to vertex labels being changed.
 		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
+
 		// Restore colorbar state.
 		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
 		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
 		colorBarOverlay.setVisible( colorbarVisible );
 		colorBarOverlay.setPosition( colorbarPosition );
+
+		// Restore coloring.
+		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
+		if ( null != noColoring && noColoring )
+		{
+			coloringModel.colorByNone();
+		}
+		else
+		{
+			final String tagSetName = ( String ) guiState.get( TAG_SET_KEY );
+			final String featureColorModeName = ( String ) guiState.get( FEATURE_COLOR_MODE_KEY );
+			if ( null != tagSetName )
+			{
+				for ( final TagSet tagSet : coloringModel.getTagSetStructure().getTagSets() )
+				{
+					if ( tagSet.getName().equals( tagSetName ) )
+					{
+						coloringModel.colorByTagSet( tagSet );
+						break;
+					}
+				}
+			}
+			else if ( null != featureColorModeName )
+			{
+				final List< FeatureColorMode > featureColorModes = new ArrayList<>();
+				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getBuiltinStyles() );
+				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getUserStyles() );
+				for ( final FeatureColorMode featureColorMode : featureColorModes )
+				{
+					if ( featureColorMode.getName().equals( featureColorModeName ) )
+					{
+						coloringModel.colorByFeature( featureColorMode );
+						break;
+					}
+				}
+			}
+		}
 		frame.getTrackschemePanel().getDisplay().overlays().add( colorBarOverlay );
 
 		// Time range and display refresh.
 		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
 		frame.getTrackschemePanel().graphChanged();
-
 
 		frame.setVisible( true );
 		frame.getTrackschemePanel().repaint();
@@ -288,4 +332,13 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 	}
 
+	ColoringModel getColoringModel()
+	{
+		return coloringModel;
+	}
+
+	ColorBarOverlay getColorBarOverlay()
+	{
+		return colorBarOverlay;
+	}
 }

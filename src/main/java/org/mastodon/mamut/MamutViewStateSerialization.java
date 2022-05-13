@@ -48,6 +48,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
@@ -432,6 +433,14 @@ class MamutViewStateSerialization
 		// Transform.
 		final ScreenTransform t = trackschemePanel.getScreenTransform().get();
 		guiState.put( TRACKSCHEME_TRANSFORM_KEY, t );
+
+		// Coloring.
+		final ColoringModel coloringModel = view.getColoringModel();
+		getColoringState( coloringModel, guiState );
+
+		// Colorbar.
+		final ColorBarOverlay colorBarOverlay = view.getColorBarOverlay();
+		getColorBarOverlayState( colorBarOverlay, guiState );
 	}
 
 	/**
@@ -464,7 +473,7 @@ class MamutViewStateSerialization
 	 * @param guiState
 	 *            the map to store it to.
 	 */
-	private static void getColoringState( final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel, final Map< String, Object > guiState )
+	private static void getColoringState( final ColoringModel coloringModel, final Map< String, Object > guiState )
 	{
 		final boolean noColoring = coloringModel.noColoring();
 		guiState.put( NO_COLORING_KEY, noColoring );
