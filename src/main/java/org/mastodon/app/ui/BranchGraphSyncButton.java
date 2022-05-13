@@ -1,6 +1,5 @@
 package org.mastodon.app.ui;
 
-import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JButton;
@@ -17,9 +16,6 @@ public class BranchGraphSyncButton extends JPanel
 
 	public BranchGraphSyncButton( final BranchGraphSynchronizer model )
 	{
-		setMaximumSize( new Dimension( 80, 37 ) );
-		setPreferredSize( new Dimension( 80, 37 ) );
-
 		final JButton btn = new JButton();
 		final UpdateListener l = () -> btn.setIcon( model.isUptodate()
 				? MastodonIcons.UP_TO_DATE_ICON
