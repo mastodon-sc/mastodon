@@ -44,12 +44,16 @@ public abstract class AbstractBranchGraphAdapter<
 
 	protected final boolean isValid( final E e )
 	{
+		if ( e == null )
+			return false;
 		final int id = idmap.getEdgeId( e );
 		return idmap.getEdgeIfExists( id, eref ) != null;
 	}
 
 	protected final boolean isValid( final V v )
 	{
+		if ( v == null )
+			return false;
 		final int id = idmap.getVertexId( v );
 		return idmap.getVertexIfExists( id, vref ) != null;
 	}
