@@ -300,6 +300,8 @@ class MamutViewStateSerialization
 		// View-specifics.
 		if ( view instanceof MamutViewBdv )
 			getGuiStateBdv( ( MamutViewBdv ) view, guiState );
+		else if ( view instanceof MamutBranchViewBdv )
+			getGuiStateBranchBdv( ( MamutBranchViewBdv ) view, guiState );
 		else if ( view instanceof MamutViewTrackScheme )
 			getGuiStateTrackScheme( ( MamutViewTrackScheme ) view, guiState );
 		else if ( view instanceof MamutBranchViewTrackScheme )
@@ -461,8 +463,36 @@ class MamutViewStateSerialization
 		view.getViewerPanelMamut().state().getViewerTransform( t );
 		guiState.put( BDV_TRANSFORM_KEY, t );
 		// Coloring.
-		final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel = view.getColoringModel();
+		final ColoringModel coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
+		// Colorbar.
+		final ColorBarOverlay colorBarOverlay = view.getColorBarOverlay();
+		getColorBarOverlayState( colorBarOverlay, guiState );
+	}
+
+	/**
+	 * Stores the {@link MamutBranchViewBdv} GUI state in the specified map.
+	 * 
+	 * @param view
+	 *            the {@link MamutViewBdv}.
+	 * @param guiState
+	 *            the map to store info into.
+	 */
+	private static void getGuiStateBranchBdv( final MamutBranchViewBdv view, final Map< String, Object > guiState )
+	{
+		// Viewer state.
+		final Element stateEl = view.getViewerPanelMamut().stateToXml();
+		guiState.put( BDV_STATE_KEY, stateEl );
+		// Transform.
+		final AffineTransform3D t = new AffineTransform3D();
+		view.getViewerPanelMamut().state().getViewerTransform( t );
+		guiState.put( BDV_TRANSFORM_KEY, t );
+		// Coloring.
+		final ColoringModel coloringModel = view.getColoringModel();
+		getColoringState( coloringModel, guiState );
+		// Colorbar.
+		final ColorBarOverlay colorBarOverlay = view.getColorBarOverlay();
+		getColorBarOverlayState( colorBarOverlay, guiState );
 	}
 
 	/**
@@ -520,6 +550,12 @@ class MamutViewStateSerialization
 				break;
 			}
 
+			case "MamutBranchViewBdv":
+			{
+				windowManager.createBranchBigDataViewer( guiState );
+				break;
+			}
+
 			case "MamutViewTrackScheme":
 			{
 				final MamutViewTrackScheme ts = windowManager.createTrackScheme( guiState );
@@ -560,7 +596,7 @@ class MamutViewStateSerialization
 			}
 
 			default:
-				System.err.println( "Unknown window type: " + typeStr + "." );
+				System.err.println( "Deserializing GUI state: Unknown window type: " + typeStr + "." );
 				continue;
 			}
 		}

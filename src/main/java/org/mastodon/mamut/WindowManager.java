@@ -66,6 +66,7 @@ import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
 import org.mastodon.util.ToggleDialogAction;
+import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
@@ -146,13 +147,16 @@ public class WindowManager
 	/** All currently open BigDataViewer windows. */
 	private final List< MamutViewBdv > bdvWindows = new ArrayList<>();
 
+	/** All currently open branch TrackScheme windows. */
+	private final List< MamutBranchViewBdv > bbdvWindows = new ArrayList<>();
+
 	/** The {@link ContextProvider}s of all currently open BigDataViewer windows. */
 	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
 
 	/** All currently open TrackScheme windows. */
 	private final List< MamutViewTrackScheme > tsWindows = new ArrayList<>();
 
-	/** All currently open TrackScheme windows. */
+	/** All currently open branch TrackScheme windows. */
 	private final List< MamutBranchViewTrackScheme > btsWindows = new ArrayList<>();
 
 	/** All currently open Table windows. */
@@ -264,7 +268,7 @@ public class WindowManager
 
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
-//		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
+		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", dataDisplayStyleManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
 		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager, "Spot", "Link" ) );
@@ -362,6 +366,12 @@ public class WindowManager
 		} );
 	}
 
+	private synchronized void addBBdvWindow( final MamutBranchViewBdv w )
+	{
+		bbdvWindows.add( w );
+		w.onClose( () -> bbdvWindows.remove( w ) );
+	}
+
 	public void forEachBdvView( final Consumer< ? super MamutViewBdv > action )
 	{
 		bdvWindows.forEach( action );
@@ -422,6 +432,12 @@ public class WindowManager
 	{
 		btsWindows.forEach( action );
 	}
+	
+	private void forEachBranchBdvView( final Consumer< ? super MamutBranchViewBdv > action )
+	{
+		bbdvWindows.forEach( action );
+	}
+
 
 	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
 	{
@@ -433,6 +449,7 @@ public class WindowManager
 
 	public void forEachBranchView( final Consumer< ? super MamutBranchView< ?, ?, ? > > action )
 	{
+		forEachBranchBdvView( action );
 		forEachBranchTrackSchemeView( action );
 	}
 
@@ -529,8 +546,7 @@ public class WindowManager
 		{
 			final MamutBranchViewBdv view = new MamutBranchViewBdv( appModel, guiState );
 			view.getFrame().setIconImages( BDV_VIEW_ICON );
-//			addBdvWindow( view ); TODO
-//			bdvViewCreatedListeners.list.forEach( l -> l.bdvViewCreated( view ) ); // TODO
+			addBBdvWindow( view );
 			return view;
 		}
 		return null;
@@ -573,6 +589,8 @@ public class WindowManager
 	{
 		final ArrayList< Window > windows = new ArrayList<>();
 		for ( final MamutViewBdv w : bdvWindows )
+			windows.add( w.getFrame() );
+		for ( final MamutBranchViewBdv w : bbdvWindows )
 			windows.add( w.getFrame() );
 		for ( final MamutViewTrackScheme w : tsWindows )
 			windows.add( w.getFrame() );
