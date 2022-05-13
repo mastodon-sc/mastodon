@@ -26,6 +26,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 
+import org.mastodon.app.ui.BranchGraphSyncButton;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
@@ -144,6 +145,9 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		if ( null != tLoaded )
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
 
+		// Regen branch graph.
+		frame.getSettingsPanel().add( new BranchGraphSyncButton( appModel.getBranchGraphSync() ) );
+				
 		// Search vertex label.
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getTrackschemePanel() );
 		frame.getSettingsPanel().add( searchPanel );
