@@ -31,12 +31,15 @@ package org.mastodon.mamut;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 import static org.mastodon.mamut.MamutViewStateSerialization.BDV_STATE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.BDV_TRANSFORM_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
@@ -97,6 +100,8 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.ContextProvider;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 
 import bdv.BigDataViewerActions;
 import bdv.tools.InitializeViewerState;
@@ -124,6 +129,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 	 */
 	private final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel;
 
+	private final ColorBarOverlay colorBarOverlay;
+
 	public MamutViewBdv( final MamutAppModel appModel )
 	{
 		this( appModel, new HashMap<>() );
@@ -142,11 +149,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		sharedBdvData = appModel.getSharedBdvData();
 
-		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO:
-																		// use
-																		// JY
-																		// naming
-																		// scheme
+		final String windowTitle = "BigDataViewer " + ( bdvName++ );
 		final BigDataViewerMamut bdv = new BigDataViewerMamut( sharedBdvData, windowTitle, groupHandle );
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
@@ -176,6 +179,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		final JMenuHandle menuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
+		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
@@ -184,6 +188,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 						item( BigDataViewerActions.SAVE_SETTINGS ) ),
 				viewMenu(
 						colorMenu( menuHandle ),
+						colorbarMenu( colorbarMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				editMenu(
@@ -234,6 +239,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		coloringModel = registerColoring( coloring, menuHandle,
 				() -> viewer.getDisplay().repaint() );
+		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> viewer.getBackground() );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> viewer.getDisplay().repaint() );
 
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> viewer.getDisplay().repaint() );
@@ -274,6 +281,13 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				}
 			}
 		}
+
+		// Restore colorbar state.
+		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
+		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
+		colorBarOverlay.setVisible( colorbarVisible );
+		colorBarOverlay.setPosition( colorbarPosition );
+		viewer.getDisplay().overlays().add( colorBarOverlay );
 
 		highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		focusModel.listeners().add( () -> viewer.getDisplay().repaint() );
@@ -359,24 +373,29 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				coloring );
 	}
 
-	public ContextProvider< Spot > getContextProvider()
+	ContextProvider< Spot > getContextProvider()
 	{
 		return contextProvider;
 	}
 
-	public ViewerPanel getViewerPanelMamut()
+	ViewerPanel getViewerPanelMamut()
 	{
 		return viewer;
 	}
 
-	public void requestRepaint()
+	void requestRepaint()
 	{
 		viewer.requestRepaint();
 	}
 
-	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
+	ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
+	}
+
+	ColorBarOverlay getColorBarOverlay()
+	{
+		return colorBarOverlay;
 	}
 
 	/**
