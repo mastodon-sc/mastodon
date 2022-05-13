@@ -88,6 +88,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.trackSchemeOverlayFactory( new BranchTrackSchemeOverlayFactory() )
 				.paintLongEdges( true )
+				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
 				
 		// Restore position
@@ -142,6 +143,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		frame.getSettingsPanel().add( searchPanel );
 
 		// Actions.
+		MastodonFrameViewActions.install( viewActions, this );
 		final ReentrantReadWriteLock lock = model.getGraph().getLock();
 		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
 		FocusActions.install( viewActions, viewGraph, lock, focusModel, selectionModel );

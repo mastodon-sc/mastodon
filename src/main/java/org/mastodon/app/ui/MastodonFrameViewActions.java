@@ -69,7 +69,7 @@ public class MastodonFrameViewActions
 		}
 	}
 
-	private final MastodonFrameView< ?, ?, ?, ?, ?, ? > view;
+	private final IMastodonFrameView view;
 
 	private final ToggleSettingsPanelAction toggleSettingsPanelAction;
 
@@ -86,7 +86,7 @@ public class MastodonFrameViewActions
 	 */
 	public static void install(
 			final Actions actions,
-			final MastodonFrameView< ?, ?, ?, ?, ?, ? > view )
+			final IMastodonFrameView view )
 	{
 		final MastodonFrameViewActions ba = new MastodonFrameViewActions( view );
 
@@ -94,7 +94,7 @@ public class MastodonFrameViewActions
 		actions.namedAction( ba.closeWindowAction, CLOSE_WINDOW_KEYS );
 	}
 
-	private MastodonFrameViewActions( final MastodonFrameView< ?, ?, ?, ?, ?, ? > view )
+	private MastodonFrameViewActions( final IMastodonFrameView view )
 	{
 		this.view = view;
 		toggleSettingsPanelAction = new ToggleSettingsPanelAction( TOGGLE_SETTINGS_PANEL );
@@ -134,7 +134,7 @@ public class MastodonFrameViewActions
 		{
 			super( name );
 			selectListeners = new Listeners.SynchronizedList<>();
-			view.frame.settingsPanel.addComponentListener( new ComponentAdapter()
+			view.getFrame().settingsPanel.addComponentListener( new ComponentAdapter()
 			{
 				@Override
 				public void componentShown( final ComponentEvent e )
@@ -153,13 +153,13 @@ public class MastodonFrameViewActions
 		@Override
 		public void actionPerformed( final ActionEvent e )
 		{
-			view.frame.setSettingsPanelVisible( !view.frame.isSettingsPanelVisible() );
+			view.getFrame().setSettingsPanelVisible( !view.getFrame().isSettingsPanelVisible() );
 		}
 
 		@Override
 		public boolean isSelected()
 		{
-			return view.frame.isSettingsPanelVisible();
+			return view.getFrame().isSettingsPanelVisible();
 		}
 
 		@Override
