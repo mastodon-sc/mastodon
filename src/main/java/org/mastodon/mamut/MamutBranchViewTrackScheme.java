@@ -96,7 +96,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 				.paintLongEdges( true )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
-				
+
 		// Restore position
 		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
 		if ( null != pos && pos.length == 4 )
@@ -147,7 +147,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 		// Regen branch graph.
 		frame.getSettingsPanel().add( new BranchGraphSyncButton( appModel.getBranchGraphSync() ) );
-				
+
 		// Search vertex label.
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getTrackschemePanel() );
 		frame.getSettingsPanel().add( searchPanel );
@@ -164,8 +164,20 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		frame.getTrackschemePanel().getNavigationBehaviours().install( viewBehaviours );
 		frame.getTrackschemePanel().getTransformEventHandler().install( viewBehaviours );
 
-		// Forward graph change event to panel.
-		viewGraph.graphChangeListeners().add( () -> frame.getTrackschemePanel().graphChanged() );
+		// Forward graph change event to a graphRebuilt event for branch graph.
+		viewGraph.graphChangeListeners().remove( frame.getTrackschemePanel() );
+		viewGraph.graphChangeListeners().add( () -> {
+			viewGraph.getLock().writeLock().lock();
+			try
+			{
+				viewGraph.graphRebuilt();
+			}
+			finally
+			{
+				viewGraph.getLock().writeLock().unlock();
+			}
+			frame.getTrackschemePanel().graphChanged();
+		} );
 
 		// Menus.
 		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), appModel.getKeymap(), keyConfigContexts );
@@ -312,7 +324,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
 			final ModelGraphProperties< BranchSpot, BranchLink > properties = new DefaultModelGraphProperties<>();
 			final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph =
-					new TrackSchemeGraph< >( graph, idmap, properties );
+					new TrackSchemeGraph<>( graph, idmap, properties );
 			return trackSchemeGraph;
 		}
 
