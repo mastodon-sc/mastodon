@@ -161,6 +161,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 					.focusModel( branchFocusfocusModel( appModel ) )
 					.navigationHandler( branchGraphNavigation( appModel, navigationHandler ) )
 					.done()
+				.title( selectionTable ? "Selection table" : "Data table" )
 				.get();
 		setFrame( frame );
 
