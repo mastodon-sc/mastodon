@@ -35,19 +35,11 @@ import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.TRACKSCHEME_TRANSFORM_KEY;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.ActionMap;
@@ -64,14 +56,12 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.AutoNavigateFocusModel;
-import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
-import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.trackscheme.ScreenTransform;
@@ -80,7 +70,6 @@ import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
-import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.views.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
@@ -153,9 +142,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 					.height( pos[ 3 ] );
 
 		// Restore group handle.
-		final Integer groupID = ( Integer ) guiState.get( GROUP_HANDLE_ID_KEY );
-		if ( null != groupID )
-			groupHandle.setGroupId( groupID.intValue() );
+		restoreGroupHandle( groupHandle, guiState );
 
 		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
@@ -260,47 +247,11 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		// Restore colorbar state.
-		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
-		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
-		colorBarOverlay.setVisible( colorbarVisible );
-		colorBarOverlay.setPosition( colorbarPosition );
+		restoreColorbarState( colorBarOverlay, guiState );
 
 		// Restore coloring.
-		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
-		if ( null != noColoring && noColoring )
-		{
-			coloringModel.colorByNone();
-		}
-		else
-		{
-			final String tagSetName = ( String ) guiState.get( TAG_SET_KEY );
-			final String featureColorModeName = ( String ) guiState.get( FEATURE_COLOR_MODE_KEY );
-			if ( null != tagSetName )
-			{
-				for ( final TagSet tagSet : coloringModel.getTagSetStructure().getTagSets() )
-				{
-					if ( tagSet.getName().equals( tagSetName ) )
-					{
-						coloringModel.colorByTagSet( tagSet );
-						break;
-					}
-				}
-			}
-			else if ( null != featureColorModeName )
-			{
-				final List< FeatureColorMode > featureColorModes = new ArrayList<>();
-				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getBuiltinStyles() );
-				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getUserStyles() );
-				for ( final FeatureColorMode featureColorMode : featureColorModes )
-				{
-					if ( featureColorMode.getName().equals( featureColorModeName ) )
-					{
-						coloringModel.colorByFeature( featureColorMode );
-						break;
-					}
-				}
-			}
-		}
+		restoreColoring( coloringModel, guiState );
+
 		frame.getTrackschemePanel().getDisplay().overlays().add( colorBarOverlay );
 
 		frame.setVisible( true );

@@ -38,18 +38,8 @@ import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 import static org.mastodon.mamut.MamutViewStateSerialization.BDV_STATE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.BDV_TRANSFORM_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.ActionMap;
@@ -73,14 +63,12 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
-import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BdvContextProvider;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
@@ -101,7 +89,6 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
-import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 
 import bdv.BigDataViewerActions;
 import bdv.tools.InitializeViewerState;
@@ -155,21 +142,13 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		setFrame( frame );
 
 		// Restore position.
-		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
-		if ( null != pos )
-			frame.setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
-		else
-			frame.setLocationRelativeTo( null );
+		restoreFramePosition( frame, guiState );
 
 		// Restore group handle.
-		final Integer groupID = ( Integer ) guiState.get( GROUP_HANDLE_ID_KEY );
-		if ( null != groupID )
-			groupHandle.setGroupId( groupID.intValue() );
+		restoreGroupHandle( groupHandle, guiState );
 
 		// Restore settings panel visibility.
-		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
-		if ( null != settingsPanelVisible )
-			frame.setSettingsPanelVisible( settingsPanelVisible.booleanValue() );
+		restoreSettingsPanelVisibility( frame, guiState );
 
 		MastodonFrameViewActions.install( viewActions, this );
 		BigDataViewerActionsMamut.install( viewActions, bdv );
@@ -246,47 +225,10 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				() -> viewer.getDisplay().repaint() );
 
 		// Restore coloring.
-		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
-		if ( null != noColoring && noColoring )
-		{
-			coloringModel.colorByNone();
-		}
-		else
-		{
-			final String tagSetName = ( String ) guiState.get( TAG_SET_KEY );
-			final String featureColorModeName = ( String ) guiState.get( FEATURE_COLOR_MODE_KEY );
-			if ( null != tagSetName )
-			{
-				for ( final TagSet tagSet : coloringModel.getTagSetStructure().getTagSets() )
-				{
-					if ( tagSet.getName().equals( tagSetName ) )
-					{
-						coloringModel.colorByTagSet( tagSet );
-						break;
-					}
-				}
-			}
-			else if ( null != featureColorModeName )
-			{
-				final List< FeatureColorMode > featureColorModes = new ArrayList<>();
-				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getBuiltinStyles() );
-				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getUserStyles() );
-				for ( final FeatureColorMode featureColorMode : featureColorModes )
-				{
-					if ( featureColorMode.getName().equals( featureColorModeName ) )
-					{
-						coloringModel.colorByFeature( featureColorMode );
-						break;
-					}
-				}
-			}
-		}
+		restoreColoring( coloringModel, guiState );
 
 		// Restore colorbar state.
-		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
-		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
-		colorBarOverlay.setVisible( colorbarVisible );
-		colorBarOverlay.setPosition( colorbarPosition );
+		restoreColorbarState( colorBarOverlay, guiState );
 		viewer.getDisplay().overlays().add( colorBarOverlay );
 
 		highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
