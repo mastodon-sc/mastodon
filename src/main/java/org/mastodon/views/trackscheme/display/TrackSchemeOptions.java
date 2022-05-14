@@ -212,9 +212,9 @@ public class TrackSchemeOptions
 
 		private int y = 0;
 
-		private int width = 800;
+		private int width = 650;
 
-		private int height = 600;
+		private int height = 400;
 
 		private long animationDurationMillis = 250;
 
