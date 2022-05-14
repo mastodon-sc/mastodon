@@ -143,22 +143,6 @@ public class MainWindow extends JFrame
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( trackschemeButton, button_gbc_right );
 
-		// Branch stuff.
-
-		++gridy;
-
-		final JButton bdvBranchButton = new JButton( actionMap.get( WindowManager.NEW_BRANCH_BDV_VIEW ) );
-		prepareButton( bdvBranchButton, "branch bdv", BDV_ICON_MEDIUM );
-		button_gbc_left.gridy = gridy;
-		buttonsPanel.add( bdvBranchButton, button_gbc_left );
-
-		final JButton trackschemeBranchButton = new JButton( actionMap.get( WindowManager.NEW_BRANCH_TRACKSCHEME_VIEW ) );
-		prepareButton( trackschemeBranchButton, "branch trackscheme", TRACKSCHEME_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( trackschemeBranchButton, button_gbc_right );
-
-		// The rest.
-
 		++gridy;
 
 		separator_gbc.gridy = gridy;
@@ -288,6 +272,8 @@ public class MainWindow extends JFrame
 						item( WindowManager.NEW_BDV_VIEW ),
 						item( WindowManager.NEW_TRACKSCHEME_VIEW ),
 						item( WindowManager.NEW_TABLE_VIEW ),
-						item( WindowManager.NEW_SELECTION_TABLE_VIEW ) ) );
+						item( WindowManager.NEW_SELECTION_TABLE_VIEW ),
+						item( WindowManager.NEW_BRANCH_BDV_VIEW ),
+						item( WindowManager.NEW_BRANCH_TRACKSCHEME_VIEW ) ) );
 	}
 }

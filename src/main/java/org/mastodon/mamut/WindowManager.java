@@ -65,6 +65,7 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
+import org.mastodon.util.RunnableActionPair;
 import org.mastodon.util.ToggleDialogAction;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
@@ -246,8 +247,8 @@ public class WindowManager
 		projectManager = new ProjectManager( this );
 		projectManager.install( globalAppActions );
 
-		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
-		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
+		newBdvViewAction = new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
+		newTrackSchemeViewAction = new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
 		newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
 		newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
 		newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
@@ -309,6 +310,8 @@ public class WindowManager
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		newTableViewAction.setEnabled( appModel != null );
 		newSelectionTableViewAction.setEnabled( appModel != null );
+		newBranchBdvViewAction.setEnabled( appModel != null );
+		newBranchTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
 		featureComputationAction.setEnabled( appModel != null );
 	}
