@@ -160,7 +160,7 @@ public class WindowManager
 	private final List< MamutBranchViewTrackScheme > btsWindows = new ArrayList<>();
 
 	/** All currently open Table windows. */
-	private final List< MamutViewTable > tableWindows = new ArrayList<>();
+	private final List< MamutViewTable2 > tableWindows = new ArrayList<>();
 
 	/** All currently open Grapher windows. */
 	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
@@ -352,7 +352,7 @@ public class WindowManager
 		contextProviders.add( w.getContextProvider() );
 		for ( final MamutViewTrackScheme tsw : tsWindows )
 			tsw.getContextChooser().updateContextProviders( contextProviders );
-		for ( final MamutViewTable tw : tableWindows )
+		for ( final MamutViewTable2 tw : tableWindows )
 			tw.getContextChooser().updateContextProviders( contextProviders );
 		for ( final MamutViewGrapher gw : grapherWindows )
 			gw.getContextChooser().updateContextProviders( contextProviders );
@@ -361,7 +361,7 @@ public class WindowManager
 			contextProviders.remove( w.getContextProvider() );
 			for ( final MamutViewTrackScheme tsw : tsWindows )
 				tsw.getContextChooser().updateContextProviders( contextProviders );
-			for ( final MamutViewTable tw : tableWindows )
+			for ( final MamutViewTable2 tw : tableWindows )
 				tw.getContextChooser().updateContextProviders( contextProviders );
 		} );
 	}
@@ -393,7 +393,7 @@ public class WindowManager
 		w.onClose( () -> btsWindows.remove( w ) );
 	}
 
-	private synchronized void addTableWindow( final MamutViewTable table )
+	private synchronized void addTableWindow( final MamutViewTable2 table )
 	{
 		tableWindows.add( table );
 		table.getContextChooser().updateContextProviders( contextProviders );
@@ -413,7 +413,7 @@ public class WindowManager
 		} );
 	}
 
-	public void forEachTableView( final Consumer< ? super MamutViewTable > action )
+	public void forEachTableView( final Consumer< ? super MamutViewTable2 > action )
 	{
 		tableWindows.forEach( action );
 	}
@@ -488,11 +488,11 @@ public class WindowManager
 		return null;
 	}
 
-	public MamutViewTable createTable( final Map< String, Object > guiState )
+	public MamutViewTable2 createTable( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
 		{
-			final MamutViewTable view = new MamutViewTable( appModel, guiState );
+			final MamutViewTable2 view = new MamutViewTable2( appModel, guiState );
 			view.getFrame().setIconImages( TABLE_VIEW_ICON );
 			addTableWindow( view );
 			return view;
@@ -511,7 +511,7 @@ public class WindowManager
 	 *            selection.
 	 * @return a new table view.
 	 */
-	public MamutViewTable createTable( final boolean selectionOnly )
+	public MamutViewTable2 createTable( final boolean selectionOnly )
 	{
 		final Map< String, Object > guiState = Collections.singletonMap(
 				MamutViewStateSerialization.TABLE_SELECTION_ONLY, Boolean.valueOf( selectionOnly ) );
@@ -596,7 +596,7 @@ public class WindowManager
 			windows.add( w.getFrame() );
 		for ( final MamutBranchViewTrackScheme w : btsWindows )
 			windows.add( w.getFrame() );
-		for ( final MamutViewTable w : tableWindows )
+		for ( final MamutViewTable2 w : tableWindows )
 			windows.add( w.getFrame() );
 		for ( final MamutViewGrapher w : grapherWindows )
 			windows.add( w.getFrame() );
