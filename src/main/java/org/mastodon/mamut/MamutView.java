@@ -242,7 +242,10 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		if ( null != pos )
 			frame.setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
 		else
+		{
+			frame.setSize( 650, 400 );
 			frame.setLocationRelativeTo( null );
+		}
 	}
 
 	protected static void restoreGroupHandle( final GroupHandle groupHandle, final Map< String, Object > guiState )
