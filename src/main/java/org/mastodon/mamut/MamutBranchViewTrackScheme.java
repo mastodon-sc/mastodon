@@ -111,7 +111,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 				groupHandle,
 				null,
 				options );
-
+		frame.setTitle( "TrackScheme Branch" );
 		setFrame( frame );
 
 		// Restore settings panel visibility.
