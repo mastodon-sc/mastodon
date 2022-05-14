@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -129,6 +130,8 @@ public class TableViewFrameBuilder
 			frame.pane.add( vertexName, bundle.vertexTable );
 			final String edgeName = bundle.eref.getClass().getSimpleName();
 			frame.pane.add( edgeName, bundle.edgeTable );
+			if ( bundle.contextChooser != null )
+				frame.contextChoosers.add( bundle.contextChooser );
 		}
 
 		return frame;
@@ -182,6 +185,8 @@ public class TableViewFrameBuilder
 		private final VV vref2;
 
 		private final EE eref;
+
+		private ContextChooser< VV > contextChooser;
 
 		public GraphTableBundle(
 				final GraphTableBuilder< VV, EE > graphBuilder,
@@ -435,7 +440,7 @@ public class TableViewFrameBuilder
 
 			if ( graphBuilder.listenToContext )
 			{
-				final ContextChooser< VV > contextChooser = new ContextChooser<>( this );
+				contextChooser = new ContextChooser<>( this );
 				final ContextChooserPanel< ? > contextChooserPanel = new ContextChooserPanel<>( contextChooser );
 				settingsPanel.add( contextChooserPanel );
 			}
@@ -656,9 +661,10 @@ public class TableViewFrameBuilder
 		 *            if <code>true</code> will display the content of the
 		 *            {@link #selectionModel}.
 		 */
-		public void selectionTable( final boolean selectionTable )
+		public GraphTableBuilder< V, E > selectionTable( final boolean selectionTable )
 		{
 			this.selectionTable = selectionTable;
+			return this;
 		}
 
 		public GraphTableBuilder< V, E > coloring( final GraphColorGenerator< V, E > coloring )
@@ -743,13 +749,17 @@ public class TableViewFrameBuilder
 	public static class MyTableViewFrame extends ViewFrame
 	{
 
+
 		private static final long serialVersionUID = 1L;
+
+		public final List< ContextChooser< ? > > contextChoosers;
 
 		private final JTabbedPane pane;
 
 		public MyTableViewFrame( final String windowTitle )
 		{
 			super( windowTitle );
+			this.contextChoosers = new ArrayList<>();
 			this.pane = new JTabbedPane( JTabbedPane.LEFT );
 			add( pane, BorderLayout.CENTER );
 
@@ -765,6 +775,36 @@ public class TableViewFrameBuilder
 			return ( FeatureTagTablePanel< ? > ) c;
 		}
 
+		public List< String > getTableNames()
+		{
+			final int nTabs = pane.getTabCount();
+			final ArrayList< String > names = new ArrayList<>( nTabs );
+			for ( int i = 0; i < nTabs; i++ )
+				names.add( "Table" + pane.getTitleAt( i ) );
+			return Collections.unmodifiableList( names );
+		}
+
+		public List< FeatureTagTablePanel< ? > > getTables()
+		{
+			final int nTabs = pane.getTabCount();
+			final ArrayList< FeatureTagTablePanel< ? > > tables = new ArrayList<>(nTabs);
+			for(int i = 0; i < nTabs; i++)
+			{
+				final FeatureTagTablePanel< ? > table = ( FeatureTagTablePanel< ? > ) pane.getComponentAt( i );
+				tables.add( table );
+			}
+			return Collections.unmodifiableList( tables );
+		}
+
+		public void displayTable( final String name )
+		{
+			final int index = getTableNames().indexOf( name );
+			if ( index < 0 )
+				return;
+
+			pane.setSelectedIndex( index );
+		}
+
 		public void editCurrentLabel()
 		{
 			getCurrentlyDisplayedTable().editCurrentLabel();
@@ -773,6 +813,11 @@ public class TableViewFrameBuilder
 		public void toggleCurrentTag()
 		{
 			getCurrentlyDisplayedTable().toggleCurrentTag();
+		}
+
+		public List< ContextChooser< ? > > getContextChoosers()
+		{
+			return contextChoosers;
 		}
 	}
 }
