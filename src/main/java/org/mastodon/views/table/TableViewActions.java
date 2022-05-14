@@ -28,7 +28,6 @@
  */
 package org.mastodon.views.table;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -36,23 +35,19 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
-import org.mastodon.app.ViewGraph;
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.Vertex;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
+import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
 import com.opencsv.CSVWriter;
 
-public class TableViewActions< 
-	V extends Vertex< E >, 
-	E extends Edge< V > >
+public class TableViewActions
 {
 
 	public static final String EDIT_LABEL = "edit vertex label";
@@ -73,27 +68,10 @@ public class TableViewActions<
 
 	private final RunnableAction exportToCSV;
 
-	@Plugin( type = Descriptions.class )
-	public static class Descriptions extends CommandDescriptionProvider
-	{
-		public Descriptions()
-		{
-			super( KeyConfigContexts.TABLE );
-		}
-
-		@Override
-		public void getCommandDescriptions( final CommandDescriptions descriptions )
-		{
-			descriptions.add( EDIT_LABEL, EDIT_LABEL_KEYS, "Edit the label of the current vertex." );
-			descriptions.add( TOGGLE_TAG, TOGGLE_TAG_KEYS, "Toggle the tag at the current cell in the table." );
-			descriptions.add( EXPORT_TO_CSV, EXPORT_TO_CSV_KEYS, "Export the current content of the table to two CSV files (one for vertices, one for edges)." );
-		}
-	}
-
-	private TableViewActions( final TableViewFrame< V, E > tableView )
+	private TableViewActions( final MyTableViewFrame tableView )
 	{
 		this.editLabel = new RunnableAction( EDIT_LABEL, tableView::editCurrentLabel );
-		this.toggleTag = new RunnableAction( TOGGLE_TAG, tableView::toggleTag );
+		this.toggleTag = new RunnableAction( TOGGLE_TAG, tableView::toggleCurrentTag );
 		this.exportToCSV = new RunnableAction( EXPORT_TO_CSV, () -> exportToCSV( tableView ) );
 	}
 
@@ -112,67 +90,57 @@ public class TableViewActions<
 	 * @param frame
 	 *            Actions are targeted at this table view.
 	 */
-	public static < 
-			VG extends ViewGraph< V, E, V, E >, 
-			V extends Vertex< E >, 
-			E extends Edge< V > >
-			void install( final Actions actions, final TableViewFrame< V, E > frame )
+	public static void install( final Actions actions, final MyTableViewFrame frame )
 	{
-		final TableViewActions< V, E > tva = new TableViewActions<>( frame );
+		final TableViewActions tva = new TableViewActions( frame );
 		actions.namedAction( tva.editLabel, EDIT_LABEL_KEYS );
 		actions.namedAction( tva.toggleTag, TOGGLE_TAG_KEYS );
 		actions.namedAction( tva.exportToCSV, EXPORT_TO_CSV_KEYS );
 	}
 
-	private static File csvFile;
+	public static String csvExportPath;
 
-	private static final < V extends Vertex< E >, E extends Edge< V > >
-			void exportToCSV( final TableViewFrame< V, E > frame )
+	public static final void exportToCSV( final MyTableViewFrame frame )
 	{
-		final Component parent = frame;
-		final String filename = ( csvFile == null )
-				? new File( System.getProperty( "user.home" ), "FeatureAndTagTable.csv" ).getAbsolutePath()
-				: csvFile.getAbsolutePath();
+		exportToCSV( frame.getCurrentlyDisplayedTable() );
+	}
+
+	public static void exportToCSV( final FeatureTagTablePanel< ? > table )
+	{
+		// Try to get at least one object.
+		final Object obj = table.getObjectForViewRow( 0 );
+		if ( obj == null )
+			return;
+
+		// Ask for filename.
+		final String klass = obj.getClass().getSimpleName();
+		final String filename = ( csvExportPath == null )
+				? new File( System.getProperty( "user.home" ), "MastodonTable.csv" ).getAbsolutePath()
+				: csvExportPath;
 		final File file = FileChooser.chooseFile(
-				parent,
+				table,
 				filename,
 				new ExtensionFileFilter( "csv" ),
-				"Export Table content as CSV files",
+				"Export " + klass + " table as CSV file",
 				FileChooser.DialogType.SAVE );
 		if ( file == null )
 			return;
-		csvFile = file;
+		csvExportPath = file.getAbsolutePath();
 
-		final int p = csvFile.getAbsolutePath().lastIndexOf( '.' );
-		final String vertexPath = csvFile.getAbsolutePath().substring( 0, p ) + "-vertices.csv";
+		final int p = csvExportPath.lastIndexOf( '.' );
+		final String path = csvExportPath.substring( 0, p ) + "-" + klass + ".csv";
 		try
 		{
-			export( vertexPath, frame.getVertexTable(), CSVWriter.DEFAULT_SEPARATOR );
+			TableViewActions.export( path, table, CSVWriter.DEFAULT_SEPARATOR );
 		}
 		catch ( final IOException e )
 		{
-			JOptionPane.showMessageDialog( frame.getVertexTable(),
-					"Could not save to file " + vertexPath + ":\n" + e.getMessage(),
+			JOptionPane.showMessageDialog( table,
+					"Could not save to file " + path + ":\n" + e.getMessage(),
 					"Error exporting vertices to CSV",
 					JOptionPane.ERROR_MESSAGE );
 			e.printStackTrace();
-			return;
 		}
-
-		final String edgePath = csvFile.getAbsolutePath().substring( 0, p ) + "-edges.csv";
-		try
-		{
-			export( edgePath, frame.getEdgeTable(), CSVWriter.DEFAULT_SEPARATOR );
-		}
-		catch ( final IOException e )
-		{
-			JOptionPane.showMessageDialog( frame.getEdgeTable(),
-					"Could not save to file " + edgePath + ":\n" + e.getMessage(),
-					"Error exporting edges to CSV",
-					JOptionPane.ERROR_MESSAGE );
-			e.printStackTrace();
-		}
-
 	}
 
 	public static < O > void export( final String path, final FeatureTagTablePanel< O > table, final char separator ) throws IOException
@@ -241,6 +209,26 @@ public class TableViewActions<
 				}
 				writer.writeNext( content );
 			}
+		}
+	}
+
+	/*
+	 * Command descriptions for all 'manually' added commands
+	 */
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.TABLE );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( EDIT_LABEL, EDIT_LABEL_KEYS, "Edit the label of the current row." );
+			descriptions.add( TOGGLE_TAG, TOGGLE_TAG_KEYS, "Toggle the tag at the current cell in the table." );
+			descriptions.add( EXPORT_TO_CSV, EXPORT_TO_CSV_KEYS, "Export the content of the displayed table to a CSV file." );
 		}
 	}
 }

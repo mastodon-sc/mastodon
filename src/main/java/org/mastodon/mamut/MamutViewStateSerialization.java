@@ -364,8 +364,8 @@ class MamutViewStateSerialization
 			getGuiStateTrackScheme( ( MamutViewTrackScheme ) view, guiState );
 		else if ( view instanceof MamutBranchViewTrackScheme )
 			getGuiStateBranchTrackScheme( ( MamutBranchViewTrackScheme ) view, guiState );
-		else if ( view instanceof MamutViewTable2 )
-			getGuiStateTable( ( MamutViewTable2 ) view, guiState );
+		else if ( view instanceof MamutViewTable )
+			getGuiStateTable( ( MamutViewTable ) view, guiState );
 		else if ( view instanceof MamutViewGrapher )
 			getGuiStateGrapher( ( MamutViewGrapher ) view, guiState );
 
@@ -400,7 +400,7 @@ class MamutViewStateSerialization
 	 * @param guiState
 	 *            the map to store info into.
 	 */
-	private static void getGuiStateTable( final MamutViewTable2 view, final Map< String, Object > guiState )
+	private static void getGuiStateTable( final MamutViewTable view, final Map< String, Object > guiState )
 	{
 		// Selection table or not.
 		guiState.put( TABLE_SELECTION_ONLY, view.isSelectionTable() );
@@ -650,9 +650,8 @@ class MamutViewStateSerialization
 			}
 
 			case "MamutViewTable":
-			case "MamutViewTable2":
 			{
-				final MamutViewTable2 table = windowManager.createTable( guiState );
+				final MamutViewTable table = windowManager.createTable( guiState );
 
 				// Deal with context chooser.
 				final String desiredProvider = ( String ) guiState.get( CHOSEN_CONTEXT_PROVIDER_KEY );
