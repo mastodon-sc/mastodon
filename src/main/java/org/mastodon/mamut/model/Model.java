@@ -40,12 +40,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
+import org.mastodon.mamut.feature.LinkTargetIdFeature;
+import org.mastodon.mamut.feature.SpotFrameFeature;
+import org.mastodon.mamut.feature.SpotNLinksFeature;
+import org.mastodon.mamut.feature.SpotPositionFeature;
+import org.mastodon.mamut.feature.SpotRadiusFeature;
+import org.mastodon.mamut.feature.branch.BranchNDivisionsFeature;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
@@ -139,6 +146,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
 		featureModel = new FeatureModel();
+		declareDefaultFeatures();
 		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 		vertexUndoableProperties.add(
 				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
@@ -170,6 +178,20 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final Recorder< DefaultTagSetModel.SetTagSetStructureUndoableEdit > recorder = undoRecorder.createGenericUndoableEditRecorder();
 		tagSetModel.setUndoRecorder( recorder );
+	}
+
+	/**
+	 * Declares a set of basic features that can return valid values without a
+	 * computer.
+	 */
+	public void declareDefaultFeatures()
+	{
+		featureModel.declareFeature( new SpotPositionFeature( Dimension.POSITION.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature( new SpotRadiusFeature( Dimension.LENGTH.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature( new SpotFrameFeature() );
+		featureModel.declareFeature( new SpotNLinksFeature() );
+		featureModel.declareFeature( new LinkTargetIdFeature( modelGraph ) );
+		featureModel.declareFeature( new BranchNDivisionsFeature() );
 	}
 
 	/**

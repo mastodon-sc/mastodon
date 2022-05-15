@@ -518,6 +518,8 @@ public class ProjectManager
 			}
 		}
 
+		model.declareDefaultFeatures();
+
 		/*
 		 * Reset window manager.
 		 */

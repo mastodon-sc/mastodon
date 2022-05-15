@@ -79,7 +79,7 @@ public class LinkTargetIdFeature implements Feature< Link >
 		}
 	}
 
-	LinkTargetIdFeature( final ModelGraph graph )
+	public LinkTargetIdFeature( final ModelGraph graph )
 	{
 		this.graph = graph;
 	}

@@ -70,7 +70,7 @@ public class BranchNDivisionsFeature implements Feature< BranchSpot >
 		}
 	}
 
-	BranchNDivisionsFeature()
+	public BranchNDivisionsFeature()
 	{
 		this.projection = new MyProjection();
 	}

@@ -56,7 +56,7 @@ public class SpotFrameFeature implements Feature< Spot >
 
 	private final IntFeatureProjection< Spot > projection;
 
-	SpotFrameFeature()
+	public SpotFrameFeature()
 	{
 		this.projection = new MyProjection();
 	}
