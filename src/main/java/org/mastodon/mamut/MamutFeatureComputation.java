@@ -47,6 +47,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.SpotPool;
+import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
@@ -65,7 +66,7 @@ public class MamutFeatureComputation
 
 		// Controller.
 		final Collection< Class< ? > > targets = Arrays.asList( Spot.class, Link.class, BranchSpot.class, BranchLink.class );
-		final FeatureComputationController controller = new FeatureComputationController( myComputerService, targets );
+		final MamutFeatureComputationController controller = new MamutFeatureComputationController( myComputerService, targets, appModel.getBranchGraphSync() );
 		computerService.computationStatusListeners().add( controller.getComputationStatusListener() );
 
 		// Listen to model changes and echo in the GUI
@@ -77,6 +78,37 @@ public class MamutFeatureComputation
 		spotPool.positionProperty().propertyChangeListeners().add( ( o ) -> controller.graphChanged() );
 
 		return controller.getDialog();
+	}
+
+	/**
+	 * A {@link FeatureComputationController} that regenerate the branch-graph
+	 * prior to feature computation if the branch-graph is out of sync.
+	 * 
+	 * @author Jean-Yves Tinevez
+	 */
+	private static final class MamutFeatureComputationController extends FeatureComputationController
+	{
+
+		private final BranchGraphSynchronizer branchGraphSynchronizer;
+
+		public MamutFeatureComputationController(
+				final FeatureComputerService computerService,
+				final Collection< Class< ? > > targets,
+				final BranchGraphSynchronizer branchGraphSynchronizer )
+		{
+			super( computerService, targets );
+			this.branchGraphSynchronizer = branchGraphSynchronizer;
+		}
+
+		@Override
+		protected synchronized void compute()
+		{
+			// Regen branch-graph prior to computation if out of sync.
+			if ( !branchGraphSynchronizer.isUptodate() )
+				branchGraphSynchronizer.sync();
+
+			super.compute();
+		}
 	}
 
 	private static final class MyFeatureComputerService extends AbstractService implements FeatureComputerService

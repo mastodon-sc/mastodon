@@ -109,7 +109,7 @@ public class FeatureComputationController implements GraphChangeListener
 		computerService.cancel( "User pressed cancel button." );
 	}
 
-	private synchronized void compute()
+	protected synchronized void compute()
 	{
 		final EverythingDisablerAndReenabler reenabler = new EverythingDisablerAndReenabler( gui,
 				new Class[] { JLabel.class, JProgressBar.class } );
