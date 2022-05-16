@@ -57,11 +57,11 @@ public class SpotRadiusFeature implements Feature< Spot >
 
 	public static final Spec SPEC = new Spec();
 
-	private final FeatureProjection< Spot > projection;
+	private final String units;
 
 	public SpotRadiusFeature( final String units )
 	{
-		this.projection = new MyProjection( units );
+		this.units = units;
 	}
 
 	@Plugin( type = FeatureSpec.class )
@@ -79,21 +79,16 @@ public class SpotRadiusFeature implements Feature< Spot >
 		}
 	}
 
-	public double get(final Spot spot)
-	{
-		return projection.value( spot );
-	}
-
 	@Override
 	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{
-		return projection.getKey().equals( key ) ? projection : null;
+		return key( PROJECTION_SPEC ).equals( key ) ? new MyProjection( units ) : null;
 	}
 
 	@Override
 	public Set< FeatureProjection< Spot > > projections()
 	{
-		return Collections.singleton( projection );
+		return Collections.singleton( new MyProjection( units ) );
 	}
 
 	@Override
