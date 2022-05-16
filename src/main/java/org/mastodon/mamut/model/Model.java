@@ -47,7 +47,9 @@ import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
+import org.mastodon.mamut.feature.LinkDisplacementFeature;
 import org.mastodon.mamut.feature.LinkTargetIdFeature;
+import org.mastodon.mamut.feature.LinkVelocityFeature;
 import org.mastodon.mamut.feature.SpotFrameFeature;
 import org.mastodon.mamut.feature.SpotNLinksFeature;
 import org.mastodon.mamut.feature.SpotPositionFeature;
@@ -191,6 +193,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		featureModel.declareFeature( new SpotFrameFeature() );
 		featureModel.declareFeature( new SpotNLinksFeature() );
 		featureModel.declareFeature( new LinkTargetIdFeature( modelGraph ) );
+		featureModel.declareFeature( new LinkDisplacementFeature( modelGraph, Dimension.LENGTH.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature( new LinkVelocityFeature( modelGraph, Dimension.VELOCITY.getUnits( spaceUnits, timeUnits ) ) );
 		featureModel.declareFeature( new BranchNDivisionsFeature() );
 	}
 
