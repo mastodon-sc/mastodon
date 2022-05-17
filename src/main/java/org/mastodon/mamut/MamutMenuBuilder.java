@@ -150,7 +150,7 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 	 * menu path. For instance
 	 * <code>makeFullMenuItem( "my action", "Plugins", "Submenu" );</code> will
 	 * create a menu item for <code>my action</code> under the menu path
-	 * <code>Plugins > Submenu</code> and create the said path if required.
+	 * <code>Plugins &gt; Submenu</code> and create the said path if required.
 	 * 
 	 * @param itemName
 	 *            the name of the item.

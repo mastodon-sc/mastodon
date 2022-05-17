@@ -79,12 +79,6 @@ public class TableViewActions
 	 * Create table-view actions and install them in the specified
 	 * {@link Actions}.
 	 *
-	 * @param <VG>
-	 *            the type of the view graph used.
-	 * @param <V>
-	 *            the type of vertices in the graph.
-	 * @param <E>
-	 *            the type of edges in the graph.
 	 * @param actions
 	 *            Actions are added here.
 	 * @param frame
