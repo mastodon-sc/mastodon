@@ -122,7 +122,9 @@ public class BranchGraphNavigationHandlerAdapter<
 			{
 				final BE beref = branchGraph.edgeRef();
 				final BE be = branchGraph.getBranchEdge( vertex, beref );
-				listener.navigateToEdge( be );
+				if ( be != null )
+					listener.navigateToEdge( be );
+
 				branchGraph.releaseRef( beref );
 			}
 			branchGraph.releaseRef( bvref );
@@ -133,7 +135,9 @@ public class BranchGraphNavigationHandlerAdapter<
 		{
 			final BE beref = branchGraph.edgeRef();
 			final BE be = branchGraph.getBranchEdge( edge, beref );
-			listener.navigateToEdge( be );
+			if ( be != null )
+				listener.navigateToEdge( be );
+
 			branchGraph.releaseRef( beref );
 		}
 	}
