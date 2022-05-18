@@ -140,6 +140,9 @@ public class WindowManager
 			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
 			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
 			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS, "Show the feature computation dialog." );
+			descriptions.add( NEW_BRANCH_BDV_VIEW, NEW_BRANCH_BDV_VIEW_KEYS, "Open a new branch BigDataViewer view." );
+			descriptions.add( NEW_BRANCH_TRACKSCHEME_VIEW, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS, "Open a new branch TrackScheme view." );
+			descriptions.add( NEW_HIERARCHY_TRACKSCHEME_VIEW, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS, "Open a new hierarchy TrackScheme view." );
 		}
 	}
 
