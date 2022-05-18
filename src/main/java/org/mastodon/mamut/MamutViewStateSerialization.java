@@ -649,6 +649,12 @@ class MamutViewStateSerialization
 				break;
 			}
 
+			case "MamutBranchViewTrackSchemeHierarchy":
+			{
+				windowManager.createHierarchyTrackScheme( guiState );
+				break;
+			}
+
 			case "MamutViewTable":
 			{
 				final MamutViewTable table = windowManager.createTable( guiState );

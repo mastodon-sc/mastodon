@@ -274,6 +274,7 @@ public class MainWindow extends JFrame
 						item( WindowManager.NEW_TABLE_VIEW ),
 						item( WindowManager.NEW_SELECTION_TABLE_VIEW ),
 						item( WindowManager.NEW_BRANCH_BDV_VIEW ),
-						item( WindowManager.NEW_BRANCH_TRACKSCHEME_VIEW ) ) );
+						item( WindowManager.NEW_BRANCH_TRACKSCHEME_VIEW ),
+						item( WindowManager.NEW_HIERARCHY_TRACKSCHEME_VIEW ) ) );
 	}
 }

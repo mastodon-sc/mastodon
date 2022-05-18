@@ -109,9 +109,11 @@ public class WindowManager
 
 	static final String NEW_BRANCH_BDV_VIEW = "new branch bdv view";
 	static final String NEW_BRANCH_TRACKSCHEME_VIEW = "new branch trackscheme view";
+	static final String NEW_HIERARCHY_TRACKSCHEME_VIEW = "new hierarchy trackscheme view";
 
 	static final String[] NEW_BRANCH_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 
 	/*
 	 * Command descriptions for all provided commands
@@ -186,6 +188,8 @@ public class WindowManager
 
 	private final AbstractNamedAction newTrackSchemeViewAction;
 
+	private final AbstractNamedAction newHierarchyTrackSchemeViewAction;
+
 	private final AbstractNamedAction newTableViewAction;
 
 	private final AbstractNamedAction newSelectionTableViewAction;
@@ -256,6 +260,7 @@ public class WindowManager
 		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
 		newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
 		newBranchTrackSchemeViewAction = new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
+		newHierarchyTrackSchemeViewAction = new RunnableAction( NEW_HIERARCHY_TRACKSCHEME_VIEW, this::createHierarchyTrackScheme );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
@@ -266,6 +271,7 @@ public class WindowManager
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 		globalAppActions.namedAction( newBranchBdvViewAction, NEW_BRANCH_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newBranchTrackSchemeViewAction, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS );
+		globalAppActions.namedAction( newHierarchyTrackSchemeViewAction, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS );
 
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
@@ -565,6 +571,23 @@ public class WindowManager
 		if ( appModel != null )
 		{
 			final MamutBranchViewTrackScheme view = new MamutBranchViewTrackScheme( appModel, guiState );
+			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+			addBTsWindow( view );
+			return view;
+		}
+		return null;
+	}
+
+	public MamutBranchViewTrackScheme createHierarchyTrackScheme()
+	{
+		return createHierarchyTrackScheme( new HashMap<>() );
+	}
+
+	public MamutBranchViewTrackScheme createHierarchyTrackScheme( final Map< String, Object > guiState )
+	{
+		if ( appModel != null )
+		{
+			final MamutBranchViewTrackSchemeHierarchy view = new MamutBranchViewTrackSchemeHierarchy( appModel, guiState );
 			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
 			addBTsWindow( view );
 			return view;
