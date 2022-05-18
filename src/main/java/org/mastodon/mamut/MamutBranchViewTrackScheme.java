@@ -68,19 +68,23 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		this( appModel, guiState, new BranchTimeTrackSchemeFactory() );
+		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory() );
 	}
 
-	protected MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState, final BranchTrackSchemeFactory factory )
+	protected MamutBranchViewTrackScheme(
+			final MamutAppModel appModel,
+			final Map< String, Object > guiState,
+			final BranchTrackSchemeFactory trackSchemeGraphFactory,
+			final TrackSchemeOverlayFactory overlayFactory )
 	{
-		super( appModel, factory.createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
+		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		// TrackScheme options.
 		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter =
 				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
-				.trackSchemeOverlayFactory( new BranchTrackSchemeOverlayFactory() )
+				.trackSchemeOverlayFactory( overlayFactory )
 				.paintLongEdges( true )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
@@ -274,7 +278,6 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 					new TrackSchemeGraph<>( graph, idmap, properties );
 			return trackSchemeGraph;
 		}
-
 	}
 
 	ColoringModel getColoringModel()
