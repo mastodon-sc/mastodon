@@ -40,6 +40,7 @@ import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -71,6 +72,7 @@ import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.mastodon.ui.util.XmlFileFilter;
+import org.mastodon.util.DatasetInfoParser;
 import org.mastodon.util.DummySpimData;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
@@ -87,6 +89,7 @@ import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.viewer.ViewerOptions;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.SpimDataIOException;
+import mpicbg.spim.data.XmlKeys;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 
 public class ProjectManager
@@ -364,11 +367,22 @@ public class ProjectManager
 			{
 				spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 			}
-			catch ( final SpimDataIOException e )
+			catch ( final SpimDataIOException | RuntimeException e )
 			{
-				e.printStackTrace();
-				System.err.println( "Could not open image data file. Opening with dummy dataset. Please fix dataset path!" );
-				spimData = DummySpimData.tryCreate( "x=100 y=100 z=100 sx=1 sy=1 sz=1 t=10.dummy" );
+				final Throwable cause = e.getCause();
+				if ( cause instanceof UnknownHostException )
+				{
+					// Try to make a sensible error message.
+					System.err.println( errorMessageUnknownHost( spimDataXmlFilename, cause.getMessage() ) );
+				}
+				else
+				{
+					System.err.println( "Could not open image data file. " );
+					e.printStackTrace();
+				}
+				final DatasetInfoParser info = DatasetInfoParser.inspect( spimDataXmlFilename );
+				System.err.println( "Opening with dummy dataset. Please fix dataset path in the mastodon project file." );
+				spimData = info.toDummySpimData();
 			}
 		}
 
@@ -628,6 +642,26 @@ public class ProjectManager
 			return;
 
 		MamutViewStateSerialization.fromXml( windowsEl, windowManager );
+	}
+
+	private static final String errorMessageUnknownHost( final String xmlFilename, final String host )
+	{
+		final SAXBuilder sax = new SAXBuilder();
+		try
+		{
+			final Document doc = sax.build( xmlFilename );
+			final Element root = doc.getRootElement();
+			final String baseUrl = root
+					.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG  )
+					.getChild(
+							XmlKeys.IMGLOADER_TAG )
+					.getChildText( "baseUrl" );
+			return "Cannot reach host  " + host + " for the dataset URL: " + baseUrl;
+		}
+		catch ( final Exception e )
+		{
+			return "Unparsable dataset file: " + e.getMessage();
+		}
 	}
 
 }

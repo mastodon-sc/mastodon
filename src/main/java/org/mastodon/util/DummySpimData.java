@@ -96,27 +96,33 @@ public class DummySpimData
 			final double sy = get( parts, "sy", 1 );
 			final double sz = get( parts, "sz", 1 );
 			final int t = ( int ) get( parts, "t", 1 );
-			final Dimensions imageSize = new FinalDimensions( x, y, z );
-			final AffineTransform3D calib = new AffineTransform3D();
-			calib.set( sx, 0,0 );
-			calib.set( sy, 1,1 );
-			calib.set( sz, 2,2 );
-
-			final File basePath = new File( "." );
-			final TimePoints timepoints = new TimePoints(
-					IntStream.range( 0, t ).mapToObj( TimePoint::new ).collect( Collectors.toList() ) );
-			final Map< Integer, BasicViewSetup > setups = new HashMap<>();
-			setups.put( 0, new BasicViewSetup( 0, "dummy", null, null ) );
-			final BasicImgLoader imgLoader = new DummyImgLoader( new UnsignedShortType(), imageSize );
-			final SequenceDescriptionMinimal sequenceDescription = new SequenceDescriptionMinimal( timepoints, setups, imgLoader, null );
-			final ViewRegistrations viewRegistrations = new ViewRegistrations(
-					IntStream.range( 0, t ).mapToObj( tp -> new ViewRegistration( tp, 0, calib ) ).collect( Collectors.toList() ) );
-			return new SpimDataMinimal( basePath, sequenceDescription, viewRegistrations );
+			return tryCreate( x, y, z, sx, sy, sz, t );
 		}
 		catch ( final NumberFormatException e )
 		{
 			return null;
 		}
+	}
+
+	public static SpimDataMinimal tryCreate( final int x, final int y, final int z, final double sx, final double sy, final double sz, final int t )
+	{
+		final Dimensions imageSize = new FinalDimensions( x, y, z );
+		final AffineTransform3D calib = new AffineTransform3D();
+		calib.set( sx, 0, 0 );
+		calib.set( sy, 1, 1 );
+		calib.set( sz, 2, 2 );
+
+		final File basePath = new File( "." );
+		final TimePoints timepoints = new TimePoints(
+				IntStream.range( 0, t ).mapToObj( TimePoint::new ).collect( Collectors.toList() ) );
+		final Map< Integer, BasicViewSetup > setups = new HashMap<>();
+		setups.put( 0, new BasicViewSetup( 0, "dummy", null, null ) );
+		final BasicImgLoader imgLoader = new DummyImgLoader( new UnsignedShortType(), imageSize );
+		final SequenceDescriptionMinimal sequenceDescription = new SequenceDescriptionMinimal( timepoints, setups, imgLoader, null );
+		final ViewRegistrations viewRegistrations = new ViewRegistrations(
+				IntStream.range( 0, t ).mapToObj( tp -> new ViewRegistration( tp, 0, calib ) ).collect( Collectors.toList() ) );
+		return new SpimDataMinimal( basePath, sequenceDescription, viewRegistrations );
+
 	}
 
 	private static double get( final String[] parts, final String key, final double defaultValue )
