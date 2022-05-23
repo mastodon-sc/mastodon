@@ -1,11 +1,11 @@
 package org.mastodon.mamut.feature.branch;
 
+import java.util.Iterator;
+
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
-import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.ItemIO;
@@ -35,24 +35,16 @@ public class BranchNSpotsFeatureComputer implements MamutFeatureComputer
 	@Override
 	public void run()
 	{
-		final Link eref = graph.edgeRef();
-		final Spot vref = graph.vertexRef();
-		final BranchSpot bvref = branchGraph.vertexRef();
 		for ( final BranchLink be : branchGraph.edges() )
 		{
 			int nspots = 0;
-			Link link = branchGraph.getLinkedEdge( be, eref );
-			Spot target = link.getTarget( vref );
-			while ( null == branchGraph.getBranchVertex( target, bvref ) && ( !target.outgoingEdges().isEmpty() ) )
+			final Iterator< Spot > it = branchGraph.vertexBranchIterator( be );
+			while ( it.hasNext() )
 			{
-				link = target.outgoingEdges().get( 0, eref );
-				target = link.getTarget( vref );
+				it.next();
 				nspots++;
 			}
 			output.map.set( be, nspots );
 		}
-		branchGraph.releaseRef( bvref );
-		graph.releaseRef( vref );
-		graph.releaseRef( eref );
 	}
 }
