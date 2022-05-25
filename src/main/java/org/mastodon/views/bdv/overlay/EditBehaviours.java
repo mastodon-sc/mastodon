@@ -107,9 +107,6 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 5.0;
 
-	/** Minimal radius below which changes in vertex size are rejected. */
-	private static final double MIN_RADIUS = 1.0;
-
 	/**
 	 * Ratio by which we change the radius upon change radius action.
 	 */
@@ -141,7 +138,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final ResizeSpotBehaviour decreaseSpotRadiusBehaviourABit;
 
-	private double lastRadius = 10;
+	private double lastRadius = 5.;
 
 	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
@@ -149,9 +146,10 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V, E > focus,
-			final UndoPointMarker undo )
+			final UndoPointMarker undo,
+			final double minRadius )
 	{
-		final EditBehaviours< V, E > eb = new EditBehaviours<>( overlayGraph, renderer, selection, focus, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE );
+		final EditBehaviours< V, E > eb = new EditBehaviours<>( overlayGraph, renderer, selection, focus, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE, minRadius );
 
 		behaviours.namedBehaviour( eb.moveSpotBehaviour, MOVE_SPOT_KEYS );
 		behaviours.namedBehaviour( eb.addSpotBehaviour, ADD_SPOT_KEYS );
@@ -183,7 +181,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final UndoPointMarker undo,
 			final double normalRadiusChange,
 			final double aBitRadiusChange,
-			final double aLotRadiusChange )
+			final double aLotRadiusChange,
+			final double minRadius )
 	{
 		this.overlayGraph = overlayGraph;
 		this.lock = overlayGraph.getLock();
@@ -194,12 +193,12 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 		moveSpotBehaviour = new MoveSpotBehaviour( MOVE_SPOT );
 		addSpotBehaviour = new AddSpotBehaviour( ADD_SPOT );
-		increaseSpotRadiusBehaviour = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS, normalRadiusChange );
-		increaseSpotRadiusBehaviourALot = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ALOT, aLotRadiusChange );
-		increaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ABIT, aBitRadiusChange );
-		decreaseSpotRadiusBehaviour = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS, -normalRadiusChange / ( 1 + normalRadiusChange ) );
-		decreaseSpotRadiusBehaviourALot = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ALOT, -aLotRadiusChange / ( 1 + aLotRadiusChange ) );
-		decreaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ABIT, -aBitRadiusChange / ( 1 + aBitRadiusChange ) );
+		increaseSpotRadiusBehaviour = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS, normalRadiusChange, minRadius );
+		increaseSpotRadiusBehaviourALot = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ALOT, aLotRadiusChange, minRadius );
+		increaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ABIT, aBitRadiusChange, minRadius );
+		decreaseSpotRadiusBehaviour = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS, -normalRadiusChange / ( 1 + normalRadiusChange ), minRadius );
+		decreaseSpotRadiusBehaviourALot = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ALOT, -aLotRadiusChange / ( 1 + aLotRadiusChange ), minRadius );
+		decreaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ABIT, -aBitRadiusChange / ( 1 + aBitRadiusChange ), minRadius );
 	}
 
 	private class AddSpotBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
@@ -339,10 +338,13 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 		private final JamaEigenvalueDecomposition eig;
 
-		public ResizeSpotBehaviour( final String name, final double factor )
+		private final double minRadius;
+
+		public ResizeSpotBehaviour( final String name, final double factor, final double minRadius )
 		{
 			super( name );
 			this.factor = factor;
+			this.minRadius = minRadius;
 			mat = new double[ 3 ][ 3 ];
 			eig = new JamaEigenvalueDecomposition( 3 );
 		}
@@ -365,11 +367,14 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 					eig.decomposeSymmetric( mat );
 					final double[] eigVals = eig.getRealEigenvalues();
 					for ( final double eigVal : eigVals )
-						if ( eigVal < MIN_RADIUS )
+					{
+						final double r = Math.sqrt( eigVal );
+						if ( r < minRadius )
 							return;
+					}
 
 					vertex.setCovariance( mat );
-					lastRadius = Math.max( MIN_RADIUS, Math.sqrt( vertex.getBoundingSphereRadiusSquared() ) );
+					lastRadius = Math.max( minRadius, Math.sqrt( vertex.getBoundingSphereRadiusSquared() ) );
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();
 

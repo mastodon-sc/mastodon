@@ -98,7 +98,10 @@ import org.mastodon.views.context.ContextProvider;
 
 import bdv.BigDataViewerActions;
 import bdv.tools.InitializeViewerState;
+import bdv.util.Affine3DHelpers;
 import bdv.viewer.NavigationActions;
+import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 
@@ -290,7 +293,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		final AutoNavigateFocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 
 		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel, navigationHandler );
-		EditBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel, model );
+		EditBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel, model, getMinRadius( sharedBdvData ) );
 		EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, selectionModel, focusModel, model );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
@@ -338,8 +341,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 	}
-	
-	protected OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >  createRenderer(
+
+	protected OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > createRenderer(
 			final OverlayGraphWrapper< Spot, Link > viewGraph,
 			final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > highlightModel,
 			final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > focusModel,
@@ -372,5 +375,36 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 	public ColoringModel getColoringModel()
 	{
 		return coloringModel;
+	}
+
+	/**
+	 * Determine min radius to pass to the edit actions, so that we cannot
+	 * create spots that have a radius smaller than 0.5 pixels in the worst
+	 * case.
+	 */
+	private static final double getMinRadius( final SharedBigDataViewerData sharedBdvData )
+	{
+		double minRadius = 0.5;
+		final int level = 0;
+		for ( final SourceAndConverter< ? > sac : sharedBdvData.getSources() )
+		{
+			for ( int t = 0; t < sharedBdvData.getNumTimepoints(); t++ )
+			{
+				final Source< ? > source = sac.getSpimSource();
+				if ( source.isPresent( t ) )
+				{
+					final AffineTransform3D transform = new AffineTransform3D();
+					source.getSourceTransform( t, level, transform );
+					for ( int d = 0; d < 3; d++ )
+					{
+						final double l = Affine3DHelpers.extractScale( transform, d ) / 2.;
+						if ( l < minRadius )
+							minRadius = l;
+					}
+					break;
+				}
+			}
+		}
+		return minRadius;
 	}
 }
