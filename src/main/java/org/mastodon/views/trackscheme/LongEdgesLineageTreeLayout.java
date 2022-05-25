@@ -72,6 +72,7 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayout
 		final double minX = transform.getMinX();
 		final double maxX = transform.getMaxX();
 		final double minY = transform.getMinY();
+		final double maxY = transform.getMaxY();
 		final double xScale = transform.getScaleX();
 		final double yScale = transform.getScaleY();
 		screenEntities.screenTransform().set( transform );
@@ -137,9 +138,16 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayout
 				minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
 				prevX = x;
 
+				final int tp1 = v1.getTimepoint();
 				for ( final TrackSchemeEdge edge : v1.incomingEdges() )
 				{
 					edge.getSource( v2 );
+
+					// Check if the edge has some parts on the screen.
+					final int tp2 = v2.getTimepoint();
+					if ( ( tp1 > maxY && tp2 > maxY ) || ( tp1 < minY && tp2 < minY ) )
+						continue;
+
 					int v2si = v2.getScreenVertexIndex();
 
 					// TODO: additionally to checking for id ref
