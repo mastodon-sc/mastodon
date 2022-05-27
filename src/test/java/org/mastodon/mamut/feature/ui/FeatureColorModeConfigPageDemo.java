@@ -64,15 +64,18 @@ public class FeatureColorModeConfigPageDemo
 			final PreferencesDialog settings = new PreferencesDialog( null, new Keymap(), new String[] { KeyConfigContexts.MASTODON } );
 			settings.addPage( new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
 					featureColorModeManager,
-					featureProjectionsManager ) );
+					featureProjectionsManager,
+					"Spot", "Link" ) );
 
-			settings.pack();
-			settings.setVisible( true );
-
-			final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+			final MamutProject project = new MamutProjectIO().load( "samples/drosophila_crop.mastodon" );
 			final Model model = new Model();
 			model.loadRaw( project.openForReading() );
 			featureProjectionsManager.setModel( model, 3 );
+
+			settings.pack();
+			settings.setLocationRelativeTo( null );
+			settings.setVisible( true );
+
 		}
 	}
 }

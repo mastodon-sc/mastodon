@@ -94,6 +94,7 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.viewer.ViewerOptions;
+import bdv.viewer.animate.MessageOverlayAnimator;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.SpimDataIOException;
@@ -518,6 +519,8 @@ public class ProjectManager
 			}
 		}
 
+		model.declareDefaultFeatures();
+
 		/*
 		 * Reset window manager.
 		 */
@@ -530,7 +533,9 @@ public class ProjectManager
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
 		final MamutPlugins plugins = windowManager.getPlugins();
 		final Actions globalAppActions = windowManager.getGlobalAppActions();
-		final ViewerOptions options = ViewerOptions.options().shareKeyPressedEvents( keyPressedManager );
+		final ViewerOptions options = ViewerOptions.options()
+				.shareKeyPressedEvents( keyPressedManager )
+				.msgOverlay( new MessageOverlayAnimator( 1500, 0.005, 0.02 ) );
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData(
 				spimDataXmlFilename,
 				spimData,
@@ -706,6 +711,8 @@ public class ProjectManager
 		guiRoot.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
 		final Element windows = new Element( WINDOWS_TAG );
 		windowManager.forEachView( ( view ) -> windows.addContent(
+				MamutViewStateSerialization.toXml( view ) ) );
+		windowManager.forEachBranchView( ( view ) -> windows.addContent(
 				MamutViewStateSerialization.toXml( view ) ) );
 		guiRoot.addContent( windows );
 		final Document doc = new Document( guiRoot );

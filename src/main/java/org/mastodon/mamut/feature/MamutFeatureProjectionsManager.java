@@ -37,13 +37,14 @@ import org.mastodon.feature.ui.FeatureProjectionsManager;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.ui.coloring.feature.DefaultFeatureRangeCalculator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.ui.coloring.feature.Projections;
 import org.mastodon.ui.coloring.feature.ProjectionsFromFeatureModel;
-import org.mastodon.ui.coloring.feature.TargetType;
 import org.scijava.listeners.Listeners;
 
 /**
@@ -103,11 +104,15 @@ public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 			final Projections projections = new ProjectionsFromFeatureModel( featureModel );
 			featureRangeCalculator.vertexCalculator = new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), projections );
 			featureRangeCalculator.edgeCalculator = new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
+			featureRangeCalculator.branchVertexCalculator = new DefaultFeatureRangeCalculator<>( model.getBranchGraph().vertices(), projections );
+			featureRangeCalculator.branchEdgeCalculator = new DefaultFeatureRangeCalculator<>( model.getBranchGraph().edges(), projections );
 			featureModel.listeners().add( this::notifyAvailableFeatureProjectionsChanged );
 		}
 		else
 		{
 			featureRangeCalculator.vertexCalculator = null;
+			featureRangeCalculator.edgeCalculator = null;
+			featureRangeCalculator.branchVertexCalculator = null;
 			featureRangeCalculator.edgeCalculator = null;
 		}
 
@@ -133,7 +138,9 @@ public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 				featureModel,
 				featureColorModeManager,
 				Spot.class,
-				Link.class );
+				Link.class,
+				BranchSpot.class,
+				BranchLink.class );
 	}
 
 	private void notifyAvailableFeatureProjectionsChanged()
@@ -143,9 +150,14 @@ public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 
 	private static class AggregateFeatureRangeCalculator implements FeatureRangeCalculator
 	{
+
 		FeatureRangeCalculator vertexCalculator;
 
 		FeatureRangeCalculator edgeCalculator;
+
+		FeatureRangeCalculator branchVertexCalculator;
+
+		FeatureRangeCalculator branchEdgeCalculator;
 
 		@Override
 		public double[] computeMinMax( final FeatureProjectionId projection )
@@ -153,17 +165,26 @@ public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 			if ( projection == null )
 				return null;
 
-			if ( projection.getTargetType() == TargetType.VERTEX )
+			switch ( projection.getTargetType() )
 			{
+			case VERTEX:
 				return vertexCalculator == null
 						? null
 						: vertexCalculator.computeMinMax( projection );
-			}
-			else // if ( projection.getTargetType() == TargetType.EDGE )
-			{
+			case EDGE:
 				return edgeCalculator == null
 						? null
 						: edgeCalculator.computeMinMax( projection );
+			case BRANCH_VERTEX:
+				return branchVertexCalculator == null
+						? null
+						: branchVertexCalculator.computeMinMax( projection );
+			case BRANCH_EDGE:
+				return branchEdgeCalculator == null
+						? null
+						: branchEdgeCalculator.computeMinMax( projection );
+			default:
+				throw new IllegalArgumentException( "Unknown target type: " + projection.getTargetType() + " of projection " + projection );
 			}
 		}
 	};

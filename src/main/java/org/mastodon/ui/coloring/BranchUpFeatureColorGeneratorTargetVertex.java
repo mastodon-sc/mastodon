@@ -26,31 +26,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature;
+package org.mastodon.ui.coloring;
 
-import org.mastodon.mamut.model.Model;
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraph;
 
-@Plugin( type = LinkTargetIdFeatureComputer.class, name = "Link target IDs" )
-public class LinkTargetIdFeatureComputer implements MamutFeatureComputer
+public class BranchUpFeatureColorGeneratorTargetVertex< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+		extends AbstractBranchVertexColorGenerator< V, E, BV, BE >
+		implements EdgeColorGenerator< V, E >
 {
 
-	@Parameter
-	private Model model;
-
-	@Parameter( type = ItemIO.OUTPUT )
-	private LinkTargetIdFeature output;
-
-	@Override
-	public void createOutput()
+	public BranchUpFeatureColorGeneratorTargetVertex(
+			final FeatureProjection< BV > featureProjection,
+			final BranchGraph< BV, BE, V, E > branchGraph,
+			final ColorMap colorMap,
+			final double min,
+			final double max )
 	{
-		if ( null == output )
-			output = new LinkTargetIdFeature( model.getGraph() );
+		super( featureProjection, branchGraph, colorMap, min, max );
 	}
 
 	@Override
-	public void run()
-	{}
+	public int color( final E edge, final V source, final V target )
+	{
+		return upwardFromVertex( target );
+	}
 }

@@ -26,38 +26,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature;
+package org.mastodon.ui.coloring;
 
-import static org.scijava.ItemIO.OUTPUT;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraph;
 
-import org.mastodon.feature.Dimension;
-import org.mastodon.mamut.model.Model;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-
-@Plugin( type = MamutFeatureComputer.class )
-public class SpotPositionFeatureComputer implements MamutFeatureComputer
+public class BranchUpFeatureColorGeneratorSourceVertex< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+		extends AbstractBranchVertexColorGenerator< V, E, BV, BE >
+		implements EdgeColorGenerator< V, E >
 {
 
-	@Parameter
-	private Model model;
-
-	@Parameter( type = OUTPUT )
-	private SpotPositionFeature output;
-
-	@Override
-	public void createOutput()
+	public BranchUpFeatureColorGeneratorSourceVertex(
+			final FeatureProjection< BV > featureProjection,
+			final BranchGraph< BV, BE, V, E > branchGraph,
+			final ColorMap colorMap,
+			final double min,
+			final double max )
 	{
-		if ( null == output )
-		{
-			final String units = Dimension.POSITION.getUnits( model.getSpaceUnits(), model.getTimeUnits() );
-			output = new SpotPositionFeature( units );
-		}
+		super( featureProjection, branchGraph, colorMap, min, max );
 	}
 
 	@Override
-	public void run()
+	public int color( final E edge, final V source, final V target )
 	{
-		// Nothing to do.
+		return upwardFromVertex( source );
 	}
 }

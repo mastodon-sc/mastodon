@@ -34,6 +34,9 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
+import org.mastodon.feature.ui.FeatureComputationPanel;
+import org.mastodon.feature.ui.FeatureTable;
+
 /**
  * Collection of static fields pointing to the icons to use in the Mastodon-app.
  *
@@ -168,4 +171,17 @@ public class MastodonIcons
 	 */
 
 	public static final Image MAINWINDOW_BG = new ImageIcon( MastodonIcons.class.getResource( "MastodonMainWindowBG.png" ) ).getImage();
+
+	/*
+	 * General use icons.
+	 */
+
+	public static final ImageIcon GO_ICON = new ImageIcon( FeatureComputationPanel.class.getResource( "bullet_green.png" ) );
+
+	public static final ImageIcon CANCEL_ICON = new ImageIcon( FeatureComputationPanel.class.getResource( "cancel.png" ) );
+
+	public static final ImageIcon UP_TO_DATE_ICON = new ImageIcon( FeatureTable.class.getResource( "bullet_green.png" ) );
+
+	public static final ImageIcon NOT_UP_TO_DATE_ICON = new ImageIcon( FeatureTable.class.getResource( "time.png" ) );
+
 }

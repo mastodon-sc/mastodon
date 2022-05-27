@@ -26,29 +26,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature;
+package org.mastodon.ui.coloring;
 
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraph;
 
-@Plugin( type = MamutFeatureComputer.class )
-public class SpotNLinksFeatureComputer implements MamutFeatureComputer
+public class BranchDownFeatureColorGenerator< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+		extends AbstractBranchVertexColorGenerator< V, E, BV, BE >
+		implements ColorGenerator< V >
 {
 
-	@Parameter( type = ItemIO.OUTPUT )
-	private SpotNLinksFeature output;
-
-	@Override
-	public void run()
+	public BranchDownFeatureColorGenerator(
+			final FeatureProjection< BV > featureProjection,
+			final BranchGraph< BV, BE, V, E > branchGraph,
+			final ColorMap colorMap,
+			final double min,
+			final double max )
 	{
-		// Nothing to do, feature is virtual.
+		super( featureProjection, branchGraph, colorMap, min, max );
 	}
 
 	@Override
-	public void createOutput()
+	public int color( final V v )
 	{
-		if ( null == output )
-			output = new SpotNLinksFeature();
+		return downwardFromVertex( v );
 	}
 }

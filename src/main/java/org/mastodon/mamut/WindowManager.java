@@ -65,6 +65,7 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
+import org.mastodon.util.RunnableActionPair;
 import org.mastodon.util.ToggleDialogAction;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
@@ -106,6 +107,14 @@ public class WindowManager
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 
+	static final String NEW_BRANCH_BDV_VIEW = "new branch bdv view";
+	static final String NEW_BRANCH_TRACKSCHEME_VIEW = "new branch trackscheme view";
+	static final String NEW_HIERARCHY_TRACKSCHEME_VIEW = "new hierarchy trackscheme view";
+
+	static final String[] NEW_BRANCH_BDV_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+
 	/*
 	 * Command descriptions for all provided commands
 	 */
@@ -131,6 +140,9 @@ public class WindowManager
 			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
 			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
 			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS, "Show the feature computation dialog." );
+			descriptions.add( NEW_BRANCH_BDV_VIEW, NEW_BRANCH_BDV_VIEW_KEYS, "Open a new branch BigDataViewer view." );
+			descriptions.add( NEW_BRANCH_TRACKSCHEME_VIEW, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS, "Open a new branch TrackScheme view." );
+			descriptions.add( NEW_HIERARCHY_TRACKSCHEME_VIEW, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS, "Open a new hierarchy TrackScheme view." );
 		}
 	}
 
@@ -138,29 +150,25 @@ public class WindowManager
 
 	private final MamutPlugins plugins;
 
-	/**
-	 * All currently open BigDataViewer windows.
-	 */
+	/** All currently open BigDataViewer windows. */
 	private final List< MamutViewBdv > bdvWindows = new ArrayList<>();
 
-	/**
-	 * The {@link ContextProvider}s of all currently open BigDataViewer windows.
-	 */
+	/** All currently open branch TrackScheme windows. */
+	private final List< MamutBranchViewBdv > bbdvWindows = new ArrayList<>();
+
+	/** The {@link ContextProvider}s of all currently open BigDataViewer windows. */
 	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
 
-	/**
-	 * All currently open TrackScheme windows.
-	 */
+	/** All currently open TrackScheme windows. */
 	private final List< MamutViewTrackScheme > tsWindows = new ArrayList<>();
 
-	/**
-	 * All currently open Table windows.
-	 */
+	/** All currently open branch TrackScheme windows. */
+	private final List< MamutBranchViewTrackScheme > btsWindows = new ArrayList<>();
+
+	/** All currently open Table windows. */
 	private final List< MamutViewTable > tableWindows = new ArrayList<>();
 
-	/**
-	 * All currently open Grapher windows.
-	 */
+	/** All currently open Grapher windows. */
 	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
 
 	private final KeyPressedManager keyPressedManager;
@@ -183,11 +191,17 @@ public class WindowManager
 
 	private final AbstractNamedAction newTrackSchemeViewAction;
 
+	private final AbstractNamedAction newHierarchyTrackSchemeViewAction;
+
 	private final AbstractNamedAction newTableViewAction;
 
 	private final AbstractNamedAction newSelectionTableViewAction;
 
 	private final AbstractNamedAction newGrapherViewAction;
+
+	private final AbstractNamedAction newBranchBdvViewAction;
+
+	private final AbstractNamedAction newBranchTrackSchemeViewAction;
 
 	private final AbstractNamedAction editTagSetsAction;
 
@@ -240,13 +254,16 @@ public class WindowManager
 		projectManager = new ProjectManager( this );
 		projectManager.install( globalAppActions );
 
-		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
-		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
+		newBdvViewAction = new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
+		newTrackSchemeViewAction = new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
 		newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
 		newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
 		newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
+		newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
+		newBranchTrackSchemeViewAction = new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
+		newHierarchyTrackSchemeViewAction = new RunnableAction( NEW_HIERARCHY_TRACKSCHEME_VIEW, this::createHierarchyTrackScheme );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
@@ -255,13 +272,16 @@ public class WindowManager
 		globalAppActions.namedAction( newGrapherViewAction, NEW_GRAPHER_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
+		globalAppActions.namedAction( newBranchBdvViewAction, NEW_BRANCH_BDV_VIEW_KEYS );
+		globalAppActions.namedAction( newBranchTrackSchemeViewAction, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS );
+		globalAppActions.namedAction( newHierarchyTrackSchemeViewAction, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS );
 
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", dataDisplayStyleManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
-		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager ) );
+		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager, "Spot", "Link" ) );
 
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
@@ -299,6 +319,8 @@ public class WindowManager
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		newTableViewAction.setEnabled( appModel != null );
 		newSelectionTableViewAction.setEnabled( appModel != null );
+		newBranchBdvViewAction.setEnabled( appModel != null );
+		newBranchTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
 		featureComputationAction.setEnabled( appModel != null );
 	}
@@ -356,6 +378,12 @@ public class WindowManager
 		} );
 	}
 
+	private synchronized void addBBdvWindow( final MamutBranchViewBdv w )
+	{
+		bbdvWindows.add( w );
+		w.onClose( () -> bbdvWindows.remove( w ) );
+	}
+
 	public void forEachBdvView( final Consumer< ? super MamutViewBdv > action )
 	{
 		bdvWindows.forEach( action );
@@ -369,6 +397,12 @@ public class WindowManager
 			tsWindows.remove( w );
 			w.getContextChooser().updateContextProviders( new ArrayList<>() );
 		} );
+	}
+
+	private synchronized void addBTsWindow( final MamutBranchViewTrackScheme w )
+	{
+		btsWindows.add( w );
+		w.onClose( () -> btsWindows.remove( w ) );
 	}
 
 	private synchronized void addTableWindow( final MamutViewTable table )
@@ -406,12 +440,29 @@ public class WindowManager
 		tsWindows.forEach( action );
 	}
 
+	public void forEachBranchTrackSchemeView( final Consumer< ? super MamutBranchViewTrackScheme > action )
+	{
+		btsWindows.forEach( action );
+	}
+	
+	private void forEachBranchBdvView( final Consumer< ? super MamutBranchViewBdv > action )
+	{
+		bbdvWindows.forEach( action );
+	}
+
+
 	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
 	{
 		forEachBdvView( action );
 		forEachTrackSchemeView( action );
 		forEachTableView( action );
 		forEachGrapherView( action );
+	}
+
+	public void forEachBranchView( final Consumer< ? super MamutBranchView< ?, ?, ? > > action )
+	{
+		forEachBranchBdvView( action );
+		forEachBranchTrackSchemeView( action );
 	}
 
 	public MamutViewBdv createBigDataViewer()
@@ -494,7 +545,57 @@ public class WindowManager
 			return view;
 		}
 		return null;
+	}
 
+	public MamutBranchViewBdv createBranchBigDataViewer()
+	{
+		return createBranchBigDataViewer( new HashMap<>() );
+	}
+
+	public MamutBranchViewBdv createBranchBigDataViewer( final Map< String, Object > guiState )
+	{
+		if ( appModel != null )
+		{
+			final MamutBranchViewBdv view = new MamutBranchViewBdv( appModel, guiState );
+			view.getFrame().setIconImages( BDV_VIEW_ICON );
+			addBBdvWindow( view );
+			return view;
+		}
+		return null;
+	}
+
+	public MamutBranchViewTrackScheme createBranchTrackScheme()
+	{
+		return createBranchTrackScheme( new HashMap<>() );
+	}
+
+	public MamutBranchViewTrackScheme createBranchTrackScheme( final Map< String, Object > guiState )
+	{
+		if ( appModel != null )
+		{
+			final MamutBranchViewTrackScheme view = new MamutBranchViewTrackScheme( appModel, guiState );
+			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+			addBTsWindow( view );
+			return view;
+		}
+		return null;
+	}
+
+	public MamutBranchViewTrackScheme createHierarchyTrackScheme()
+	{
+		return createHierarchyTrackScheme( new HashMap<>() );
+	}
+
+	public MamutBranchViewTrackScheme createHierarchyTrackScheme( final Map< String, Object > guiState )
+	{
+		if ( appModel != null )
+		{
+			final MamutBranchViewTrackSchemeHierarchy view = new MamutBranchViewTrackSchemeHierarchy( appModel, guiState );
+			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+			addBTsWindow( view );
+			return view;
+		}
+		return null;
 	}
 
 	public void editTagSets()
@@ -518,7 +619,11 @@ public class WindowManager
 		final ArrayList< Window > windows = new ArrayList<>();
 		for ( final MamutViewBdv w : bdvWindows )
 			windows.add( w.getFrame() );
+		for ( final MamutBranchViewBdv w : bbdvWindows )
+			windows.add( w.getFrame() );
 		for ( final MamutViewTrackScheme w : tsWindows )
+			windows.add( w.getFrame() );
+		for ( final MamutBranchViewTrackScheme w : btsWindows )
 			windows.add( w.getFrame() );
 		for ( final MamutViewTable w : tableWindows )
 			windows.add( w.getFrame() );

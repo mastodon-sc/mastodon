@@ -43,6 +43,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.SpotPool;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.command.CommandModule;
@@ -105,6 +106,15 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 			@SuppressWarnings( "unchecked" )
 			final ModuleItem< ModelGraph > graphItem = ( ModuleItem< ModelGraph > ) item;
 			graphItem.setValue( module, model.getGraph() );
+			return;
+		}
+
+		// Pass the model branch graph.
+		if ( ModelBranchGraph.class.isAssignableFrom( parameterClass ) )
+		{
+			@SuppressWarnings( "unchecked" )
+			final ModuleItem< ModelBranchGraph > graphItem = ( ModuleItem< ModelBranchGraph > ) item;
+			graphItem.setValue( module, model.getBranchGraph() );
 			return;
 		}
 

@@ -63,6 +63,9 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		menuTexts.put( WindowManager.NEW_TRACKSCHEME_VIEW, "New Trackscheme" );
 		menuTexts.put( WindowManager.NEW_TABLE_VIEW, "New data table" );
 		menuTexts.put( WindowManager.NEW_SELECTION_TABLE_VIEW, "New selection table" );
+		menuTexts.put( WindowManager.NEW_BRANCH_BDV_VIEW, "New branch Bdv" );
+		menuTexts.put( WindowManager.NEW_BRANCH_TRACKSCHEME_VIEW, "New branch Trackscheme" );
+		menuTexts.put( WindowManager.NEW_HIERARCHY_TRACKSCHEME_VIEW, "New hierarchy Trackscheme" );
 		menuTexts.put( WindowManager.PREFERENCES_DIALOG, "Preferences..." );
 
 		menuTexts.put( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL, "Settings Toolbar" );
@@ -118,6 +121,11 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		return ViewMenuBuilder.menu( "Coloring", handle );
 	}
 
+	public static MenuItem branchColorMenu( final JMenuHandle handle )
+	{
+		return ViewMenuBuilder.menu( "Branch coloring", handle );
+	}
+
 	public static MenuItem tagSetMenu( final JMenuHandle handle )
 	{
 		return ViewMenuBuilder.menu( "Tags", handle );
@@ -143,7 +151,7 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 	 * menu path. For instance
 	 * <code>makeFullMenuItem( "my action", "Plugins", "Submenu" );</code> will
 	 * create a menu item for <code>my action</code> under the menu path
-	 * <code>Plugins > Submenu</code> and create the said path if required.
+	 * <code>Plugins &gt; Submenu</code> and create the said path if required.
 	 * 
 	 * @param itemName
 	 *            the name of the item.

@@ -32,6 +32,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,10 +42,15 @@ import java.util.Map.Entry;
 import javax.swing.JViewport;
 
 import org.jdom2.Element;
+import org.mastodon.app.IMastodonView;
+import org.mastodon.app.ui.IMastodonFrameView;
 import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
@@ -129,11 +135,36 @@ class MamutViewStateSerialization
 	static final String TABLE_DISPLAYING_VERTEX_TABLE = "TableVertexTableDisplayed";
 
 	/**
+	 * Key that specifies what table is currently showing in the table view.
+	 * Values are <code>String</code> that points to a tab name in the tabbed
+	 * pane.
+	 */
+	static final String TABLE_DISPLAYED = "TableDisplayed";
+
+	/**
 	 * Key to the parameter that stores the vertex table displayed rectangle.
 	 * Value is and <code>int[]</code> array of 4 elements: x, y, width and
 	 * height.
 	 */
 	static final String TABLE_VERTEX_TABLE_VISIBLE_POS = "TableVertexTableVisibleRect";
+
+	/**
+	 * Key to the parameter that stores the table displayed position. Value is
+	 * and <code>int[]</code> array of 2 elements: x, y.
+	 */
+	static final String TABLE_VISIBLE_POS = "TableVisibleRect";
+
+	/**
+	 * Key to the parameter that stores the GUI states of multiple tables. Value
+	 * is a <code>List<Map<String, Object>></code>.
+	 */
+	static final String TABLE_ELEMENT = "Tables";
+
+	/**
+	 * Key to the parameter that stores the table name in a table GUI state.
+	 * Value is a <code>String</code>.
+	 */
+	static final String TABLE_NAME = "TableName";
 
 	/**
 	 * Key to the parameter that stores the edge table displayed rectangle.
@@ -189,79 +220,111 @@ class MamutViewStateSerialization
 	static final String COLORBAR_POSITION_KEY = "ColorbarPosition";
 
 	/**
+	 * Key that specifies settings specific to the branch-graph view in a common
+	 * view. Values are <code>Map<String, Object></code>.
+	 */
+	static final String BRANCH_GRAPH = "BranchGraph";
+
+	/**
 	 * Serializes a GUI state map into a XML element.
 	 *
 	 * @param guiState
 	 *            the GUI state to serialize.
 	 * @return a new XML element.
 	 */
-	static Element toXml( final MamutView< ?, ?, ? > view )
+	static < V extends IMastodonFrameView & IMastodonView > Element toXml( final V view )
 	{
 		final Map< String, Object > guiState = getGuiState( view );
 		final Element element = new Element( WINDOW_TAG );
-		for ( final Entry< String, Object > entry : guiState.entrySet() )
+		toXml( guiState, element );
+		return element;
+	}
+
+	static void toXml( final Map< String, Object > map, final Element element )
+	{
+		for ( final Entry< String, Object > entry : map.entrySet() )
 		{
-			final Object value = entry.getValue();
-			final Element el;
-			if ( value instanceof Integer )
-				el = XmlHelpers.intElement( entry.getKey(), ( Integer ) entry.getValue() );
-			else if ( value instanceof int[] )
-				el = XmlHelpers.intArrayElement( entry.getKey(), ( int[] ) entry.getValue() );
-			else if ( value instanceof Double )
-				el = XmlHelpers.doubleElement( entry.getKey(), ( Double ) entry.getValue() );
-			else if ( value instanceof double[] )
-				el = XmlHelpers.doubleArrayElement( entry.getKey(), ( double[] ) entry.getValue() );
-			else if ( value instanceof AffineGet )
-				el = XmlHelpers.affineTransform3DElement( entry.getKey(), ( AffineGet ) entry.getValue() );
-			else if ( value instanceof Boolean )
-				el = XmlHelpers.booleanElement( entry.getKey(), ( Boolean ) value );
-			else if ( value instanceof String )
-			{
-				el = new Element( entry.getKey() );
-				el.setText( value.toString() );
-			}
-			else if ( value instanceof ScreenTransform )
-			{
-				final ScreenTransform t = ( ScreenTransform ) value;
-				el = XmlHelpers.doubleArrayElement( entry.getKey(), new double[] {
-						t.getMinX(),
-						t.getMaxX(),
-						t.getMinY(),
-						t.getMaxY(),
-						t.getScreenWidth(),
-						t.getScreenHeight()
-				} );
-			}
-			else if ( value instanceof org.mastodon.views.grapher.datagraph.ScreenTransform )
-			{
-				final org.mastodon.views.grapher.datagraph.ScreenTransform t = ( org.mastodon.views.grapher.datagraph.ScreenTransform ) value;
-				el = XmlHelpers.doubleArrayElement( entry.getKey(), new double[] {
-						t.getMinX(),
-						t.getMaxX(),
-						t.getMinY(),
-						t.getMaxY(),
-						t.getScreenWidth(),
-						t.getScreenHeight()
-				} );
-			}
-			else if ( value instanceof Position )
-			{
-				el = new Element( entry.getKey() );
-				el.setText( ( ( Position ) value ).name() );
-			}
-			else if ( value instanceof Element )
-			{
-				el = new Element( entry.getKey() );
-				el.setContent( ( Element ) value );
-			}
-			else
-			{
-				System.err.println( "Do not know how to serialize object " + value + " for key " + entry.getKey() + "." );
-				continue;
-			}
+			final Element el = toXml( entry.getKey(), entry.getValue() );
 			element.addContent( el );
 		}
-		return element;
+	}
+
+	@SuppressWarnings( "unchecked" )
+	static Element toXml( final String key, final Object value )
+	{
+		final Element el;
+		if ( value instanceof Integer )
+			el = XmlHelpers.intElement( key, ( Integer ) value );
+		else if ( value instanceof int[] )
+			el = XmlHelpers.intArrayElement( key, ( int[] ) value );
+		else if ( value instanceof Double )
+			el = XmlHelpers.doubleElement( key, ( Double ) value );
+		else if ( value instanceof double[] )
+			el = XmlHelpers.doubleArrayElement( key, ( double[] ) value );
+		else if ( value instanceof AffineGet )
+			el = XmlHelpers.affineTransform3DElement( key, ( AffineGet ) value );
+		else if ( value instanceof Boolean )
+			el = XmlHelpers.booleanElement( key, ( Boolean ) value );
+		else if ( value instanceof String )
+		{
+			el = new Element( key );
+			el.setText( value.toString() );
+		}
+		else if ( value instanceof ScreenTransform )
+		{
+			final ScreenTransform t = ( ScreenTransform ) value;
+			el = XmlHelpers.doubleArrayElement( key, new double[] {
+					t.getMinX(),
+					t.getMaxX(),
+					t.getMinY(),
+					t.getMaxY(),
+					t.getScreenWidth(),
+					t.getScreenHeight()
+			} );
+		}
+		else if ( value instanceof org.mastodon.views.grapher.datagraph.ScreenTransform )
+		{
+			final org.mastodon.views.grapher.datagraph.ScreenTransform t = ( org.mastodon.views.grapher.datagraph.ScreenTransform ) value;
+			el = XmlHelpers.doubleArrayElement( key, new double[] {
+					t.getMinX(),
+					t.getMaxX(),
+					t.getMinY(),
+					t.getMaxY(),
+					t.getScreenWidth(),
+					t.getScreenHeight()
+			} );
+		}
+		else if ( value instanceof Position )
+		{
+			el = new Element( key );
+			el.setText( ( ( Position ) value ).name() );
+		}
+		else if ( value instanceof Element )
+		{
+			el = new Element( key );
+			el.setContent( ( Element ) value );
+		}
+		else if ( value instanceof Map )
+		{
+			el = new Element( key );
+			toXml( ( Map< String, Object > ) value, el );
+		}
+		else if ( value instanceof List )
+		{
+			el = new Element( key );
+			final List< Object > os = ( List< Object > ) value;
+			for ( final Object o : os )
+			{
+				final Element child = toXml( key, o );
+				el.addContent( child );
+			}
+		}
+		else
+		{
+			System.err.println( "Do not know how to serialize object " + value + " for key " + key + "." );
+			el = null;
+		}
+		return el;
 	}
 
 	/**
@@ -271,7 +334,7 @@ class MamutViewStateSerialization
 	 *            the view.
 	 * @return a new {@link Map}.
 	 */
-	private static Map< String, Object > getGuiState( final MamutView< ?, ?, ? > view )
+	private static < V extends IMastodonFrameView & IMastodonView > Map< String, Object > getGuiState( final V view )
 	{
 		final Map< String, Object > guiState = new LinkedHashMap<>();
 
@@ -295,8 +358,12 @@ class MamutViewStateSerialization
 		// View-specifics.
 		if ( view instanceof MamutViewBdv )
 			getGuiStateBdv( ( MamutViewBdv ) view, guiState );
+		else if ( view instanceof MamutBranchViewBdv )
+			getGuiStateBranchBdv( ( MamutBranchViewBdv ) view, guiState );
 		else if ( view instanceof MamutViewTrackScheme )
 			getGuiStateTrackScheme( ( MamutViewTrackScheme ) view, guiState );
+		else if ( view instanceof MamutBranchViewTrackScheme )
+			getGuiStateBranchTrackScheme( ( MamutBranchViewTrackScheme ) view, guiState );
 		else if ( view instanceof MamutViewTable )
 			getGuiStateTable( ( MamutViewTable ) view, guiState );
 		else if ( view instanceof MamutViewGrapher )
@@ -314,7 +381,7 @@ class MamutViewStateSerialization
 		guiState.put( GRAPHER_TRANSFORM_KEY, t );
 
 		// Coloring.
-		final ColoringModel coloringModel = view.getColoringModel();
+		final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
 
 		// Colorbar.
@@ -338,27 +405,45 @@ class MamutViewStateSerialization
 		// Selection table or not.
 		guiState.put( TABLE_SELECTION_ONLY, view.isSelectionTable() );
 
-		// View rectangles.
-		final FeatureTagTablePanel< Spot > vertexTable = view.getFrame().getVertexTable();
-		final JViewport viewportVertex = vertexTable.getScrollPane().getViewport();
-		final Point vertexTableRect = viewportVertex.getViewPosition();
-		guiState.put( TABLE_VERTEX_TABLE_VISIBLE_POS, new int[] {
-				vertexTableRect.x,
-				vertexTableRect.y } );
+		// Currently displayed table.
+		final FeatureTagTablePanel< ? > currentlyDisplayedTable = view.getFrame().getCurrentlyDisplayedTable();
+		String displayedTableName = "";
 
-		final FeatureTagTablePanel< Link > edgeTable = view.getFrame().getEdgeTable();
-		final JViewport viewportEdge = edgeTable.getScrollPane().getViewport();
-		final Point edgeTablePos = viewportEdge.getViewPosition();
-		guiState.put( TABLE_EDGE_TABLE_VISIBLE_POS, new int[] {
-				edgeTablePos.x,
-				edgeTablePos.y } );
+		// Table visible rectangles.
+		final List< FeatureTagTablePanel< ? > > tables = view.getFrame().getTables();
+		final List< String > names = view.getFrame().getTableNames();
+		final List< Map< String, Object > > tableGuiStates = new ArrayList<>( names.size() );
+		for ( int i = 0; i < names.size(); i++ )
+		{
+			final String name = names.get( i );
+			final FeatureTagTablePanel< ? > table = tables.get( i );
 
-		final boolean isVertexTableDisplayed = view.getFrame().getCurrentlyDisplayedTable() == vertexTable;
-		guiState.put( TABLE_DISPLAYING_VERTEX_TABLE, isVertexTableDisplayed );
+			if ( table == currentlyDisplayedTable )
+				displayedTableName = name;
 
-		// Coloring.
+			final JViewport viewportVertex = table.getScrollPane().getViewport();
+			final Point tableRect = viewportVertex.getViewPosition();
+
+			final LinkedHashMap< String, Object > tableGuiState = new LinkedHashMap<>();
+			tableGuiState.put( TABLE_NAME, name );
+			tableGuiState.put( TABLE_VISIBLE_POS, new int[] {
+					tableRect.x,
+					tableRect.y } );
+
+			tableGuiStates.add( tableGuiState );
+		}
+		guiState.put( TABLE_ELEMENT, tableGuiStates );
+		guiState.put( TABLE_DISPLAYED, displayedTableName );
+
+		// Coloring for core graph.
 		final ColoringModel coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
+
+		// Coloring for branch-graph.
+		final ColoringModel branchColoringModel = view.getBranchColoringModel();
+		final Map< String, Object > branchGraphMap = new HashMap<>();
+		getColoringState( branchColoringModel, branchGraphMap );
+		guiState.put( BRANCH_GRAPH, branchGraphMap );
 
 		// Context provider.
 		guiState.put( CHOSEN_CONTEXT_PROVIDER_KEY, view.getContextChooser().getChosenProvider().getName() );
@@ -390,7 +475,7 @@ class MamutViewStateSerialization
 		guiState.put( TRACKSCHEME_TRANSFORM_KEY, t );
 
 		// Coloring.
-		final ColoringModel coloringModel = view.getColoringModel();
+		final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
 
 		// Colorbar.
@@ -399,6 +484,41 @@ class MamutViewStateSerialization
 
 		// Context provider.
 		guiState.put( CHOSEN_CONTEXT_PROVIDER_KEY, view.getContextChooser().getChosenProvider().getName() );
+	}
+
+	/**
+	 * Stores the {@link MamutBranchViewTrackScheme} GUI state in the specified
+	 * map.
+	 * 
+	 * @param view
+	 *            the {@link MamutBranchViewTrackScheme}.
+	 * @param guiState
+	 *            the map to store info into.
+	 */
+	private static void getGuiStateBranchTrackScheme( final MamutBranchViewTrackScheme view, final Map< String, Object > guiState )
+	{
+		final TrackSchemePanel trackschemePanel = view.getFrame().getTrackschemePanel();
+
+		// Edit position to reflect the fact that we store the TrackScheme panel
+		// width and height.
+		final Point point = view.getFrame().getLocation();
+		guiState.put( FRAME_POSITION_KEY, new int[] {
+				point.x,
+				point.y,
+				trackschemePanel.getDisplay().getWidth(),
+				trackschemePanel.getDisplay().getHeight() } );
+
+		// Transform.
+		final ScreenTransform t = trackschemePanel.getScreenTransform().get();
+		guiState.put( TRACKSCHEME_TRANSFORM_KEY, t );
+
+		// Coloring.
+		final ColoringModel coloringModel = view.getColoringModel();
+		getColoringState( coloringModel, guiState );
+
+		// Colorbar.
+		final ColorBarOverlay colorBarOverlay = view.getColorBarOverlay();
+		getColorBarOverlayState( colorBarOverlay, guiState );
 	}
 
 	/**
@@ -421,6 +541,34 @@ class MamutViewStateSerialization
 		// Coloring.
 		final ColoringModel coloringModel = view.getColoringModel();
 		getColoringState( coloringModel, guiState );
+		// Colorbar.
+		final ColorBarOverlay colorBarOverlay = view.getColorBarOverlay();
+		getColorBarOverlayState( colorBarOverlay, guiState );
+	}
+
+	/**
+	 * Stores the {@link MamutBranchViewBdv} GUI state in the specified map.
+	 * 
+	 * @param view
+	 *            the {@link MamutViewBdv}.
+	 * @param guiState
+	 *            the map to store info into.
+	 */
+	private static void getGuiStateBranchBdv( final MamutBranchViewBdv view, final Map< String, Object > guiState )
+	{
+		// Viewer state.
+		final Element stateEl = view.getViewerPanelMamut().stateToXml();
+		guiState.put( BDV_STATE_KEY, stateEl );
+		// Transform.
+		final AffineTransform3D t = new AffineTransform3D();
+		view.getViewerPanelMamut().state().getViewerTransform( t );
+		guiState.put( BDV_TRANSFORM_KEY, t );
+		// Coloring.
+		final ColoringModel coloringModel = view.getColoringModel();
+		getColoringState( coloringModel, guiState );
+		// Colorbar.
+		final ColorBarOverlay colorBarOverlay = view.getColorBarOverlay();
+		getColorBarOverlayState( colorBarOverlay, guiState );
 	}
 
 	/**
@@ -478,6 +626,12 @@ class MamutViewStateSerialization
 				break;
 			}
 
+			case "MamutBranchViewBdv":
+			{
+				windowManager.createBranchBigDataViewer( guiState );
+				break;
+			}
+
 			case "MamutViewTrackScheme":
 			{
 				final MamutViewTrackScheme ts = windowManager.createTrackScheme( guiState );
@@ -486,6 +640,18 @@ class MamutViewStateSerialization
 				final String desiredProvider = ( String ) guiState.get( CHOSEN_CONTEXT_PROVIDER_KEY );
 				if ( null != desiredProvider )
 					contextChosers.put( ts.getContextChooser(), desiredProvider );
+				break;
+			}
+
+			case "MamutBranchViewTrackScheme":
+			{
+				windowManager.createBranchTrackScheme( guiState );
+				break;
+			}
+
+			case "MamutBranchViewTrackSchemeHierarchy":
+			{
+				windowManager.createHierarchyTrackScheme( guiState );
 				break;
 			}
 
@@ -512,7 +678,7 @@ class MamutViewStateSerialization
 			}
 
 			default:
-				System.err.println( "Unknown window type: " + typeStr + "." );
+				System.err.println( "Deserializing GUI state: Unknown window type: " + typeStr + "." );
 				continue;
 			}
 		}
@@ -569,12 +735,7 @@ class MamutViewStateSerialization
 				value = new org.mastodon.views.grapher.datagraph.ScreenTransform( arr[ 0 ], arr[ 1 ], arr[ 2 ], arr[ 3 ], ( int ) arr[ 4 ], ( int ) arr[ 5 ] );
 				break;
 			}
-			case TABLE_VERTEX_TABLE_VISIBLE_POS:
-			case TABLE_EDGE_TABLE_VISIBLE_POS:
-				value = XmlHelpers.getIntArray( viewEl, key );
-				break;
 			case TABLE_SELECTION_ONLY:
-			case TABLE_DISPLAYING_VERTEX_TABLE:
 			case NO_COLORING_KEY:
 			case SETTINGS_PANEL_VISIBLE_KEY:
 			case COLORBAR_VISIBLE_KEY:
@@ -585,7 +746,31 @@ class MamutViewStateSerialization
 				value = Position.valueOf( str );
 				break;
 			case GROUP_HANDLE_ID_KEY:
+			{
 				value = XmlHelpers.getInt( viewEl, key );
+				break;
+			}
+			case TABLE_ELEMENT:
+			{
+				final List< Element > els = el.getChildren();
+				final List< Map< String, Object > > maps = new ArrayList<>( els.size() );
+				for ( final Element child : els )
+				{
+					final String name = child.getChildTextTrim( TABLE_NAME );
+					final int[] tablePos = XmlHelpers.getIntArray( child, TABLE_VISIBLE_POS );
+					final Map< String, Object > m = new HashMap<>();
+					m.put( TABLE_NAME, name );
+					m.put( TABLE_VISIBLE_POS, tablePos );
+					maps.add( m );
+				}
+				value = maps;
+				break;
+			}
+			case TABLE_DISPLAYED:
+				value = XmlHelpers.getText( viewEl, TABLE_DISPLAYED );
+				break;
+			case BRANCH_GRAPH:
+				value = xmlToMap( el );
 				break;
 			default:
 				System.err.println( "Unknown GUI config parameter: " + key + " found in GUI file." );

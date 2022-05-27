@@ -95,9 +95,9 @@ public class LineageTreeLayout
 		public void layoutChanged( LineageTreeLayout layout );
 	}
 
-	private final TrackSchemeGraph< ?, ? > graph;
+	protected final TrackSchemeGraph< ?, ? > graph;
 
-	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
+	protected final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
 	private final Listeners.List< LayoutListener > listeners;
 
@@ -127,7 +127,7 @@ public class LineageTreeLayout
 	/**
 	 *  ordered list of all existing timpoints.
 	 */
-	private final TIntArrayList timepoints;
+	protected final TIntArrayList timepoints;
 
 	/**
 	 * Maps timepoint to {@link TrackSchemeVertexList} that contains all
@@ -136,7 +136,7 @@ public class LineageTreeLayout
 	 * <p>
 	 * This is built during TODO TODO TODO
 	 */
-	private final TIntObjectMap< TrackSchemeVertexList > timepointToOrderedVertices;
+	protected final TIntObjectMap< TrackSchemeVertexList > timepointToOrderedVertices;
 
 	/**
 	 * the minimum layoutX coordinate assigned to any vertex in the current
@@ -153,17 +153,17 @@ public class LineageTreeLayout
 	/**
 	 * The width below which a column line will not generate a screen entity.
 	 */
-	private static final double MIN_COLUMN_WIDTH = 30;
+	protected static final double MIN_COLUMN_WIDTH = 30;
 
 	/**
 	 * The column layout X coordinates.
 	 */
-	private final TDoubleList currentLayoutColumnX;
+	protected final TDoubleList currentLayoutColumnX;
 
 	/**
 	 * The list of roots for each column.
 	 */
-	private final RefList< TrackSchemeVertex > currentLayoutColumnRoot;
+	protected final RefList< TrackSchemeVertex > currentLayoutColumnRoot;
 
 	public LineageTreeLayout(
 			final TrackSchemeGraph< ?, ? > graph,

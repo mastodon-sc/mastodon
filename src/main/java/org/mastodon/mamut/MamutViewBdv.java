@@ -31,22 +31,15 @@ package org.mastodon.mamut;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 import static org.mastodon.mamut.MamutViewStateSerialization.BDV_STATE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.BDV_TRANSFORM_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.ActionMap;
@@ -63,19 +56,19 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.ModelOverlayProperties;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
-import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
-import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BdvContextProvider;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
@@ -95,6 +88,7 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.ContextProvider;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 
 import bdv.BigDataViewerActions;
 import bdv.tools.InitializeViewerState;
@@ -120,7 +114,9 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 	 * A reference on a supervising instance of the {@code ColoringModel} that
 	 * is bound to this instance/window.
 	 */
-	private final ColoringModel coloringModel;
+	private final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel;
+
+	private final ColorBarOverlay colorBarOverlay;
 
 	public MamutViewBdv( final MamutAppModel appModel )
 	{
@@ -140,31 +136,19 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		sharedBdvData = appModel.getSharedBdvData();
 
-		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO:
-																		// use
-																		// JY
-																		// naming
-																		// scheme
+		final String windowTitle = "BigDataViewer " + ( bdvName++ );
 		final BigDataViewerMamut bdv = new BigDataViewerMamut( sharedBdvData, windowTitle, groupHandle );
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
 
 		// Restore position.
-		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
-		if ( null != pos )
-			frame.setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
-		else
-			frame.setLocationRelativeTo( null );
+		restoreFramePosition( frame, guiState );
 
 		// Restore group handle.
-		final Integer groupID = ( Integer ) guiState.get( GROUP_HANDLE_ID_KEY );
-		if ( null != groupID )
-			groupHandle.setGroupId( groupID.intValue() );
+		restoreGroupHandle( groupHandle, guiState );
 
 		// Restore settings panel visibility.
-		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
-		if ( null != settingsPanelVisible )
-			frame.setSettingsPanelVisible( settingsPanelVisible.booleanValue() );
+		restoreSettingsPanelVisibility( frame, guiState );
 
 		MastodonFrameViewActions.install( viewActions, this );
 		BigDataViewerActionsMamut.install( viewActions, bdv );
@@ -174,6 +158,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		final JMenuHandle menuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
+		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
@@ -182,6 +167,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 						item( BigDataViewerActions.SAVE_SETTINGS ) ),
 				viewMenu(
 						colorMenu( menuHandle ),
+						colorbarMenu( colorbarMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				editMenu(
@@ -232,46 +218,18 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		coloringModel = registerColoring( coloring, menuHandle,
 				() -> viewer.getDisplay().repaint() );
+		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> viewer.getBackground() );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> viewer.getDisplay().repaint() );
 
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> viewer.getDisplay().repaint() );
 
 		// Restore coloring.
-		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
-		if ( null != noColoring && noColoring )
-		{
-			coloringModel.colorByNone();
-		}
-		else
-		{
-			final String tagSetName = ( String ) guiState.get( TAG_SET_KEY );
-			final String featureColorModeName = ( String ) guiState.get( FEATURE_COLOR_MODE_KEY );
-			if ( null != tagSetName )
-			{
-				for ( final TagSet tagSet : coloringModel.getTagSetStructure().getTagSets() )
-				{
-					if ( tagSet.getName().equals( tagSetName ) )
-					{
-						coloringModel.colorByTagSet( tagSet );
-						break;
-					}
-				}
-			}
-			else if ( null != featureColorModeName )
-			{
-				final List< FeatureColorMode > featureColorModes = new ArrayList<>();
-				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getBuiltinStyles() );
-				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getUserStyles() );
-				for ( final FeatureColorMode featureColorMode : featureColorModes )
-				{
-					if ( featureColorMode.getName().equals( featureColorModeName ) )
-					{
-						coloringModel.colorByFeature( featureColorMode );
-						break;
-					}
-				}
-			}
-		}
+		restoreColoring( coloringModel, guiState );
+
+		// Restore colorbar state.
+		restoreColorbarState( colorBarOverlay, guiState );
+		viewer.getDisplay().overlays().add( colorBarOverlay );
 
 		highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		focusModel.listeners().add( () -> viewer.getDisplay().repaint() );
@@ -357,24 +315,29 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				coloring );
 	}
 
-	public ContextProvider< Spot > getContextProvider()
+	ContextProvider< Spot > getContextProvider()
 	{
 		return contextProvider;
 	}
 
-	public ViewerPanel getViewerPanelMamut()
+	ViewerPanel getViewerPanelMamut()
 	{
 		return viewer;
 	}
 
-	public void requestRepaint()
+	void requestRepaint()
 	{
 		viewer.requestRepaint();
 	}
 
-	public ColoringModel getColoringModel()
+	ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
+	}
+
+	ColorBarOverlay getColorBarOverlay()
+	{
+		return colorBarOverlay;
 	}
 
 	/**

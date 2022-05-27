@@ -79,7 +79,7 @@ public class LinkTargetIdFeature implements Feature< Link >
 		}
 	}
 
-	LinkTargetIdFeature( final ModelGraph graph )
+	public LinkTargetIdFeature( final ModelGraph graph )
 	{
 		this.graph = graph;
 	}
@@ -131,7 +131,7 @@ public class LinkTargetIdFeature implements Feature< Link >
 		}
 
 		@Override
-		public double value( final Link obj )
+		public synchronized double value( final Link obj )
 		{
 			return obj.getSource( ref ).getInternalPoolIndex();
 		}
@@ -166,7 +166,7 @@ public class LinkTargetIdFeature implements Feature< Link >
 		}
 
 		@Override
-		public double value( final Link obj )
+		public synchronized double value( final Link obj )
 		{
 			return obj.getTarget( ref ).getInternalPoolIndex();
 		}

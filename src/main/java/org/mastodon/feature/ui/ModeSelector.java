@@ -28,16 +28,22 @@
  */
 package org.mastodon.feature.ui;
 
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 
 public class ModeSelector< E > extends JPanel
@@ -49,24 +55,65 @@ public class ModeSelector< E > extends JPanel
 
 	private final Map< E, JToggleButton > buttons;
 
+	private final JScrollPane scrollPane;
+
 	public ModeSelector( final E[] choices )
 	{
-		super( new FlowLayout( FlowLayout.LEADING, 10, 2 ) );
+		this( choices, null );
+	}
+
+	public ModeSelector( final E[] choices, final String[] toolips )
+	{
+		super( new BorderLayout() );
 		buttons = new HashMap<>();
+
+		final JPanel main = new JPanel();
+		main.setLayout( new BoxLayout( main, BoxLayout.LINE_AXIS ) );
 		final ButtonGroup group = new ButtonGroup();
-		for ( final E c : choices )
+		final FocusListener fl = new FocusListener()
 		{
+
+			@Override
+			public void focusLost( final FocusEvent e )
+			{}
+
+			@Override
+			public void focusGained( final FocusEvent e )
+			{
+				scrollPane.getHorizontalScrollBar().setValue( e.getComponent().getLocation().x );
+			}
+		};
+
+		for ( int i = 0; i < choices.length; i++ )
+		{
+			final E c = choices[ i ];
 			final JRadioButton button = new JRadioButton( c.toString() );
+			button.addFocusListener( fl );
+			button.setAlignmentY( 1f );
 			button.addActionListener( ( e ) -> listeners.forEach( l -> l.accept( c ) ) );
+			if ( toolips != null && toolips.length - 1 >= i )
+				button.setToolTipText( "<html><p width=200px>" + toolips[ i ] + "</html>" );
+
 			group.add( button );
-			add( button );
+			main.add( button );
 			buttons.put( c, button );
 		}
+		scrollPane = new JScrollPane( main );
+		scrollPane.getHorizontalScrollBar().setUnitIncrement( 16 );
+		scrollPane.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_NEVER );
+		scrollPane.setBorder( null );
+		add( scrollPane );
+
+		setBorder( BorderFactory.createMatteBorder( 0, 1, 0, 0, Color.LIGHT_GRAY ) );
 	}
 
 	public void setSelected( final E c )
 	{
-		buttons.get( c ).setSelected( true );
+		final JToggleButton btn = buttons.get( c );
+		scrollPane.getHorizontalScrollBar().setValue( btn.getLocation().x );
+		btn.setSelected( true );
+		buttons.values().forEach( b -> b.setForeground( Color.LIGHT_GRAY ) );
+		btn.setForeground( getForeground() );
 	}
 
 	public List< Consumer< E > > listeners()

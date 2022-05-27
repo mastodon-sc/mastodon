@@ -30,6 +30,7 @@ package org.mastodon.views.grapher.datagraph;
 
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.ref.RefArrayList;
+import org.mastodon.views.trackscheme.ScreenVertexRange;
 
 /**
  * A collection of layouted screen objects to paint. Comprises lists of
@@ -52,9 +53,6 @@ public class ScreenEntities
 
 	private final RefArrayList< ScreenEdge > edges;
 
-	/**
-	 * transform used to generate these {@link ScreenEntities}
-	 */
 	private final ScreenTransform screenTransform;
 
 	public ScreenEntities( final DataGraph< ?, ? > graph )

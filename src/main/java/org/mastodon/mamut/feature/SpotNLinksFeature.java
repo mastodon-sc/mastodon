@@ -70,7 +70,7 @@ public class SpotNLinksFeature implements Feature< Spot >
 		}
 	}
 
-	SpotNLinksFeature()
+	public SpotNLinksFeature()
 	{
 		this.projection = new MyProjection();
 	}

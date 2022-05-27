@@ -33,6 +33,7 @@ import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -70,6 +71,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final int maxTimepoint;
 
+	private final BranchGraphSynchronizer branchGraphSync;
 
 	public MamutAppModel(
 			final Model model,
@@ -100,6 +102,8 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		this.featureColorModeManager = featureColorModeManager;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
+		this.branchGraphSync = new BranchGraphSynchronizer( model.getBranchGraph(), model.getGraph().getLock().readLock() );
+		model.getGraph().addGraphChangeListener( branchGraphSync );
 		/*
 		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
 		 * of IDs/names. This is because BDV also displays timepoint index, and
@@ -146,5 +150,10 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public int getMaxTimepoint()
 	{
 		return maxTimepoint;
+	}
+
+	public BranchGraphSynchronizer getBranchGraphSync()
+	{
+		return branchGraphSync;
 	}
 }

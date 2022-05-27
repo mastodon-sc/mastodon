@@ -38,11 +38,11 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
-import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.mamut.model.Link;
-import org.mastodon.properties.DoublePropertyMap;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
 import org.scijava.plugin.Plugin;
 
 public class LinkVelocityFeature implements Feature< Link >
@@ -57,9 +57,9 @@ public class LinkVelocityFeature implements Feature< Link >
 
 	public static final Spec SPEC = new Spec();
 
-	final DoublePropertyMap< Link > map;
+	private final ModelGraph graph;
 
-	private final FeatureProjection< Link > projection;
+	private final String units;
 
 	@Plugin( type = FeatureSpec.class )
 	public static class Spec extends FeatureSpec< LinkVelocityFeature, Link >
@@ -76,27 +76,22 @@ public class LinkVelocityFeature implements Feature< Link >
 		}
 	}
 
-	LinkVelocityFeature( final DoublePropertyMap< Link > map, final String units )
+	public LinkVelocityFeature( final ModelGraph graph, final String units )
 	{
-		this.map = map;
-		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, units );
-	}
-
-	public double get( final Link link )
-	{
-		return map.getDouble( link );
+		this.graph = graph;
+		this.units = units;
 	}
 
 	@Override
 	public FeatureProjection< Link > project( final FeatureProjectionKey key )
 	{
-		return projection.getKey().equals( key ) ? projection : null;
+		return key( PROJECTION_SPEC ).equals( key ) ? new MyProjection( graph, units ) : null;
 	}
 
 	@Override
 	public Set< FeatureProjection< Link > > projections()
 	{
-		return Collections.singleton( projection );
+		return Collections.singleton( new MyProjection( graph, units ) );
 	}
 
 	@Override
@@ -107,7 +102,56 @@ public class LinkVelocityFeature implements Feature< Link >
 
 	@Override
 	public void invalidate( final Link link )
+	{}
+
+	private static final class MyProjection implements FeatureProjection< Link >
 	{
-		map.remove( link );
+
+		private final String units;
+
+		private final Spot ref1;
+
+		private final Spot ref2;
+
+
+		public MyProjection( final ModelGraph graph, final String units )
+		{
+			this.units = units;
+			this.ref1 = graph.vertexRef();
+			this.ref2 = graph.vertexRef();
+		}
+
+		@Override
+		public FeatureProjectionKey getKey()
+		{
+			return key( PROJECTION_SPEC );
+		}
+
+		@Override
+		public boolean isSet( final Link link )
+		{
+			return true;
+		}
+
+		@Override
+		public synchronized double value( final Link link )
+		{
+			final Spot source = link.getSource( ref1 );
+			final Spot target = link.getTarget( ref2 );
+			double d2 = 0.;
+			for ( int d = 0; d < 3; d++ )
+			{
+				final double dx = source.getDoublePosition( d ) - target.getDoublePosition( d );
+				d2 += dx * dx;
+			}
+			final double dt = Math.abs( source.getTimepoint() - target.getTimepoint() );
+			return Math.sqrt( d2 ) / dt;
+		}
+
+		@Override
+		public String units()
+		{
+			return units;
+		}
 	}
 }

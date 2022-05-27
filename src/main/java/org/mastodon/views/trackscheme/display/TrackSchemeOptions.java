@@ -196,6 +196,13 @@ public class TrackSchemeOptions
 		return this;
 	}
 
+	public TrackSchemeOptions paintLongEdges( final boolean paintLongEdges )
+	{
+		values.paintLongEdges = paintLongEdges;
+		return this;
+	}
+
+
 	/**
 	 * Read-only {@link TrackSchemeOptions} values.
 	 */
@@ -205,9 +212,9 @@ public class TrackSchemeOptions
 
 		private int y = 0;
 
-		private int width = 800;
+		private int width = 650;
 
-		private int height = 600;
+		private int height = 400;
 
 		private long animationDurationMillis = 250;
 
@@ -221,6 +228,8 @@ public class TrackSchemeOptions
 
 		private GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > graphColorGenerator = new DefaultGraphColorGenerator<>();
 
+		private boolean paintLongEdges = false;
+
 		public TrackSchemeOptions optionsFromValues()
 		{
 			return new TrackSchemeOptions().
@@ -232,7 +241,8 @@ public class TrackSchemeOptions
 				navigationEtiquette( navigationEtiquette ).
 				style( style ).
 				trackSchemeOverlayFactory( trackSchemeOverlayFactory ).
-				graphColorGenerator( graphColorGenerator );
+				graphColorGenerator( graphColorGenerator ).
+				paintLongEdges( paintLongEdges );
 		}
 
 		public int getX()
@@ -283,6 +293,11 @@ public class TrackSchemeOptions
 		public GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > getGraphColorGenerator()
 		{
 			return graphColorGenerator;
+		}
+
+		public boolean isPaintLongEdges()
+		{
+			return paintLongEdges;
 		}
 	}
 }

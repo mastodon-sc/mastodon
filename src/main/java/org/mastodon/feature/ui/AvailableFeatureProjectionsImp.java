@@ -28,8 +28,6 @@
  */
 package org.mastodon.feature.ui;
 
-import static org.mastodon.ui.coloring.feature.TargetType.VERTEX;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -97,6 +95,10 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 
 	private final Map< String, FeatureProperties > edgeFeatures = new LinkedHashMap<>();
 
+	private final Map< String, FeatureProperties > branchVertexFeatures = new LinkedHashMap<>();
+
+	private final Map< String, FeatureProperties > branchEdgeFeatures = new LinkedHashMap<>();
+
 	// all available source indices (from model or existing color modes)
 	private final TIntList sourceIndices = new TIntArrayList();
 
@@ -104,10 +106,16 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 
 	private final Class< ? > edgeClass;
 
-	public AvailableFeatureProjectionsImp( final Class< ? > vertexClass, final Class< ? > edgeClass )
+	private final Class< ? > branchVertexClass;
+
+	private final Class< ? > branchEdgeClass;
+
+	public AvailableFeatureProjectionsImp( final Class< ? > vertexClass, final Class< ? > edgeClass, final Class< ? > branchVertexClass, final Class< ? > branchEdgeClass )
 	{
 		this.vertexClass = vertexClass;
 		this.edgeClass = edgeClass;
+		this.branchVertexClass = branchVertexClass;
+		this.branchEdgeClass = branchEdgeClass;
 	}
 
 	@Override
@@ -192,6 +200,10 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 			features = vertexFeatures;
 		else if ( target.isAssignableFrom( edgeClass ) )
 			features = edgeFeatures;
+		else if ( target.isAssignableFrom( branchVertexClass ) )
+			features = branchVertexFeatures;
+		else if ( target.isAssignableFrom( branchEdgeClass ) )
+			features = branchEdgeFeatures;
 		else
 			return;
 
@@ -245,9 +257,19 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 
 	private Map< String, FeatureProperties > features( final TargetType targetType )
 	{
-		return ( targetType == VERTEX )
-				? vertexFeatures
-				: edgeFeatures;
+		switch ( targetType )
+		{
+		case VERTEX:
+			return vertexFeatures;
+		case EDGE:
+			return edgeFeatures;
+		case BRANCH_VERTEX:
+			return branchVertexFeatures;
+		case BRANCH_EDGE:
+			return branchEdgeFeatures;
+		default:
+			throw new IllegalArgumentException( "Unknown target type: " + targetType );
+		}
 	}
 
 	@Override
@@ -266,6 +288,26 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 		sb.append( "  },\n" );
 		sb.append( "  edgeFeatures={\n" );
 		for ( final Map.Entry< String, FeatureProperties > e : edgeFeatures.entrySet() )
+		{
+			sb.append( "    " );
+			sb.append( e.getKey() );
+			sb.append( "[" );
+			sb.append( e.getValue() );
+			sb.append( "]\n" );
+		}
+		sb.append( "  },\n" );
+		sb.append( "  branchVertexFeatures={\n" );
+		for ( final Map.Entry< String, FeatureProperties > e : branchVertexFeatures.entrySet() )
+		{
+			sb.append( "    " );
+			sb.append( e.getKey() );
+			sb.append( "[" );
+			sb.append( e.getValue() );
+			sb.append( "]\n" );
+		}
+		sb.append( "  },\n" );
+		sb.append( "  branchEdgeFeatures={\n" );
+		for ( final Map.Entry< String, FeatureProperties > e : branchEdgeFeatures.entrySet() )
 		{
 			sb.append( "    " );
 			sb.append( e.getKey() );
@@ -293,9 +335,11 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 			final FeatureModel featureModel,
 			final FeatureColorModeManager featureColorModeManager,
 			final Class< ? > vertexClass,
-			final Class< ? > edgeClass )
+			final Class< ? > edgeClass,
+			final Class< ? > branchVertexClass,
+			final Class< ? > branchEdgeClass )
 	{
-		final AvailableFeatureProjectionsImp projections = new AvailableFeatureProjectionsImp( vertexClass, edgeClass );
+		final AvailableFeatureProjectionsImp projections = new AvailableFeatureProjectionsImp( vertexClass, edgeClass, branchVertexClass, branchEdgeClass );
 
 		/*
 		 * Available source indices from SharedBigDataViewerData.

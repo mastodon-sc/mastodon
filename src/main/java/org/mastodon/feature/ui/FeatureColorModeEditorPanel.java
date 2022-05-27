@@ -28,22 +28,29 @@
  */
 package org.mastodon.feature.ui;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.function.Consumer;
 
+import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 
 import org.mastodon.ui.coloring.ColorMap;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
-import org.mastodon.ui.coloring.feature.FeatureProjectionId;
-import org.mastodon.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorMode.VertexColorMode;
+import org.mastodon.ui.coloring.feature.FeatureProjectionId;
+import org.mastodon.ui.coloring.feature.FeatureRangeCalculator;
+
+import com.itextpdf.text.Font;
 
 /**
  * JPanel to edit a single {@link FeatureColorMode}.
@@ -73,43 +80,53 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 	public FeatureColorModeEditorPanel(
 			final FeatureColorMode mode,
-			final FeatureRangeCalculator rangeCalculator
-			)
+			final FeatureRangeCalculator rangeCalculator,
+			final String vertexName,
+			final String edgeName )
 	{
+		setPreferredSize( new Dimension( 400, 550 ) );
 		this.mode = mode;
 
 		final GridBagLayout layout = new GridBagLayout();
-		layout.rowHeights = new int[] { 45, 45, 45, 45, 45, 10, 45, 45, 45, 45, 45 };
+		layout.rowHeights = new int[] { 20, 45, 50, 45, 45, 45, 20, 45, 50, 45, 45, 45, 45 };
 
 		setLayout( layout );
 		final GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets( 0, 5, 0, 5 );
-		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets( 5, 5, 5, 5 );
 		c.weightx = 1.0;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 0;
 
+		addToLayout( new JSeparator(), c );
+		final JLabel lbl1 = new JLabel( "Coloring " + vertexName + "s" );
+		lbl1.setFont( getFont().deriveFont( Font.BOLD ) );
+		addToLayout( lbl1, c );
+
 		/*
 		 * Vertex color mode.
 		 */
-		final ModeSelector< VertexColorMode > vertexColorModeSelector = new ModeSelector<>( VertexColorMode.values() );
-		addToLayout( new JLabel( "vertex color mode", JLabel.TRAILING ), vertexColorModeSelector, c );
+		final ModeSelector< VertexColorMode > vertexColorModeSelector = new ModeSelector<>( VertexColorMode.values(), VertexColorMode.tooltips() );
+		final JTextArea ta1 = new JTextArea( "Read " + vertexName.toLowerCase() + "\ncolor from" );
+		ta1.setOpaque( false );
+		ta1.setFocusable( false );
+		ta1.setEditable( false );
+		addToLayout( ta1, vertexColorModeSelector, c );
 
 		/*
 		 * Vertex feature.
 		 */
 
 		this.vertexFeatureSelectionPanel = new FeatureSelectionPanel();
-		addToLayout( new JLabel( "vertex feature", JLabel.TRAILING ), vertexFeatureSelectionPanel.getPanel(), c );
-
+		c.fill = GridBagConstraints.HORIZONTAL;
+		addToLayout( new JLabel( "feature", JLabel.TRAILING ), vertexFeatureSelectionPanel.getPanel(), c );
 
 		/*
 		 * Vertex color map.
 		 */
 
 		final ColorMapSelector vertexColorMapSelector = new ColorMapSelector( ColorMap.getColorMapNames() );
-		addToLayout( new JLabel( "vertex colormap", JLabel.TRAILING ), vertexColorMapSelector, c );
+		addToLayout( new JLabel( "colormap", JLabel.TRAILING ), vertexColorMapSelector, c );
 
 		/*
 		 * Vertex feature range.
@@ -133,38 +150,40 @@ public class FeatureColorModeEditorPanel extends JPanel
 			}
 
 		};
-		addToLayout( new JLabel( "vertex range", JLabel.TRAILING ), vertexFeatureRangeSelector, c );
+		addToLayout( new JLabel( "range", JLabel.TRAILING ), vertexFeatureRangeSelector, c );
 
 		/*
 		 * Separator.
 		 */
 
-		c.gridx = 0;
-		c.weightx = 1.0;
-		c.gridwidth = 2;
-		add( new JSeparator(), c );
-		c.gridy++;
-		c.gridwidth = 1;
+		addToLayout( new JSeparator(), c );
+		final JLabel lbl2 = new JLabel( "Coloring " + edgeName + "s" );
+		lbl2.setFont( getFont().deriveFont( Font.BOLD ) );
+		addToLayout( lbl2, c );
 
 		/*
 		 * Edge color mode.
 		 */
-		final ModeSelector< EdgeColorMode > edgeColorModeSelector = new ModeSelector<>( EdgeColorMode.values() );
-		addToLayout( new JLabel( "edge color mode", JLabel.TRAILING ), edgeColorModeSelector, c );
+		final ModeSelector< EdgeColorMode > edgeColorModeSelector = new ModeSelector<>( EdgeColorMode.values(), EdgeColorMode.tooltips() );
+		final JTextArea ta2 = new JTextArea( "Read " + edgeName.toLowerCase() + "\ncolor from" );
+		ta2.setEditable( false );
+		ta2.setOpaque( false );
+		ta2.setFocusable( false );
+		addToLayout( ta2, edgeColorModeSelector, c );
 
 		/*
 		 * Edge feature.
 		 */
 
 		this.edgeFeatureSelectionPanel = new FeatureSelectionPanel();
-		addToLayout( new JLabel( "edge feature", JLabel.TRAILING ), edgeFeatureSelectionPanel.getPanel(), c );
+		addToLayout( new JLabel( "feature", JLabel.TRAILING ), edgeFeatureSelectionPanel.getPanel(), c );
 
 		/*
 		 * Edge color map.
 		 */
 
 		final ColorMapSelector edgeColorMapSelector = new ColorMapSelector( ColorMap.getColorMapNames() );
-		addToLayout( new JLabel( "edge colormap", JLabel.TRAILING ), edgeColorMapSelector, c );
+		addToLayout( new JLabel( "colormap", JLabel.TRAILING ), edgeColorMapSelector, c );
 
 		/*
 		 * Edge feature range.
@@ -178,7 +197,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 			@Override
 			public void autoscale()
 			{
-				final FeatureProjectionId projection = mode.getVertexFeatureProjection();
+				final FeatureProjectionId projection = mode.getEdgeFeatureProjection();
 				if ( null == projection )
 					return;
 				final double[] minMax = rangeCalculator.computeMinMax( projection );
@@ -187,13 +206,31 @@ public class FeatureColorModeEditorPanel extends JPanel
 				setMinMax( minMax[ 0 ], minMax[ 1 ] );
 			}
 		};
-		addToLayout( new JLabel( "edge range", JLabel.TRAILING ), edgeFeatureRangeSelector, c );
+		addToLayout( new JLabel( "range", JLabel.TRAILING ), edgeFeatureRangeSelector, c );
+
+		/*
+		 * Last separator.
+		 */
+
+		c.weighty = 1.;
+		addToLayout( new JSeparator(), c );
+
+		/*
+		 * Tweak the JLabels. Totally not portable.
+		 */
+
+		modifyLabels( this, "vertex", vertexName.toLowerCase() );
+		modifyLabels( this, "edge", edgeName.toLowerCase() );
+		modifyLabels( this, "vertices", vertexName.toLowerCase() + 's' );
+		modifyLabels( this, "Vertex", vertexName );
+		modifyLabels( this, "Vertices", vertexName + 's' );
+		modifyLabels( this, "Edge", edgeName );
 
 		/*
 		 * Here comes the great dance of listeners.
 		 *
-		 * First the listener that listens to changes in the GUI and forward them to the
-		 * model.
+		 * First the listener that listens to changes in the GUI and forward
+		 * them to the model.
 		 */
 
 		/*
@@ -213,8 +250,8 @@ public class FeatureColorModeEditorPanel extends JPanel
 		vertexColorModeSelector.listeners().add( vertexColorModeListener );
 
 		/*
-		 * Listen to changes in edge color mode and hide panels or not. Then forward
-		 * possible new feature specs to feature selection panel.
+		 * Listen to changes in edge color mode and hide panels or not. Then
+		 * forward possible new feature specs to feature selection panel.
 		 */
 
 		final Consumer< EdgeColorMode > edgeColorModeListener = ecm -> {
@@ -258,16 +295,19 @@ public class FeatureColorModeEditorPanel extends JPanel
 		} );
 
 		/*
-		 * Listen to changes in the feature selection panels and forward it to the mode.
+		 * Listen to changes in the feature selection panels and forward it to
+		 * the mode.
 		 */
 
-		// Listen to changes in the vertex feature panel and forward it to the mode.
+		// Listen to changes in the vertex feature panel and forward it to the
+		// mode.
 		vertexFeatureSelectionPanel.updateListeners().add( () -> {
 			if ( doForwardToMode )
 				mode.setVertexFeatureProjection( vertexFeatureSelectionPanel.getSelection() );
 		} );
 
-		// Listen to changes in the vertex feature panel and forward it to the mode.
+		// Listen to changes in the vertex feature panel and forward it to the
+		// mode.
 		edgeFeatureSelectionPanel.updateListeners().add( () -> {
 			if ( doForwardToMode )
 				mode.setEdgeFeatureProjection( edgeFeatureSelectionPanel.getSelection() );
@@ -304,14 +344,58 @@ public class FeatureColorModeEditorPanel extends JPanel
 	{
 		c.gridx = 0;
 		c.anchor = GridBagConstraints.LINE_END;
+		c.fill = GridBagConstraints.NONE;
 		c.weightx = 0.0;
 		add( comp1, c );
 		c.gridx++;
 
 		c.anchor = GridBagConstraints.LINE_START;
 		c.weightx = 1.0;
+		c.fill = GridBagConstraints.BOTH;
 		add( comp2, c );
 		c.gridy++;
+	}
+
+	private void addToLayout( final JComponent comp1, final GridBagConstraints c )
+	{
+		c.anchor = GridBagConstraints.LINE_START;
+		c.gridx = 0;
+		c.gridwidth = 2;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		add( comp1, c );
+		c.gridy++;
+		c.gridwidth = 1;
+	}
+
+	private void modifyLabels( final Container parent, final CharSequence oldstr, final CharSequence newstr )
+	{
+		for ( final Component c : parent.getComponents() )
+		{
+			if ( c instanceof JLabel )
+			{
+				final JLabel lbl = ( JLabel ) c;
+				final String str = lbl.getText();
+				lbl.setText( str.replace( oldstr, newstr ) );
+			}
+			else if ( c instanceof AbstractButton )
+			{
+				final AbstractButton lbl = ( AbstractButton ) c;
+				final String str = lbl.getText();
+				lbl.setText( str.replace( oldstr, newstr ) );
+			}
+			else if ( c instanceof Container )
+			{
+				modifyLabels( ( Container ) c, oldstr, newstr );
+			}
+			if ( c instanceof JComponent )
+			{
+				final JComponent jc = ( JComponent ) c;
+				final String str = jc.getToolTipText();
+				if ( str != null )
+					jc.setToolTipText( str.replace( oldstr, newstr ) );
+			}
+		}
 	}
 
 	public void setAvailableFeatureProjections( final AvailableFeatureProjections featureSpecs )

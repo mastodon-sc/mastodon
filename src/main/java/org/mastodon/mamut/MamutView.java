@@ -28,6 +28,20 @@
  */
 package org.mastodon.mamut;
 
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
+
+import java.awt.Window;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
@@ -35,20 +49,28 @@ import javax.swing.JSeparator;
 
 import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameView;
+import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
+import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColoringMenu;
 import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
@@ -78,7 +100,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 *
 	 * @return reference on the underlying {@code ColoringModel}
 	 */
-	protected ColoringModel registerColoring(
+	protected ColoringModelMain< Spot, Link, BranchSpot, BranchLink > registerColoring(
 			final GraphColorGeneratorAdapter< Spot, Link, V, E > colorGeneratorAdapter,
 			final JMenuHandle menuHandle,
 			final Runnable refresh )
@@ -86,7 +108,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
 		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
-		final ColoringModel coloringModel = new ColoringModel( tagSetModel, featureColorModeManager, featureModel );
+		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
+		final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel = new ColoringModelMain<>( tagSetModel, featureColorModeManager, featureModel, branchGraph );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
 
 		tagSetModel.listeners().add( coloringModel );
@@ -102,7 +125,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		featureModel.listeners().add( coloringMenu );
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
 
-		final ColoringModel.ColoringChangedListener coloringChangedListener = () -> {
+		final ColoringModelMain.ColoringChangedListener coloringChangedListener = () -> {
 			if ( coloringModel.noColoring() )
 				colorGeneratorAdapter.setColorGenerator( null );
 			else if ( coloringModel.getTagSet() != null )
@@ -161,5 +184,81 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu< >( menuHandle.getMenu(), tagSetModel, selectionModel, model.getGraph().getLock(), model );
 		tagSetModel.listeners().add( tagSetMenu );
 		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
+	}
+
+	protected static void restoreColoring( final ColoringModel coloringModel, final Map< String, Object > guiState )
+	{
+		if ( guiState == null )
+			return;
+
+		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
+		if ( null != noColoring && noColoring )
+		{
+			coloringModel.colorByNone();
+		}
+		else
+		{
+			final String tagSetName = ( String ) guiState.get( TAG_SET_KEY );
+			final String featureColorModeName = ( String ) guiState.get( FEATURE_COLOR_MODE_KEY );
+			if ( null != tagSetName )
+			{
+				for ( final TagSet tagSet : coloringModel.getTagSetStructure().getTagSets() )
+				{
+					if ( tagSet.getName().equals( tagSetName ) )
+					{
+						coloringModel.colorByTagSet( tagSet );
+						break;
+					}
+				}
+			}
+			else if ( null != featureColorModeName )
+			{
+				final List< FeatureColorMode > featureColorModes = new ArrayList<>();
+				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getBuiltinStyles() );
+				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getUserStyles() );
+				for ( final FeatureColorMode featureColorMode : featureColorModes )
+				{
+					if ( featureColorMode.getName().equals( featureColorModeName ) )
+					{
+						coloringModel.colorByFeature( featureColorMode );
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	protected static void restoreColorbarState( final ColorBarOverlay colorBarOverlay, final Map< String, Object > guiState )
+	{
+		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
+		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
+		colorBarOverlay.setVisible( colorbarVisible );
+		colorBarOverlay.setPosition( colorbarPosition );
+	}
+
+	protected static void restoreFramePosition( final Window frame, final Map< String, Object > guiState )
+	{
+		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
+		if ( null != pos )
+			frame.setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
+		else
+		{
+			frame.setSize( 650, 400 );
+			frame.setLocationRelativeTo( null );
+		}
+	}
+
+	protected static void restoreGroupHandle( final GroupHandle groupHandle, final Map< String, Object > guiState )
+	{
+		final Integer groupID = ( Integer ) guiState.get( GROUP_HANDLE_ID_KEY );
+		if ( null != groupID )
+			groupHandle.setGroupId( groupID.intValue() );
+	}
+
+	protected static void restoreSettingsPanelVisibility( final ViewFrame frame, final Map< String, Object > guiState )
+	{
+		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
+		if ( null != settingsPanelVisible )
+			frame.setSettingsPanelVisible( settingsPanelVisible.booleanValue() );
 	}
 }

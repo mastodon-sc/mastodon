@@ -37,5 +37,7 @@ package org.mastodon.ui.coloring.feature;
 public enum TargetType
 {
 	VERTEX,
-	EDGE;
+	EDGE,
+	BRANCH_VERTEX,
+	BRANCH_EDGE;
 }

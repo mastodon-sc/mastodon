@@ -64,7 +64,7 @@ public class SpotPositionFeature implements Feature< Spot >
 
 	public static final Spec SPEC = new Spec();
 
-	SpotPositionFeature( final String units )
+	public SpotPositionFeature( final String units )
 	{
 		this.projections = new LinkedHashMap<>( 3 );
 		for ( int d = 0; d < 3; d++ )

@@ -38,11 +38,10 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
-import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.properties.DoublePropertyMap;
+import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.plugin.Plugin;
 
 public class SpotRadiusFeature implements Feature< Spot >
@@ -58,14 +57,11 @@ public class SpotRadiusFeature implements Feature< Spot >
 
 	public static final Spec SPEC = new Spec();
 
-	final DoublePropertyMap< Spot > map;
+	private final String units;
 
-	private final FeatureProjection< Spot > projection;
-
-	SpotRadiusFeature( final DoublePropertyMap< Spot > map, final String units )
+	public SpotRadiusFeature( final String units )
 	{
-		this.map = map;
-		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, units );
+		this.units = units;
 	}
 
 	@Plugin( type = FeatureSpec.class )
@@ -83,21 +79,16 @@ public class SpotRadiusFeature implements Feature< Spot >
 		}
 	}
 
-	public double get(final Spot spot)
-	{
-		return map.getDouble( spot );
-	}
-
 	@Override
 	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{
-		return projection.getKey().equals( key ) ? projection : null;
+		return key( PROJECTION_SPEC ).equals( key ) ? new MyProjection( units ) : null;
 	}
 
 	@Override
 	public Set< FeatureProjection< Spot > > projections()
 	{
-		return Collections.singleton( projection );
+		return Collections.singleton( new MyProjection( units ) );
 	}
 
 	@Override
@@ -108,7 +99,54 @@ public class SpotRadiusFeature implements Feature< Spot >
 
 	@Override
 	public void invalidate( final Spot spot )
+	{}
+
+	private static final class MyProjection implements FeatureProjection< Spot >
 	{
-		map.remove( spot );
+
+		private final double[][] cov = new double[ 3 ][ 3 ];
+
+		private final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( 3 );
+
+		private final String units;
+
+		public MyProjection( final String units )
+		{
+			this.units = units;
+		}
+
+		@Override
+		public FeatureProjectionKey getKey()
+		{
+			return key( PROJECTION_SPEC );
+		}
+
+		@Override
+		public boolean isSet( final Spot obj )
+		{
+			return true;
+		}
+
+		@Override
+		public synchronized double value( final Spot spot )
+		{
+			spot.getCovariance( cov );
+			eig.decomposeSymmetric( cov );
+			final double[] eigVals = eig.getRealEigenvalues();
+			double volume = 4. / 3. * Math.PI;
+			for ( int k = 0; k < eigVals.length; k++ )
+			{
+				final double semiAxis = Math.sqrt( eigVals[ k ] );
+				volume *= semiAxis;
+			}
+			final double radius = Math.pow( volume * 3. / 4. / Math.PI, 1. / 3. );
+			return radius;
+		}
+
+		@Override
+		public String units()
+		{
+			return units;
+		}
 	}
 }

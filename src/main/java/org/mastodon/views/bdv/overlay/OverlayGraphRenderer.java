@@ -435,11 +435,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	/**
 	 * Points (ellipsoid centers) are always drawn if
 	 * <ul>
-	 *   <li>point drawing is enabled ({@code drawPoints}), and either</li>
-	 *   <ul>
-	 *     <li>either points shall be drawn for visible ellipses too ({@code drawPointsForEllipses}),</li>
-	 *     <li>or no ellipses are visible anyways ({@code !drawEllipsoidSliceIntersection} and {@code !drawEllipsoidSliceProjection}).</li>
-	 *   </ul>
+	 * <li>point drawing is enabled ({@code drawPoints}),</li>
+	 * </ul>
+	 * and either
+	 * <ul>
+	 * <li>either points shall be drawn for visible ellipses too
+	 * ({@code drawPointsForEllipses}),</li>
+	 * <li>or no ellipses are visible anyways
+	 * ({@code !drawEllipsoidSliceIntersection} and
+	 * {@code !drawEllipsoidSliceProjection}).</li>
 	 * </ul>
 	 *
 	 * @return whether to draw points always

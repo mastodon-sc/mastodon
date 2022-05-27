@@ -663,9 +663,9 @@ public class MamutExporter
 		else if ( units.equals( Dimension.VELOCITY.getUnits( spaceUnits, timeUnits ) ) )
 			return "VELOCITY";
 		else if ( units.equals( Dimension.ANGLE.getUnits( spaceUnits, timeUnits ) ) )
-			return "TIME";
-		else if ( units.equals( Dimension.TIME.getUnits( spaceUnits, timeUnits ) ) )
 			return "ANGLE";
+		else if ( units.equals( Dimension.TIME.getUnits( spaceUnits, timeUnits ) ) )
+			return "TIME";
 		else if ( units.equals( Dimension.RATE.getUnits( spaceUnits, timeUnits ) ) )
 			return "RATE";
 		else

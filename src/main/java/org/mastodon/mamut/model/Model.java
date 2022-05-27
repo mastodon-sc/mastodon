@@ -40,11 +40,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
+import org.mastodon.mamut.feature.LinkDisplacementFeature;
+import org.mastodon.mamut.feature.LinkTargetIdFeature;
+import org.mastodon.mamut.feature.LinkVelocityFeature;
+import org.mastodon.mamut.feature.SpotFrameFeature;
+import org.mastodon.mamut.feature.SpotNLinksFeature;
+import org.mastodon.mamut.feature.SpotPositionFeature;
+import org.mastodon.mamut.feature.SpotRadiusFeature;
+import org.mastodon.mamut.feature.branch.BranchNDivisionsFeature;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.model.AbstractModel;
 import org.mastodon.model.tag.DefaultTagSetModel;
@@ -80,6 +93,9 @@ import net.imglib2.RealLocalizable;
  */
 public class Model extends AbstractModel< ModelGraph, Spot, Link > implements UndoPointMarker
 {
+
+	private static final int initialCapacity = 1024;
+
 	/*
 	 * SpatioTemporalIndex of model spots
 	 */
@@ -97,6 +113,10 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final String timeUnits;
 
+	private final ModelBranchGraph branchGraph;
+
+	private final SpatioTemporalIndexImp< BranchSpot, BranchLink > branchIndex;
+
 	public Model()
 	{
 		this( "pixel", "frame" );
@@ -104,7 +124,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	public Model( final String spaceUnits, final String timeUnits )
 	{
-		super( new ModelGraph() );
+		super( new ModelGraph( initialCapacity ) );
 		this.spaceUnits = spaceUnits;
 		this.timeUnits = timeUnits;
 		final SpatioTemporalIndexImp< Spot, Link > theIndex = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
@@ -116,7 +136,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		index = theIndex;
 		lock = modelGraph.getLock();
 
-		final int initialCapacity = 1024;
+		branchGraph = new ModelBranchGraph( modelGraph, initialCapacity );
+		branchIndex = new SpatioTemporalIndexImp<>( branchGraph, branchGraph.getGraphIdBimap().vertexIdBimap() );
 
 		final List< Property< Spot > > vertexUndoableProperties = new ArrayList<>();
 		vertexUndoableProperties.add( modelGraph.getVertexPool().positionProperty() );
@@ -127,6 +148,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
 		featureModel = new FeatureModel();
+		declareDefaultFeatures();
 		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 		vertexUndoableProperties.add(
 				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
@@ -158,6 +180,22 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final Recorder< DefaultTagSetModel.SetTagSetStructureUndoableEdit > recorder = undoRecorder.createGenericUndoableEditRecorder();
 		tagSetModel.setUndoRecorder( recorder );
+	}
+
+	/**
+	 * Declares a set of basic features that can return valid values without a
+	 * computer.
+	 */
+	public void declareDefaultFeatures()
+	{
+		featureModel.declareFeature( new SpotPositionFeature( Dimension.POSITION.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature( new SpotRadiusFeature( Dimension.LENGTH.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature( new SpotFrameFeature() );
+		featureModel.declareFeature( new SpotNLinksFeature() );
+		featureModel.declareFeature( new LinkTargetIdFeature( modelGraph ) );
+		featureModel.declareFeature( new LinkDisplacementFeature( modelGraph, Dimension.LENGTH.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature( new LinkVelocityFeature( modelGraph, Dimension.VELOCITY.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature( new BranchNDivisionsFeature() );
 	}
 
 	/**
@@ -223,6 +261,11 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		return index;
 	}
 
+	public SpatioTemporalIndex< BranchSpot > getBranchGraphSpatioTemporalIndex()
+	{
+		return branchIndex;
+	}
+
 	public void undo()
 	{
 		lock.writeLock().lock();
@@ -255,6 +298,16 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public void setUndoPoint()
 	{
 		undoRecorder.setUndoPoint();
+	}
+
+	public ModelBranchGraph getBranchGraph()
+	{
+		return branchGraph;
+	}
+
+	public GraphIdBimap< BranchSpot, BranchLink > getBranchGraphIdBimap()
+	{
+		return branchGraph.getGraphIdBimap();
 	}
 
 	public FeatureModel getFeatureModel()
