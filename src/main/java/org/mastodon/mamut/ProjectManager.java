@@ -128,9 +128,6 @@ public class ProjectManager
 
 	private static final String WINDOWS_TAG = "Windows";
 
-	private static final String OMEZARRS3_OPENER_TAG = "OMEZarrS3Opener";
-	private static final String URL_TAG = "url";
-
 	/*
 	 * Command descriptions for all provided commands
 	 */
