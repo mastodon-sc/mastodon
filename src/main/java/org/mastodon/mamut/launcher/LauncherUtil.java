@@ -56,7 +56,7 @@ import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.XmlFileFilter;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
-import bdv.spimdata.SpimDataMinimal;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.Dimensions;
@@ -152,7 +152,7 @@ class LauncherUtil
 		actions.put( TEXT_SUBMIT, new RunnableAction( "EnterPressed", toExecute ) );
 	}
 
-	static final String buildInfoString( final SpimDataMinimal spimData )
+	static final String buildInfoString( final AbstractSpimData< ? > spimData )
 	{
 		final StringBuilder str = new StringBuilder();
 		str.append( "<html>" );
@@ -200,5 +200,12 @@ class LauncherUtil
 		str.append( "</ul>" );
 		str.append( "</html>" );
 		return str.toString();
+	}
+
+	static final String toHtml( final Exception e )
+	{
+		return e.getMessage()
+				.replace( "<", "&lt;" )
+				.replace( ">", "&gt;" );
 	}
 }

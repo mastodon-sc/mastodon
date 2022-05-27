@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.launcher;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -59,7 +60,9 @@ import org.mastodon.ui.util.XmlFileFilter;
 import org.scijava.Context;
 import org.scijava.util.VersionUtils;
 
+import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.registration.ViewRegistrations;
@@ -90,6 +93,7 @@ public class MastodonLauncher extends JFrame
 		gui = new LauncherGUI();
 
 		gui.btnNew.addActionListener( l -> newMastodonProject() );
+		gui.btnOpenURL.addActionListener( l -> showOpenFromURLPanel() );
 		gui.btnLoad.addActionListener( l -> loadMastodonProject() );
 		gui.btnImportTgmm.addActionListener( l -> showImportTgmmPanel() );
 		gui.btnImportMamut.addActionListener( l -> importMaMuT() );
@@ -99,6 +103,7 @@ public class MastodonLauncher extends JFrame
 		gui.newMastodonProjectPanel.btnCreate.addActionListener( l -> createNewProject() );
 		gui.importTGMMPanel.btnImport.addActionListener( l -> importTgmm() );
 		gui.importSimiBioCellPanel.btnImport.addActionListener( l -> importSimi() );
+		gui.openRemoteURLPanel.btnCreate.addActionListener( l -> createProjectFromURL() );
 
 		getContentPane().add( gui );
 		setSize( 630, 660 );
@@ -178,16 +183,19 @@ public class MastodonLauncher extends JFrame
 			catch ( final IOException e )
 			{
 				gui.importSimiBioCellPanel.labelInfo.setText(
-						"<html>Problem reading the SimiBioCell file.<p>" + toHtml( e ) + "</html>" );
+						"<html>Problem reading the SimiBioCell file.<p>" +
+								LauncherUtil.toHtml( e ) + "</html>" );
 			}
 			catch ( final ParseException e )
 			{
 				gui.importSimiBioCellPanel.labelInfo.setText(
-						"<html>Problem parsing the SimiBioCell file.<p>" + toHtml( e ) + "</html>" );
+						"<html>Problem parsing the SimiBioCell file.<p>" +
+								LauncherUtil.toHtml( e ) + "</html>" );
 			}
 			catch ( final SpimDataException e )
 			{
-				gui.importSimiBioCellPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" + toHtml( e ) + "</html>" );
+				gui.importSimiBioCellPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
+						LauncherUtil.toHtml( e ) + "</html>" );
 			}
 			finally
 			{
@@ -247,15 +255,18 @@ public class MastodonLauncher extends JFrame
 			}
 			catch ( final ParseException e )
 			{
-				gui.importTGMMPanel.labelInfo.setText( "<html>Could not parse timepoint pattern.<p>" + toHtml( e ) + "</html>" );
+				gui.importTGMMPanel.labelInfo.setText( "<html>Could not parse timepoint pattern.<p>" +
+						LauncherUtil.toHtml( e ) + "</html>" );
 			}
 			catch ( JDOMException | IOException e )
 			{
-				gui.importTGMMPanel.labelInfo.setText( "<html>Malformed TGMM dataset.<p>" + toHtml( e ) + "</html>" );
+				gui.importTGMMPanel.labelInfo.setText( "<html>Malformed TGMM dataset.<p>" +
+						LauncherUtil.toHtml( e ) + "</html>" );
 			}
 			catch ( final SpimDataException e )
 			{
-				gui.importTGMMPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" + toHtml( e ) + "</html>" );
+				gui.importTGMMPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
+						LauncherUtil.toHtml( e ) + "</html>" );
 			}
 			disabler.reenable();
 		} ).start();
@@ -314,7 +325,8 @@ public class MastodonLauncher extends JFrame
 			}
 			catch ( IOException | SpimDataException e )
 			{
-				gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" + toHtml( e ) + "</html>" );
+				gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
+						LauncherUtil.toHtml( e ) + "</html>" );
 			}
 			finally
 			{
@@ -326,6 +338,11 @@ public class MastodonLauncher extends JFrame
 	private void newMastodonProject()
 	{
 		gui.showPanel( LauncherGUI.NEW_MASTODON_PROJECT_KEY );
+	}
+
+	private void showOpenFromURLPanel()
+	{
+		gui.showPanel( LauncherGUI.NEW_FROM_URL_KEY );
 	}
 
 	private void showImportTgmmPanel()
@@ -341,6 +358,76 @@ public class MastodonLauncher extends JFrame
 	private void showHelpPanel()
 	{
 		gui.showPanel( LauncherGUI.WELCOME_PANEL_KEY );
+	}
+
+	private void createProjectFromURL()
+	{
+		final String filepath = gui.openRemoteURLPanel.taFileSave.getText();
+		if ( filepath == null || filepath.isEmpty() )
+		{
+			gui.openRemoteURLPanel.log.setForeground( Color.RED );
+			gui.openRemoteURLPanel.log.setText( "Please specify a BDV file to write to." );
+			return;
+		}
+
+		final File file = new File( filepath );
+		if ( file.exists() && !file.canWrite() )
+		{
+			gui.openRemoteURLPanel.log.setForeground( Color.RED );
+			gui.openRemoteURLPanel.log.setText( "Target BDV file exists and cannot be overwritten." );
+			return;
+		}
+
+		final SpimData spimData = gui.openRemoteURLPanel.spimData;
+		if ( spimData == null )
+		{
+			gui.openRemoteURLPanel.log.setForeground( Color.RED );
+			gui.openRemoteURLPanel.log.setText( "Please specify an image URL first." );
+			return;
+		}
+
+		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+		disabler.disable();
+		new Thread( () -> {
+			try
+			{
+				gui.openRemoteURLPanel.log.setText( "Creating project..." );
+
+				/*
+				 * Save the XML file first.
+				 */
+				final XmlIoSpimData xmlIoSpimData = new XmlIoSpimData();
+				spimData.setBasePath( file.getParentFile() );
+				try
+				{
+					xmlIoSpimData.save( spimData, file.getAbsolutePath() );
+				}
+				catch ( final SpimDataException e )
+				{
+					gui.openRemoteURLPanel.log.setForeground( Color.RED );
+					gui.openRemoteURLPanel.log.setText( "<html>Problem save to BDV file.<p>" +
+							LauncherUtil.toHtml( e ) + "</html>" );
+				}
+
+				/*
+				 * Open it as a new Mastodon project.
+				 */
+				final WindowManager windowManager = createWindowManager();
+				windowManager.getProjectManager().open( new MamutProject( null, file ) );
+				new MainWindow( windowManager ).setVisible( true );
+				dispose();
+			}
+			catch ( IOException | SpimDataException e )
+			{
+				gui.openRemoteURLPanel.log.setForeground( Color.RED );
+				gui.openRemoteURLPanel.log.setText( "<html>Problem creating project.<p>" +
+						LauncherUtil.toHtml( e ) + "</html>" );
+			}
+			finally
+			{
+				disabler.reenable();
+			}
+		} ).start();
 	}
 
 	private void importMaMuT()
@@ -373,7 +460,8 @@ public class MastodonLauncher extends JFrame
 			}
 			catch ( final IOException | SpimDataException e )
 			{
-				gui.importMamutPanel.lblInfo.setText( "<html>Invalid MaMuT file.<p>" + toHtml( e ) + "</html>" );
+				gui.importMamutPanel.lblInfo.setText( "<html>Invalid MaMuT file.<p>" +
+						LauncherUtil.toHtml( e ) + "</html>" );
 			}
 			finally
 			{
@@ -414,7 +502,8 @@ public class MastodonLauncher extends JFrame
 					}
 					catch ( final IOException | SpimDataException e )
 					{
-						gui.loadMastodonPanel.lblInfo.setText( "<html>Invalid Mastodon file.<p>" + toHtml( e ) + "</html>" );
+						gui.loadMastodonPanel.lblInfo.setText( "<html>Invalid Mastodon file.<p>" +
+								LauncherUtil.toHtml( e ) + "</html>" );
 					}
 				} );
 			}
@@ -428,12 +517,5 @@ public class MastodonLauncher extends JFrame
 	private WindowManager createWindowManager()
 	{
 		return new WindowManager( context );
-	}
-
-	private static final String toHtml( final Exception e )
-	{
-		return e.getMessage()
-				.replace( "<", "&lt;" )
-				.replace( ">", "&gt;" );
 	}
 }
