@@ -300,6 +300,16 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		undoRecorder.setUndoPoint();
 	}
 
+	public void setSavePoint()
+	{
+		undoRecorder.setSavePoint();
+	}
+
+	public boolean isSavePoint()
+	{
+		return undoRecorder.isSavePoint();
+	}
+
 	public ModelBranchGraph getBranchGraph()
 	{
 		return branchGraph;
