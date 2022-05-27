@@ -60,6 +60,8 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		menuTexts.put( ProjectManager.IMPORT_MAMUT, "Import MaMuT project" );
 		menuTexts.put( ProjectManager.EXPORT_MAMUT, "Export MaMuT project" );
 
+		menuTexts.put( WindowManager.OPEN_ONLINE_DOCUMENTATION, "Open online documentation" );
+
 		menuTexts.put( WindowManager.NEW_BDV_VIEW, "New Bdv" );
 		menuTexts.put( WindowManager.NEW_TRACKSCHEME_VIEW, "New Trackscheme" );
 		menuTexts.put( WindowManager.NEW_TABLE_VIEW, "New data table" );

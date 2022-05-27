@@ -35,15 +35,23 @@ import static org.mastodon.app.MastodonIcons.MAMUT_IMPORT_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.NEW_FROM_URL_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.NEW_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TGMM_IMPORT_ICON_MEDIUM;
+import static org.mastodon.mamut.WindowManager.DOCUMENTATION_URL;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -74,7 +82,6 @@ class LauncherGUI extends JPanel
 	static final String IMPORT_MAMUT_KEY = "ImportMaMuT";
 
 	static final String IMPORT_SIMI_KEY = "ImportSimi";
-
 
 	final JButton btnNew;
 
@@ -267,11 +274,16 @@ class LauncherGUI extends JPanel
 
 		private static final long serialVersionUID = 1L;
 
+
+		private static final String DOCUMENTATION_STR = "Mastodon online documentation";
+
+		private static final String DOCUMENTATION_LINK = "<html><a href='" + DOCUMENTATION_URL + "'>" + DOCUMENTATION_STR + "</html>";
+
 		public WelcomePanel()
 		{
 			final GridBagLayout gridBagLayout = new GridBagLayout();
 			gridBagLayout.columnWidths = new int[] { 194, 0 };
-			gridBagLayout.rowHeights = new int[] { 16, 0, 42, 0 };
+			gridBagLayout.rowHeights = new int[] { 16, 0, 42, 42 };
 			setLayout( gridBagLayout );
 
 			final JLabel lblMastodon = new JLabel( "Mastodon" );
@@ -296,6 +308,32 @@ class LauncherGUI extends JPanel
 			gbc_lblTobiasPietzsch.gridx = 0;
 			gbc_lblTobiasPietzsch.gridy = 2;
 			add( lblTobiasPietzsch, gbc_lblTobiasPietzsch );
+
+			final JLabel hyperlink = new JLabel( DOCUMENTATION_LINK );
+			hyperlink.setForeground( Color.BLUE.darker() );
+			hyperlink.setCursor( Cursor.getPredefinedCursor( Cursor.HAND_CURSOR ) );
+			hyperlink.setToolTipText( DOCUMENTATION_URL );
+			hyperlink.addMouseListener( new MouseAdapter()
+			{
+				@Override
+				public void mouseClicked( final java.awt.event.MouseEvent e )
+				{
+					try
+					{
+						Desktop.getDesktop().browse( new URI( DOCUMENTATION_URL ) );
+					}
+					catch ( IOException | URISyntaxException e1 )
+					{
+						e1.printStackTrace();
+					}
+				}
+			} );
+			final GridBagConstraints gbcHyperlilnk = new GridBagConstraints();
+			gbcHyperlilnk.anchor = GridBagConstraints.SOUTH;
+			gbcHyperlilnk.gridx = 0;
+			gbcHyperlilnk.gridy = 3;
+			add( hyperlink, gbcHyperlilnk );
+
 		}
 
 		@Override

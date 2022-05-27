@@ -308,7 +308,9 @@ public class MainWindow extends JFrame
 //						item( ProjectManager.IMPORT_MAMUT ),
 //						item( ProjectManager.EXPORT_MAMUT ),
 //						separator(),
-						item( WindowManager.PREFERENCES_DIALOG ) ),
+						item( WindowManager.PREFERENCES_DIALOG ),
+						separator(),
+						item( WindowManager.OPEN_ONLINE_DOCUMENTATION ) ),
 				windowMenu(
 						item( WindowManager.NEW_BDV_VIEW ),
 						item( WindowManager.NEW_TRACKSCHEME_VIEW ),
