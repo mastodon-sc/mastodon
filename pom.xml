@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>30.0.0</version>
+		<version>31.1.0</version>
 	</parent>
 
 	<groupId>org.mastodon</groupId>
@@ -153,8 +153,8 @@
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
-		<mastodon-collection.version>1.0.0-beta-22</mastodon-collection.version>
-		<mastodon-graph.version>1.0.0-beta-20</mastodon-graph.version>
+		<mastodon-collection.version>1.0.0-beta-23</mastodon-collection.version>
+		<mastodon-graph.version>1.0.0-beta-21</mastodon-graph.version>
 		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>
 
