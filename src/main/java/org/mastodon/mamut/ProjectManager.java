@@ -420,6 +420,7 @@ public class ProjectManager
 		if ( project == null )
 			return;
 
+
 		project.setProjectRoot( projectRoot );
 		try (final MamutProject.ProjectWriter writer = project.openForWriting())
 		{
@@ -430,6 +431,8 @@ public class ProjectManager
 			MamutRawFeatureModelIO.serialize( windowManager.getContext(), model.getFeatureModel(), idmap, writer );
 			// Serialize GUI state.
 			saveGUI( writer );
+			// Set save point.
+			model.setSavePoint();
 		}
 		updateEnabledActions();
 	}
