@@ -522,6 +522,7 @@ public class ProjectManager
 			}
 		}
 
+		model.setSavePoint();
 		model.declareDefaultFeatures();
 
 		/*
