@@ -63,6 +63,8 @@ public class MastodonIcons
 
 	public static final ImageIcon NEW_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-16x16.png" ) );
 
+	public static final ImageIcon NEW_FROM_URL_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-remote-image-project-16x16.png" ) );
+
 	public static final ImageIcon SAVE_AS_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-save-as-16x16.png" ) );
 
 	public static final ImageIcon SAVE_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-save-16x16.png" ) );
@@ -92,6 +94,8 @@ public class MastodonIcons
 	public static final ImageIcon TRACKSCHEME_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-lineage-view-32x32.png" ) );
 
 	public static final ImageIcon NEW_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-32x32.png" ) );
+
+	public static final ImageIcon NEW_FROM_URL_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-remote-image-project-32x32.png" ) );
 
 	public static final ImageIcon LOAD_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-load-32x32.png" ) );
 
@@ -124,6 +128,8 @@ public class MastodonIcons
 	public static final ImageIcon TRACKSCHEME_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-lineage-view-512x512.png" ) );
 
 	public static final ImageIcon NEW_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-512x512.png" ) );
+
+	public static final ImageIcon NEW_FROM_URL_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-remote-image-project-512x512.png" ) );
 
 	public static final ImageIcon LOAD_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-load-512x512.png" ) );
 

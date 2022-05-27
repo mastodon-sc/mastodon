@@ -32,6 +32,7 @@ import static org.mastodon.app.MastodonIcons.HELP_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.LOAD_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.MAINWINDOW_BG;
 import static org.mastodon.app.MastodonIcons.MAMUT_IMPORT_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.NEW_FROM_URL_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.NEW_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TGMM_IMPORT_ICON_MEDIUM;
 
@@ -64,6 +65,8 @@ class LauncherGUI extends JPanel
 
 	static final String NEW_MASTODON_PROJECT_KEY = "NewMastodonProject";
 
+	static final String NEW_FROM_URL_KEY = "NewFromURL";
+
 	static final String LOAD_MASTODON_PROJECT_KEY = "LoadMastodonProject";
 
 	static final String IMPORT_TGMM_KEY = "ImportTGMM";
@@ -72,9 +75,12 @@ class LauncherGUI extends JPanel
 
 	static final String IMPORT_SIMI_KEY = "ImportSimi";
 
+
 	final JButton btnNew;
 
 	final JButton btnLoad;
+
+	final JButton btnOpenURL;
 
 	final JButton btnImportTgmm;
 
@@ -87,6 +93,8 @@ class LauncherGUI extends JPanel
 	final JPanel sidePanel;
 
 	final OpenBDVPanel newMastodonProjectPanel;
+
+	final OpenRemoteURLPanel openRemoteURLPanel;
 
 	final LoadMastodonPanel loadMastodonPanel;
 
@@ -125,6 +133,14 @@ class LauncherGUI extends JPanel
 		c.gridx = 1;
 		c.gridy = 0;
 		sidePanel.add( new JLabel( "new Mastodon project" ), c );
+
+		c.gridx = 0;
+		c.gridy++;
+		btnOpenURL = new JButton( NEW_FROM_URL_ICON_MEDIUM );
+		sidePanel.add( btnOpenURL, c );
+
+		c.gridx = 1;
+		sidePanel.add( new JLabel( "new project from URL" ), c );
 
 		c.gridx = 0;
 		c.gridy++;
@@ -185,6 +201,9 @@ class LauncherGUI extends JPanel
 
 		newMastodonProjectPanel = new OpenBDVPanel( "New Mastodon project", "create" );
 		centralPanel.add( newMastodonProjectPanel, NEW_MASTODON_PROJECT_KEY );
+
+		openRemoteURLPanel = new OpenRemoteURLPanel();
+		centralPanel.add( openRemoteURLPanel, NEW_FROM_URL_KEY );
 
 		importTGMMPanel = new ImportTGMMPanel();
 		centralPanel.add( importTGMMPanel, IMPORT_TGMM_KEY );
