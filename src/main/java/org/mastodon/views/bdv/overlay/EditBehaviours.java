@@ -30,6 +30,7 @@ package org.mastodon.views.bdv.overlay;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.collection.RefSet;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
@@ -43,6 +44,7 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
+import bdv.viewer.ViewerPanel;
 import net.imglib2.util.LinAlgHelpers;
 
 /**
@@ -60,6 +62,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 {
 	public static final String MOVE_SPOT = "move spot";
 	public static final String ADD_SPOT = "add spot";
+	public static final String TOGGLE_AUTO_LINKING_MODE = "toggle auto-linking mode";
 	public static final String INCREASE_SPOT_RADIUS = "increase spot radius";
 	public static final String INCREASE_SPOT_RADIUS_ALOT = "increase spot radius a lot";
 	public static final String INCREASE_SPOT_RADIUS_ABIT = "increase spot radius a bit";
@@ -69,6 +72,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	static final String[] MOVE_SPOT_KEYS = new String[] { "SPACE" };
 	static final String[] ADD_SPOT_KEYS = new String[] { "A" };
+	static final String[] TOGGLE_AUTO_LINKING_MODE_KEYS = { "control L" };
 	static final String[] INCREASE_SPOT_RADIUS_KEYS = new String[] { "E" };
 	static final String[] INCREASE_SPOT_RADIUS_ALOT_KEYS = new String[] { "shift E" };
 	static final String[] INCREASE_SPOT_RADIUS_ABIT_KEYS = new String[] { "control E" };
@@ -92,6 +96,9 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		{
 			descriptions.add( MOVE_SPOT, MOVE_SPOT_KEYS, "Move spot by mouse-dragging." );
 			descriptions.add( ADD_SPOT, ADD_SPOT_KEYS, "Add spot at mouse position." );
+			descriptions.add( TOGGLE_AUTO_LINKING_MODE, TOGGLE_AUTO_LINKING_MODE_KEYS, "Toggle auto-linking mode. When on, "
+					+ "the next spot added will be automatically linked to the spot in the selection, if there is exactly "
+					+ "one spot selected." );
 			descriptions.add( INCREASE_SPOT_RADIUS, INCREASE_SPOT_RADIUS_KEYS, "Increase radius of spot at mouse position." );
 			descriptions.add( INCREASE_SPOT_RADIUS_ALOT, INCREASE_SPOT_RADIUS_ALOT_KEYS, "Increase radius of spot at mouse position (a lot)." );
 			descriptions.add( INCREASE_SPOT_RADIUS_ABIT, INCREASE_SPOT_RADIUS_ABIT_KEYS, "Increase radius of spot at mouse position (a little)." );
@@ -124,6 +131,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final AddSpotBehaviour addSpotBehaviour;
 
+	private final ToggleAutoLinkingModeBehaviour toggleAutoLinkingModeBehaviour;
+
 	private final MoveSpotBehaviour moveSpotBehaviour;
 
 	private final ResizeSpotBehaviour increaseSpotRadiusBehaviour;
@@ -142,6 +151,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
+			final ViewerPanel viewerPanel,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
@@ -149,10 +159,11 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final UndoPointMarker undo,
 			final double minRadius )
 	{
-		final EditBehaviours< V, E > eb = new EditBehaviours<>( overlayGraph, renderer, selection, focus, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE, minRadius );
+		final EditBehaviours< V, E > eb = new EditBehaviours<>( viewerPanel, overlayGraph, renderer, selection, focus, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE, minRadius );
 
 		behaviours.namedBehaviour( eb.moveSpotBehaviour, MOVE_SPOT_KEYS );
 		behaviours.namedBehaviour( eb.addSpotBehaviour, ADD_SPOT_KEYS );
+		behaviours.namedBehaviour( eb.toggleAutoLinkingModeBehaviour, TOGGLE_AUTO_LINKING_MODE_KEYS );
 		behaviours.namedBehaviour( eb.increaseSpotRadiusBehaviour, INCREASE_SPOT_RADIUS_KEYS );
 		behaviours.namedBehaviour( eb.increaseSpotRadiusBehaviourABit, INCREASE_SPOT_RADIUS_ABIT_KEYS );
 		behaviours.namedBehaviour( eb.increaseSpotRadiusBehaviourALot, INCREASE_SPOT_RADIUS_ALOT_KEYS );
@@ -173,7 +184,10 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final UndoPointMarker undo;
 
+	private final ViewerPanel viewerPanel;
+
 	private EditBehaviours(
+			final ViewerPanel viewerPanel,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
@@ -184,6 +198,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final double aLotRadiusChange,
 			final double minRadius )
 	{
+		this.viewerPanel = viewerPanel;
 		this.overlayGraph = overlayGraph;
 		this.lock = overlayGraph.getLock();
 		this.renderer = renderer;
@@ -193,6 +208,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 		moveSpotBehaviour = new MoveSpotBehaviour( MOVE_SPOT );
 		addSpotBehaviour = new AddSpotBehaviour( ADD_SPOT );
+		toggleAutoLinkingModeBehaviour = new ToggleAutoLinkingModeBehaviour( TOGGLE_AUTO_LINKING_MODE );
 		increaseSpotRadiusBehaviour = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS, normalRadiusChange, minRadius );
 		increaseSpotRadiusBehaviourALot = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ALOT, aLotRadiusChange, minRadius );
 		increaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ABIT, aBitRadiusChange, minRadius );
@@ -201,14 +217,38 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		decreaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ABIT, -aBitRadiusChange / ( 1 + aBitRadiusChange ), minRadius );
 	}
 
+	private class ToggleAutoLinkingModeBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
+	{
+
+		public ToggleAutoLinkingModeBehaviour( final String name )
+		{
+			super( name );
+		}
+
+		@Override
+		public void click( final int x, final int y )
+		{
+			addSpotBehaviour.toggleAutoLinking();
+		}
+	}
+
 	private class AddSpotBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
 	{
+		
 		private final double[] pos;
+
+		private boolean autoLink = false;
 
 		public AddSpotBehaviour( final String name )
 		{
 			super( name );
 			pos = new double[ 3 ];
+		}
+
+		public void toggleAutoLinking()
+		{
+			this.autoLink = !autoLink;
+			viewerPanel.showMessage( "Auto-linking mode " + ( autoLink ? "on" : "off" ) );
 		}
 
 		@Override
@@ -237,6 +277,30 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 				try
 				{
 					final V vertex = overlayGraph.addVertex( ref ).init( timepoint, pos, lastRadius );
+
+					if ( autoLink )
+					{
+						final RefSet< V > selectedVertices = selection.getSelectedVertices();
+						if ( selectedVertices.size() == 1 )
+						{
+							final V previous = selectedVertices.iterator().next();
+							/*
+							 * Careful with directed graphs. We always check and
+							 * create links forward in time.
+							 */
+							final int t1 = vertex.getTimepoint();
+							final int t2 = previous.getTimepoint();
+							if ( t1 != t2 )
+							{
+								final V from = t1 > t2 ? previous : vertex;
+								final V to = t1 > t2 ? vertex : previous;
+								final E eref = overlayGraph.edgeRef();
+								overlayGraph.addEdge( from, to, eref ).init();
+								overlayGraph.releaseRef( eref );
+							}
+						}
+					}
+
 					overlayGraph.notifyGraphChanged();
 
 					undo.setUndoPoint();
@@ -263,6 +327,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private class MoveSpotBehaviour extends AbstractNamedBehaviour implements DragBehaviour
 	{
+
 		private final double[] start;
 
 		private final double[] pos;
@@ -332,6 +397,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private class ResizeSpotBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
 	{
+
 		private final double[][] mat;
 
 		private final double factor;
