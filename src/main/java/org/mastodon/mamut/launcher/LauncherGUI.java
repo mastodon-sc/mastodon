@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Consumer;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -76,6 +77,8 @@ class LauncherGUI extends JPanel
 	static final String NEW_FROM_URL_KEY = "NewFromURL";
 
 	static final String LOAD_MASTODON_PROJECT_KEY = "LoadMastodonProject";
+
+	static final String RECENT_PROJECTS_KEY = "MastodonRecentProjects";
 
 	static final String IMPORT_TGMM_KEY = "ImportTGMM";
 
@@ -113,7 +116,9 @@ class LauncherGUI extends JPanel
 
 	final JButton btnHelp;
 
-	public LauncherGUI()
+	private final RecentProjectsPanel recentProjectsPanel;
+
+	public LauncherGUI( final Consumer< String > projectOpener )
 	{
 		setLayout( new BorderLayout( 5, 5 ) );
 
@@ -208,6 +213,9 @@ class LauncherGUI extends JPanel
 
 		newMastodonProjectPanel = new OpenBDVPanel( "New Mastodon project", "create" );
 		centralPanel.add( newMastodonProjectPanel, NEW_MASTODON_PROJECT_KEY );
+
+		recentProjectsPanel = new RecentProjectsPanel( projectOpener );
+		centralPanel.add( recentProjectsPanel, RECENT_PROJECTS_KEY );
 
 		openRemoteURLPanel = new OpenRemoteURLPanel();
 		centralPanel.add( openRemoteURLPanel, NEW_FROM_URL_KEY );

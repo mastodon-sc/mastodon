@@ -82,19 +82,22 @@ public class MastodonLauncher extends JFrame
 
 	private final Context context;
 
-
 	public MastodonLauncher(final Context context)
 	{
 		super("Mastodon launcher");
 		this.context = Optional.ofNullable( context ).orElse( new Context() );
+
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
 		setIconImage( MastodonIcons.MASTODON_ICON_LARGE.getImage() );
-		gui = new LauncherGUI();
+		gui = new LauncherGUI( s -> loadMastodonProject( s ) );
 
+		/*
+		 * Wire buttons.
+		 */
 		gui.btnNew.addActionListener( l -> newMastodonProject() );
 		gui.btnOpenURL.addActionListener( l -> showOpenFromURLPanel() );
-		gui.btnLoad.addActionListener( l -> loadMastodonProject() );
+		gui.btnLoad.addActionListener( l -> showShowRecentProjects() );
 		gui.btnImportTgmm.addActionListener( l -> showImportTgmmPanel() );
 		gui.btnImportMamut.addActionListener( l -> importMaMuT() );
 		gui.btnImportSimi.addActionListener( l -> showImportSimiPanel() );
@@ -340,6 +343,11 @@ public class MastodonLauncher extends JFrame
 		gui.showPanel( LauncherGUI.NEW_MASTODON_PROJECT_KEY );
 	}
 
+	private void showShowRecentProjects()
+	{
+		gui.showPanel( LauncherGUI.RECENT_PROJECTS_KEY );
+	}
+
 	private void showOpenFromURLPanel()
 	{
 		gui.showPanel( LauncherGUI.NEW_FROM_URL_KEY );
@@ -416,6 +424,12 @@ public class MastodonLauncher extends JFrame
 				windowManager.getProjectManager().open( new MamutProject( null, file ) );
 				new MainWindow( windowManager ).setVisible( true );
 				dispose();
+
+				/*
+				 * We update the list of recent projects here so that only
+				 * projects that were successfully opened are added to the list.
+				 */
+				RecentProjectsPanel.recentProjects.add( file.getAbsolutePath() );
 			}
 			catch ( IOException | SpimDataException e )
 			{
@@ -470,7 +484,7 @@ public class MastodonLauncher extends JFrame
 		} ).start();
 	}
 
-	private void loadMastodonProject()
+	private void loadMastodonProject( final String projectPath )
 	{
 		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 		disabler.disable();
@@ -482,16 +496,25 @@ public class MastodonLauncher extends JFrame
 				final WindowManager windowManager = createWindowManager();
 				SwingUtilities.invokeLater( () -> {
 
-					final File file = FileChooser.chooseFile(
-							true, // We have to use the JFileChooser to open folders.
-							this,
-							null,
-							new ExtensionFileFilter( "mastodon" ),
-							"Open Mastodon Project",
-							FileChooser.DialogType.LOAD,
-							SelectionMode.FILES_AND_DIRECTORIES );
-					if ( file == null )
-						return;
+					final File file;
+					if ( projectPath == null )
+					{
+						// We have to use the JFileChooser to open folders.
+						file = FileChooser.chooseFile(
+								true,
+								this,
+								null,
+								new ExtensionFileFilter( "mastodon" ),
+								"Open Mastodon Project",
+								FileChooser.DialogType.LOAD,
+								SelectionMode.FILES_AND_DIRECTORIES );
+						if ( file == null )
+							return;
+					}
+					else
+					{
+						file = new File( projectPath );
+					}
 
 					try
 					{
@@ -499,6 +522,12 @@ public class MastodonLauncher extends JFrame
 						windowManager.getProjectManager().open( project, true );
 						new MainWindow( windowManager ).setVisible( true );
 						dispose();
+						/*
+						 * We update the list of recent projects here so that
+						 * only projects that were successfully opened are added
+						 * to the list.
+						 */
+						RecentProjectsPanel.recentProjects.add( file.getAbsolutePath() );
 					}
 					catch ( final IOException | SpimDataException e )
 					{
