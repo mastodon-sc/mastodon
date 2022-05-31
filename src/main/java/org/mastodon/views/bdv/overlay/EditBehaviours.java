@@ -80,6 +80,11 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	static final String[] DECREASE_SPOT_RADIUS_ALOT_KEYS = new String[] { "shift Q" };
 	static final String[] DECREASE_SPOT_RADIUS_ABIT_KEYS = new String[] { "control Q" };
 
+	/**
+	 * Common (static) flag for the auto-linking mode.
+	 */
+	private static boolean autoLink = false;
+
 	/*
 	 * Command descriptions for all provided commands
 	 */
@@ -228,7 +233,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		@Override
 		public void click( final int x, final int y )
 		{
-			addSpotBehaviour.toggleAutoLinking();
+			autoLink = !autoLink;
+			viewerPanel.showMessage( "Auto-linking mode " + ( autoLink ? "on" : "off" ) );
 		}
 	}
 
@@ -237,18 +243,10 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		
 		private final double[] pos;
 
-		private boolean autoLink = false;
-
 		public AddSpotBehaviour( final String name )
 		{
 			super( name );
 			pos = new double[ 3 ];
-		}
-
-		public void toggleAutoLinking()
-		{
-			this.autoLink = !autoLink;
-			viewerPanel.showMessage( "Auto-linking mode " + ( autoLink ? "on" : "off" ) );
 		}
 
 		@Override
