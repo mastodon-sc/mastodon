@@ -75,6 +75,7 @@ import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.BigDataViewerMamut;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.ViewerFrameMamut;
+import org.mastodon.views.bdv.export.RecordMovieDialog;
 import org.mastodon.views.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
@@ -256,6 +257,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		OverlayActions.install( viewActions, viewer, tracksOverlay );
+		RecordMovieDialog.install( viewActions, bdv, tracksOverlay, colorBarOverlay );
 
 		/*
 		 * We must make a search action using the underlying model graph,
