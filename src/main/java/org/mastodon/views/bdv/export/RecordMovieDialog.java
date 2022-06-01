@@ -66,7 +66,7 @@ import ij.io.LogStream;
 public class RecordMovieDialog extends DelayedPackDialog implements OverlayRenderer
 {
 
-	private static final String RECORD_MOVIE_DIALOG = "record movie dialog";
+	public static final String RECORD_MOVIE_DIALOG = "record movie dialog";
 
 	private static final String[] RECORD_MOVIE_DIALOG_KEYS = { "ctrl R" };
 

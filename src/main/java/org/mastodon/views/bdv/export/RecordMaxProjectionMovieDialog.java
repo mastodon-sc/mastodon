@@ -66,7 +66,7 @@ import ij.io.LogStream;
 public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements OverlayRenderer
 {
 
-	private static final String RECORD_MIP_MOVIE_DIALOG = "record max projection movie dialog";
+	public static final String RECORD_MIP_MOVIE_DIALOG = "record max projection movie dialog";
 
 	private static final String[] RECORD_MIP_MOVIE_DIALOG_KEYS = { "ctrl shift R" };
 

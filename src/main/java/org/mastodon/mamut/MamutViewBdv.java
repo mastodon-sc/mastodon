@@ -166,7 +166,10 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				fileMenu(
 						separator(),
 						item( BigDataViewerActions.LOAD_SETTINGS ),
-						item( BigDataViewerActions.SAVE_SETTINGS ) ),
+						item( BigDataViewerActions.SAVE_SETTINGS ),
+						separator(),
+						item( RecordMovieDialog.RECORD_MOVIE_DIALOG ),
+						item( RecordMaxProjectionMovieDialog.RECORD_MIP_MOVIE_DIALOG ) ),
 				viewMenu(
 						colorMenu( menuHandle ),
 						colorbarMenu( colorbarMenuHandle ),
