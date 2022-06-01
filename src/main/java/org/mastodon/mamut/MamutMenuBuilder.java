@@ -38,6 +38,8 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.ui.SelectionActions;
+import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
+import org.mastodon.views.bdv.export.RecordMovieDialog;
 import org.mastodon.views.table.TableViewActions;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
@@ -86,6 +88,9 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		menuTexts.put( BigDataViewerActions.SAVE_SETTINGS, "Save Bdv Settings" );
 		menuTexts.put( BigDataViewerActions.BRIGHTNESS_SETTINGS, "Brightness & Color" );
 		menuTexts.put( BigDataViewerActions.VISIBILITY_AND_GROUPING, "Visibility & Grouping" );
+
+		menuTexts.put( RecordMovieDialog.RECORD_MOVIE_DIALOG, "Record BDV movie" );
+		menuTexts.put( RecordMaxProjectionMovieDialog.RECORD_MIP_MOVIE_DIALOG, "Record BDV max projection movie" );
 
 		menuTexts.put( TrackSchemeNavigationActions.NAVIGATE_CHILD, "Navigate to Child" );
 		menuTexts.put( TrackSchemeNavigationActions.NAVIGATE_PARENT, "Navigate to Parent" );
