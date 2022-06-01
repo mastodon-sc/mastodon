@@ -50,8 +50,14 @@ public class MovieFileBDVRecorder extends AbstractBDVRecorder
 	}
 
 	@Override
-	protected void initializeRecorder( final int width, final int height )
+	protected void initializeRecorder( final int w, final int h )
 	{
+		/*
+		 * Make sure we only get even numbers for width and height.
+		 */
+		final int width = Math.round( w / 2 ) * 2;
+		final int height = Math.round( h / 2 ) * 2;
+
 		/*
 		 * First we create a muxer using the filename to determine code and
 		 * format.
@@ -105,10 +111,13 @@ public class MovieFileBDVRecorder extends AbstractBDVRecorder
 	protected void writeFrame( final BufferedImage frame, final int timepoint )
 	{
 		// Convert BI type to something Humble can harness.
-		final BufferedImage convertedImg = new BufferedImage( frame.getWidth(), frame.getHeight(), BufferedImage.TYPE_3BYTE_BGR );
+		// Also crop in case we had non-even dimensions.
+		final BufferedImage convertedImg = new BufferedImage( picture.getWidth(), picture.getHeight(), BufferedImage.TYPE_3BYTE_BGR );
 		convertedImg.getGraphics().drawImage( frame, 0, 0, null );
+
 		if ( converter == null )
 			converter = MediaPictureConverterFactory.createConverter( convertedImg, picture );
+
 		converter.toPicture( picture, convertedImg, timepoint );
 
 		// Write to output video stream.
