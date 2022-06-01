@@ -251,7 +251,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		final AutoNavigateFocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 
 		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel, navigationHandler );
-		EditBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel, model, getMinRadius( sharedBdvData ) );
+		EditBehaviours.install( viewBehaviours, viewer, viewGraph, tracksOverlay, selectionModel, focusModel, model, getMinRadius( sharedBdvData ) );
 		EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, selectionModel, focusModel, model );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
