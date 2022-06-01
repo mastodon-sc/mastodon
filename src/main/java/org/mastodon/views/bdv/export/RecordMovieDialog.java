@@ -10,19 +10,17 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.PrintStream;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.InputMap;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -30,8 +28,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -40,6 +38,8 @@ import org.mastodon.app.MastodonIcons;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.Keymap;
+import org.mastodon.ui.keymap.Keymap.UpdateListener;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.DialogType;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
@@ -47,10 +47,12 @@ import org.mastodon.views.bdv.BigDataViewerMamut;
 import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.scijava.plugin.Plugin;
+import org.scijava.prefs.DefaultPrefService;
 import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.InputActionBindings;
 
-import bdv.BigDataViewerActions;
 import bdv.export.ProgressWriter;
+import bdv.tools.ToggleDialogAction;
 import bdv.util.DelayedPackDialog;
 import bdv.viewer.OverlayRenderer;
 import bdv.viewer.ViewerPanel;
@@ -60,7 +62,6 @@ import ij.io.LogStream;
  * Adapted from BDV {@code RecordMovieDialog} to also record the MaMuT overlay.
  *
  * @author Jean-Yves Tinevez
- *
  */
 public class RecordMovieDialog extends DelayedPackDialog implements OverlayRenderer
 {
@@ -88,24 +89,78 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		}
 	}
 
-	public static void install(
+	/**
+	 * Install the record dialog on the specified BDV window.
+	 * 
+	 * @param actions
+	 *            the actions to register the toggle dialog visibility action.
+	 * @param bdv
+	 *            the BDV frame to capture.
+	 * @param tracksOverlay
+	 *            the track overlay displayed on the BDV.
+	 * @param colorBarOverlay
+	 *            the colorbar overlay displayed on the BDV.
+	 * @param keymap
+	 *            the keymap of the application. If not <code>null</code>, the
+	 *            toggle visibility key bindings will also be registered to the
+	 *            dialog window.
+	 * @return a runnable that should be executed when the BDV window is closed,
+	 *         and that closes this dialog and de-registers its listeners.
+	 */
+	public static Runnable install(
 			final Actions actions,
-			final BigDataViewerMamut bdv, final OverlayGraphRenderer< ?, ? > tracksOverlay, final ColorBarOverlay colorBarOverlay )
+			final BigDataViewerMamut bdv,
+			final OverlayGraphRenderer< ?, ? > tracksOverlay,
+			final ColorBarOverlay colorBarOverlay,
+			final Keymap keymap )
 	{
 		final RecordMovieDialog dialog = new RecordMovieDialog(
 				bdv.getViewerFrame(),
 				bdv.getViewer(),
 				tracksOverlay,
 				colorBarOverlay );
-		dialog.setLocationRelativeTo( bdv.getViewerFrame() );
-		BigDataViewerActions.toggleDialogAction( actions, dialog, RECORD_MOVIE_DIALOG, RECORD_MOVIE_DIALOG_KEYS );
+		dialog.setTitle( "Record movie on " + bdv.getViewerFrame().getTitle() );
+		bdv.getViewer().getDisplay().overlays().add( dialog );
+		actions.namedAction( new MyToggleDialogAction( RECORD_MOVIE_DIALOG, dialog ), RECORD_MOVIE_DIALOG_KEYS );
+
+		// Register some keymaps to the dialog itself.
+		if ( keymap != null )
+		{
+			final InputActionBindings keybindings = new InputActionBindings();
+			SwingUtilities.replaceUIActionMap( dialog.rootPane, keybindings.getConcatenatedActionMap() );
+			SwingUtilities.replaceUIInputMap( dialog.rootPane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+
+			final Actions dialogActions = new Actions( keymap.getConfig(), KeyConfigContexts.BIGDATAVIEWER );
+			dialogActions.install( keybindings, "view" );
+			final UpdateListener updateListener = () -> dialogActions.updateKeyConfig( keymap.getConfig() );
+			keymap.updateListeners().add( updateListener );
+			updateListener.keymapChanged();
+			final Runnable onClose = () -> {
+				keymap.updateListeners().remove( updateListener );
+				dialog.setVisible( false );
+				dialog.dispose();
+			};
+
+			dialogActions.namedAction( new MyToggleDialogAction( RECORD_MOVIE_DIALOG, dialog ), RECORD_MOVIE_DIALOG_KEYS );
+			return onClose;
+		}
+		
+		return () -> {
+			dialog.setVisible( false );
+			dialog.dispose();
+		};
 	}
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String EXPORT_TO_MOVIE_KEY = "ExportToMovie";
+	private static final String PNG_EXPORT_PATH_KEY = "PNGExportPath";
+	private static final String MOVIE_EXPORT_PATH_KEY = "MovieExportPath";
+	private static final String FPS_KEY = "FPS";
+
 	private final int maxTimepoint;
 
-	private final JTextField pathTextField;
+	private final JTextField tfPathPNGs;
 
 	private final JSpinner spinnerMinTimepoint;
 
@@ -115,7 +170,7 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 
 	private final JSpinner spinnerHeight;
 
-	private JTextField textField;
+	private JTextField tfPathMovie;
 
 	public RecordMovieDialog(
 			final Frame owner,
@@ -124,7 +179,8 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 			final ColorBarOverlay colorBarOverlay )
 	{
 		super( owner, "Record BDV movie", false );
-		maxTimepoint = viewer.state().getNumTimepoints() - 1;
+		maxTimepoint = ( null == viewer ) ? 10 : viewer.state().getNumTimepoints() - 1;
+		final DefaultPrefService prefService = new DefaultPrefService();
 
 		final JPanel boxes = new JPanel();
 		boxes.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
@@ -161,30 +217,6 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		spinnerMaxTimepoint = new JSpinner();
 		spinnerMaxTimepoint.setModel( new SpinnerNumberModel( maxTimepoint, 0, maxTimepoint, 1 ) );
 		timepointsPanel.add( spinnerMaxTimepoint );
-
-		spinnerMinTimepoint.addChangeListener( new ChangeListener()
-		{
-			@Override
-			public void stateChanged( final ChangeEvent e )
-			{
-				final int min = ( Integer ) spinnerMinTimepoint.getValue();
-				final int max = ( Integer ) spinnerMaxTimepoint.getValue();
-				if ( max < min )
-					spinnerMaxTimepoint.setValue( min );
-			}
-		} );
-
-		spinnerMaxTimepoint.addChangeListener( new ChangeListener()
-		{
-			@Override
-			public void stateChanged( final ChangeEvent e )
-			{
-				final int min = ( Integer ) spinnerMinTimepoint.getValue();
-				final int max = ( Integer ) spinnerMaxTimepoint.getValue();
-				if ( min > max )
-					spinnerMinTimepoint.setValue( max );
-			}
-		} );
 
 		final JPanel widthPanel = new JPanel();
 		final GridBagConstraints gbcWidthPanel = new GridBagConstraints();
@@ -243,33 +275,14 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		saveAsPanel.add( new JLabel( "save to" ) );
 
 		saveAsPanel.add( Box.createHorizontalStrut( 5 ) );
-		pathTextField = new JTextField();
-		saveAsPanel.add( pathTextField );
-		pathTextField.setColumns( 20 );
+		tfPathPNGs = new JTextField();
+		saveAsPanel.add( tfPathPNGs );
+		tfPathPNGs.setColumns( 20 );
 
 		saveAsPanel.add( Box.createHorizontalStrut( 10 ) );
 
-		final JButton browseButton = new JButton( "Browse" );
-		saveAsPanel.add( browseButton );
-
-		browseButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				final File file = FileChooser.chooseFile(
-						FileChooser.useJFileChooser,
-						RecordMovieDialog.this,
-						pathTextField.getText(),
-						null,
-						"Browse to a folder to save the PNGs to",
-						DialogType.SAVE,
-						SelectionMode.DIRECTORIES_ONLY,
-						MastodonIcons.BDV_ICON_MEDIUM.getImage() );
-				if ( file != null )
-					pathTextField.setText( file.getAbsolutePath() );
-			}
-		} );
+		final JButton btnBrowsePNGs = new JButton( "Browse" );
+		saveAsPanel.add( btnBrowsePNGs );
 
 		final GridBagConstraints gbcSeparator1 = new GridBagConstraints();
 		gbcSeparator1.anchor = GridBagConstraints.SOUTH;
@@ -301,9 +314,9 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 
 		panelSaveTo2.add( Box.createHorizontalStrut( 5 ) );
 
-		textField = new JTextField();
-		panelSaveTo2.add( textField );
-		textField.setColumns( 10 );
+		tfPathMovie = new JTextField();
+		panelSaveTo2.add( tfPathMovie );
+		tfPathMovie.setColumns( 10 );
 
 		panelSaveTo2.add( Box.createHorizontalStrut( 10 ) );
 
@@ -320,9 +333,7 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		gbcPanelFPS.gridy = 8;
 		boxes.add( panelFPS, gbcPanelFPS );
 
-		final JLabel lblNewLabel = new JLabel( "fps" );
-		panelFPS.add( lblNewLabel );
-
+		panelFPS.add( new JLabel( "fps" ) );
 		panelFPS.add( Box.createHorizontalStrut( 10 ) );
 
 		final JSpinner spinnerFPS = new JSpinner();
@@ -386,24 +397,128 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		 * Listeners.
 		 */
 
+		spinnerMinTimepoint.addChangeListener( new ChangeListener()
+		{
+			@Override
+			public void stateChanged( final ChangeEvent e )
+			{
+				final int min = ( Integer ) spinnerMinTimepoint.getValue();
+				final int max = ( Integer ) spinnerMaxTimepoint.getValue();
+				if ( max < min )
+					spinnerMaxTimepoint.setValue( min );
+			}
+		} );
+
+		spinnerMaxTimepoint.addChangeListener( new ChangeListener()
+		{
+			@Override
+			public void stateChanged( final ChangeEvent e )
+			{
+				final int min = ( Integer ) spinnerMinTimepoint.getValue();
+				final int max = ( Integer ) spinnerMaxTimepoint.getValue();
+				if ( min > max )
+					spinnerMinTimepoint.setValue( max );
+			}
+		} );
+
+
+		btnBrowsePNGs.addActionListener( e -> {
+			final File file = FileChooser.chooseFile(
+					FileChooser.useJFileChooser,
+					RecordMovieDialog.this,
+					tfPathPNGs.getText(),
+					null,
+					"Browse to a folder to save the PNGs to",
+					DialogType.SAVE,
+					SelectionMode.DIRECTORIES_ONLY,
+					MastodonIcons.BDV_ICON_MEDIUM.getImage() );
+			if ( file != null )
+			{
+				tfPathPNGs.setText( file.getAbsolutePath() );
+				prefService.put( RecordMovieDialog.class, PNG_EXPORT_PATH_KEY, file.getAbsolutePath() );
+			}
+		} );
+
+		btnBrowseMovie.addActionListener( e -> {
+			final File file = FileChooser.chooseFile(
+					FileChooser.useJFileChooser,
+					RecordMovieDialog.this,
+					tfPathMovie.getText(),
+					null,
+					"Save to movie file (MP4, MOV, AVI, ...)",
+					DialogType.SAVE,
+					SelectionMode.FILES_ONLY,
+					MastodonIcons.BDV_ICON_MEDIUM.getImage() );
+			if ( file != null )
+			{
+				tfPathMovie.setText( file.getAbsolutePath() );
+				prefService.put( RecordMovieDialog.class, MOVIE_EXPORT_PATH_KEY, file.getAbsolutePath() );
+			}
+		} );
+
+		final ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add( rdbtnToPNG );
+		buttonGroup.add( rdbtnToMovie );
+
+		final ItemListener enableGroupListener = e -> {
+			if ( e != null && e.getStateChange() == ItemEvent.DESELECTED )
+				return;
+			final boolean pngEnabled = rdbtnToPNG.isSelected();
+			tfPathPNGs.setEnabled( pngEnabled );
+			btnBrowsePNGs.setEnabled( pngEnabled );
+			tfPathMovie.setEnabled( !pngEnabled );
+			btnBrowseMovie.setEnabled( !pngEnabled );
+			spinnerFPS.setEnabled( !pngEnabled );
+
+			prefService.put( RecordMovieDialog.class, EXPORT_TO_MOVIE_KEY, !pngEnabled );
+		};
+		rdbtnToPNG.addItemListener( enableGroupListener );
+		rdbtnToMovie.addItemListener( enableGroupListener );
+
+		/*
+		 * Persistence.
+		 */
+
+		rdbtnToMovie.setSelected( prefService.getBoolean( RecordMovieDialog.class, EXPORT_TO_MOVIE_KEY, true ) );
+		tfPathPNGs.setText( prefService.get( RecordMovieDialog.class, PNG_EXPORT_PATH_KEY, System.getProperty( "user.home" ) ) );
+		tfPathMovie.setText( prefService.get( RecordMovieDialog.class, MOVIE_EXPORT_PATH_KEY, new File( System.getProperty( "user.home" ), "BDVCapture.mp4" ).getAbsolutePath() ) );
+		int fps = prefService.getInt( RecordMovieDialog.class, FPS_KEY, 10 );
+		fps = Math.min( 200, Math.max( 1, fps ) );
+		spinnerFPS.setValue( fps );
+		setCanvasSize( viewer.getWidth(), viewer.getHeight() );
+
+		/*
+		 * Record action.
+		 */
+
 		recordButton.addActionListener( new ActionListener()
 		{
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-				final String dirname = pathTextField.getText();
-				final int fps = 30;
-				final String filename = "C:/Users/tinevez/Desktop/testexport/testMastodon.mp4";
-				final AbstractBDVRecorder recorder = new MovieFileBDVRecorder( viewer, tracksOverlay, colorBarOverlay, progressWriter, filename, fps );
+				final boolean toPNG = rdbtnToPNG.isSelected();
 
-				final File dir = new File( dirname );
-				if ( !dir.exists() )
-					dir.mkdirs();
-				if ( !dir.exists() || !dir.isDirectory() )
+				final AbstractBDVRecorder recorder;
+				if ( toPNG )
 				{
-					System.err.println( "Invalid export directory " + dirname );
-					return;
+					final String dirname = tfPathPNGs.getText();
+					final File dir = new File( dirname );
+					if ( !dir.exists() )
+						dir.mkdirs();
+					if ( !dir.exists() || !dir.isDirectory() )
+					{
+						progressWriter.err().append( "Invalid export directory " + dirname + '\n' );
+						return;
+					}
+					recorder = new PNGFolderBDVRecorder( viewer, tracksOverlay, colorBarOverlay, progressWriter, dir );
 				}
+				else
+				{
+					final String filename = tfPathMovie.getText();
+					final int fps = ( ( Number ) spinnerFPS.getValue() ).intValue();
+					recorder = new MovieFileBDVRecorder( viewer, tracksOverlay, colorBarOverlay, progressWriter, filename, fps );
+				}
+
 				final int minTimepointIndex = ( Integer ) spinnerMinTimepoint.getValue();
 				final int maxTimepointIndex = ( Integer ) spinnerMaxTimepoint.getValue();
 				final int width = ( Integer ) spinnerWidth.getValue();
@@ -428,26 +543,7 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 			}
 		} );
 
-		final JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setMultiSelectionEnabled( false );
-		fileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
-
-		final ActionMap am = getRootPane().getActionMap();
-		final InputMap im = getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
-		final Object hideKey = new Object();
-		final Action hideAction = new AbstractAction()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				setVisible( false );
-			}
-
-			private static final long serialVersionUID = 1L;
-		};
-		im.put( KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 ), hideKey );
-		am.put( hideKey, hideAction );
-
+		// Pack.
 		pack();
 	}
 
@@ -460,5 +556,23 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 	{
 		spinnerWidth.setValue( width );
 		spinnerHeight.setValue( height );
+	}
+
+	private static final class MyToggleDialogAction extends ToggleDialogAction
+	{
+
+		private static final long serialVersionUID = 1L;
+
+		public MyToggleDialogAction( final String name, final JDialog dialog )
+		{
+			super( name, dialog );
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			dialog.setLocationRelativeTo( ( Component ) e.getSource() );
+			super.actionPerformed( e );
+		}
 	}
 }

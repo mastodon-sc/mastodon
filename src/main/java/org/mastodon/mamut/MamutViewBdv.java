@@ -257,7 +257,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		OverlayActions.install( viewActions, viewer, tracksOverlay );
-		RecordMovieDialog.install( viewActions, bdv, tracksOverlay, colorBarOverlay );
+		final Runnable onCloseDialog = RecordMovieDialog.install( viewActions, bdv, tracksOverlay, colorBarOverlay, appModel.getKeymap() );
+		onClose( onCloseDialog );
 
 		/*
 		 * We must make a search action using the underlying model graph,
