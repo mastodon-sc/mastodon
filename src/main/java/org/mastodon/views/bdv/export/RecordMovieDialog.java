@@ -485,6 +485,7 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		int fps = prefService.getInt( RecordMovieDialog.class, FPS_KEY, 10 );
 		fps = Math.min( 200, Math.max( 1, fps ) );
 		spinnerFPS.setValue( fps );
+		spinnerFPS.addChangeListener( e -> prefService.put( RecordMovieDialog.class, FPS_KEY, ( ( Number ) spinnerFPS.getValue() ).intValue() ) );
 		setCanvasSize( viewer.getWidth(), viewer.getHeight() );
 
 		/*
@@ -558,7 +559,7 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		spinnerHeight.setValue( height );
 	}
 
-	private static final class MyToggleDialogAction extends ToggleDialogAction
+	static final class MyToggleDialogAction extends ToggleDialogAction
 	{
 
 		private static final long serialVersionUID = 1L;
