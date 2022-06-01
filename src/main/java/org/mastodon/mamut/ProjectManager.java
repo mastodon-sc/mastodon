@@ -355,7 +355,7 @@ public class ProjectManager
 		{
 			proposedProjectRoot = file;
 			final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
-			open( project );
+			open( project, true );
 		}
 		catch ( final IOException | SpimDataException e )
 		{
@@ -420,7 +420,6 @@ public class ProjectManager
 		if ( project == null )
 			return;
 
-
 		project.setProjectRoot( projectRoot );
 		try (final MamutProject.ProjectWriter writer = project.openForWriting())
 		{
@@ -440,7 +439,8 @@ public class ProjectManager
 	/**
 	 * Opens a project. If {@code project.getProjectRoot() == null} this is a
 	 * new project and data structures are initialized as empty. The image data
-	 * {@code project.getDatasetXmlFile()} must always be set.
+	 * {@code project.getDatasetXmlFile()} must always be set. The GUI state is
+	 * not restored, even if one is found in the project file.
 	 *
 	 * @param project
 	 *            the project to open.
@@ -451,6 +451,28 @@ public class ProjectManager
 	 *             XML file.
 	 */
 	public synchronized void open( final MamutProject project ) throws IOException, SpimDataException
+	{
+		open( project, false );
+	}
+
+	/**
+	 * Opens a project. If {@code project.getProjectRoot() == null} this is a
+	 * new project and data structures are initialized as empty. The image data
+	 * {@code project.getDatasetXmlFile()} must always be set.
+	 *
+	 * @param project
+	 *            the project to open.
+	 * @param restoreGUIState
+	 *            if <code>true</code>, the GUI state settings will be read from
+	 *            the project file, and if found, the saved GUI state will be
+	 *            restored.
+	 * @throws IOException
+	 *             if an IO exception occurs during opening.
+	 * @throws SpimDataException
+	 *             if a spim-data exception occurs while opening the spim-data
+	 *             XML file.
+	 */
+	public synchronized void open( final MamutProject project, final boolean restoreGUIState ) throws IOException, SpimDataException
 	{
 		/*
 		 * Load SpimData
@@ -561,7 +583,7 @@ public class ProjectManager
 		windowManager.setAppModel( appModel );
 
 		// Restore GUI state if loaded project, now that we have an App model.
-		if ( !isNewProject )
+		if ( !isNewProject && restoreGUIState )
 		{
 			try (final MamutProject.ProjectReader reader = project.openForReading())
 			{
@@ -755,9 +777,8 @@ public class ProjectManager
 			final Document doc = sax.build( xmlFilename );
 			final Element root = doc.getRootElement();
 			final String baseUrl = root
-					.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG  )
-					.getChild(
-							XmlKeys.IMGLOADER_TAG )
+					.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
+					.getChild( XmlKeys.IMGLOADER_TAG )
 					.getChildText( "baseUrl" );
 			return "Cannot reach host  " + host + " for the dataset URL: " + baseUrl;
 		}

@@ -98,7 +98,7 @@ public class Mastodon extends ContextCommand
 			final MamutProject project = new MamutProjectIO().load( "samples/drosophila_crop_3_spots.mastodon" );
 
 			final WindowManager windowManager = mastodon.windowManager;
-			windowManager.projectManager.open( project );
+			windowManager.projectManager.open( project, true );
 
 //			mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
 //			mw.loadProject( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );

@@ -55,7 +55,7 @@ public class DndHandler extends AbstractIOPlugin< Object >
 		{
 			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 			final WindowManager windowManager = new WindowManager( getContext() );
-			windowManager.getProjectManager().open( new MamutProjectIO().load( projectFile ) );
+			windowManager.getProjectManager().open( new MamutProjectIO().load( projectFile ), true );
 			new MainWindow( windowManager ).setVisible( true );
 		}
 		catch ( IOException | SpimDataException e )

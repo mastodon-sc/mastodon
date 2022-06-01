@@ -26,7 +26,7 @@ public class BranchGraphExample
 			final MamutProject project = new MamutProjectIO().load( projectPath );
 
 			final WindowManager wm = new WindowManager( context );
-			wm.getProjectManager().open( project );
+			wm.getProjectManager().open( project, true );
 			wm.getAppModel().getBranchGraphSync().sync();
 			new MainWindow( wm ).setVisible( true );
 		}
