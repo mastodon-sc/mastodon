@@ -591,11 +591,14 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 									minTimepointIndex, maxTimepointIndex,
 									stepSize, numSteps,
 									projectOverlay );
-							recordButton.setEnabled( true );
 						}
 						catch ( final Exception ex )
 						{
 							ex.printStackTrace();
+						}
+						finally
+						{
+							recordButton.setEnabled( true );
 						}
 					}
 				}.start();

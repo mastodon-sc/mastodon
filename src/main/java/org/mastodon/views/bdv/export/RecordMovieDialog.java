@@ -533,11 +533,14 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 						{
 							recordButton.setEnabled( false );
 							recorder.record( width, height, minTimepointIndex, maxTimepointIndex );
-							recordButton.setEnabled( true );
 						}
 						catch ( final Exception ex )
 						{
 							ex.printStackTrace();
+						}
+						finally
+						{
+							recordButton.setEnabled( true );
 						}
 					}
 				}.start();
