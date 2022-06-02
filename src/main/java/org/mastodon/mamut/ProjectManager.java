@@ -477,7 +477,9 @@ public class ProjectManager
 		/*
 		 * Load SpimData
 		 */
-		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
+		String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
+		spimDataXmlFilename = spimDataXmlFilename.replaceAll( "\\\\", "/" );
+		spimDataXmlFilename = new File( spimDataXmlFilename ).getCanonicalPath();
 		AbstractSpimData< ? > spimData = DummySpimData.tryCreate( project.getDatasetXmlFile().getName() );
 		if ( spimData == null )
 		{
