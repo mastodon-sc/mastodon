@@ -31,6 +31,7 @@ package org.mastodon.mamut;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 import static org.mastodon.mamut.MamutViewStateSerialization.BRANCH_GRAPH;
@@ -174,15 +175,15 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		// Restore settings panel visibility.
 		restoreSettingsPanelVisibility( frame, guiState );
 
-		// Table actions.
-		MastodonFrameViewActions.install( viewActions, this );
-		TableViewActions.install( viewActions, frame );
-
 		// Search panels.
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getCurrentlyDisplayedTable() );
 		frame.getSettingsPanel().add( searchPanel );
 
-		// Menus.
+		// Table actions.
+		MastodonFrameViewActions.install( viewActions, this );
+		TableViewActions.install( viewActions, frame );
+
+		// Menus
 		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), appModel.getKeymap(), CONTEXTS );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		final JMenuHandle colorMenuHandle = new JMenuHandle();
@@ -190,6 +191,9 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						separator(),
+						item( TableViewActions.EXPORT_TO_CSV ) ),
 				viewMenu(
 						MamutMenuBuilder.colorMenu( colorMenuHandle ),
 						ViewMenuBuilder.menu( "Branch coloring", colorBranchMenuHandle ),
@@ -204,7 +208,10 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
 						separator(),
-						tagSetMenu( tagSetMenuHandle ) ),
+						tagSetMenu( tagSetMenuHandle ),
+						separator(),
+						item( TableViewActions.EDIT_LABEL ),
+						item( TableViewActions.TOGGLE_TAG ) ),
 				ViewMenuBuilder.menu( "Settings",
 						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
 						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
