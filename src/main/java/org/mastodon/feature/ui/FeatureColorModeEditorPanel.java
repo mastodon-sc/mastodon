@@ -37,6 +37,9 @@ import java.awt.Insets;
 import java.util.function.Consumer;
 
 import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -108,6 +111,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 		 */
 		final ModeSelector< VertexColorMode > vertexColorModeSelector = new ModeSelector<>( VertexColorMode.values(), VertexColorMode.tooltips() );
 		final JTextArea ta1 = new JTextArea( "Read " + vertexName.toLowerCase() + "\ncolor from" );
+		ta1.setFont( getFont() );
 		ta1.setOpaque( false );
 		ta1.setFocusable( false );
 		ta1.setEditable( false );
@@ -157,15 +161,29 @@ public class FeatureColorModeEditorPanel extends JPanel
 		 */
 
 		addToLayout( new JSeparator(), c );
+
+		final JPanel panelEdgeColoringTitle = new JPanel();
+		final BoxLayout panelEdgeColoringTitleLayout = new BoxLayout( panelEdgeColoringTitle, BoxLayout.LINE_AXIS );
+		panelEdgeColoringTitle.setLayout( panelEdgeColoringTitleLayout );
 		final JLabel lbl2 = new JLabel( "Coloring " + edgeName + "s" );
 		lbl2.setFont( getFont().deriveFont( Font.BOLD ) );
-		addToLayout( lbl2, c );
+		
+		final JButton buttonCopy = new JButton( "Copy from " +vertexName + " settings" );
+		buttonCopy.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+		buttonCopy.addActionListener( e -> copyFromVertexSettings() );
+		
+		panelEdgeColoringTitle.add( lbl2 );
+		panelEdgeColoringTitle.add( Box.createHorizontalGlue() );
+		panelEdgeColoringTitle.add( buttonCopy );
+
+		addToLayout( panelEdgeColoringTitle, c );
 
 		/*
 		 * Edge color mode.
 		 */
 		final ModeSelector< EdgeColorMode > edgeColorModeSelector = new ModeSelector<>( EdgeColorMode.values(), EdgeColorMode.tooltips() );
 		final JTextArea ta2 = new JTextArea( "Read " + edgeName.toLowerCase() + "\ncolor from" );
+		ta2.setFont( getFont() );
 		ta2.setEditable( false );
 		ta2.setOpaque( false );
 		ta2.setFocusable( false );
@@ -338,6 +356,42 @@ public class FeatureColorModeEditorPanel extends JPanel
 		};
 		update = l::featureColorModeChanged;
 		mode.updateListeners().add( l );
+	}
+
+	private void copyFromVertexSettings()
+	{
+		switch ( mode.getVertexColorMode() )
+		{
+		case BRANCH_VERTEX_DOWN:
+			mode.setEdgeColorMode( EdgeColorMode.SOURCE_BRANCH_VERTEX_DOWN );
+			break;
+		case BRANCH_VERTEX_UP:
+			mode.setEdgeColorMode( EdgeColorMode.SOURCE_BRANCH_VERTEX_UP );
+			break;
+		case INCOMING_BRANCH_EDGE:
+			mode.setEdgeColorMode( EdgeColorMode.BRANCH_EDGE );
+			break;
+		case INCOMING_EDGE:
+			mode.setEdgeColorMode( EdgeColorMode.EDGE );
+			break;
+		case NONE:
+			mode.setEdgeColorMode( EdgeColorMode.NONE );
+			break;
+		case OUTGOING_BRANCH_EDGE:
+			mode.setEdgeColorMode( EdgeColorMode.BRANCH_EDGE );
+			break;
+		case OUTGOING_EDGE:
+			mode.setEdgeColorMode( EdgeColorMode.EDGE );
+			break;
+		case VERTEX:
+			mode.setEdgeColorMode( EdgeColorMode.SOURCE_VERTEX );
+			break;
+		default:
+			throw new IllegalArgumentException( "Unknown vertex color mode: " + mode.getVertexColorMode() );
+		}
+		mode.setEdgeFeatureProjection( mode.getVertexFeatureProjection() );
+		mode.setEdgeColorMap( mode.getVertexColorMap() );
+		mode.setEdgeRange( mode.getVertexRangeMin(), mode.getVertexRangeMax() );
 	}
 
 	private void addToLayout( final JComponent comp1, final JComponent comp2, final GridBagConstraints c )
