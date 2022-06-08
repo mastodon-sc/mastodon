@@ -28,9 +28,7 @@
  */
 package org.mastodon.views.trackscheme;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.mastodon.collection.RefCollections;
@@ -178,8 +176,6 @@ public class LineageTreeLayout
 		timepointToOrderedVertices = new TIntObjectArrayMap< >();
 		currentLayoutColumnX = new TDoubleArrayList();
 		currentLayoutColumnRoot = RefCollections.createRefList( graph.vertices() );
-		stack = new ArrayList<>();
-		stack.add( new StackFrame( null ) );
 	}
 
 	/**
@@ -243,7 +239,7 @@ public class LineageTreeLayout
 		currentLayoutColumnX.add( rightmost );
 		for ( final TrackSchemeVertex root : layoutRoots )
 		{
-			layoutX_iterative( root );
+			layoutX( root );
 			getGraphRoot( root, currentGraphRoot );
 			if ( first || !currentGraphRoot.equals( previousGraphRoot ) )
 			{
@@ -774,42 +770,7 @@ public class LineageTreeLayout
 		return listeners;
 	}
 
-	private class StackFrame
-	{
-		int numLaidOutChildren;
-		double firstChildX;
-		double lastChildX;
-		TrackSchemeVertex current;
-		TrackSchemeVertex child;
-		Iterator< TrackSchemeEdge > edges;
-		boolean done;
-
-		StackFrame( final TrackSchemeVertex current )
-		{
-			numLaidOutChildren = 0;
-			firstChildX = 0;
-			lastChildX = 0;
-			this.current = current;
-			child = graph.vertexRef();
-			edges = null;
-			done = true;
-		}
-	}
-
-	private final ArrayList< StackFrame > stack;
-
-	private void growStackIfNecessary( final int depth )
-	{
-		if ( stack.size() == depth )
-			stack.add( new StackFrame( stack.get( depth - 1 ).child ) );
-	}
-
 	/**
-	 * Non-recursive version of {@link #layoutX(TrackSchemeVertex)}. Faster,
-	 * throws no {@link StackOverflowError}, but impenetrable... Look at the
-	 * recursive version to understand what's going on.
-	 *
-	 * <p>
 	 * Recursively lay out vertices such that
 	 * <ul>
 	 * <li>leafs are assigned layoutX = 0, 1, 2, ...
@@ -825,145 +786,33 @@ public class LineageTreeLayout
 	 * @param root
 	 *            root of sub-tree to layout.
 	 */
-	private void layoutX_iterative( final TrackSchemeVertex root )
+	private void layoutX( final TrackSchemeVertex root )
 	{
-		stack.get( 0 ).current = root;
-		int depth = 0;
-
-A:		while ( true )
-		{
-			final StackFrame f = stack.get( depth );
-			final TrackSchemeVertex v = f.current;
-
-			// init first time
-			if ( f.done )
-			{
-				f.numLaidOutChildren = 0;
-				final boolean ghost = v.getLayoutTimestamp() < mark;
-				final boolean terminate = v.getLayoutTimestamp() < mark - 1;
-				v.setGhost( ghost );
-				v.setLayoutTimestamp( timestamp );
-
-				if ( !terminate )
-				{
-					f.edges = v.outgoingEdges().iterator();
-					f.done = false;
-				}
-			}
-
-			// iteratively go to children
-			if ( !f.done )
-			{
-				while ( f.edges.hasNext() )
-				{
-					final TrackSchemeEdge edge = f.edges.next();
-					edge.getTarget( f.child );
-					if ( f.child.getLayoutTimestamp() < timestamp )
-					{
-						// unused currently...
-//						f.child.setLayoutInEdgeIndex( edge.getInternalPoolIndex() );
-						growStackIfNecessary( ++depth );
-						continue A;
-					}
-				}
-			}
-
-			// done. assign layoutX and backtrack
-			f.done = true;
-			double layoutX;
-			switch ( f.numLaidOutChildren )
-			{
-			case 0:
-				layoutX = rightmost;
-				rightmost += 1;
-				break;
-			case 1:
-				layoutX = f.firstChildX;
-				break;
-			default:
-				layoutX = ( f.firstChildX + f.lastChildX ) / 2;
-			}
-			v.setLayoutX( layoutX );
-
+		DepthFirstIteration<TrackSchemeVertex> df = new DepthFirstIteration<>( graph );
+		df.setExcludeNodeAction( ( TrackSchemeVertex v ) -> {
 			appendToOrderedVertices( v );
-
-			if ( depth == 0 )
+			final boolean ghost = v.getLayoutTimestamp() < mark;
+			final boolean terminate = v.getLayoutTimestamp() < mark - 1;
+			v.setGhost( ghost );
+			v.setLayoutTimestamp( timestamp );
+			if ( terminate )
 			{
-				return;
+				// This node, and it children will not be visited by the depth
+				// first iteration, but we still won't it to appear in the layout
+				// as a leaf.
+				v.setLayoutX( rightmost++ );
 			}
-			else
-			{
-				// set stuff in parent
-				final StackFrame p = stack.get( --depth );
-				if ( ++p.numLaidOutChildren == 1 )
-					p.firstChildX = layoutX;
-				else
-					p.lastChildX = layoutX;
-			}
-		}
-	}
-
-	/**
-	 * Recursively lay out vertices such that
-	 * <ul>
-	 * <li>leafs are assigned layoutX = 0, 1, 2, ...
-	 * <li>non-leafs are centered between first and last child's layoutX
-	 * <li>for layout of vertices with more than one parent, only first incoming
-	 * edge counts as parent edge
-	 * <li>vertices marked with a timestamp &lt; the current {@link #mark} are
-	 * marked as ghosts.
-	 * <li>additionally, vertices marked with a timestamp &lt; the current
-	 * {@link #mark}<em>-1</em> are treated as leafs.
-	 * </ul>
-	 *
-	 * @param v
-	 *            root of sub-tree to layout.
-	 */
-	private void layoutX( final TrackSchemeVertex v )
-	{
-		int numLaidOutChildren = 0;
-		double firstChildX = 0;
-		double lastChildX = 0;
-
-		final boolean ghost = v.getLayoutTimestamp() < mark;
-		final boolean terminate = v.getLayoutTimestamp() < mark - 1;
-		v.setGhost( ghost );
-		v.setLayoutTimestamp( timestamp );
-
-		if ( !terminate )
-		{
-			final TrackSchemeVertex child = graph.vertexRef();
-			for ( final TrackSchemeEdge edge : v.outgoingEdges() )
-			{
-				edge.getTarget( child );
-				if ( child.getLayoutTimestamp() < timestamp )
-				{
-					// unused currently...
-//					child.setLayoutInEdgeIndex( edge.getInternalPoolIndex() );
-					layoutX( child );
-					if ( ++numLaidOutChildren == 1 )
-						firstChildX = child.getLayoutX();
-					else
-						lastChildX = child.getLayoutX();
-				}
-			}
-			graph.releaseRef( child );
-		}
-
-		switch( numLaidOutChildren )
-		{
-		case 0:
-			v.setLayoutX( rightmost );
-			rightmost += 1;
-			break;
-		case 1:
-			v.setLayoutX( firstChildX );
-			break;
-		default:
-			v.setLayoutX( ( firstChildX + lastChildX ) / 2 );
-		}
-
-		appendToOrderedVertices( v );
+			return terminate;
+		} );
+		df.setVisitLeafAction( leaf -> {
+			leaf.setLayoutX( rightmost++ );
+		} );
+		df.setVisitNodeAfterChildrenAction( (node, children) -> {
+			double firstX = children.get( 0 ).getLayoutX();
+			double lastX = children.get( children.size() - 1 ).getLayoutX();
+			node.setLayoutX( ( firstX + lastX ) / 2 );
+		} );
+		df.runForRoot( root );
 	}
 
 	private void appendToOrderedVertices( final TrackSchemeVertex v )
