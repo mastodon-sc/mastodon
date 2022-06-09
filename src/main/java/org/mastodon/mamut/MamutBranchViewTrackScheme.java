@@ -36,6 +36,7 @@ import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
@@ -85,7 +86,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.trackSchemeOverlayFactory( overlayFactory )
-				.paintLongEdges( true )
+				.lineageTreeLayoutFactory( LongEdgesLineageTreeLayout::new )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
 
