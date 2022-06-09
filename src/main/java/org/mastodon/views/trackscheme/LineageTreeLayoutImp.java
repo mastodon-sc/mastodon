@@ -439,10 +439,11 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
 
-		/*
-		 * Columns
-		 */
+		buildScreenColumns( screenEntities, decorationsOffsetX, minX, maxX, xScale );
+	}
 
+	protected void buildScreenColumns( ScreenEntities screenEntities, int decorationsOffsetX, double minX, double maxX, double xScale )
+	{
 		final List< ScreenColumn > screenColumns = screenEntities.getColumns();
 		int minC = currentLayoutColumnX.binarySearch( minX );
 		if ( minC < 0 )
