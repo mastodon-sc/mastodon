@@ -40,9 +40,9 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 
 /**
- * A version of {@link LineageTreeLayout} made specially for branch graphs.
+ * A version of {@link LineageTreeLayoutImp} made specially for branch graphs.
  * <p>
- * {@link LineageTreeLayout} generates Screen objects only for the vertices that
+ * {@link LineageTreeLayoutImp} generates Screen objects only for the vertices that
  * are in the visible rectangle specified in the transform when calling
  * {@link #cropAndScale(ScreenTransform, ScreenEntities, int, int, GraphColorGenerator)}.
  * This is ok when the TrackSchemeGraph is dense, as in for the core graph, but
@@ -51,7 +51,7 @@ import gnu.trove.list.array.TIntArrayList;
  * is not painted. This version solves this issue by forcing the generation of
  * Screen objects ignoring the Y bounds of the visible rectangle.
  */
-public class LongEdgesLineageTreeLayout extends LineageTreeLayout
+public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 {
 
 	public LongEdgesLineageTreeLayout(

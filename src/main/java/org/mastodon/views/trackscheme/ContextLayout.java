@@ -37,10 +37,10 @@ import org.mastodon.views.context.Context;
  * <ol>
  * <li>Mark vertices in context with {@code mark}.
  * <li>Mark vertices attached to them with {@code ghostmark = mark - 1}.
- * <li>Use {@link LineageTreeLayout#layout(java.util.Collection, int)} to layout
+ * <li>Use {@link LineageTreeLayoutImp#layout(java.util.Collection, int)} to layout
  * vertices that have been marked like this. (After that, all active (laid out)
  * vertices (also ghosts) will have been marked with the
- * {@link LineageTreeLayout#getCurrentLayoutTimestamp()}).
+ * {@link LineageTreeLayoutImp#getCurrentLayoutTimestamp()}).
  * </ol>
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
