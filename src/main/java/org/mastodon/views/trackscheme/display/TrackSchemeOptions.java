@@ -33,6 +33,8 @@ import java.awt.event.KeyListener;
 import org.mastodon.ui.NavigationEtiquette;
 import org.mastodon.ui.coloring.DefaultGraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGenerator;
+import org.mastodon.views.trackscheme.LineageTreeLayout.LineageTreeLayoutFactory;
+import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOverlayFactory;
@@ -196,9 +198,9 @@ public class TrackSchemeOptions
 		return this;
 	}
 
-	public TrackSchemeOptions paintLongEdges( final boolean paintLongEdges )
+	public TrackSchemeOptions lineageTreeLayoutFactory( final LineageTreeLayoutFactory lineageTreeLayoutFactory )
 	{
-		values.paintLongEdges = paintLongEdges;
+		values.lineageTreeLayoutFactory = lineageTreeLayoutFactory;
 		return this;
 	}
 
@@ -228,7 +230,7 @@ public class TrackSchemeOptions
 
 		private GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > graphColorGenerator = new DefaultGraphColorGenerator<>();
 
-		private boolean paintLongEdges = false;
+		private LineageTreeLayoutFactory lineageTreeLayoutFactory = LineageTreeLayoutImp::new;
 
 		public TrackSchemeOptions optionsFromValues()
 		{
@@ -242,7 +244,7 @@ public class TrackSchemeOptions
 				style( style ).
 				trackSchemeOverlayFactory( trackSchemeOverlayFactory ).
 				graphColorGenerator( graphColorGenerator ).
-				paintLongEdges( paintLongEdges );
+				lineageTreeLayoutFactory( lineageTreeLayoutFactory );
 		}
 
 		public int getX()
@@ -295,9 +297,9 @@ public class TrackSchemeOptions
 			return graphColorGenerator;
 		}
 
-		public boolean isPaintLongEdges()
+		public LineageTreeLayoutFactory lineageTreeLayoutFactory()
 		{
-			return paintLongEdges;
+			return lineageTreeLayoutFactory;
 		}
 	}
 }
