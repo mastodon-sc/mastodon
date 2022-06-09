@@ -189,41 +189,6 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
 
-		/*
-		 * Columns
-		 */
-
-		final List< ScreenColumn > screenColumns = screenEntities.getColumns();
-		int minC = currentLayoutColumnX.binarySearch( minX );
-		if ( minC < 0 )
-		{
-			minC = -1 - minC;
-		}
-		minC = Math.max( 0, minC - 1 ); // at least 1 column out
-
-		int maxC = currentLayoutColumnX.binarySearch( maxX + 0.5, minC, currentLayoutColumnX.size() );
-		if ( maxC < 0 )
-		{
-			maxC = -1 - maxC;
-		}
-		maxC = Math.min( currentLayoutColumnX.size(), maxC + 1 );
-
-		// Build screen columns.
-		final double scaledMinWidth = MIN_COLUMN_WIDTH / xScale;
-		for ( int ic = minC + 1; ic < maxC; ic++ )
-		{
-			final double cLeft = currentLayoutColumnX.get( ic - 1 );
-			final double cRight = currentLayoutColumnX.get( ic );
-			if ( cRight - cLeft < scaledMinWidth )
-				continue;
-
-			final int xRight = ( int ) ( ( cRight - minX - 0.5 ) * xScale + decorationsOffsetX );
-			final int xLeft = ( int ) ( ( cLeft - minX - 0.5 ) * xScale + decorationsOffsetX );
-			final int columnWidth = xRight - xLeft;
-
-			final TrackSchemeVertex root = currentLayoutColumnRoot.get( ic - 1 );
-			final ScreenColumn column = new ScreenColumn( root.getLabel(), xLeft, columnWidth );
-			screenColumns.add( column );
-		}
+		buildScreenColumns( screenEntities, decorationsOffsetX, minX, maxX, xScale );
 	}
 }
