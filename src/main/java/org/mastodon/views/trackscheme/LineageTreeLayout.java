@@ -42,13 +42,10 @@ import org.mastodon.views.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.views.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
 import org.scijava.listeners.Listeners;
 
-import gnu.trove.iterator.TIntAlternatingIterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TIntObjectArrayMap;
-import gnu.trove.map.TIntObjectMap;
 import net.imglib2.RealLocalizable;
 
 /**
@@ -122,20 +119,7 @@ public class LineageTreeLayout
 	 */
 	private int mark;
 
-	/**
-	 *  ordered list of all existing timpoints.
-	 */
-	protected final TIntArrayList timepoints;
-
-	/**
-	 * Maps timepoint to {@link TrackSchemeVertexList} that contains all
-	 * layouted vertices of that timepoint ordered by ascending layout X
-	 * coordinate.
-	 * <p>
-	 * This is built during TODO TODO TODO
-	 */
-	protected final TIntObjectMap< TrackSchemeVertexList > timepointToOrderedVertices;
-
+	protected final TrackSchemeVertexTable vertexTable;
 	/**
 	 * the minimum layoutX coordinate assigned to any vertex in the current
 	 * layout.
@@ -172,8 +156,7 @@ public class LineageTreeLayout
 		listeners = new Listeners.SynchronizedList<>();
 		rightmost = 0;
 		timestamp = 0;
-		timepoints = new TIntArrayList();
-		timepointToOrderedVertices = new TIntObjectArrayMap< >();
+		vertexTable = new TrackSchemeVertexTable( graph );
 		currentLayoutColumnX = new TDoubleArrayList();
 		currentLayoutColumnRoot = RefCollections.createRefList( graph.vertices() );
 	}
@@ -228,8 +211,7 @@ public class LineageTreeLayout
 	{
 		++timestamp;
 		rightmost = 0;
-		timepoints.clear();
-		timepointToOrderedVertices.clear();
+		vertexTable.clear();
 		currentLayoutColumnX.clear();
 		currentLayoutColumnRoot.clear();
 		final TrackSchemeVertex previousGraphRoot = graph.vertexRef();
@@ -353,7 +335,7 @@ public class LineageTreeLayout
 
 		final double allowedMinD = 2.0 / xScale;
 
-		final TIntIterator iter = timepoints.iterator();
+		final TIntIterator iter = vertexTable.getTimepoints().iterator();
 		while ( iter.hasNext() )
 		{
 			final int timepoint = iter.next();
@@ -364,7 +346,7 @@ public class LineageTreeLayout
 				final double y = ( timepoint - minY ) * yScale + decorationsOffsetY;
 				// screen y of vertices of (timepoint-1)
 				final double prevY = ( timepoint - 1 - minY ) * yScale + decorationsOffsetY;
-				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
+				final TrackSchemeVertexList vertexList = vertexTable.getOrderedVertices( timepoint );
 				// largest index of vertex with layoutX <= minX
 				int minIndex = vertexList.binarySearch( minX );
 				// include vertex before that (may be appears partially on
@@ -520,42 +502,7 @@ public class LineageTreeLayout
 	 */
 	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double aspectRatioXtoY, final TrackSchemeVertex ref )
 	{
-		final double lx = layoutPos.getDoublePosition( 0 );
-		final double ly = layoutPos.getDoublePosition( 1 );
-
-		double closestVertexSquareDist = Double.POSITIVE_INFINITY;
-		int closestVertexIndex = -1;
-
-		final TIntIterator tpIter = new TIntAlternatingIterator( timepoints, ( int ) ly );
-		while( tpIter.hasNext() )
-		{
-			final int tp = tpIter.next();
-			final double diffy = ( ly - tp ) * aspectRatioXtoY;
-			if ( diffy * diffy >= closestVertexSquareDist )
-				break;
-
-			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tp );
-			final int left = vertexList.binarySearch( lx );
-			final int begin = Math.max( 0, left );
-			final int end = Math.min( begin + 2, vertexList.size() );
-			for ( int x = begin; x < end; ++x )
-			{
-				vertexList.get( x, ref );
-				final double diffx = ( lx - ref.getLayoutX() );
-				final double d2 = diffx * diffx + diffy * diffy;
-				if ( d2 < closestVertexSquareDist )
-				{
-					closestVertexSquareDist = d2;
-					closestVertexIndex = ref.getInternalPoolIndex();
-				}
-			}
-		}
-
-		if ( closestVertexIndex < 0 )
-			return null;
-
-		graph.getVertexPool().getObject( closestVertexIndex, ref );
-		return ref;
+		return vertexTable.getClosestVertex( layoutPos, aspectRatioXtoY, ref );
 	}
 
 	/**
@@ -583,51 +530,7 @@ public class LineageTreeLayout
 	 */
 	public TrackSchemeVertex getClosestActiveVertexWithin( final double lx1, final double ly1, final double lx2, final double ly2, final double aspectRatioXtoY, final TrackSchemeVertex ref )
 	{
-		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
-		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;
-		final double x1 = Math.min( lx1, lx2 );
-		final double x2 = Math.max( lx1, lx2 );
-
-		double closestVertexSquareDist = Double.POSITIVE_INFINITY;
-		int closestVertexIndex = -1;
-
-		int start = timepoints.binarySearch( tStart );
-		if ( start < 0 )
-			start = -start - 1;
-		int end = timepoints.binarySearch( tEnd );
-		if ( end < 0 )
-			end = -end - 1;
-
-		final int tpIndexFirst = ly1 < ly2 ? end - 1 : start;
-		final int tpIndexLast = ly1 < ly2 ? start - 1 : end;
-		final int tpIndexInc = ly1 < ly2 ? -1 : 1;
-		for ( int tpIndex = tpIndexFirst; tpIndex != tpIndexLast; tpIndex += tpIndexInc )
-		{
-			final double diffy = ( ly2 - tpIndex ) * aspectRatioXtoY;
-			if ( diffy * diffy >= closestVertexSquareDist )
-				break;
-
-			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoints.get( tpIndex ) );
-			final int left = vertexList.binarySearch( x1 ) + 1;
-			final int right = vertexList.binarySearch( x2, left, vertexList.size() );
-			if ( right > left )
-			{
-				final int candidate = lx1 < lx2 ? right : left;
-				final TrackSchemeVertex v = vertexList.get( candidate, ref );
-				final double diffx = ( lx2 - v.getLayoutX() );
-				final double d2 = diffx * diffx + diffy * diffy;
-				if ( d2 < closestVertexSquareDist )
-				{
-					closestVertexSquareDist = d2;
-					closestVertexIndex = v.getInternalPoolIndex();
-				}
-			}
-		}
-
-		if ( closestVertexIndex < 0 )
-			return null;
-
-		return graph.getVertexPool().getObject( closestVertexIndex, ref );
+		return vertexTable.getClosestVertexWithin( lx1, ly1, lx2, ly2, aspectRatioXtoY, ref );
 	}
 
 	/**
@@ -647,26 +550,7 @@ public class LineageTreeLayout
 	 */
 	public RefSet< TrackSchemeVertex > getActiveVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
 	{
-		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
-		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;
-		final double x1 = Math.min( lx1, lx2 );
-		final double x2 = Math.max( lx1, lx2 );
-
-		final RefSet< TrackSchemeVertex > vertexSet = RefCollections.createRefSet( graph.vertices() );
-		int start = timepoints.binarySearch( tStart );
-		if ( start < 0 )
-			start = -start - 1;
-		int end = timepoints.binarySearch( tEnd );
-		if ( end < 0 )
-			end = -end - 1;
-		for ( int tpIndex = start; tpIndex < end; ++tpIndex )
-		{
-			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoints.get( tpIndex ) );
-			final int left = vertexList.binarySearch( x1 ) + 1;
-			final int right = vertexList.binarySearch( x2, left, vertexList.size() );
-			vertexSet.addAll( vertexList.subList( left, right + 1 ) );
-		}
-		return vertexSet;
+		return vertexTable.getVerticesWithin(lx1, ly1, lx2, ly2);
 	}
 
 	/**
@@ -727,11 +611,7 @@ public class LineageTreeLayout
 	 */
 	public TrackSchemeVertex getLeftSibling( final TrackSchemeVertex vertex, final TrackSchemeVertex ref )
 	{
-		final TrackSchemeVertexList vertices = timepointToOrderedVertices.get( vertex.getTimepoint() );
-		final int index = vertices.binarySearch( vertex.getLayoutX() );
-		return ( index > 0 )
-				? vertices.get( index - 1, ref )
-				: null;
+		return vertexTable.getLeftSibling( vertex, ref );
 	}
 
 	/**
@@ -746,11 +626,7 @@ public class LineageTreeLayout
 	 */
 	public TrackSchemeVertex getRightSibling( final TrackSchemeVertex vertex, final TrackSchemeVertex ref )
 	{
-		final TrackSchemeVertexList vertices = timepointToOrderedVertices.get( vertex.getTimepoint() );
-		final int index = vertices.binarySearch( vertex.getLayoutX() );
-		return ( index < vertices.size() - 1 )
-				? vertices.get( index + 1, ref )
-				: null;
+		return vertexTable.getRightSibling( vertex, ref );
 	}
 
 	public Listeners< LayoutListener > layoutListeners()
@@ -778,7 +654,7 @@ public class LineageTreeLayout
 	{
 		DepthFirstIteration<TrackSchemeVertex> df = new DepthFirstIteration<>( graph );
 		df.setExcludeNodeAction( ( TrackSchemeVertex v ) -> {
-			appendToOrderedVertices( v );
+			vertexTable.add( v );
 			final boolean ghost = v.getLayoutTimestamp() < mark;
 			final boolean terminate = v.getLayoutTimestamp() < mark - 1;
 			v.setGhost( ghost );
@@ -801,19 +677,6 @@ public class LineageTreeLayout
 			node.setLayoutX( ( firstX + lastX ) / 2 );
 		} );
 		df.runForRoot( root );
-	}
-
-	private void appendToOrderedVertices( final TrackSchemeVertex v )
-	{
-		final int tp = v.getTimepoint();
-		TrackSchemeVertexList vlist = timepointToOrderedVertices.get( tp );
-		if ( vlist == null )
-		{
-			vlist = new TrackSchemeVertexList( graph );
-			timepointToOrderedVertices.put( tp, vlist );
-			timepoints.insert( -( 1 + timepoints.binarySearch( tp ) ), tp );
-		}
-		vlist.add( v );
 	}
 
 	/**
