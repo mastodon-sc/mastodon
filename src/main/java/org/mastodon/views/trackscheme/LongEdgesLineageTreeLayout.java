@@ -89,7 +89,7 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayout
 
 		final double allowedMinD = 2.0 / xScale;
 
-		final TIntIterator iter = timepoints.iterator();
+		final TIntIterator iter = vertexTable.getTimepoints().iterator();
 		while ( iter.hasNext() )
 		{
 			final int timepoint = iter.next();
@@ -97,7 +97,7 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayout
 			// screen y of vertices of timepoint
 			final double y = ( timepoint - minY ) * yScale + decorationsOffsetY;
 			// screen y of vertices of (timepoint-1)
-			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
+			final TrackSchemeVertexList vertexList = vertexTable.getOrderedVertices( timepoint );
 			// largest index of vertex with layoutX <= minX
 			int minIndex = vertexList.binarySearch( minX );
 			// include vertex before that (may be appears partially on
