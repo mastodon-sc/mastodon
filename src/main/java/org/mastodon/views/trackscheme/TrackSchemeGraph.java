@@ -73,7 +73,7 @@ import org.scijava.listeners.Listeners;
  * {@link GraphListener}.
  * <p>
  * The vertices and edges of the {@link TrackSchemeGraph} expose properties
- * related to graph {@link LineageTreeLayout layout} (such as layout
+ * related to graph {@link LineageTreeLayoutImp layout} (such as layout
  * coordinates) and painting (such as whether the vertex is selected). Some of
  * these (layout coordinates) are stored in the {@link TrackSchemeGraph}
  * entities, while others (label, selected state) are backed by the model

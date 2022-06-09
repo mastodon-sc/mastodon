@@ -58,6 +58,7 @@ import org.mastodon.ui.NavigationEtiquette;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
+import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
 import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.ContextLayout;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
@@ -123,7 +124,7 @@ public class TrackSchemePanel extends JPanel implements
 	private final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator;
 
 	/**
-	 * compute {@link ScreenEntities} from {@link LineageTreeLayout} using the
+	 * compute {@link ScreenEntities} from {@link LineageTreeLayoutImp} using the
 	 * current {@link ScreenTransform} and interpolate between
 	 * {@link ScreenEntities} for animation.
 	 */
@@ -248,7 +249,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		layout = optional.values.isPaintLongEdges()
 				? new LongEdgesLineageTreeLayout( graph, selection )
-				: new LineageTreeLayout( graph, selection );
+				: new LineageTreeLayoutImp( graph, selection );
 		contextLayout = new ContextLayout( graph, layout );
 		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
