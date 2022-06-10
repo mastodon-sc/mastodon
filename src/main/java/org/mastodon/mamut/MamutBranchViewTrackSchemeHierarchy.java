@@ -27,6 +27,8 @@ import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackScheme
 {
 
+	private static final int MINIMUM_NUMBER_OF_HIERARCHY_LEVELS_SCROLLABLE = 30;
+
 	public MamutBranchViewTrackSchemeHierarchy( final MamutAppModel appModel )
 	{
 		this( appModel, new HashMap<>() );
@@ -55,6 +57,7 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 				if ( t < minT )
 					minT = t;
 			}
+			maxT = Math.max( MINIMUM_NUMBER_OF_HIERARCHY_LEVELS_SCROLLABLE, maxT );
 			frame.getTrackschemePanel().setTimepointRange( minT, maxT );
 			frame.getTrackschemePanel().graphChanged();
 		};
