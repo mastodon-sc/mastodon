@@ -525,7 +525,7 @@ public class PaintGraph
 	 *            the background color.
 	 * @return the black or white color.
 	 */
-	private static Color textColorForBackground( final Color backgroundColor )
+	protected static Color textColorForBackground( final Color backgroundColor )
 	{
 		if ( ( backgroundColor.getRed() * 0.299
 				+ backgroundColor.getGreen() * 0.587
