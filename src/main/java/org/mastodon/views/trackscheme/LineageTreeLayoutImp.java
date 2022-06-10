@@ -371,15 +371,8 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 					if ( i < nextRangeStart )
 					{
 						vertexList.get( i, v1 );
-						final int v1si = screenVertices.size();
-						v1.setScreenVertexIndex( v1si );
-						final int id = v1.getInternalPoolIndex();
-						final String label = v1.getLabel();
 						final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-						final boolean selected = selection.isSelected( v1 );
-						final boolean ghost = v1.isGhost();
-						screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, colorGenerator.color( v1 ) );
-						screenVertices.add( sv );
+						addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y );
 
 						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
 						prevX = x;
@@ -393,21 +386,14 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 							if ( v2si < 0 || v2si >= screenVertices.size() || screenVertices.get( v2si, sv ).getTrackSchemeVertexId() != v2.getInternalPoolIndex() )
 							{
 								// ScreenVertex for v2 not found. Adding one...
-								v2si = screenVertices.size();
-								v2.setScreenVertexIndex( v2si );
-								final int nid = v2.getInternalPoolIndex();
-								final String nlabel = v2.getLabel();
 								final double nx = ( v2.getLayoutX() - minX ) * xScale + decorationsOffsetX;
 								final double ny = ( v2.getTimepoint() - minY ) * yScale + decorationsOffsetY;
-								final boolean nselected = selection.isSelected( v2 );
-								final boolean nghost = v2.isGhost();
-								screenVertexPool.create( sv ).init( nid, nlabel, nx, ny, nselected, nghost, colorGenerator.color( v2 ) );
-								screenVertices.add( sv );
+								addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v2, sv, nx, ny );
 							}
 
 							final int eid = edge.getInternalPoolIndex();
-							final int sourceScreenVertexIndex = v2si;
-							final int targetScreenVertexIndex = v1si;
+							final int sourceScreenVertexIndex = v2.getScreenVertexIndex();
+							final int targetScreenVertexIndex = v1.getScreenVertexIndex();
 							final boolean eselected = selection.isSelected( edge );
 							screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( edge, v2, v1 ) );
 							screenEdges.add( se );
@@ -440,6 +426,18 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		graph.releaseRef( v2 );
 
 		buildScreenColumns( screenEntities, decorationsOffsetX, minX, maxX, xScale );
+	}
+
+	private void addScreenVertex( GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator, RefList<ScreenVertex> screenVertices, ScreenVertexPool screenVertexPool, TrackSchemeVertex v1, ScreenVertex sv, double x, double y )
+	{
+		final int v1si = screenVertices.size();
+		v1.setScreenVertexIndex( v1si );
+		final int id = v1.getInternalPoolIndex();
+		final String label = v1.getLabel();
+		final boolean selected = selection.isSelected( v1 );
+		final boolean ghost = v1.isGhost();
+		screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, colorGenerator.color( v1 ) );
+		screenVertices.add( sv );
 	}
 
 	protected void buildScreenColumns( ScreenEntities screenEntities, int decorationsOffsetX, double minX, double maxX, double xScale )
