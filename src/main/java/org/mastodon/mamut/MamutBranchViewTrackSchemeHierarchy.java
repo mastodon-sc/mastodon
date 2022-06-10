@@ -12,6 +12,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
+import org.mastodon.views.trackscheme.HierarchyLayout;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
@@ -120,6 +121,7 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 				final TrackSchemeOptions options )
 		{
+			options.lineageTreeLayoutFactory( HierarchyLayout::new );
 			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(), new PaintHierarchicalGraph(), options );
 		}
 	}
