@@ -43,7 +43,7 @@ import org.mastodon.views.trackscheme.ScreenVertex.Transition;
 public class PaintBranchGraph extends PaintGraph
 {
 
-	private final Stroke edgeStroke = new BasicStroke( 1.5f );
+	protected Stroke edgeStroke = new BasicStroke( 1.5f );
 
 	@Override
 	public void beforeDrawEdges()
