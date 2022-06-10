@@ -230,6 +230,15 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 		// Give focus to the display so that it can receive key presses immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
+
+		// Automatically regenerate branch graph, if it never hase been generated before
+		if(appModel.getModel().getBranchGraph().vertices().size() == 0)
+		{
+			new Thread(() -> {
+				appModel.getBranchGraphSync().sync();
+				frame.getTrackschemePanel().getTransformEventHandler().zoomOutFully();
+			}).start();
+		}
 	}
 
 	@Override
