@@ -88,14 +88,14 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	/**
 	 * X coordinate that will be assigned to the next leaf in the current layout.
 	 */
-	private double rightmost;
+	protected double rightmost;
 
 	/**
 	 * The timestamp used in the current layout. This is incremented at the
 	 * beginning of {@link #layout(Collection, int)}. It is also incremented
 	 * when {@link #nextLayoutTimestamp()} is called.
 	 */
-	private int timestamp;
+	protected int timestamp;
 
 	/**
 	 * The mark timestamp for the current layout. Context trackscheme marks
@@ -428,7 +428,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		buildScreenColumns( screenEntities, decorationsOffsetX, minX, maxX, xScale );
 	}
 
-	private void addScreenVertex( GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator, RefList<ScreenVertex> screenVertices, ScreenVertexPool screenVertexPool, TrackSchemeVertex v1, ScreenVertex sv, double x, double y )
+	protected void addScreenVertex( GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator, RefList<ScreenVertex> screenVertices, ScreenVertexPool screenVertexPool, TrackSchemeVertex v1, ScreenVertex sv, double x, double y )
 	{
 		final int v1si = screenVertices.size();
 		v1.setScreenVertexIndex( v1si );
@@ -649,7 +649,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	 * @param root
 	 *            root of sub-tree to layout.
 	 */
-	private void layoutX( final TrackSchemeVertex root )
+	protected void layoutX( final TrackSchemeVertex root )
 	{
 		DepthFirstIteration<TrackSchemeVertex> df = new DepthFirstIteration<>( graph );
 		df.setExcludeNodeAction( ( TrackSchemeVertex v ) -> {
