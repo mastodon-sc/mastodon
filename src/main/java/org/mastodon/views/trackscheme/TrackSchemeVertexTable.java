@@ -111,7 +111,8 @@ public class TrackSchemeVertexTable
 			end = -end - 1;
 		for ( int tpIndex = start; tpIndex < end; ++tpIndex )
 		{
-			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tpIndex );
+			final int timepoint = timepoints.get( tpIndex );
+			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
 			final int left = vertexList.binarySearch( x1 ) + 1;
 			final int right = vertexList.binarySearch( x2, left, vertexList.size() );
 			vertexSet.addAll( vertexList.subList( left, right + 1 ) );
