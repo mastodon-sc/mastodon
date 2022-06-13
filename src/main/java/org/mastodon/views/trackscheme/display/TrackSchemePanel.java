@@ -759,8 +759,7 @@ public class TrackSchemePanel extends JPanel implements
 		return offsetHeaders;
 	}
 
-	// TODO is this needed? does it have to be public?
-	protected LineageTreeLayout getLineageTreeLayout()
+	public LineageTreeLayout getLineageTreeLayout()
 	{
 		return layout;
 	}

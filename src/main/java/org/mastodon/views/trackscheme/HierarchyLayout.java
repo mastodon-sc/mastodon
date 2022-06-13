@@ -32,8 +32,9 @@ import org.mastodon.collection.RefList;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 
-public class HierarchyLayout extends LineageTreeLayoutImp
+public class HierarchyLayout extends LongEdgesLineageTreeLayout
 {
+
 	public HierarchyLayout( TrackSchemeGraph<?, ?> graph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selection )
 	{
 		super( graph, selection );

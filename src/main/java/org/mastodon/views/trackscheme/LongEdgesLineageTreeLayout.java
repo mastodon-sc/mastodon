@@ -30,7 +30,9 @@ package org.mastodon.views.trackscheme;
 
 import java.util.List;
 
+import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefList;
+import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
@@ -54,11 +56,28 @@ import gnu.trove.list.array.TIntArrayList;
 public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 {
 
+	private final RefArrayList<TrackSchemeVertex> roots;
+
 	public LongEdgesLineageTreeLayout(
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		super( graph, selection );
+		this.roots = new RefArrayList<>( graph.getVertexPool() );
+	}
+
+	public void setRoots( RefList<TrackSchemeVertex> roots )
+	{
+		this.roots.reset();
+		this.roots.addAll( roots );
+	}
+
+	@Override
+	public void layout()
+	{
+		RefCollection<TrackSchemeVertex> unsortedRoots = this.roots.isEmpty() ? graph.getRoots() : this.roots;
+		RefList<TrackSchemeVertex> sortedRoots = LexicographicalVertexOrder.sort( graph, unsortedRoots );
+		layout( sortedRoots, -1 );
 	}
 
 	@Override
@@ -135,6 +154,9 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 				for ( final TrackSchemeEdge edge : v1.incomingEdges() )
 				{
 					edge.getSource( v2 );
+
+					if( v2.getLayoutTimestamp() != timestamp )
+						continue;
 
 					// Check if the edge has some parts on the screen.
 					final int tp2 = v2.getTimepoint();

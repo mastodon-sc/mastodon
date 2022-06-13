@@ -42,6 +42,7 @@ import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
 import org.mastodon.views.bdv.export.RecordMovieDialog;
 import org.mastodon.views.table.TableViewActions;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
+import org.mastodon.views.trackscheme.display.ShowSelectedTracksActions;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 
 import bdv.BigDataViewerActions;
@@ -78,6 +79,10 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 
 		menuTexts.put( UndoActions.UNDO, "Undo" );
 		menuTexts.put( UndoActions.REDO, "Redo" );
+
+		menuTexts.put( ShowSelectedTracksActions.SHOW_TRACK_DOWNWARD, "Show Track Downward" );
+		menuTexts.put( ShowSelectedTracksActions.SHOW_SELECTED_TRACKS, "Show Only Selected Tracks" );
+		menuTexts.put( ShowSelectedTracksActions.SHOW_ALL_TRACKS, "Show All Tracks" );
 
 		menuTexts.put( SelectionActions.DELETE_SELECTION, "Delete Selection" );
 		menuTexts.put( SelectionActions.SELECT_WHOLE_TRACK, "Select Whole Track" );

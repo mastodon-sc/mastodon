@@ -106,20 +106,20 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	 * as ghosts. Additionally, vertices marked with a timestamp &lt;
 	 * {@link #mark}<em>-1</em> are treated as leafs.
 	 */
-	private int mark;
+	protected int mark;
 
 	protected final TrackSchemeVertexTable vertexTable;
 	/**
 	 * the minimum layoutX coordinate assigned to any vertex in the current
 	 * layout.
 	 */
-	private double currentLayoutMinX;
+	protected double currentLayoutMinX;
 
 	/**
 	 * the maximum layoutX coordinate assigned to any vertex in the current
 	 * layout.
 	 */
-	private double currentLayoutMaxX;
+	protected double currentLayoutMaxX;
 
 	/**
 	 * The width below which a column line will not generate a screen entity.
@@ -380,9 +380,11 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 						for ( final TrackSchemeEdge edge : v1.incomingEdges() )
 						{
 							edge.getSource( v2 );
-							int v2si = v2.getScreenVertexIndex();
 
-							// TODO: additionally to checking for id ref consistency, the following should be decided by layout timestamp
+							if(v2.getLayoutTimestamp() != timestamp)
+								continue;
+
+							int v2si = v2.getScreenVertexIndex();
 							if ( v2si < 0 || v2si >= screenVertices.size() || screenVertices.get( v2si, sv ).getTrackSchemeVertexId() != v2.getInternalPoolIndex() )
 							{
 								// ScreenVertex for v2 not found. Adding one...
@@ -689,7 +691,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 			graphRoot.incomingEdges().iterator().next().getSource( graphRoot );
 	}
 
-	private void notifyListeners()
+	protected void notifyListeners()
 	{
 		for ( final LayoutListener l : listeners.list )
 			l.layoutChanged( this );

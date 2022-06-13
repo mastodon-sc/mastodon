@@ -36,6 +36,7 @@ import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -43,6 +44,7 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
+import org.mastodon.views.trackscheme.display.ShowSelectedTracksActions;
 import org.mastodon.views.trackscheme.display.PaintBranchGraph;
 import org.mastodon.views.trackscheme.display.PaintDecorations;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
@@ -69,14 +71,15 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory() );
+		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(), LongEdgesLineageTreeLayout::new );
 	}
 
 	protected MamutBranchViewTrackScheme(
 			final MamutAppModel appModel,
 			final Map< String, Object > guiState,
 			final BranchTrackSchemeFactory trackSchemeGraphFactory,
-			final TrackSchemeOverlayFactory overlayFactory )
+			final TrackSchemeOverlayFactory overlayFactory,
+			final LineageTreeLayout.LineageTreeLayoutFactory layoutFactory )
 	{
 		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
 
@@ -86,7 +89,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.trackSchemeOverlayFactory( overlayFactory )
-				.lineageTreeLayoutFactory( LongEdgesLineageTreeLayout::new )
+				.lineageTreeLayoutFactory( layoutFactory )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
 
@@ -137,6 +140,9 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		// Regen branch graph.
 		frame.getSettingsPanel().add( new BranchGraphSyncButton( appModel.getBranchGraphSync() ) );
 
+		// Limit button
+		ShowSelectedTracksActions.install(viewActions, viewGraph, selectionModel, frame.getTrackschemePanel());
+
 		// Search vertex label.
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getTrackschemePanel() );
 		frame.getSettingsPanel().add( searchPanel );
@@ -181,6 +187,10 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 				viewMenu(
 						branchColorMenu( coloringMenuHandle ),
 						colorbarMenu( colorbarMenuHandle ),
+						separator(),
+						item( ShowSelectedTracksActions.SHOW_TRACK_DOWNWARD ),
+						item( ShowSelectedTracksActions.SHOW_SELECTED_TRACKS ),
+						item( ShowSelectedTracksActions.SHOW_ALL_TRACKS ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				editMenu(
