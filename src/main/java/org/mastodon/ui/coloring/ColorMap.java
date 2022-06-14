@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -434,10 +435,12 @@ public class ColorMap
 					final ColorMap cm = ColorMapIO.importLUT( path );
 					if ( null == cm )
 						System.err.println( "Could not read LUT file: " + path + ". Skipping." );
-					cms.add( cm );
+					else
+						cms.add( cm );
 				}
 			}
 		}
+		cms.sort( Comparator.comparing( cm -> cm.name ) );
 		return cms;
 	}
 }
