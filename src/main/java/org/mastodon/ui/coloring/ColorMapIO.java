@@ -31,6 +31,10 @@ package org.mastodon.ui.coloring;
 import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -249,37 +253,100 @@ public class ColorMapIO
 	{
 		String name = path.getFileName().toString();
 		name = name.substring( 0, name.indexOf( '.' ) ).toLowerCase();
-		try (final Scanner scanner = new Scanner( path ))
+
+		final int naColor = Color.BLACK.getRGB();
+
+		/*
+		 * Do we have a binary LUT file (size == 768 bytes)?
+		 */
+		final int fileLength = ( int ) path.toFile().length();
+		final boolean isBinaryLUT = fileLength == 768 || fileLength == 970;
+
+		if ( isBinaryLUT )
 		{
+			/*
+			 * LUT is stored in a binary file.
+			 */
 
-			final IntArray intColors = new IntArray();
-			final IntArray intAlphas = new IntArray();
-			final int naColor = Color.BLACK.getRGB();
-			final AtomicInteger nLines = new AtomicInteger( 0 );
-
-			while ( scanner.hasNext() )
+			try (DataInputStream f = new DataInputStream( new FileInputStream( path.toFile() ) ))
 			{
-				if ( !scanner.hasNextInt() )
+				final int nColors = 256;
+				final byte[] r = new byte[ nColors ];
+				final byte[] g = new byte[ nColors ];
+				final byte[] b = new byte[ nColors ];
+				f.read( r, 0, nColors );
+				f.read( g, 0, nColors );
+				f.read( b, 0, nColors );
+				f.close();
+
+				final double[] alphas = new double[ nColors ];
+				final int[] colors = new int[ alphas.length ];
+				for ( int i = 0; i < alphas.length; i++ )
 				{
-					scanner.next();
-					continue;
+					alphas[ i ] = ( double ) i / nColors;
+					final int rgba = new Color(
+							r[ i ] & 0xff,
+							g[ i ] & 0xff,
+							b[ i ] & 0xff ).getRGB();
+					colors[ i ] = rgba;
 				}
-				intAlphas.addValue( scanner.nextInt() );
-				final int rgba = new Color( scanner.nextInt(), scanner.nextInt(), scanner.nextInt() ).getRGB();
-				intColors.addValue( rgba );
-				nLines.incrementAndGet();
+				return new ColorMap( name, colors, alphas, naColor );
 			}
 
-			if ( nLines.get() < 2 )
-				return null;
-			final double[] alphas = new double[ intAlphas.size() ];
-			final int[] colors = new int[ alphas.length ];
-			for ( int i = 0; i < alphas.length; i++ )
-			{
-				alphas[ i ] = ( double ) intAlphas.get( i ) / ( nLines.get() - 1 );
-				colors[ i ] = intColors.getValue( i );
-			}
-			return new ColorMap( name, colors, alphas, naColor );
 		}
+		else
+		{
+			/*
+			 * We assume LUT is stored in a text file, 3 or 4 columns.
+			 */
+
+			String firstLine = "";
+			try (BufferedReader brTest = new BufferedReader( new FileReader( path.toFile() ) ))
+			{
+				firstLine = brTest.readLine();
+			}
+			catch ( final IOException e )
+			{
+				System.err.println( "Could not read LUT file " + path );
+				return null;
+			}
+			final String[] tokens = firstLine.split( "\\s+" );
+			final int nCols = tokens.length;
+			final boolean hasIndex = nCols > 3;
+			final AtomicInteger index = new AtomicInteger( 0 );
+
+			try (final Scanner scanner = new Scanner( path ))
+			{
+
+				final IntArray intColors = new IntArray();
+				final IntArray intAlphas = new IntArray();
+				final AtomicInteger nLines = new AtomicInteger( 0 );
+
+				while ( scanner.hasNext() )
+				{
+					if ( !scanner.hasNextInt() )
+					{
+						scanner.next();
+						continue;
+					}
+					intAlphas.addValue( hasIndex ? scanner.nextInt() : index.getAndIncrement() );
+					final int rgba = new Color( scanner.nextInt(), scanner.nextInt(), scanner.nextInt() ).getRGB();
+					intColors.addValue( rgba );
+					nLines.incrementAndGet();
+				}
+
+				if ( nLines.get() < 2 )
+					return null;
+				final double[] alphas = new double[ intAlphas.size() ];
+				final int[] colors = new int[ alphas.length ];
+				for ( int i = 0; i < alphas.length; i++ )
+				{
+					alphas[ i ] = ( double ) intAlphas.get( i ) / ( nLines.get() - 1 );
+					colors[ i ] = intColors.getValue( i );
+				}
+				return new ColorMap( name, colors, alphas, naColor );
+			}
+		}
+
 	}
 }
