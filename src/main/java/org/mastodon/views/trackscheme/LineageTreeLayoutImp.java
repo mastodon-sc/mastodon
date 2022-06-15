@@ -37,6 +37,7 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edges;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
+import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.views.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.views.trackscheme.ScreenVertexRange.ScreenVertexRangePool;

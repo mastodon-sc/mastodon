@@ -26,12 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.util;
 
 import net.imglib2.util.Cast;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.views.trackscheme.LineageTreeLayout;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -99,8 +100,6 @@ import java.util.function.Predicate;
  */
 public class DepthFirstIteration<V extends Vertex<?>>
 {
-	static{
-	}
 
 	private final Graph<V, ?> graph;
 	private Predicate<V> excludeNodeAction = node -> false;
