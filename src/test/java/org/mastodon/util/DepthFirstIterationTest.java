@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.util;
 
 import org.junit.Test;
 import org.mastodon.mamut.model.ModelGraph;

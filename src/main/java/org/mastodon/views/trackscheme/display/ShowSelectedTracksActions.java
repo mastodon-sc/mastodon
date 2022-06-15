@@ -41,7 +41,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.views.trackscheme.DepthFirstIteration;
+import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.views.trackscheme.LexicographicalVertexOrder;
 import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
