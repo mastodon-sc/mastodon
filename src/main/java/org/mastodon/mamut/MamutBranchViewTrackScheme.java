@@ -44,9 +44,9 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
-import org.mastodon.views.trackscheme.display.ShowSelectedTracksActions;
 import org.mastodon.views.trackscheme.display.PaintBranchGraph;
 import org.mastodon.views.trackscheme.display.PaintDecorations;
+import org.mastodon.views.trackscheme.display.ShowSelectedTracksActions;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions;
@@ -239,13 +239,13 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		// Give focus to the display so that it can receive key presses immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 
-		// Automatically regenerate branch graph, if it never hase been generated before
-		if(appModel.getModel().getBranchGraph().vertices().size() == 0)
+		// Automatically regenerate branch graph, if it never has been generated before
+		if ( !appModel.getBranchGraphSync().isUptodate() )
 		{
-			new Thread(() -> {
+			new Thread( () -> {
 				appModel.getBranchGraphSync().sync();
 				frame.getTrackschemePanel().getTransformEventHandler().zoomOutFully();
-			}).start();
+			} ).start();
 		}
 	}
 
