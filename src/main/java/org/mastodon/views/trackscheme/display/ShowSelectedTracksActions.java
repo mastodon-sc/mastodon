@@ -43,7 +43,6 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.views.trackscheme.LexicographicalVertexOrder;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
-import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
@@ -52,9 +51,7 @@ import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
 /**
- * These actions allow to limit the view of the
- * {@link org.mastodon.mamut.MamutBranchViewTrackScheme}
- * and {@link org.mastodon.mamut.MamutBranchViewTrackSchemeHierarchy}
+ * These actions can be used to limit the track scheme views
  * to only show selected tracks or downward tracks.
  */
 public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
