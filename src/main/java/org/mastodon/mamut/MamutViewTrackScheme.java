@@ -71,6 +71,7 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
+import org.mastodon.views.trackscheme.display.ShowSelectedTracksActions;
 import org.mastodon.views.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
@@ -188,6 +189,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
+		ShowSelectedTracksActions.install(viewActions, viewGraph, selectionModel, frame.getTrackschemePanel());
 
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getTrackschemePanel() );
 		frame.getSettingsPanel().add( searchPanel );
@@ -209,6 +211,10 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 				viewMenu(
 						colorMenu( coloringMenuHandle ),
 						colorbarMenu( colorbarMenuHandle ),
+						separator(),
+						item( ShowSelectedTracksActions.SHOW_TRACK_DOWNWARD ),
+						item( ShowSelectedTracksActions.SHOW_SELECTED_TRACKS ),
+						item( ShowSelectedTracksActions.SHOW_ALL_TRACKS ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				editMenu(

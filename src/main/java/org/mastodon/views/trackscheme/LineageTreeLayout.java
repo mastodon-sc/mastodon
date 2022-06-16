@@ -29,6 +29,7 @@
 package org.mastodon.views.trackscheme;
 
 import net.imglib2.RealLocalizable;
+import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
@@ -38,6 +39,8 @@ import java.util.Collection;
 
 public interface LineageTreeLayout
 {
+	void setRoots( RefList<TrackSchemeVertex> roots );
+
 	void layout();
 
 	void layout( Collection<TrackSchemeVertex> layoutRoots );
