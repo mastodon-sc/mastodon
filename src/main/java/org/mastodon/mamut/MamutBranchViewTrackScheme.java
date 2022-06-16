@@ -151,7 +151,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		FocusActions.install( viewActions, viewGraph, lock, focusModel, selectionModel );
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), lock, frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
-		ShowSelectedTracksActions.install(viewActions, viewGraph, selectionModel, frame.getTrackschemePanel());
+		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, frame.getTrackschemePanel() );
 
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
 		frame.getTrackschemePanel().getNavigationBehaviours().install( viewBehaviours );
@@ -236,10 +236,16 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		frame.setVisible( true );
 		frame.getTrackschemePanel().repaint();
 
-		// Give focus to the display so that it can receive key presses immediately.
+		/*
+		 * Give focus to the display so that it can receive key presses
+		 * immediately.
+		 */
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 
-		// Automatically regenerate branch graph, if it never has been generated before
+		/*
+		 * Automatically regenerate branch graph, if it never has been generated
+		 * before
+		 */
 		if ( !appModel.getBranchGraphSync().isUptodate() )
 		{
 			new Thread( () -> {
