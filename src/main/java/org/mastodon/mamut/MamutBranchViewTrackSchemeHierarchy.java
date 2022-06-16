@@ -58,7 +58,12 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 				if ( t < minT )
 					minT = t;
 			}
+
+			// NB: The line below is a hack that allows the user to further
+			// zoom out in Y when showing a hierarchy track scheme with only
+			// shallow hierarchies.
 			maxT = Math.max( MINIMUM_NUMBER_OF_HIERARCHY_LEVELS_SCROLLABLE, maxT );
+
 			frame.getTrackschemePanel().setTimepointRange( minT, maxT );
 			frame.getTrackschemePanel().graphChanged();
 		};
