@@ -31,9 +31,11 @@ package org.mastodon.views.trackscheme;
 import java.util.Collection;
 import java.util.List;
 
+import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
+import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.graph.Edges;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
@@ -85,6 +87,12 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	protected final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
 	private final Listeners.List< LayoutListener > listeners;
+
+	/**
+	 * The roots to use when drawing the TrackScheme. If this list is empty
+	 * {@link TrackSchemeGraph#getRoots()}, will be used instead.
+	 */
+	private final RefArrayList<TrackSchemeVertex> roots;
 
 	/**
 	 * X coordinate that will be assigned to the next leaf in the current layout.
@@ -143,12 +151,20 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	{
 		this.graph = graph;
 		this.selection = selection;
+		this.roots = new RefArrayList<>( graph.getVertexPool() );
 		listeners = new Listeners.SynchronizedList<>();
 		rightmost = 0;
 		timestamp = 0;
 		vertexTable = new TrackSchemeVertexTable( graph );
 		currentLayoutColumnX = new TDoubleArrayList();
 		currentLayoutColumnRoot = RefCollections.createRefList( graph.vertices() );
+	}
+
+	@Override
+	public void setRoots( RefList<TrackSchemeVertex> roots )
+	{
+		this.roots.reset();
+		this.roots.addAll( roots );
 	}
 
 	/**
@@ -160,7 +176,10 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	@Override
 	public void layout()
 	{
-		layout( LexicographicalVertexOrder.sort( graph, graph.getRoots() ), -1 );
+		RefCollection<TrackSchemeVertex> roots = this.roots.isEmpty() ?
+				LexicographicalVertexOrder.sort( graph, graph.getRoots() ) :
+				this.roots;
+		layout( roots, -1 );
 	}
 
 	/**

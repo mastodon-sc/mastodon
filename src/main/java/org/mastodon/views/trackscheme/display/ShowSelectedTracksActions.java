@@ -30,19 +30,19 @@ package org.mastodon.views.trackscheme.display;
 
 import javax.swing.SwingUtilities;
 
-import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.collection.ref.RefSetImp;
-import org.mastodon.mamut.model.branch.BranchLink;
-import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.views.trackscheme.LexicographicalVertexOrder;
+import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
@@ -57,7 +57,7 @@ import org.scijava.ui.behaviour.util.RunnableAction;
  * and {@link org.mastodon.mamut.MamutBranchViewTrackSchemeHierarchy}
  * to only show selected tracks or downward tracks.
  */
-public class ShowSelectedTracksActions
+public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 {
 
 	public static final String SHOW_TRACK_DOWNWARD = "ts show track downward";
@@ -82,15 +82,15 @@ public class ShowSelectedTracksActions
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( SHOW_TRACK_DOWNWARD, SHOW_TRACK_DOWNWARD_KEYS, "Show only the downward tracks of selected spots and in the branch / hierarchy TrackScheme." );
-			descriptions.add( SHOW_SELECTED_TRACKS, SHOW_SELECTED_TRACKS_KEYS, "Show only the tracks with selected spots in the branch / hierarchy TrackScheme." );
-			descriptions.add( SHOW_ALL_TRACKS, SHOW_ALL_TRACKS_KEYS, "Show all tracks in the branch / hierarchy TrackScheme." );
+			descriptions.add( SHOW_TRACK_DOWNWARD, SHOW_TRACK_DOWNWARD_KEYS, "Show only the downward tracks of selected spots and in the TrackScheme." );
+			descriptions.add( SHOW_SELECTED_TRACKS, SHOW_SELECTED_TRACKS_KEYS, "Show only the tracks with selected spots in the TrackScheme." );
+			descriptions.add( SHOW_ALL_TRACKS, SHOW_ALL_TRACKS_KEYS, "Show all tracks in the TrackScheme." );
 		}
 	}
 
-	private final TrackSchemeGraph<BranchSpot, BranchLink> viewGraph;
+	private final TrackSchemeGraph<V, E> viewGraph;
 
-	private final LongEdgesLineageTreeLayout layout;
+	private final LineageTreeLayout layout;
 
 	private final SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel;
 
@@ -102,15 +102,15 @@ public class ShowSelectedTracksActions
 
 	private final RunnableAction showAllTracksAction = new RunnableAction( SHOW_ALL_TRACKS, this::showAllTracks );
 
-	public static void install( Actions actions, TrackSchemeGraph<BranchSpot, BranchLink> viewGraph, SelectionModelAdapter<BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge> selectionModel, TrackSchemePanel trackschemePanel )
+	public static <V extends Vertex<E>, E extends Edge<V>> void install( Actions actions, TrackSchemeGraph<V, E> viewGraph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel, TrackSchemePanel trackschemePanel )
 	{
-		new ShowSelectedTracksActions( viewGraph, selectionModel, trackschemePanel).install(actions);
+		new ShowSelectedTracksActions<>( viewGraph, selectionModel, trackschemePanel).install(actions);
 	}
 
-	private ShowSelectedTracksActions( TrackSchemeGraph<BranchSpot, BranchLink> viewGraph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel, TrackSchemePanel panel )
+	private ShowSelectedTracksActions( TrackSchemeGraph<V, E> viewGraph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel, TrackSchemePanel panel )
 	{
 		this.viewGraph = viewGraph;
-		this.layout = ( LongEdgesLineageTreeLayout ) panel.getLineageTreeLayout();
+		this.layout = panel.getLineageTreeLayout();
 		this.selectionModel = selectionModel;
 		this.panel = panel;
 		selectionModelChanged();
@@ -134,21 +134,22 @@ public class ShowSelectedTracksActions
 
 	public void showTrackDownward()
 	{
-		layout.setRoots( getSelectedSubtreeRoots() );
-		panel.graphChanged();
-		panel.getTransformEventHandler().zoomOutFully();
+		setLayoutRoots( getSelectedSubtreeRoots() );
 	}
 
 	private void showSelectedTracks()
 	{
-		layout.setRoots( getSelectedWholeTrackRoots() );
-		panel.graphChanged();
-		panel.getTransformEventHandler().zoomOutFully();
+		setLayoutRoots( getSelectedWholeTrackRoots() );
 	}
 
 	public void showAllTracks()
 	{
-		layout.setRoots( new RefArrayList<>( viewGraph.getVertexPool() ) );
+		setLayoutRoots( new RefArrayList<>( viewGraph.getVertexPool() ) );
+	}
+
+	private void setLayoutRoots( RefList<TrackSchemeVertex> roots )
+	{
+		layout.setRoots( roots );
 		panel.graphChanged();
 		panel.getTransformEventHandler().zoomOutFully();
 	}

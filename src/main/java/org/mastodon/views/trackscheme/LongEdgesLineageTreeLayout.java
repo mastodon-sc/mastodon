@@ -56,28 +56,11 @@ import gnu.trove.list.array.TIntArrayList;
 public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 {
 
-	private final RefArrayList<TrackSchemeVertex> roots;
-
 	public LongEdgesLineageTreeLayout(
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		super( graph, selection );
-		this.roots = new RefArrayList<>( graph.getVertexPool() );
-	}
-
-	public void setRoots( RefList<TrackSchemeVertex> roots )
-	{
-		this.roots.reset();
-		this.roots.addAll( roots );
-	}
-
-	@Override
-	public void layout()
-	{
-		RefCollection<TrackSchemeVertex> unsortedRoots = this.roots.isEmpty() ? graph.getRoots() : this.roots;
-		RefList<TrackSchemeVertex> sortedRoots = LexicographicalVertexOrder.sort( graph, unsortedRoots );
-		layout( sortedRoots, -1 );
 	}
 
 	@Override
