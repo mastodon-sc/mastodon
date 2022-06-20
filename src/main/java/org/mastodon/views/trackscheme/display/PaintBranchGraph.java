@@ -28,66 +28,31 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.APPEAR;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.DISAPPEAR;
-
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Stroke;
-
 import org.mastodon.util.GeometryUtil;
 import org.mastodon.views.trackscheme.ScreenEdge;
 import org.mastodon.views.trackscheme.ScreenVertex;
-import org.mastodon.views.trackscheme.ScreenVertex.Transition;
 
 public class PaintBranchGraph extends PaintGraph
 {
 
-	protected Stroke edgeStroke = new BasicStroke( 1.5f );
-
 	@Override
 	public void beforeDrawEdges()
 	{
+		edgeStroke = style.getBranchGraphEdgeStroke();
+		edgeHighlightStroke = style.getBranchGraphEdgeHighlightStroke();
+		edgeGhostStroke = style.getEdgeGhostStroke();
 		g2.setStroke( edgeStroke );
 	}
 
 	@Override
-	public void drawEdge( final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
+	protected void drawEdgeLine( ScreenVertex vs, ScreenVertex vt )
 	{
-		Transition transition = edge.getTransition();
-		double ratio = edge.getInterpolationCompletionRatio();
-		if ( vt.getTransition() == APPEAR )
-		{
-			transition = APPEAR;
-			ratio = vt.getInterpolationCompletionRatio();
-		}
-		if ( vs.getTransition() == APPEAR || vs.getTransition() == DISAPPEAR )
-		{
-			transition = vs.getTransition();
-			ratio = vs.getInterpolationCompletionRatio();
-		}
-		final boolean highlighted = ( highlightedEdgeId >= 0 ) && ( edge.getTrackSchemeEdgeId() == highlightedEdgeId );
-		final boolean selected = edge.isSelected();
-		final boolean ghost = vs.isGhost() && vt.isGhost();
-		final int specifiedColor = edge.getColor();
-		final Color drawColor = getColor( selected, ghost, transition, ratio, specifiedColor,
-				style.getEdgeColor(), style.getSelectedEdgeColor(),
-				style.getGhostEdgeColor(), style.getGhostSelectedEdgeColor() );
-		g2.setColor( drawColor );
-		if ( highlighted )
-			g2.setStroke( style.getEdgeHighlightStroke() );
-		else if ( ghost )
-			g2.setStroke( style.getEdgeGhostStroke() );
-
 		final int sx = ( int ) vs.getX();
 		final int sy = ( int ) vs.getY();
 		final int tx = ( int ) vt.getX();
 		final int ty = ( int ) vt.getY();
 		g2.drawLine( sx, sy, tx, sy );
 		g2.drawLine( tx, sy, tx, ty );
-
-		if ( highlighted || ghost )
-			g2.setStroke( edgeStroke );
 	}
 
 	@Override

@@ -35,6 +35,7 @@ import static org.mastodon.views.trackscheme.ScreenVertex.Transition.SELECTING;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
@@ -112,6 +113,12 @@ public class PaintGraph
 	protected int focusedVertexId;
 
 	protected TrackSchemeStyle style;
+
+	protected Stroke edgeStroke;
+
+	protected Stroke edgeHighlightStroke;
+
+	protected Stroke edgeGhostStroke;
 
 	public void paintGraph(
 			final Graphics2D g2,
@@ -268,7 +275,10 @@ public class PaintGraph
 	 */
 	public void beforeDrawEdges()
 	{
-		g2.setStroke( style.getEdgeStroke() );
+		edgeStroke = style.getEdgeStroke();
+		edgeHighlightStroke = style.getEdgeHighlightStroke();
+		edgeGhostStroke = style.getEdgeGhostStroke();
+		g2.setStroke( edgeStroke );
 	}
 
 	/**
@@ -304,12 +314,17 @@ public class PaintGraph
 				style.getGhostEdgeColor(), style.getGhostSelectedEdgeColor() );
 		g2.setColor( drawColor );
 		if ( highlighted )
-			g2.setStroke( style.getEdgeHighlightStroke() );
+			g2.setStroke( edgeHighlightStroke );
 		else if ( ghost )
-			g2.setStroke( style.getEdgeGhostStroke() );
-		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
+			g2.setStroke( edgeGhostStroke );
+		drawEdgeLine( vs, vt );
 		if ( highlighted || ghost )
-			g2.setStroke( style.getEdgeStroke() );
+			g2.setStroke( edgeStroke );
+	}
+
+	protected void drawEdgeLine( ScreenVertex vs, ScreenVertex vt )
+	{
+		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
 	}
 
 	protected void drawVertexSimplified( final ScreenVertex vertex )

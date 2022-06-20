@@ -233,7 +233,11 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 				booleanElement( "paint rows", style::isPaintRows, style::paintRows ),
 				booleanElement( "highlight current timepoint", style::isHighlightCurrentTimepoint, style::highlightCurrentTimepoint ),
 				booleanElement( "paint columns", style::isPaintColumns, style::paintColumns ),
-				booleanElement( "paint header shadow", style::isPaintHeaderShadow, style::paintHeaderShadow )
+				booleanElement( "paint header shadow", style::isPaintHeaderShadow, style::paintHeaderShadow ),
+
+				separator(),
+
+				booleanElement( "hierarchy graph use curved lines", style::isHierarchyGraphCurvedLines, style::hierarchyGraphCurvedLines )
 		);
 	}
 

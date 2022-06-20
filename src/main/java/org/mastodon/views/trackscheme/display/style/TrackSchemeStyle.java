@@ -33,6 +33,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -113,6 +114,18 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 
 	private Stroke decorationStroke;
 
+	private Stroke branchGraphEdgeStroke;
+
+	private Stroke branchGraphEdgeHighlightStroke;
+
+	private Stroke hierarchyEdgeStroke;
+
+	private Stroke hierarchyEdgeHighlightStroke;
+
+	private Stroke hierarchyVertexStroke;
+
+	private Stroke hierarchyVertexHighlightStroke;
+
 	private boolean highlightCurrentTimepoint;
 
 	private boolean paintRows;
@@ -120,6 +133,8 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 	private boolean paintColumns;
 
 	private boolean paintHeaderShadow;
+
+	private boolean hierarchyCurvedLines;
 
 	public // TODO?
 	static Color mixGhostColor( final Color color, final Color backgroundColor )
@@ -318,6 +333,35 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 	public Stroke getVertexStroke()
 	{
 		return vertexStroke;
+	}
+
+	public Stroke getBranchGraphEdgeStroke() {
+		return branchGraphEdgeStroke;
+	}
+
+	public Stroke getBranchGraphEdgeHighlightStroke() {
+		return branchGraphEdgeHighlightStroke;
+	}
+
+	public Stroke getHierarchyEdgeStroke() {
+		return hierarchyEdgeStroke;
+	}
+
+	public Stroke getHierarchyEdgeHighlightStroke() {
+		return hierarchyEdgeHighlightStroke;
+	}
+
+	public Stroke getHierarchyVertexStroke() {
+		return hierarchyVertexStroke;
+	}
+
+	public Stroke getHierarchyVertexHighlightStroke() {
+		return hierarchyVertexHighlightStroke;
+	}
+
+	public boolean isHierarchyGraphCurvedLines()
+	{
+		return hierarchyCurvedLines;
 	}
 
 	public boolean isPaintColumns()
@@ -619,6 +663,70 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		return this;
 	}
 
+	public TrackSchemeStyle branchGraphEdgeStroke( final Stroke stroke ) {
+		if ( !Objects.equals( this.branchGraphEdgeStroke, stroke ) )
+		{
+			this.branchGraphEdgeStroke = stroke;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public TrackSchemeStyle branchGraphEdgeHighlightStroke( final Stroke stroke ) {
+		if ( !Objects.equals( this.branchGraphEdgeHighlightStroke, stroke ) )
+		{
+			this.branchGraphEdgeHighlightStroke = stroke;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public TrackSchemeStyle hierarchyEdgeStroke( final Stroke stroke ) {
+		if ( !Objects.equals( this.hierarchyEdgeStroke, stroke ) )
+		{
+			this.hierarchyEdgeStroke = stroke;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public TrackSchemeStyle hierarchyEdgeHighlightStroke( final Stroke stroke ) {
+		if ( !Objects.equals( this.hierarchyEdgeHighlightStroke, stroke ) )
+		{
+			this.hierarchyEdgeHighlightStroke = stroke;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public TrackSchemeStyle hierarchyVertexStroke( final Stroke stroke ) {
+		if ( !Objects.equals( this.hierarchyVertexStroke, stroke ) )
+		{
+			this.hierarchyVertexStroke = stroke;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public TrackSchemeStyle hierarchyVertexHighlightStroke( final Stroke stroke ) {
+		if ( !Objects.equals( this.hierarchyVertexHighlightStroke, stroke ) )
+		{
+			this.hierarchyVertexHighlightStroke = stroke;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public TrackSchemeStyle hierarchyGraphCurvedLines( final boolean b )
+	{
+		if ( this.hierarchyCurvedLines != b )
+		{
+			this.hierarchyCurvedLines = b;
+			notifyListeners();
+		}
+		return this;
+	}
+
 	public TrackSchemeStyle highlightCurrentTimepoint( final boolean b )
 	{
 		if ( this.highlightCurrentTimepoint != b )
@@ -713,6 +821,13 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		this.vertexHighlightStroke = style.vertexHighlightStroke;
 		this.focusStroke = style.focusStroke;
 		this.decorationStroke = style.decorationStroke;
+		this.branchGraphEdgeStroke = style.branchGraphEdgeStroke;
+		this.branchGraphEdgeHighlightStroke = style.branchGraphEdgeHighlightStroke;
+		this.hierarchyEdgeStroke = style.hierarchyEdgeStroke;
+		this.hierarchyEdgeHighlightStroke = style.hierarchyEdgeHighlightStroke;
+		this.hierarchyVertexStroke = style.hierarchyVertexStroke;
+		this.hierarchyVertexHighlightStroke = style.hierarchyVertexHighlightStroke;
+		this.hierarchyCurvedLines = style.hierarchyCurvedLines;
 		this.highlightCurrentTimepoint = style.highlightCurrentTimepoint;
 		this.paintRows = style.paintRows;
 		this.paintColumns = style.paintColumns;
@@ -753,6 +868,29 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		return copy( null );
 	}
 
+
+	private static TrackSchemeStyle basicStyle() {
+		return new TrackSchemeStyle().
+				edgeStroke( new BasicStroke() ).
+				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
+				edgeHighlightStroke( new BasicStroke( 2f ) ).
+				vertexStroke( new BasicStroke() ).
+				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
+				vertexHighlightStroke( new BasicStroke( 3f ) ).
+				focusStroke( DEFAULT_FOCUS_STROKE ).
+				decorationStroke( new BasicStroke() ).
+				branchGraphEdgeStroke( new BasicStroke(1.5f ) ).
+				branchGraphEdgeHighlightStroke( new BasicStroke( 3f ) ).
+				hierarchyEdgeStroke( new BasicStroke( 3f ) ).
+				hierarchyEdgeHighlightStroke( new BasicStroke( 5f ) ).
+				hierarchyVertexStroke( new BasicStroke( 3f ) ).
+				hierarchyVertexHighlightStroke( new BasicStroke( 5f ) ).
+				highlightCurrentTimepoint( true ).
+				paintRows( true ).
+				paintColumns( true ).
+				paintHeaderShadow( true );
+	}
+
 	/**
 	 * Returns the default TrackScheme style instance. Editing this instance
 	 * will affect all view using this style.
@@ -768,7 +906,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 	static
 	{
 		final Color fill = new Color( 128, 255, 128 );
-		df = new TrackSchemeStyle().name( "default" ).
+		df = basicStyle().name( "default" ).
 				backgroundColor( Color.LIGHT_GRAY ).
 				currentTimepointColor( new Color( 217, 217, 217 ) ).
 				vertexFillColor( Color.WHITE ).
@@ -785,19 +923,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 				headerDecorationColor( Color.DARK_GRAY ).
 				headerCurrentTimepointColor( Color.WHITE ).
 				font( new Font( "SansSerif", Font.PLAIN, 9 ) ).
-				headerFont( new Font( "SansSerif", Font.PLAIN, 9 ) ).
-				edgeStroke( new BasicStroke() ).
-				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
-				edgeHighlightStroke( new BasicStroke( 2f ) ).
-				vertexStroke( new BasicStroke() ).
-				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
-				vertexHighlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE ).
-				decorationStroke( new BasicStroke() ).
-				highlightCurrentTimepoint( true ).
-				paintRows( true ).
-				paintColumns( true ).
-				paintHeaderShadow( true );
+				headerFont( new Font( "SansSerif", Font.PLAIN, 9 ) );
 	}
 
 	/**
@@ -818,7 +944,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		final Color fill = new Color( 64, 106, 102 );
 		final Color selfill = new Color( 255, 128, 128 );
 		final Color currenttp = new Color( 38, 175, 185 );
-		modern = new TrackSchemeStyle().name( "modern" ).
+		modern = basicStyle().name( "modern" ).
 				backgroundColor( bg ).
 				currentTimepointColor( currenttp ).
 				vertexFillColor( fill ).
@@ -835,19 +961,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 				headerDecorationColor( bg ).
 				headerCurrentTimepointColor( bg.darker() ).
 				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
-				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
-				edgeStroke( new BasicStroke() ).
-				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
-				edgeHighlightStroke( new BasicStroke( 2f ) ).
-				vertexStroke( new BasicStroke() ).
-				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
-				vertexHighlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE ).
-				decorationStroke( new BasicStroke() ).
-				highlightCurrentTimepoint( true ).
-				paintRows( true ).
-				paintColumns( true ).
-				paintHeaderShadow( true );
+				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) );
 	}
 
 	/**
@@ -869,7 +983,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		final Color selfill = new Color( 53, 107, 154 );
 		final Color seldraw = new Color( 230, 245, 255 );
 		final Color seledge = new Color( 91, 137, 158 );
-		hmdyk = new TrackSchemeStyle().name( "lorry" ).
+		hmdyk = basicStyle().name( "lorry" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
@@ -886,19 +1000,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 				headerDecorationColor( bg ).
 				headerCurrentTimepointColor( bg.darker() ).
 				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
-				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
-				edgeStroke( new BasicStroke() ).
-				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
-				edgeHighlightStroke( new BasicStroke( 2f ) ).
-				vertexStroke( new BasicStroke() ).
-				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
-				vertexHighlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE ).
-				decorationStroke( new BasicStroke() ).
-				highlightCurrentTimepoint( true ).
-				paintRows( true ).
-				paintColumns( true ).
-				paintHeaderShadow( true );
+				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) );
 	}
 
 	public static Collection< TrackSchemeStyle > defaults;
