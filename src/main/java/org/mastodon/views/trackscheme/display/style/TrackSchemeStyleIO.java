@@ -301,7 +301,14 @@ public class TrackSchemeStyleIO
 			mapping.put( "vertexGhostStroke", s.getVertexGhostStroke() );
 			mapping.put( "vertexHighlightStroke", s.getVertexHighlightStroke() );
 			mapping.put( "focusStroke", s.getFocusStroke() );
+			mapping.put( "branchGraphEdgeStroke", s.getBranchGraphEdgeStroke() );
+			mapping.put( "branchGraphEdgeHighlightStroke", s.getBranchGraphEdgeHighlightStroke() );
+			mapping.put( "hierarchyEdgeStroke", s.getHierarchyEdgeStroke() );
+			mapping.put( "hierarchyEdgeHighlightStroke", s.getHierarchyEdgeHighlightStroke() );
+			mapping.put( "hierarchyVertexStroke", s.getHierarchyVertexStroke() );
+			mapping.put( "hierarchyVertexHighlightStroke", s.getHierarchyVertexHighlightStroke() );
 			// Paint decorations.
+			mapping.put( "hierarchyGraphCurvedLines", s.isHierarchyGraphCurvedLines() );
 			mapping.put( "highlightCurrentTimepoint", s.isHighlightCurrentTimepoint() );
 			mapping.put( "paintRows", s.isPaintRows() );
 			mapping.put( "paintColumns", s.isPaintColumns() );
@@ -355,7 +362,14 @@ public class TrackSchemeStyleIO
 				s.vertexGhostStroke( ( Stroke ) mapping.getOrDefault( "vertexGhostStroke", df.getVertexGhostStroke() ) );
 				s.vertexHighlightStroke( ( Stroke ) mapping.getOrDefault( "vertexHighlightStroke", df.getVertexHighlightStroke() ) );
 				s.focusStroke( ( Stroke ) mapping.getOrDefault( "focusStroke", df.getFocusStroke() ) );
+				s.branchGraphEdgeStroke( ( Stroke ) mapping.getOrDefault( "branchGraphEdgeStroke", df.getBranchGraphEdgeStroke() ));
+				s.branchGraphEdgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "branchGraphEdgeHighlightStroke", df.getBranchGraphEdgeHighlightStroke() ));
+				s.hierarchyEdgeStroke( ( Stroke ) mapping.getOrDefault( "hierarchyEdgeStroke", df.getHierarchyEdgeStroke() ));
+				s.hierarchyEdgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "hierarchyEdgeHighlightStroke", df.getHierarchyEdgeHighlightStroke() ));
+				s.hierarchyVertexStroke( ( Stroke ) mapping.getOrDefault( "hierarchyVertexStroke", df.getHierarchyVertexStroke() ));
+				s.hierarchyVertexHighlightStroke( ( Stroke ) mapping.getOrDefault( "hierarchyVertexHighlightStroke", df.getHierarchyVertexHighlightStroke() ));
 
+				s.hierarchyGraphCurvedLines( ( boolean ) mapping.getOrDefault( "hierarchyGraphCurvedLines", df.isHierarchyGraphCurvedLines() ) );
 				s.highlightCurrentTimepoint( ( boolean ) mapping.getOrDefault( "highlightCurrentTimepoint", df.isHighlightCurrentTimepoint() ) );
 				s.paintRows( ( boolean ) mapping.getOrDefault( "paintRows", df.isPaintRows() ) );
 				s.paintColumns( ( boolean ) mapping.getOrDefault( "paintColumns", df.isPaintColumns() ) );
