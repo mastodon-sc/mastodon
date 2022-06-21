@@ -28,8 +28,10 @@ import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.AutoNavigateFocusModel;
+import org.mastodon.model.BranchTrackSchemeRootsModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
+import org.mastodon.model.RootsModel;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
@@ -108,12 +110,14 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		// Show TrackSchemeFrame.
 		final Model model = appModel.getModel();
 		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
+		final RootsModel< TrackSchemeVertex > rootsModel = new BranchTrackSchemeRootsModel( model.getGraph(), model.getBranchGraph(), viewGraph);
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
 				highlightModel,
 				navigateFocusModel,
 				timepointModel,
 				selectionModel,
+				rootsModel,
 				navigationHandler,
 				model,
 				groupHandle,
@@ -151,7 +155,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		FocusActions.install( viewActions, viewGraph, lock, focusModel, selectionModel );
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), lock, frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
-		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, frame.getTrackschemePanel() );
+		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
 
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
 		frame.getTrackschemePanel().getNavigationBehaviours().install( viewBehaviours );

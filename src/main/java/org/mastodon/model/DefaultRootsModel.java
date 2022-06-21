@@ -26,26 +26,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.model;
 
+import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
-import org.mastodon.model.RootsModel;
-import org.mastodon.model.SelectionModel;
-import org.mastodon.ui.coloring.GraphColorGenerator;
+import org.mastodon.collection.ref.RefArrayList;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.Vertex;
+import org.mastodon.views.trackscheme.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.TrackSchemeVertex;
 
-public class HierarchyLayout extends LineageTreeLayoutImp
+import java.util.List;
+
+public class DefaultRootsModel<Spot extends Vertex<Link>, Link extends Edge<Spot>>
+		implements RootsModel<TrackSchemeVertex>
 {
+	private final TrackSchemeGraph<Spot, Link> viewGraph;
 
-	public HierarchyLayout( RootsModel<TrackSchemeVertex> rootsModel, TrackSchemeGraph<?, ?> graph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selection )
+	private final RefList<Spot> modelRoots;
+
+	public DefaultRootsModel( ReadOnlyGraph<Spot, Link> modelGraph, TrackSchemeGraph<Spot, Link> viewGraph )
 	{
-		super( rootsModel, graph, selection );
+		this.viewGraph = viewGraph;
+		this.modelRoots = RefCollections.createRefList( modelGraph.vertices() );
 	}
 
 	@Override
-	protected void addScreenVertex( GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator, RefList<ScreenVertex> screenVertices, ScreenVertex.ScreenVertexPool screenVertexPool, TrackSchemeVertex v1, ScreenVertex sv, double x, double y )
+	public void setRoots( List<TrackSchemeVertex> viewRoots )
 	{
-		super.addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y );
-		if(v1.outgoingEdges().size() == 1)
-			sv.setLabel( "" );
+		modelRoots.clear();
+		TrackSchemeVertex ref = viewGraph.vertexRef();
+		for ( TrackSchemeVertex viewRoot : viewRoots )
+			modelRoots.add( viewGraph.getVertexMap().getLeft( viewRoot ) );
+		viewGraph.releaseRef( ref );
+	}
+
+	@Override
+	public RefList<TrackSchemeVertex> getRoots()
+	{
+		RefArrayList<TrackSchemeVertex> viewRoots = new RefArrayList<>( viewGraph.getVertexPool() );
+		TrackSchemeVertex ref = viewGraph.vertexRef();
+		for ( Spot modelRoot : this.modelRoots )
+			viewRoots.add( viewGraph.getVertexMap().getRight( modelRoot, ref ) );
+		viewGraph.releaseRef( ref );
+		return viewRoots;
 	}
 }

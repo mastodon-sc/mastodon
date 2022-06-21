@@ -26,26 +26,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.model;
 
 import org.mastodon.collection.RefList;
-import org.mastodon.model.RootsModel;
-import org.mastodon.model.SelectionModel;
-import org.mastodon.ui.coloring.GraphColorGenerator;
 
-public class HierarchyLayout extends LineageTreeLayoutImp
+import java.util.List;
+
+public interface RootsModel<V>
 {
+	void setRoots( List<V> roots );
 
-	public HierarchyLayout( RootsModel<TrackSchemeVertex> rootsModel, TrackSchemeGraph<?, ?> graph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selection )
-	{
-		super( rootsModel, graph, selection );
-	}
-
-	@Override
-	protected void addScreenVertex( GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator, RefList<ScreenVertex> screenVertices, ScreenVertex.ScreenVertexPool screenVertexPool, TrackSchemeVertex v1, ScreenVertex sv, double x, double y )
-	{
-		super.addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y );
-		if(v1.outgoingEdges().size() == 1)
-			sv.setLabel( "" );
-	}
+	RefList<V> getRoots();
 }

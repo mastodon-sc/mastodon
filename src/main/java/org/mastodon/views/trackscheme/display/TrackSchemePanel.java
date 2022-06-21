@@ -50,6 +50,7 @@ import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
+import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointListener;
@@ -200,6 +201,7 @@ public class TrackSchemePanel extends JPanel implements
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TimepointModel timepoint,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final RootsModel<TrackSchemeVertex> rootsModel,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final TrackSchemeOptions optional )
 	{
@@ -246,7 +248,7 @@ public class TrackSchemePanel extends JPanel implements
 			}
 		} );
 
-		layout = optional.values.lineageTreeLayoutFactory().create( graph, selection );
+		layout = optional.values.lineageTreeLayoutFactory().create( rootsModel, graph, selection );
 		contextLayout = new ContextLayout( graph, layout );
 		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
@@ -759,7 +761,8 @@ public class TrackSchemePanel extends JPanel implements
 		return offsetHeaders;
 	}
 
-	public LineageTreeLayout getLineageTreeLayout()
+	// TODO is this needed? does it have to be public?
+	protected LineageTreeLayout getLineageTreeLayout()
 	{
 		return layout;
 	}

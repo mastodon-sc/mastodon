@@ -30,12 +30,16 @@ package org.mastodon.views.trackscheme.display;
 
 import javax.swing.SwingUtilities;
 
+import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.collection.ref.RefSetImp;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
@@ -91,6 +95,8 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 
 	private final SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel;
 
+	private final RootsModel<TrackSchemeVertex> rootsModel;
+
 	private final TrackSchemePanel panel;
 
 	private final RunnableAction showTrackDownwardAction = new RunnableAction( SHOW_TRACK_DOWNWARD, this::showTrackDownward );
@@ -99,16 +105,25 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 
 	private final RunnableAction showAllTracksAction = new RunnableAction( SHOW_ALL_TRACKS, this::showAllTracks );
 
-	public static <V extends Vertex<E>, E extends Edge<V>> void install( Actions actions, TrackSchemeGraph<V, E> viewGraph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel, TrackSchemePanel trackschemePanel )
+	public static <V extends Vertex<E>, E extends Edge<V>> void install(
+			Actions actions,
+			TrackSchemeGraph<V, E> viewGraph,
+			SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel,
+			RootsModel<TrackSchemeVertex> rootsModel,
+			TrackSchemePanel trackschemePanel )
 	{
-		new ShowSelectedTracksActions<>( viewGraph, selectionModel, trackschemePanel).install(actions);
+		new ShowSelectedTracksActions<>( viewGraph, selectionModel, rootsModel, trackschemePanel).install(actions);
 	}
 
-	private ShowSelectedTracksActions( TrackSchemeGraph<V, E> viewGraph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel, TrackSchemePanel panel )
+	private ShowSelectedTracksActions( TrackSchemeGraph<V, E> viewGraph,
+			SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel,
+			RootsModel<TrackSchemeVertex> rootsModel,
+			TrackSchemePanel panel )
 	{
 		this.viewGraph = viewGraph;
 		this.layout = panel.getLineageTreeLayout();
 		this.selectionModel = selectionModel;
+		this.rootsModel = rootsModel;
 		this.panel = panel;
 		selectionModelChanged();
 		selectionModel.listeners().add( this::selectionModelChanged );
@@ -146,7 +161,7 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 
 	private void setLayoutRoots( RefList<TrackSchemeVertex> roots )
 	{
-		layout.setRoots( roots );
+		rootsModel.setRoots( roots );
 		panel.graphChanged();
 		panel.getTransformEventHandler().zoomOutFully();
 	}
