@@ -37,6 +37,8 @@ import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.graph.Edges;
+import org.mastodon.model.DefaultRootsModel;
+import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.DepthFirstIteration;
@@ -92,7 +94,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	 * The roots to use when drawing the TrackScheme. If this list is empty
 	 * {@link TrackSchemeGraph#getRoots()}, will be used instead.
 	 */
-	private final RefArrayList<TrackSchemeVertex> roots;
+	private final RootsModel<TrackSchemeVertex> roots;
 
 	/**
 	 * X coordinate that will be assigned to the next leaf in the current layout.
@@ -146,25 +148,19 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	protected final RefList< TrackSchemeVertex > currentLayoutColumnRoot;
 
 	public LineageTreeLayoutImp(
+			final RootsModel<TrackSchemeVertex> rootsModel,
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.graph = graph;
 		this.selection = selection;
-		this.roots = new RefArrayList<>( graph.getVertexPool() );
+		this.roots = rootsModel;
 		listeners = new Listeners.SynchronizedList<>();
 		rightmost = 0;
 		timestamp = 0;
 		vertexTable = new TrackSchemeVertexTable( graph );
 		currentLayoutColumnX = new TDoubleArrayList();
 		currentLayoutColumnRoot = RefCollections.createRefList( graph.vertices() );
-	}
-
-	@Override
-	public void setRoots( RefList<TrackSchemeVertex> roots )
-	{
-		this.roots.reset();
-		this.roots.addAll( roots );
 	}
 
 	/**
@@ -176,9 +172,9 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	@Override
 	public void layout()
 	{
-		RefCollection<TrackSchemeVertex> roots = this.roots.isEmpty() ?
-				LexicographicalVertexOrder.sort( graph, graph.getRoots() ) :
-				this.roots;
+		RefCollection<TrackSchemeVertex> roots = this.roots.getRoots();
+		if(roots.isEmpty())
+			roots = LexicographicalVertexOrder.sort( graph, graph.getRoots() );
 		layout( roots, -1 );
 	}
 

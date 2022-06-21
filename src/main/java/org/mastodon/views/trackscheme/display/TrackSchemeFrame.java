@@ -43,6 +43,7 @@ import org.mastodon.grouping.GroupHandle;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.context.ContextChooserPanel;
@@ -65,6 +66,7 @@ public class TrackSchemeFrame extends ViewFrame
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TimepointModel timepoint,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final RootsModel< TrackSchemeVertex > rootsModel,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
@@ -79,6 +81,7 @@ public class TrackSchemeFrame extends ViewFrame
 				focus,
 				timepoint,
 				selection,
+				rootsModel,
 				navigation,
 				optional );
 		add( trackschemePanel, BorderLayout.CENTER );

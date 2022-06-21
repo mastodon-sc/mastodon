@@ -33,6 +33,7 @@ import java.util.List;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.ref.RefArrayList;
+import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
@@ -57,10 +58,11 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 {
 
 	public LongEdgesLineageTreeLayout(
-			final TrackSchemeGraph< ?, ? > graph,
-			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
+			final RootsModel<TrackSchemeVertex> rootsModel,
+			final TrackSchemeGraph<?, ?> graph,
+			final SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selection )
 	{
-		super( graph, selection );
+		super( rootsModel, graph, selection );
 	}
 
 	@Override
