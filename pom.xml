@@ -217,6 +217,11 @@
 			<url>https://github.com/maarzt</url>
 			<properties><id>maarzt</id></properties>
 		</contributor>
+		<contributor>
+			<name>Vladimír Ulman</name>
+			<url>https://github.com/xulman</url>
+			<properties><id>xulman</id></properties>
+		</contributor>
 	</contributors>
 
 	<repositories>
