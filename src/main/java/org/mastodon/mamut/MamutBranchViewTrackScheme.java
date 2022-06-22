@@ -149,6 +149,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		frame.getSettingsPanel().add( searchPanel );
 
 		// Actions.
+		BranchGraphUndoActions.install( viewActions, model, appModel.getBranchGraphSync() );
 		MastodonFrameViewActions.install( viewActions, this );
 		final ReentrantReadWriteLock lock = model.getGraph().getLock();
 		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
@@ -196,6 +197,9 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				editMenu(
+						item( BranchGraphUndoActions.UNDO ),
+						item( BranchGraphUndoActions.REDO ),
+						separator(),
 						item( SelectionActions.SELECT_WHOLE_TRACK ),
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
