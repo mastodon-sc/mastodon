@@ -30,7 +30,6 @@ package org.mastodon.views.trackscheme.display;
 
 import static org.mastodon.views.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
@@ -45,6 +44,8 @@ import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 
 public class PaintHierarchicalGraph extends PaintBranchGraph
 {
+	private final int SIMPLIFIED_VERTEX_THRESHOLD_RADIUS = 3;
+	private final int SIMPLIFIED_VERTEX_SELECTION_RADIUS = 4;
 	private static final int ARC_RADIUS = 15;
 
 	private final ScreenTransform transform = new ScreenTransform();
@@ -86,7 +87,7 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 	@Override
 	protected void drawVertex( ScreenVertex vertex )
 	{
-		if(spotRadius > 3)
+		if(spotRadius > SIMPLIFIED_VERTEX_THRESHOLD_RADIUS )
 			drawVertexFull( vertex );
 		else
 			drawVertexSimplified( vertex );
@@ -217,5 +218,14 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 					2 * Math.min( ARC_RADIUS, dy ),
 					90, 90 );
 		}
+	}
+
+	@Override
+	public boolean isInsidePaintedVertex( double x, double y, ScreenVertex vertex )
+	{
+		double radius = Math.max(spotRadius, SIMPLIFIED_VERTEX_SELECTION_RADIUS );
+		final double dx = x - vertex.getX();
+		final double dy = y - vertex.getY();
+		return ( dx * dx + dy * dy <= radius * radius );
 	}
 }
