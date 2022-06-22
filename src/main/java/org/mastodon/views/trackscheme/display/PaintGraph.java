@@ -329,12 +329,25 @@ public class PaintGraph
 
 	protected void drawVertexSimplified( final ScreenVertex vertex )
 	{
+		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
+		drawVertexSimplified( vertex, highlighted, focused );
+	}
+
+	protected void drawVertexSimplifiedIfHighlighted( final ScreenVertex vertex )
+	{
+		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
+		if ( highlighted || focused )
+			drawVertexSimplified( vertex, false, focused );
+	}
+
+	private void drawVertexSimplified( ScreenVertex vertex, boolean highlighted, boolean focused )
+	{
 		final Transition transition = vertex.getTransition();
 		final boolean disappear = ( transition == DISAPPEAR );
 		final double ratio = vertex.getInterpolationCompletionRatio();
 
-		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
-		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
 		final boolean ghost = vertex.isGhost();
 		final int specifiedColor = vertex.getColor();
@@ -363,44 +376,6 @@ public class PaintGraph
 			g2.fillRect( ox, oy, ow, ow );
 		else
 			g2.fillOval( ox, oy, ow, ow );
-	}
-
-	protected void drawVertexSimplifiedIfHighlighted( final ScreenVertex vertex )
-	{
-		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
-		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
-		if ( highlighted || focused )
-		{
-			final Transition transition = vertex.getTransition();
-			final boolean disappear = ( transition == DISAPPEAR );
-			final double ratio = vertex.getInterpolationCompletionRatio();
-
-			final boolean selected = vertex.isSelected();
-			final boolean ghost = vertex.isGhost();
-			final int specifiedColor = vertex.getColor();
-
-			double spotradius = simplifiedVertexRadius;
-			if ( disappear )
-				spotradius *= ( 1 + 3 * ratio );
-
-			final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
-					disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
-					style.getSelectedSimplifiedVertexFillColor(),
-					disappear ? style.getGhostSelectedSimplifiedVertexFillColor() : style.getGhostSimplifiedVertexFillColor(),
-					style.getGhostSelectedSimplifiedVertexFillColor() );
-
-			final double x = vertex.getX();
-			final double y = vertex.getY();
-			g2.setColor( fillColor );
-			final int ox = ( int ) x - ( int ) spotradius;
-			final int oy = ( int ) y - ( int ) spotradius;
-			final int ow = 2 * ( int ) spotradius;
-
-			if ( focused )
-				g2.fillRect( ox, oy, ow, ow );
-			else
-				g2.fillOval( ox, oy, ow, ow );
-		}
 	}
 
 	protected void drawVertexFull( final ScreenVertex vertex )
