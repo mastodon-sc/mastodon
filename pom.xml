@@ -212,6 +212,11 @@
 			<url>https://github.com/ksugar</url>
 			<properties><id>ksugar</id></properties>
 		</contributor>
+		<contributor>
+			<name>Matthias Arzt</name>
+			<url>https://github.com/maarzt</url>
+			<properties><id>maarzt</id></properties>
+		</contributor>
 	</contributors>
 
 	<repositories>
