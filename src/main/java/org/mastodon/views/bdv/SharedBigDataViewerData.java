@@ -28,30 +28,36 @@
  */
 package org.mastodon.views.bdv;
 
-import bdv.TransformEventHandler2D;
-import bdv.TransformEventHandler3D;
-import bdv.viewer.BasicViewerState;
-import bdv.viewer.ConverterSetups;
-import bdv.viewer.Source;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import net.imglib2.RandomAccessibleInterval;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.mastodon.util.DatasetInfoParser;
+import org.mastodon.util.DummySpimData;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.BigDataViewer;
+import bdv.TransformEventHandler2D;
+import bdv.TransformEventHandler3D;
 import bdv.ViewerImgLoader;
 import bdv.cache.CacheControl;
+import bdv.img.imagestack.ImageStackImageLoader;
+import bdv.img.virtualstack.VirtualStackImageLoader;
+import bdv.spimdata.SequenceDescriptionMinimal;
+import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.WrapBasicImgLoader;
+import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.tools.InitializeViewerState;
 import bdv.tools.bookmarks.Bookmarks;
 import bdv.tools.brightness.BrightnessDialog;
@@ -59,12 +65,37 @@ import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.MinMaxGroup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.ManualTransformation;
+import bdv.viewer.BasicViewerState;
+import bdv.viewer.ConverterSetups;
+import bdv.viewer.DisplayMode;
 import bdv.viewer.RequestRepaint;
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
+import bdv.viewer.ViewerState;
+import ij.CompositeImage;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.io.FileInfo;
+import ij.process.LUT;
+import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.SpimDataIOException;
+import mpicbg.spim.data.XmlKeys;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicImgLoader;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import mpicbg.spim.data.registration.ViewRegistration;
+import mpicbg.spim.data.registration.ViewRegistrations;
+import mpicbg.spim.data.sequence.Channel;
+import mpicbg.spim.data.sequence.FinalVoxelDimensions;
+import mpicbg.spim.data.sequence.TimePoint;
+import mpicbg.spim.data.sequence.TimePoints;
+import net.imglib2.FinalDimensions;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.ARGBType;
 
 public class SharedBigDataViewerData
 {
@@ -96,61 +127,40 @@ public class SharedBigDataViewerData
 
 	private File proposedSettingsFile;
 
-	public SharedBigDataViewerData(
-			final String spimDataXmlFilename,
+	private SharedBigDataViewerData(
 			final AbstractSpimData< ? > spimData,
+			final ArrayList< SourceAndConverter< ? > > sources,
+			final ConverterSetups setups,
+			final SetupAssignments setupAssignments,
+			final CacheControl cache,
+			final int numTimepoints,
 			final ViewerOptions options,
 			final RequestRepaint requestRepaint )
 	{
-		if ( WrapBasicImgLoader.wrapImgLoaderIfNecessary( spimData ) )
-		{
-			System.err.println( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
-		}
-
 		this.spimData = spimData;
+		this.sources = sources;
+		this.setups = setups;
+		this.setupAssignments = setupAssignments;
+		this.cache = cache;
+		this.numTimepoints = numTimepoints;
 
-		inputTriggerConfig = ( options.values.getInputTriggerConfig() != null )
+		this.inputTriggerConfig = ( options.values.getInputTriggerConfig() != null )
 				? options.values.getInputTriggerConfig()
 				: new InputTriggerConfig();
 
-		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
-		numTimepoints = seq.getTimePoints().size();
-		cache = ( ( ViewerImgLoader ) seq.getImgLoader() ).getCacheControl();
+		this.manualTransformation = new ManualTransformation( sources );
 
-		final ArrayList< ConverterSetup > converterSetups = new ArrayList<>();
-		sources = new ArrayList<>();
-		BigDataViewer.initSetups( spimData, converterSetups, sources );
+		this.bookmarks = new Bookmarks();
 
-		setups = new ConverterSetups( new BasicViewerState() );
-		for ( int i = 0; i < sources.size(); ++i )
-			setups.put( sources.get( i ), converterSetups.get( i ) );
-
-		setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
-		if ( setupAssignments.getMinMaxGroups().size() > 0 )
-		{
-			final MinMaxGroup group = setupAssignments.getMinMaxGroups().get( 0 );
-			for ( final ConverterSetup setup : setupAssignments.getConverterSetups() )
-				setupAssignments.moveSetupToGroup( setup, group );
-		}
-
-		manualTransformation = new ManualTransformation( sources );
-
-		bookmarks = new Bookmarks();
-
-		if ( !tryLoadSettings( spimDataXmlFilename ) )
-		{
-			final BasicViewerState state = new BasicViewerState();
-			state.addSource( sources.get( 0 ) );
-			state.setCurrentSource( sources.get( 0 ) );
-			InitializeViewerState.initBrightness( 0.001, 0.999, state, setups );
-		}
-
-		is2D = computeIs2D();
+		this.is2D = computeIs2D();
 		this.options = options
 				.inputTriggerConfig( inputTriggerConfig )
 				.transformEventHandlerFactory( is2D
 						? TransformEventHandler2D::new
 						: TransformEventHandler3D::new );
+
+		if ( WrapBasicImgLoader.wrapImgLoaderIfNecessary( spimData ) )
+			System.err.println( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
 
 		WrapBasicImgLoader.removeWrapperIfPresent( spimData );
 	}
@@ -158,7 +168,7 @@ public class SharedBigDataViewerData
 	public boolean tryLoadSettings( final String xmlFilename )
 	{
 		proposedSettingsFile = null;
-		if( xmlFilename.startsWith( "http://" ) )
+		if ( xmlFilename.startsWith( "http://" ) )
 		{
 			// load settings.xml from the BigDataServer
 			final String settings = xmlFilename + "settings";
@@ -266,6 +276,11 @@ public class SharedBigDataViewerData
 		return bookmarks;
 	}
 
+	public ManualTransformation getManualTransformation()
+	{
+		return manualTransformation;
+	}
+
 	@Deprecated
 	public synchronized BrightnessDialog getBrightnessDialog()
 	{
@@ -291,7 +306,8 @@ public class SharedBigDataViewerData
 	}
 
 	/**
-	 * Utility that returns <code>true</code> if all the sources specified are 2D.
+	 * Utility that returns <code>true</code> if all the sources specified are
+	 * 2D.
 	 *
 	 * @return <code>true</code> if all the sources specified are 2D.
 	 */
@@ -313,4 +329,341 @@ public class SharedBigDataViewerData
 		}
 		return true;
 	}
+
+	private static final String errorMessageUnknownHost( final String xmlFilename, final String host )
+	{
+		final SAXBuilder sax = new SAXBuilder();
+		try
+		{
+			final Document doc = sax.build( xmlFilename );
+			final Element root = doc.getRootElement();
+			final String baseUrl = root
+					.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
+					.getChild( XmlKeys.IMGLOADER_TAG )
+					.getChildText( "baseUrl" );
+			return "Cannot reach host  " + host + " for the dataset URL: " + baseUrl;
+		}
+		catch ( final Exception e )
+		{
+			return "Unparsable dataset file: " + e.getMessage();
+		}
+	}
+
+	/*
+	 * FROM BDV FILE OR URL.
+	 */
+
+	public static SharedBigDataViewerData fromSpimDataXmlFile(
+			String spimDataXmlFilename,
+			final ViewerOptions viewerOptions,
+			final RequestRepaint requestRepaint ) throws SpimDataException, IOException
+	{
+		// Load SpimData
+		spimDataXmlFilename = spimDataXmlFilename.replaceAll( "\\\\", "/" );
+		spimDataXmlFilename = new File( spimDataXmlFilename ).getCanonicalPath();
+		AbstractSpimData< ? > spimData = DummySpimData.tryCreate( spimDataXmlFilename );
+		if ( spimData == null )
+		{
+			try
+			{
+				spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+			}
+			catch ( final SpimDataIOException | RuntimeException e )
+			{
+				final Throwable cause = e.getCause();
+				if ( cause instanceof UnknownHostException )
+				{
+					// Try to make a sensible error message.
+					System.err.println( errorMessageUnknownHost( spimDataXmlFilename, cause.getMessage() ) );
+				}
+				else
+				{
+					System.err.println( "Could not open image data file. " );
+					e.printStackTrace();
+				}
+				final DatasetInfoParser info = DatasetInfoParser.inspect( spimDataXmlFilename );
+				System.err.println( "Opening with dummy dataset. Please fix dataset path in the mastodon project file." );
+				spimData = info.toDummySpimData();
+			}
+		}
+
+		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
+		final int numTimepoints = seq.getTimePoints().size();
+		final CacheControl cache = ( ( ViewerImgLoader ) seq.getImgLoader() ).getCacheControl();
+
+		final ArrayList< ConverterSetup > converterSetups = new ArrayList<>();
+		final ArrayList< SourceAndConverter< ? > > sources = new ArrayList<>();
+		BigDataViewer.initSetups( spimData, converterSetups, sources );
+
+		final ConverterSetups setups = new ConverterSetups( new BasicViewerState() );
+		for ( int i = 0; i < sources.size(); ++i )
+			setups.put( sources.get( i ), converterSetups.get( i ) );
+
+		final SetupAssignments setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
+		if ( setupAssignments.getMinMaxGroups().size() > 0 )
+		{
+			final MinMaxGroup group = setupAssignments.getMinMaxGroups().get( 0 );
+			for ( final ConverterSetup setup : setupAssignments.getConverterSetups() )
+				setupAssignments.moveSetupToGroup( setup, group );
+		}
+
+		WrapBasicImgLoader.removeWrapperIfPresent( spimData );
+
+		final SharedBigDataViewerData sbdv = new SharedBigDataViewerData(
+				spimData,
+				sources,
+				setups,
+				setupAssignments,
+				cache,
+				numTimepoints,
+				viewerOptions,
+				requestRepaint );
+
+		if ( !sbdv.tryLoadSettings( spimDataXmlFilename ) )
+		{
+			final BasicViewerState state = new BasicViewerState();
+			state.addSource( sources.get( 0 ) );
+			state.setCurrentSource( sources.get( 0 ) );
+			InitializeViewerState.initBrightness( 0.001, 0.999, state, setups );
+		}
+
+		return sbdv;
+	}
+
+	/*
+	 * FROM IMAGEPLUS.
+	 */
+
+	public static SharedBigDataViewerData fromImagePlus(
+			final ImagePlus imp,
+			final ViewerOptions viewerOptions,
+			final RequestRepaint requestRepaint )
+	{
+		// check the image type
+		switch ( imp.getType() )
+		{
+		case ImagePlus.GRAY8:
+		case ImagePlus.GRAY16:
+		case ImagePlus.GRAY32:
+		case ImagePlus.COLOR_RGB:
+			break;
+		default:
+			IJ.showMessage( imp.getShortTitle() + ": Only 8, 16, 32-bit images and RGB images are supported currently!" );
+			return null;
+		}
+
+		// get calibration and image size
+		final double pw = imp.getCalibration().pixelWidth;
+		final double ph = imp.getCalibration().pixelHeight;
+		final double pd = imp.getCalibration().pixelDepth;
+		String punit = imp.getCalibration().getUnit();
+		if ( punit == null || punit.isEmpty() )
+			punit = "pixel";
+		final FinalVoxelDimensions voxelSize = new FinalVoxelDimensions( punit, pw, ph, pd );
+		final int w = imp.getWidth();
+		final int h = imp.getHeight();
+		final int d = imp.getNSlices();
+		final FinalDimensions size = new FinalDimensions( w, h, d );
+
+		// create ImgLoader wrapping the image
+		final BasicImgLoader imgLoader;
+		int setupIdOffset = 0;
+		if ( imp.getStack().isVirtual() )
+		{
+			switch ( imp.getType() )
+			{
+			case ImagePlus.GRAY8:
+				imgLoader = VirtualStackImageLoader.createUnsignedByteInstance( imp, setupIdOffset );
+				break;
+			case ImagePlus.GRAY16:
+				imgLoader = VirtualStackImageLoader.createUnsignedShortInstance( imp, setupIdOffset );
+				break;
+			case ImagePlus.GRAY32:
+				imgLoader = VirtualStackImageLoader.createFloatInstance( imp, setupIdOffset );
+				break;
+			case ImagePlus.COLOR_RGB:
+			default:
+				imgLoader = VirtualStackImageLoader.createARGBInstance( imp, setupIdOffset );
+				break;
+			}
+		}
+		else
+		{
+			switch ( imp.getType() )
+			{
+			case ImagePlus.GRAY8:
+				imgLoader = ImageStackImageLoader.createUnsignedByteInstance( imp, setupIdOffset );
+				break;
+			case ImagePlus.GRAY16:
+				imgLoader = ImageStackImageLoader.createUnsignedShortInstance( imp, setupIdOffset );
+				break;
+			case ImagePlus.GRAY32:
+				imgLoader = ImageStackImageLoader.createFloatInstance( imp, setupIdOffset );
+				break;
+			case ImagePlus.COLOR_RGB:
+			default:
+				imgLoader = ImageStackImageLoader.createARGBInstance( imp, setupIdOffset );
+				break;
+			}
+		}
+
+		final int numTimepoints = imp.getNFrames();
+		final int numSetups = imp.getNChannels();
+
+		// create setups from channels
+		final HashMap< Integer, BasicViewSetup > setups = new HashMap<>( numSetups );
+		for ( int s = 0; s < numSetups; ++s )
+		{
+			final BasicViewSetup setup = new BasicViewSetup( setupIdOffset + s, String.format( imp.getTitle() + " channel %d", s + 1 ), size, voxelSize );
+			setup.setAttribute( new Channel( s + 1 ) );
+			setups.put( setupIdOffset + s, setup );
+		}
+
+		// create timepoints
+		final ArrayList< TimePoint > timepoints = new ArrayList<>( numTimepoints );
+		for ( int t = 0; t < numTimepoints; ++t )
+			timepoints.add( new TimePoint( t ) );
+		final SequenceDescriptionMinimal seq = new SequenceDescriptionMinimal( new TimePoints( timepoints ), setups, imgLoader, null );
+
+		// create ViewRegistrations from the images calibration
+		final AffineTransform3D sourceTransform = new AffineTransform3D();
+		sourceTransform.set( pw, 0, 0, 0, 0, ph, 0, 0, 0, 0, pd, 0 );
+		final ArrayList< ViewRegistration > registrations = new ArrayList<>();
+		for ( int t = 0; t < numTimepoints; ++t )
+			for ( int s = 0; s < numSetups; ++s )
+				registrations.add( new ViewRegistration( t, setupIdOffset + s, sourceTransform ) );
+
+		final ArrayList< ConverterSetup > converterSetups = new ArrayList<>();
+		final ArrayList< SourceAndConverter< ? > > sources = new ArrayList<>();
+
+		final File basePath = new File( "." );
+		final AbstractSpimData< ? > spimData = new SpimDataMinimal( basePath, seq, new ViewRegistrations( registrations ) );
+		WrapBasicImgLoader.wrapImgLoaderIfNecessary( spimData );
+		BigDataViewer.initSetups( spimData, converterSetups, sources );
+
+		final CacheControl.CacheControls cache = new CacheControl.CacheControls();
+		cache.addCacheControl( ( ( ViewerImgLoader ) spimData.getSequenceDescription().getImgLoader() ).getCacheControl() );
+		setupIdOffset += imp.getNChannels();
+
+		final BasicViewerState state = new BasicViewerState();
+		for ( final SourceAndConverter< ? > sourceAndConverter : sources )
+			state.addSource( sourceAndConverter );
+
+		final ConverterSetups css = new ConverterSetups( state );
+		for ( int i = 0; i < sources.size(); i++ )
+			css.put( sources.get( i ), converterSetups.get( i ) );
+
+		final SetupAssignments setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
+
+		final SharedBigDataViewerData sbdv = new SharedBigDataViewerData(
+				spimData,
+				sources,
+				css,
+				setupAssignments,
+				cache,
+				numTimepoints,
+				viewerOptions,
+				requestRepaint );
+
+		// File info
+		final FileInfo fileInfo = imp.getOriginalFileInfo();
+		String imageFileName;
+		String imageFolder;
+		if ( null != fileInfo )
+		{
+			imageFileName = fileInfo.fileName;
+			imageFolder = fileInfo.directory;
+		}
+		else
+		{
+			imageFileName = imp.getShortTitle();
+			imageFolder = "";
+
+		}
+		final String imageSourceFilename = new File( imageFolder, imageFileName ).getAbsolutePath();
+
+		if ( !sbdv.tryLoadSettings( imageSourceFilename ) )
+		{
+			int channelOffset = 0;
+			final int numActiveChannels = transferChannelVisibility( imp, state );
+			transferChannelSettings( channelOffset, imp, state, css );
+			channelOffset += imp.getNChannels();
+			state.setDisplayMode( numActiveChannels > 1 ? DisplayMode.FUSED : DisplayMode.SINGLE );
+			if ( setupAssignments.getMinMaxGroups().size() > 0 )
+			{
+				final MinMaxGroup group = setupAssignments.getMinMaxGroups().get( 0 );
+				for ( final ConverterSetup setup : setupAssignments.getConverterSetups() )
+					setupAssignments.moveSetupToGroup( setup, group );
+			}
+		}
+
+		return sbdv;
+	}
+
+	/**
+	 * @return number of setups that were set active.
+	 */
+	private static int transferChannelVisibility(
+			final ImagePlus imp,
+			final ViewerState state )
+	{
+		final int nChannels = imp.getNChannels();
+		final CompositeImage ci = imp.isComposite() ? ( CompositeImage ) imp : null;
+		final List< SourceAndConverter< ? > > sources = state.getSources();
+		if ( ci != null && ci.getCompositeMode() == IJ.COMPOSITE )
+		{
+			final boolean[] activeChannels = ci.getActiveChannels();
+			int numActiveChannels = 0;
+			for ( int i = 0; i < Math.min( activeChannels.length, nChannels ); ++i )
+			{
+				final SourceAndConverter< ? > source = sources.get( i );
+				state.setSourceActive( source, activeChannels[ i ] );
+				state.setCurrentSource( source );
+				numActiveChannels += activeChannels[ i ] ? 1 : 0;
+			}
+			return numActiveChannels;
+		}
+		else
+		{
+			final int activeChannel = imp.getChannel() - 1;
+			for ( int i = 0; i < nChannels; ++i )
+				state.setSourceActive( sources.get( i ), i == activeChannel );
+			state.setCurrentSource( sources.get( activeChannel ) );
+			return 1;
+		}
+	}
+
+	private static void transferChannelSettings( final int channelOffset, final ImagePlus imp, final ViewerState state, final ConverterSetups converterSetups )
+	{
+		final int nChannels = imp.getNChannels();
+		final CompositeImage ci = imp.isComposite() ? ( CompositeImage ) imp : null;
+		final List< SourceAndConverter< ? > > sources = state.getSources();
+		if ( ci != null )
+		{
+			final int mode = ci.getCompositeMode();
+			final boolean transferColor = mode == IJ.COMPOSITE || mode == IJ.COLOR;
+			for ( int c = 0; c < nChannels; ++c )
+			{
+				final LUT lut = ci.getChannelLut( c + 1 );
+				final ConverterSetup setup = converterSetups.getConverterSetup( sources.get( channelOffset + c ) );
+				if ( transferColor )
+					setup.setColor( new ARGBType( lut.getRGB( 255 ) ) );
+				setup.setDisplayRange( lut.min, lut.max );
+			}
+		}
+		else
+		{
+			final double displayRangeMin = imp.getDisplayRangeMin();
+			final double displayRangeMax = imp.getDisplayRangeMax();
+			for ( int i = 0; i < nChannels; ++i )
+			{
+				final ConverterSetup setup = converterSetups.getConverterSetup( sources.get( channelOffset + i ) );
+				final LUT[] luts = imp.getLuts();
+				if ( luts.length != 0 )
+					setup.setColor( new ARGBType( luts[ 0 ].getRGB( 255 ) ) );
+				setup.setDisplayRange( displayRangeMin, displayRangeMax );
+			}
+		}
+	}
+
 }
