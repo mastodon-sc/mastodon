@@ -66,6 +66,7 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
@@ -245,13 +246,27 @@ public class MainWindow extends JFrame
 		setResizable( false );
 	}
 
-	private void close( final WindowManager windowManager, final Action saveAction, final WindowEvent trigger )
+	/**
+	 * Closes all the windows opened in Mastodon, this main window. If the model
+	 * has been modified and not saved, prompts the user for confirmation.
+	 * Returns <code>true</code> if Mastodon has been closed, or
+	 * <code>false</code> if the user canceled closing.
+	 * 
+	 * @param windowManager
+	 *            the Mastodon window manager controlled in this windown.
+	 * @param saveAction
+	 *            the action that saves the Mastodon file.
+	 * @param trigger
+	 *            the event that triggered this action.
+	 * @return <code>true</code> if the Mastodon instance has been closed.
+	 */
+	public boolean close( final WindowManager windowManager, final Action saveAction, final WindowEvent trigger )
 	{
 		if ( windowManager != null && windowManager.getAppModel() == null || windowManager.getAppModel().getModel().isSavePoint() )
 		{
 			windowManager.closeAllWindows();
 			dispose();
-			return;
+			return true;
 		}
 
 		// Custom button text
@@ -260,17 +275,21 @@ public class MainWindow extends JFrame
 				"Don't save",
 				"Cancel" };
 		final int choice = JOptionPane.showOptionDialog( this,
-				"Data changed since last save. Do you want to save the project before closing mastodon?",
+				"Data changed since last save. \n"
+						+ "Do you want to save the project before closing mastodon?",
 				"Save before close?",
 				JOptionPane.YES_NO_CANCEL_OPTION,
-				JOptionPane.QUESTION_MESSAGE, null, options, JOptionPane.CANCEL_OPTION );
+				JOptionPane.QUESTION_MESSAGE,
+				MastodonIcons.MASTODON_ICON_MEDIUM,
+				options,
+				JOptionPane.CANCEL_OPTION );
 
 		switch ( choice )
 		{
 		case JOptionPane.CLOSED_OPTION:
 		case JOptionPane.CANCEL_OPTION:
 		default:
-			return;
+			return false;
 
 		case JOptionPane.YES_OPTION:
 			saveAction.actionPerformed( new ActionEvent( trigger.getSource(), trigger.getID(), trigger.paramString() ) );
@@ -281,6 +300,7 @@ public class MainWindow extends JFrame
 				windowManager.closeAllWindows();
 			dispose();
 		}
+		return true;
 	}
 
 	private static void prepareButton( final JButton button, final String txt, final ImageIcon icon )
