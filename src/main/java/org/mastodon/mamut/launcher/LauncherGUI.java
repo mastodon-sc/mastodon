@@ -42,13 +42,11 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -58,12 +56,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
-
-import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
-import mpicbg.spim.data.SpimDataException;
 
 class LauncherGUI extends JPanel
 {
@@ -102,7 +95,7 @@ class LauncherGUI extends JPanel
 
 	final JPanel sidePanel;
 
-	final OpenBDVPanel newMastodonProjectPanel;
+	final NewMastodonProjectPanel newMastodonProjectPanel;
 
 	final OpenRemoteURLPanel openRemoteURLPanel;
 
@@ -211,7 +204,7 @@ class LauncherGUI extends JPanel
 		final WelcomePanel welcomePanel = new WelcomePanel();
 		centralPanel.add( welcomePanel, WELCOME_PANEL_KEY );
 
-		newMastodonProjectPanel = new OpenBDVPanel( "New Mastodon project", "create" );
+		newMastodonProjectPanel = new NewMastodonProjectPanel( "New Mastodon project", "create" );
 		centralPanel.add( newMastodonProjectPanel, NEW_MASTODON_PROJECT_KEY );
 
 		recentProjectsPanel = new RecentProjectsPanel( projectOpener );
@@ -355,103 +348,5 @@ class LauncherGUI extends JPanel
 			g.drawImage( MAINWINDOW_BG, 0, 0, this );
 		}
 
-	}
-
-	class OpenBDVPanel extends JPanel
-	{
-
-		private static final long serialVersionUID = 1L;
-
-		final JButton btnCreate;
-
-		final JLabel labelInfo;
-
-		final JTextArea textAreaFile;
-
-		public OpenBDVPanel( final String panelTitle, final String buttonTitle )
-		{
-			final GridBagLayout gbl_newMastodonProjectPanel = new GridBagLayout();
-			gbl_newMastodonProjectPanel.columnWidths = new int[] { 0, 0 };
-			gbl_newMastodonProjectPanel.rowHeights = new int[] { 35, 70, 65, 0, 0, 0, 0 };
-			gbl_newMastodonProjectPanel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-			gbl_newMastodonProjectPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
-			setLayout( gbl_newMastodonProjectPanel );
-
-			final JLabel lblNewMastodonProject_1 = new JLabel( panelTitle );
-			lblNewMastodonProject_1.setFont( lblNewMastodonProject_1.getFont().deriveFont( lblNewMastodonProject_1.getFont().getStyle() | Font.BOLD ) );
-			final GridBagConstraints gbc_lblNewMastodonProject_1 = new GridBagConstraints();
-			gbc_lblNewMastodonProject_1.insets = new Insets( 5, 5, 5, 5 );
-			gbc_lblNewMastodonProject_1.gridx = 0;
-			gbc_lblNewMastodonProject_1.gridy = 0;
-			add( lblNewMastodonProject_1, gbc_lblNewMastodonProject_1 );
-
-			final JLabel lblBrowseToA = new JLabel( "Browse to a BDV file (xml/h5 pair):" );
-			final GridBagConstraints gbc_lblBrowseToA = new GridBagConstraints();
-			gbc_lblBrowseToA.anchor = GridBagConstraints.SOUTHWEST;
-			gbc_lblBrowseToA.insets = new Insets( 5, 5, 5, 5 );
-			gbc_lblBrowseToA.gridx = 0;
-			gbc_lblBrowseToA.gridy = 1;
-			add( lblBrowseToA, gbc_lblBrowseToA );
-
-			textAreaFile = new JTextArea();
-			textAreaFile.setLineWrap( true );
-			final GridBagConstraints gbc_textAreaFile = new GridBagConstraints();
-			gbc_textAreaFile.insets = new Insets( 5, 5, 5, 5 );
-			gbc_textAreaFile.fill = GridBagConstraints.BOTH;
-			gbc_textAreaFile.gridx = 0;
-			gbc_textAreaFile.gridy = 2;
-			add( textAreaFile, gbc_textAreaFile );
-
-			final JButton btnBrowse = new JButton( "browse" );
-			final GridBagConstraints gbc_btnBrowse = new GridBagConstraints();
-			gbc_btnBrowse.insets = new Insets( 5, 5, 5, 5 );
-			gbc_btnBrowse.anchor = GridBagConstraints.EAST;
-			gbc_btnBrowse.gridx = 0;
-			gbc_btnBrowse.gridy = 3;
-			add( btnBrowse, gbc_btnBrowse );
-
-			labelInfo = new JLabel( "" );
-			final GridBagConstraints gbc_labelInfo = new GridBagConstraints();
-			gbc_labelInfo.insets = new Insets( 5, 5, 5, 5 );
-			gbc_labelInfo.fill = GridBagConstraints.BOTH;
-			gbc_labelInfo.gridx = 0;
-			gbc_labelInfo.gridy = 4;
-			add( labelInfo, gbc_labelInfo );
-
-			btnCreate = new JButton( buttonTitle );
-			final GridBagConstraints gbc_btnCreate = new GridBagConstraints();
-			gbc_btnCreate.anchor = GridBagConstraints.EAST;
-			gbc_btnCreate.gridx = 0;
-			gbc_btnCreate.gridy = 5;
-			add( btnCreate, gbc_btnCreate );
-
-			/*
-			 * Wire listeners.
-			 */
-
-			btnBrowse.addActionListener( l -> LauncherUtil.browseToBDVFile(
-					null,
-					textAreaFile,
-					() -> checkBDVFile(),
-					this ) );
-			LauncherUtil.decorateJComponent( textAreaFile, () -> checkBDVFile() );
-		}
-
-		boolean checkBDVFile()
-		{
-			final File file = new File( textAreaFile.getText() );
-			try
-			{
-				final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( file.getAbsolutePath() );
-				final String str = LauncherUtil.buildInfoString( spimData );
-				labelInfo.setText( str );
-				return true;
-			}
-			catch ( final SpimDataException | RuntimeException e )
-			{
-				labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" + e.getMessage() + "</html>" );
-				return false;
-			}
-		}
 	}
 }
