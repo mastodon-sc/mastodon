@@ -331,7 +331,7 @@ public class MaMuTExporterTest
 
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
 		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
-		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, new ViewerOptions(), () -> {} );
+		final SharedBigDataViewerData sharedBdvData = SharedBigDataViewerData.fromSpimDataXmlFile( spimDataXmlFilename, new ViewerOptions(), () -> {} );
 
 		final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
 		loadProject( context, project, model );
