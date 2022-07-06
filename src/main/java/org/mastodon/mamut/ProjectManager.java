@@ -94,6 +94,8 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.animate.MessageOverlayAnimator;
+import ij.IJ;
+import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
@@ -597,13 +599,38 @@ public class ProjectManager
 	 */
 	public synchronized void open( final MamutProject project, final boolean restoreGUIState ) throws IOException, SpimDataException
 	{
+		final MamutProject localProject;
+
+		// Check whether the project points to a BDV file.
+		final String imagePath = project.getDatasetXmlFile().getAbsolutePath().replaceAll( "\\\\", "/" );
+		final String canonicalPath = new File( imagePath ).getCanonicalPath();
+		if ( !canonicalPath.endsWith( ".xml" ) )
+		{
+			// Assume it is a plain image file.
+			final ImagePlus imp = IJ.openImage( canonicalPath );
+
+			// If it does not work file.
+			if ( imp == null )
+				throw new IOException( "Cannot open image " + canonicalPath );
+
+			// Morph the project.
+			localProject = new MamutImagePlusProject( imp );
+			localProject.setProjectRoot( project.getProjectRoot() );
+			localProject.setSpaceUnits( project.getSpaceUnits() );
+			localProject.setTimeUnits( project.getTimeUnits() );
+		}
+		else
+		{
+			localProject = project;
+		}
+
 		// Prepare image data.
-		final SharedBigDataViewerData sharedBdvData = openImageData( project, windowManager );
+		final SharedBigDataViewerData sharedBdvData = openImageData( localProject, windowManager );
 
 		// Load model.
-		loadModel( windowManager, sharedBdvData, project, restoreGUIState );
+		loadModel( windowManager, sharedBdvData, localProject, restoreGUIState );
 
-		this.project = project;
+		this.project = localProject;
 		updateEnabledActions();
 	}
 
