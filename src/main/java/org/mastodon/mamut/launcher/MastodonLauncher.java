@@ -29,6 +29,9 @@
 package org.mastodon.mamut.launcher;
 
 import java.awt.Color;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -37,19 +40,23 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntUnaryOperator;
 
+import javax.swing.ActionMap;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jdom2.JDOMException;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.mamut.MainWindow;
+import org.mastodon.mamut.ProjectManager;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.importer.simi.SimiImporter;
 import org.mastodon.mamut.importer.simi.SimiImporter.LabelFunction;
 import org.mastodon.mamut.importer.tgmm.TgmmImporter;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.project.MamutImagePlusProject;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProjectIO;
 import org.mastodon.ui.util.EverythingDisablerAndReenabler;
@@ -60,6 +67,8 @@ import org.mastodon.ui.util.XmlFileFilter;
 import org.scijava.Context;
 import org.scijava.util.VersionUtils;
 
+import ij.ImagePlus;
+import ij.gui.ImageWindow;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
@@ -69,7 +78,6 @@ import mpicbg.spim.data.registration.ViewRegistrations;
 import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.TimePoints;
 import mpicbg.spim.data.sequence.TimePointsPattern;
-
 
 public class MastodonLauncher extends JFrame
 {
@@ -82,9 +90,9 @@ public class MastodonLauncher extends JFrame
 
 	private final Context context;
 
-	public MastodonLauncher(final Context context)
+	public MastodonLauncher( final Context context )
 	{
-		super("Mastodon launcher");
+		super( "Mastodon launcher" );
 		this.context = Optional.ofNullable( context ).orElse( new Context() );
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
@@ -305,37 +313,117 @@ public class MastodonLauncher extends JFrame
 			}
 		}
 		catch ( final Exception e )
-		{
-		}
+		{}
 		return null;
 	}
 
 	private void createNewProject()
 	{
-		if ( !gui.newMastodonProjectPanel.checkBDVFile() )
-			return;
+		if ( gui.newMastodonProjectPanel.rdbtBrowseToBDV.isSelected() )
+		{
+			/*
+			 * Open from a BDV local file.
+			 */
 
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
-		disabler.disable();
-		final File file = new File( gui.newMastodonProjectPanel.textAreaFile.getText() );
-		new Thread( () -> {
-			try
+			if ( !gui.newMastodonProjectPanel.checkBDVFile() )
+				return;
+
+			final File file = new File( gui.newMastodonProjectPanel.textAreaFile.getText() );
+			final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+			disabler.disable();
+			new Thread( () -> {
+				try
+				{
+					final WindowManager windowManager = createWindowManager();
+					windowManager.getProjectManager().open( new MamutProject( null, file ) );
+					new MainWindow( windowManager ).setVisible( true );
+					dispose();
+				}
+				catch ( IOException | SpimDataException e )
+				{
+					gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
+							LauncherUtil.toHtml( e ) + "</html>" );
+				}
+				finally
+				{
+					disabler.reenable();
+				}
+			} ).start();
+		}
+		else
+		{
+			/*
+			 * Open from an ImagePlus opened in ImageJ.
+			 */
+
+			final String imageName = ( String ) gui.newMastodonProjectPanel.comboBox.getSelectedItem();
+			final ImagePlus imp = ij.WindowManager.getImage( imageName );
+			if ( imp == null )
 			{
-				final WindowManager windowManager = createWindowManager();
-				windowManager.getProjectManager().open( new MamutProject( null, file ) );
-				new MainWindow( windowManager ).setVisible( true );
-				dispose();
+				gui.newMastodonProjectPanel.labelInfo.setText( "Invalid image." );
+				return;
 			}
-			catch ( IOException | SpimDataException e )
-			{
-				gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
-						LauncherUtil.toHtml( e ) + "</html>" );
-			}
-			finally
-			{
-				disabler.reenable();
-			}
-		} ).start();
+			final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+			disabler.disable();
+			new Thread( () -> {
+				try
+				{
+					final WindowManager windowManager = createWindowManager();
+					final MainWindow mainWindow = new MainWindow( windowManager );
+					
+					/*
+					 * Action when user closes source image plus.
+					 */
+					final ImageWindow window = imp.getWindow();
+					if ( window != null )
+					{
+						for ( final WindowListener wl : window.getWindowListeners() )
+							window.removeWindowListener( wl );
+
+						window.addWindowListener( new WindowAdapter()
+						{
+							@Override
+							public void windowClosing( final WindowEvent e )
+							{
+								final int val = JOptionPane.showConfirmDialog(
+										window,
+										"Warning.\n"
+												+ "\n"
+												+ "If you close this image, the Mastodon \n"
+												+ "instance that runs on it will be closed \n"
+												+ "as well.\n"
+												+ "\n"
+												+ "Are you sure you want to close this image?",
+										"Confirm closing image",
+										JOptionPane.YES_NO_OPTION,
+										JOptionPane.QUESTION_MESSAGE,
+										MastodonIcons.MASTODON_ICON_MEDIUM );
+								if ( val == JOptionPane.YES_OPTION )
+								{
+									final ActionMap actionMap = windowManager.getAppModel().getAppActions().getActionMap();
+									final boolean hasBeenClosed = mainWindow.close( windowManager, actionMap.get( ProjectManager.SAVE_PROJECT ), e );
+									if ( hasBeenClosed )
+										window.close();
+								}
+							}
+						} );
+					}
+
+					windowManager.getProjectManager().open( new MamutImagePlusProject( imp ) );
+					mainWindow.setVisible( true );
+					dispose();
+				}
+				catch ( IOException | SpimDataException e )
+				{
+					gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid image.<p>" +
+							LauncherUtil.toHtml( e ) + "</html>" );
+				}
+				finally
+				{
+					disabler.reenable();
+				}
+			} ).start();
+		}
 	}
 
 	private void newMastodonProject()
