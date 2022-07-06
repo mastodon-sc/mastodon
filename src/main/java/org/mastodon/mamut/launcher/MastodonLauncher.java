@@ -195,18 +195,18 @@ public class MastodonLauncher extends JFrame
 			{
 				gui.importSimiBioCellPanel.labelInfo.setText(
 						"<html>Problem reading the SimiBioCell file.<p>" +
-								LauncherUtil.toHtml( e ) + "</html>" );
+								LauncherUtil.toMessage( e ) + "</html>" );
 			}
 			catch ( final ParseException e )
 			{
 				gui.importSimiBioCellPanel.labelInfo.setText(
 						"<html>Problem parsing the SimiBioCell file.<p>" +
-								LauncherUtil.toHtml( e ) + "</html>" );
+								LauncherUtil.toMessage( e ) + "</html>" );
 			}
 			catch ( final SpimDataException e )
 			{
 				gui.importSimiBioCellPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
-						LauncherUtil.toHtml( e ) + "</html>" );
+						LauncherUtil.toMessage( e ) + "</html>" );
 			}
 			finally
 			{
@@ -267,17 +267,17 @@ public class MastodonLauncher extends JFrame
 			catch ( final ParseException e )
 			{
 				gui.importTGMMPanel.labelInfo.setText( "<html>Could not parse timepoint pattern.<p>" +
-						LauncherUtil.toHtml( e ) + "</html>" );
+						LauncherUtil.toMessage( e ) + "</html>" );
 			}
 			catch ( JDOMException | IOException e )
 			{
 				gui.importTGMMPanel.labelInfo.setText( "<html>Malformed TGMM dataset.<p>" +
-						LauncherUtil.toHtml( e ) + "</html>" );
+						LauncherUtil.toMessage( e ) + "</html>" );
 			}
 			catch ( final SpimDataException e )
 			{
 				gui.importTGMMPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
-						LauncherUtil.toHtml( e ) + "</html>" );
+						LauncherUtil.toMessage( e ) + "</html>" );
 			}
 			disabler.reenable();
 		} ).start();
@@ -342,7 +342,7 @@ public class MastodonLauncher extends JFrame
 				catch ( IOException | SpimDataException e )
 				{
 					gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
-							LauncherUtil.toHtml( e ) + "</html>" );
+							LauncherUtil.toMessage( e ) + "</html>" );
 				}
 				finally
 				{
@@ -416,7 +416,7 @@ public class MastodonLauncher extends JFrame
 				catch ( IOException | SpimDataException e )
 				{
 					gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid image.<p>" +
-							LauncherUtil.toHtml( e ) + "</html>" );
+							LauncherUtil.toMessage( e ) + "</html>" );
 				}
 				finally
 				{
@@ -502,7 +502,7 @@ public class MastodonLauncher extends JFrame
 				{
 					gui.openRemoteURLPanel.log.setForeground( Color.RED );
 					gui.openRemoteURLPanel.log.setText( "<html>Problem save to BDV file.<p>" +
-							LauncherUtil.toHtml( e ) + "</html>" );
+							LauncherUtil.toMessage( e ) + "</html>" );
 				}
 
 				/*
@@ -523,7 +523,7 @@ public class MastodonLauncher extends JFrame
 			{
 				gui.openRemoteURLPanel.log.setForeground( Color.RED );
 				gui.openRemoteURLPanel.log.setText( "<html>Problem creating project.<p>" +
-						LauncherUtil.toHtml( e ) + "</html>" );
+						LauncherUtil.toMessage( e ) + "</html>" );
 			}
 			finally
 			{
@@ -548,7 +548,7 @@ public class MastodonLauncher extends JFrame
 			return;
 		}
 
-		gui.showPanel( LauncherGUI.IMPORT_MAMUT_KEY );
+		gui.showPanel( LauncherGUI.LOGGER_KEY );
 		new Thread( () -> {
 			try
 			{
@@ -562,8 +562,7 @@ public class MastodonLauncher extends JFrame
 			}
 			catch ( final IOException | SpimDataException e )
 			{
-				gui.importMamutPanel.lblInfo.setText( "<html>Invalid MaMuT file.<p>" +
-						LauncherUtil.toHtml( e ) + "</html>" );
+				gui.error( "Invalid MaMuT file.\n\n" + LauncherUtil.toMessage( e ) );
 			}
 			finally
 			{
@@ -576,11 +575,11 @@ public class MastodonLauncher extends JFrame
 	{
 		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 		disabler.disable();
-		gui.showPanel( LauncherGUI.LOAD_MASTODON_PROJECT_KEY );
+		gui.showPanel( LauncherGUI.LOGGER_KEY );
 		new Thread( () -> {
 			try
 			{
-				gui.loadMastodonPanel.lblInfo.setText( "" );
+				gui.clearLog();
 				final WindowManager windowManager = createWindowManager();
 				SwingUtilities.invokeLater( () -> {
 
@@ -619,8 +618,7 @@ public class MastodonLauncher extends JFrame
 					}
 					catch ( final IOException | SpimDataException e )
 					{
-						gui.loadMastodonPanel.lblInfo.setText( "<html>Invalid Mastodon file.<p>" +
-								LauncherUtil.toHtml( e ) + "</html>" );
+						gui.error( "Invalid Mastodon file.\n\n" + LauncherUtil.toMessage( e ) );
 					}
 				} );
 			}

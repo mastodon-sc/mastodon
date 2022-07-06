@@ -202,10 +202,8 @@ class LauncherUtil
 		return str.toString();
 	}
 
-	static final String toHtml( final Exception e )
+	static final String toMessage( final Exception e )
 	{
-		return e.getMessage()
-				.replace( "<", "&lt;" )
-				.replace( ">", "&gt;" );
+		return e.getMessage();
 	}
 }

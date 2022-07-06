@@ -165,7 +165,7 @@ public class OpenRemoteURLPanel extends JPanel
 		catch ( final MalformedURLException e2 )
 		{
 			log.setForeground( Color.RED.darker() );
-			log.setText( "Malformed URL." + LauncherUtil.toHtml( e2 ) );
+			log.setText( "Malformed URL." + LauncherUtil.toMessage( e2 ) );
 			return;
 		}
 
