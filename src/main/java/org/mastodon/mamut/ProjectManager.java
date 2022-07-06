@@ -37,16 +37,21 @@ import static org.mastodon.mamut.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATT
 import static org.mastodon.mamut.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATTRIBUTE_NAME;
 
 import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.net.UnknownHostException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import org.embl.mobie.io.ome.zarr.openers.OMEZarrS3Opener;
 import org.embl.mobie.io.util.S3Utils;
@@ -56,6 +61,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.mastodon.app.MastodonIcons;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
@@ -66,41 +72,32 @@ import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.plugin.MamutPlugins;
+import org.mastodon.mamut.project.MamutImagePlusProject;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProject.ProjectReader;
 import org.mastodon.mamut.project.MamutProject.ProjectWriter;
 import org.mastodon.mamut.project.MamutProjectIO;
-import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.mastodon.ui.util.XmlFileFilter;
-import org.mastodon.util.DatasetInfoParser;
-import org.mastodon.util.DummySpimData;
+import org.mastodon.util.BDVImagePlusExporter;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
-import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
-import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
-import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
-import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.animate.MessageOverlayAnimator;
+import ij.gui.ImageWindow;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
-import mpicbg.spim.data.SpimDataIOException;
 import mpicbg.spim.data.XmlIoSpimData;
-import mpicbg.spim.data.XmlKeys;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 
 public class ProjectManager
@@ -370,27 +367,153 @@ public class ProjectManager
 
 		final String projectRoot = getProposedProjectRoot( project );
 
-		final Component parent = null; // TODO
-		final File file = FileChooser.chooseFile( true,
-				parent,
-				projectRoot,
-				new ExtensionFileFilter( "mastodon" ),
-				"Save Mastodon Project",
-				FileChooser.DialogType.SAVE,
-				SelectionMode.FILES_ONLY,
-				SAVE_ICON_MEDIUM.getImage() );
-		if ( file == null )
-			return;
+		new Thread( new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
 
-		try
-		{
-			proposedProjectRoot = file;
-			saveProject( proposedProjectRoot );
-		}
-		catch ( final IOException e )
-		{
-			e.printStackTrace();
-		}
+					/*
+					 * Check if the image data is based on a non-BDV image. If
+					 * it's the case, offer to convert.
+					 */
+
+					if ( project instanceof MamutImagePlusProject )
+					{
+
+						final AtomicInteger returnUserValue = new AtomicInteger( -1 );
+						SwingUtilities.invokeAndWait( new Runnable()
+						{
+
+							@Override
+							public void run()
+							{
+								final int val = JOptionPane.showConfirmDialog(
+										null,
+										"The image data is not currently saved as a BDV file, \n"
+												+ "which is optimal for Mastodon. Mastodon might fail \n"
+												+ "to load the image data when you will reopen the \n"
+												+ "project you are about to save.\n"
+												+ "\n"
+												+ "Do you want to resave the image to the BDV file \n"
+												+ "format prior to saving the Mastodon project? \n"
+												+ "\n"
+												+ "(Clicking 'Yes' will show the BDV exporter \n"
+												+ "interface and close all Mastodon windows, \n"
+												+ "then offer to save the Mastodon project.)",
+										"Image not in BDV file format",
+										JOptionPane.YES_NO_OPTION,
+										JOptionPane.QUESTION_MESSAGE,
+										MastodonIcons.MASTODON_ICON_MEDIUM );
+								returnUserValue.set( val );
+							}
+						} );
+
+						if ( returnUserValue.get() == JOptionPane.YES_OPTION )
+						{
+							final MamutAppModel appModel = windowManager.getAppModel();
+
+							// Export imp to BDV.
+							final MamutImagePlusProject mipp = ( MamutImagePlusProject ) project;
+							final int n = projectRoot.indexOf( '.' );
+							final String proposedXmlFile = projectRoot.subSequence( 0, n ).toString() + ".xml";
+							final File bdvFile = BDVImagePlusExporter.export( mipp.getImagePlus(), proposedXmlFile );
+							final MamutProject np = new MamutProject( new File( projectRoot ), bdvFile );
+							np.setSpaceUnits( project.getSpaceUnits() );
+							np.setTimeUnits( project.getTimeUnits() );
+							project = np;
+							
+							// Export the settings file with what we can put in.
+							final Element root = new Element( "Settings" );
+							final SharedBigDataViewerData sbdv = appModel.getSharedBdvData();
+							root.addContent( sbdv.getManualTransformation().toXml() );
+							root.addContent( sbdv.getSetupAssignments().toXml() );
+							root.addContent( sbdv.getBookmarks().toXml() );
+							final Document doc = new Document( root );
+							final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
+							final String xmlFilename = bdvFile.getAbsolutePath();
+							final String settings = xmlFilename.substring( 0, xmlFilename.length() - ".xml".length() ) + ".settings" + ".xml";
+							xout.output( doc, new FileWriter( settings ) );
+
+							// Reopen the image data from the new BDV file.
+							final SharedBigDataViewerData sharedBdvData = openImageData( project, windowManager );
+
+							// Recreate app model.
+							final MamutAppModel nAppModel = new MamutAppModel(
+									appModel.getModel(),
+									sharedBdvData,
+									windowManager.getKeyPressedManager(),
+									windowManager.getTrackSchemeStyleManager(),
+									windowManager.getDataDisplayStyleManager(),
+									windowManager.getRenderSettingsManager(),
+									windowManager.getFeatureColorModeManager(),
+									windowManager.getKeymapManager(),
+									windowManager.getPlugins(),
+									windowManager.getGlobalAppActions() );
+							windowManager.setAppModel( nAppModel );
+
+							// Remove listener to imp window closing.
+							final ImageWindow window = mipp.getImagePlus().getWindow();
+							if ( window != null )
+							{
+								for ( final WindowListener wl : window.getWindowListeners() )
+									window.removeWindowListener( wl );
+
+								window.addWindowListener( new WindowAdapter()
+								{
+									@Override
+									public void windowClosing( final java.awt.event.WindowEvent e )
+									{
+										mipp.getImagePlus().close();
+									}
+								} );
+							}
+						}
+					}
+
+					/*
+					 * Ask for a file path to save to.
+					 */
+
+					final Component parent = null; // TODO
+					SwingUtilities.invokeAndWait( new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							final File file = FileChooser.chooseFile( true,
+									parent,
+									projectRoot,
+									new ExtensionFileFilter( "mastodon" ),
+									"Save Mastodon Project",
+									FileChooser.DialogType.SAVE,
+									SelectionMode.FILES_ONLY,
+									SAVE_ICON_MEDIUM.getImage() );
+							if ( file == null )
+								return;
+
+							proposedProjectRoot = file;
+							new Thread( () -> {
+								try
+								{
+									saveProject( proposedProjectRoot );
+								}
+								catch ( final IOException e )
+								{
+									e.printStackTrace();
+								}
+							} ).start();
+						}
+					} );
+				}
+				catch ( final InterruptedException | InvocationTargetException | SpimDataException | IOException e )
+				{
+					e.printStackTrace();
+				}
+			}
+		} ).start();
 	}
 
 	public synchronized void saveProject()
@@ -474,45 +597,25 @@ public class ProjectManager
 	 */
 	public synchronized void open( final MamutProject project, final boolean restoreGUIState ) throws IOException, SpimDataException
 	{
-		/*
-		 * Load SpimData
-		 */
-		String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
-		spimDataXmlFilename = spimDataXmlFilename.replaceAll( "\\\\", "/" );
-		spimDataXmlFilename = new File( spimDataXmlFilename ).getCanonicalPath();
-		AbstractSpimData< ? > spimData = DummySpimData.tryCreate( project.getDatasetXmlFile().getName() );
-		if ( spimData == null )
-		{
-			try
-			{
-				spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
-			}
-			catch ( final SpimDataIOException | RuntimeException e )
-			{
-				final Throwable cause = e.getCause();
-				if ( cause instanceof UnknownHostException )
-				{
-					// Try to make a sensible error message.
-					System.err.println( errorMessageUnknownHost( spimDataXmlFilename, cause.getMessage() ) );
-				}
-				else
-				{
-					System.err.println( "Could not open image data file. " );
-					e.printStackTrace();
-				}
-				final DatasetInfoParser info = DatasetInfoParser.inspect( spimDataXmlFilename );
-				System.err.println( "Opening with dummy dataset. Please fix dataset path in the mastodon project file." );
-				spimData = info.toDummySpimData();
-			}
-		}
+		// Prepare image data.
+		final SharedBigDataViewerData sharedBdvData = openImageData( project, windowManager );
 
+		// Load model.
+		loadModel( windowManager, sharedBdvData, project, restoreGUIState );
+
+		this.project = project;
+		updateEnabledActions();
+	}
+
+	private static void loadModel( final WindowManager windowManager, final SharedBigDataViewerData sharedBdvData, final MamutProject project, final boolean restoreGUIState ) throws IOException
+	{
 		/*
 		 * Try to read units from spimData is they are not present
 		 */
 		if ( project.getSpaceUnits() == null )
 		{
 			project.setSpaceUnits(
-					spimData.getSequenceDescription().getViewSetupsOrdered().stream()
+					sharedBdvData.getSpimData().getSequenceDescription().getViewSetupsOrdered().stream()
 							.filter( BasicViewSetup::hasVoxelSize )
 							.map( setup -> setup.getVoxelSize().unit() )
 							.findFirst()
@@ -549,38 +652,17 @@ public class ProjectManager
 		model.setSavePoint();
 		model.declareDefaultFeatures();
 
-		/*
-		 * Reset window manager.
-		 */
-
-		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
-		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
-		final DataDisplayStyleManager dataDisplayStyleManager = windowManager.getDataDisplayStyleManager();
-		final FeatureColorModeManager featureColorModeManager = windowManager.getFeatureColorModeManager();
-		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
-		final KeymapManager keymapManager = windowManager.getKeymapManager();
-		final MamutPlugins plugins = windowManager.getPlugins();
-		final Actions globalAppActions = windowManager.getGlobalAppActions();
-		final ViewerOptions options = ViewerOptions.options()
-				.shareKeyPressedEvents( keyPressedManager )
-				.msgOverlay( new MessageOverlayAnimator( 1500, 0.005, 0.02 ) );
-		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData(
-				spimDataXmlFilename,
-				spimData,
-				options,
-				() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
-
 		final MamutAppModel appModel = new MamutAppModel(
 				model,
 				sharedBdvData,
-				keyPressedManager,
-				trackSchemeStyleManager,
-				dataDisplayStyleManager,
-				renderSettingsManager,
-				featureColorModeManager,
-				keymapManager,
-				plugins,
-				globalAppActions );
+				windowManager.getKeyPressedManager(),
+				windowManager.getTrackSchemeStyleManager(),
+				windowManager.getDataDisplayStyleManager(),
+				windowManager.getRenderSettingsManager(),
+				windowManager.getFeatureColorModeManager(),
+				windowManager.getKeymapManager(),
+				windowManager.getPlugins(),
+				windowManager.getGlobalAppActions() );
 
 		windowManager.setAppModel( appModel );
 
@@ -591,7 +673,7 @@ public class ProjectManager
 			{
 				try
 				{
-					loadGUI( reader );
+					loadGUI( reader, windowManager );
 				}
 				catch ( final FileNotFoundException fnfe )
 				{
@@ -599,9 +681,6 @@ public class ProjectManager
 				}
 			}
 		}
-
-		this.project = project;
-		updateEnabledActions();
 	}
 
 	public synchronized void importTgmm()
@@ -748,7 +827,7 @@ public class ProjectManager
 		xout.output( doc, writer.getGuiOutputStream() );
 	}
 
-	private void loadGUI( final ProjectReader reader ) throws IOException
+	private static void loadGUI( final ProjectReader reader, final WindowManager windowManager ) throws IOException
 	{
 		final SAXBuilder sax = new SAXBuilder();
 		Document guiDoc;
@@ -771,23 +850,43 @@ public class ProjectManager
 		MamutViewStateSerialization.fromXml( windowsEl, windowManager );
 	}
 
-	private static final String errorMessageUnknownHost( final String xmlFilename, final String host )
+	/**
+	 * Opens and prepares the shared image data, based on whether the Mamut
+	 * project points to a BDV XML/H5 pair or an opened ImagePlus.
+	 * 
+	 * @param project
+	 *            the project.
+	 * @param windowManager
+	 *            the {@link WindowManager} instance, used to create a lambda
+	 *            that refreshes all BDV views and get the session
+	 *            {@link KeyPressedManager}.
+	 * @return a new {@link SharedBigDataViewerData} instance
+	 * @throws SpimDataException
+	 * @throws IOException
+	 */
+	private static final SharedBigDataViewerData openImageData(
+			final MamutProject project,
+			final WindowManager windowManager ) throws SpimDataException, IOException
 	{
-		final SAXBuilder sax = new SAXBuilder();
-		try
-		{
-			final Document doc = sax.build( xmlFilename );
-			final Element root = doc.getRootElement();
-			final String baseUrl = root
-					.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
-					.getChild( XmlKeys.IMGLOADER_TAG )
-					.getChildText( "baseUrl" );
-			return "Cannot reach host  " + host + " for the dataset URL: " + baseUrl;
-		}
-		catch ( final Exception e )
-		{
-			return "Unparsable dataset file: " + e.getMessage();
-		}
-	}
+		// Prepare base view options.
+		final ViewerOptions options = ViewerOptions.options()
+				.shareKeyPressedEvents( windowManager.getKeyPressedManager() )
+				.msgOverlay( new MessageOverlayAnimator( 1500, 0.005, 0.02 ) );
 
+		// Is it based on ImagePlus?
+		if ( project instanceof MamutImagePlusProject )
+		{
+			final MamutImagePlusProject mipp = ( MamutImagePlusProject ) project;
+			return SharedBigDataViewerData.fromImagePlus(
+					mipp.getImagePlus(),
+					options,
+					() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
+		}
+
+		// Assume it is a BDV file.
+		return SharedBigDataViewerData.fromSpimDataXmlFile(
+				project.getDatasetXmlFile().getAbsolutePath(),
+				options,
+				() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
+	}
 }
