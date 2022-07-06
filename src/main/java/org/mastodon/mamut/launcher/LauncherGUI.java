@@ -56,7 +56,15 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 
 class LauncherGUI extends JPanel
 {
@@ -69,13 +77,11 @@ class LauncherGUI extends JPanel
 
 	static final String NEW_FROM_URL_KEY = "NewFromURL";
 
-	static final String LOAD_MASTODON_PROJECT_KEY = "LoadMastodonProject";
+	static final String LOGGER_KEY = "Logger";
 
 	static final String RECENT_PROJECTS_KEY = "MastodonRecentProjects";
 
 	static final String IMPORT_TGMM_KEY = "ImportTGMM";
-
-	static final String IMPORT_MAMUT_KEY = "ImportMaMuT";
 
 	static final String IMPORT_SIMI_KEY = "ImportSimi";
 
@@ -99,11 +105,9 @@ class LauncherGUI extends JPanel
 
 	final OpenRemoteURLPanel openRemoteURLPanel;
 
-	final LoadMastodonPanel loadMastodonPanel;
+	final LoggerPanel logger;
 
 	final ImportTGMMPanel importTGMMPanel;
-
-	final ImportMaMUTPanel importMamutPanel;
 
 	final ImportSimiBioCellPanel importSimiBioCellPanel;
 
@@ -216,11 +220,8 @@ class LauncherGUI extends JPanel
 		importTGMMPanel = new ImportTGMMPanel();
 		centralPanel.add( importTGMMPanel, IMPORT_TGMM_KEY );
 
-		loadMastodonPanel = new LoadMastodonPanel();
-		centralPanel.add( loadMastodonPanel, LOAD_MASTODON_PROJECT_KEY );
-
-		importMamutPanel = new ImportMaMUTPanel();
-		centralPanel.add( importMamutPanel, IMPORT_MAMUT_KEY );
+		logger = new LoggerPanel();
+		centralPanel.add( logger, LOGGER_KEY );
 
 		importSimiBioCellPanel = new ImportSimiBioCellPanel();
 		centralPanel.add( importSimiBioCellPanel, IMPORT_SIMI_KEY );
@@ -234,39 +235,19 @@ class LauncherGUI extends JPanel
 		layout.show( centralPanel, key );
 	}
 
-	class LoadMastodonPanel extends JPanel
+	private class LoggerPanel extends JPanel
 	{
 
 		private static final long serialVersionUID = 1L;
 
-		final JLabel lblInfo;
+		private final JTextPane textPane;
 
-		public LoadMastodonPanel()
+		public LoggerPanel()
 		{
-			this.lblInfo = new JLabel();
-			add( lblInfo );
-		}
-	}
-
-	class ImportMaMUTPanel extends JPanel
-	{
-
-		private static final long serialVersionUID = 1L;
-
-		final JLabel lblInfo;
-
-		private ImportMaMUTPanel()
-		{
-			final GridBagLayout gridBagLayout = new GridBagLayout();
-			setLayout( gridBagLayout );
-
-			lblInfo = new JLabel();
-			final GridBagConstraints gbc_lblMastodon = new GridBagConstraints();
-			gbc_lblMastodon.insets = new Insets( 5, 5, 5, 5 );
-			gbc_lblMastodon.fill = GridBagConstraints.VERTICAL;
-			gbc_lblMastodon.gridx = 0;
-			gbc_lblMastodon.gridy = 0;
-			add( lblInfo, gbc_lblMastodon );
+			super( new BorderLayout() );
+			this.textPane = new JTextPane();
+			textPane.setOpaque( false );
+			add( textPane, BorderLayout.CENTER );
 		}
 	}
 
@@ -347,6 +328,78 @@ class LauncherGUI extends JPanel
 			super.paintComponent( g );
 			g.drawImage( MAINWINDOW_BG, 0, 0, this );
 		}
+	}
 
+	/*
+	 * Logger methods.
+	 */
+
+	public static final Color NORMAL_COLOR = Color.BLACK;
+
+	public static final Color ERROR_COLOR = new Color( 0.8f, 0, 0 );
+
+	public static final Color GREEN_COLOR = new Color( 0, 0.6f, 0 );
+
+	public static final Color BLUE_COLOR = new Color( 0, 0, 0.7f );
+
+	private static final int MAX_N_CHARS = 10_000;
+
+	public void error( final String message )
+	{
+		log( message, ERROR_COLOR );
+	}
+
+	public void log( final String message, final Color color )
+	{
+		SwingUtilities.invokeLater( new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				final StyleContext sc = StyleContext.getDefaultStyleContext();
+				final AttributeSet aset = sc.addAttribute( SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color );
+				final AbstractDocument doc = ( AbstractDocument ) logger.textPane.getStyledDocument();
+				final int len = doc.getLength();
+				final int l = message.length();
+
+				if ( len + l > MAX_N_CHARS )
+				{
+					final int delta = Math.max( 0, Math.min( l - 1, len + l - MAX_N_CHARS ) );
+					try
+					{
+						doc.remove( 0, delta );
+					}
+					catch ( final BadLocationException e )
+					{
+						e.printStackTrace();
+					}
+				}
+				logger.textPane.setCaretPosition( doc.getLength() );
+				logger.textPane.setCharacterAttributes( aset, false );
+				logger.textPane.replaceSelection( message );
+			}
+		} );
+	}
+
+	public void setStatus( final String status )
+	{
+		log( status, GREEN_COLOR );
+	}
+
+	public void setLog( final String string )
+	{
+		SwingUtilities.invokeLater( new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				logger.textPane.setText( string );
+			}
+		} );
+	}
+
+	public void clearLog()
+	{
+		setLog( "" );
 	}
 }
