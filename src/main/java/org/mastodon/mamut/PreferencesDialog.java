@@ -37,6 +37,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.MastodonIcons;
@@ -83,13 +84,11 @@ public class PreferencesDialog extends JDialog
 		keymap.updateListeners().add( () -> actions.updateKeyConfig( keymap.getConfig() ) );
 
 		getContentPane().add( settingsPanel, BorderLayout.CENTER );
-		pack();
 	}
 
 	public void addPage( final SettingsPage page )
 	{
 		settingsPanel.addPage( page );
-		pack();
 	}
 
 	/**
@@ -102,6 +101,5 @@ public class PreferencesDialog extends JDialog
 	public void removePage( final String path )
 	{
 		settingsPanel.removePage( path );
-		pack();
 	}
 }
