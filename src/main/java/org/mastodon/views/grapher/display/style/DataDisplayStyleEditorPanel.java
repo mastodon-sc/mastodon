@@ -28,15 +28,15 @@
  */
 package org.mastodon.views.grapher.display.style;
 
-import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
-import static org.mastodon.app.ui.settings.StyleElements.colorElement;
-import static org.mastodon.app.ui.settings.StyleElements.doubleElement;
-import static org.mastodon.app.ui.settings.StyleElements.enumElement;
-import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
-import static org.mastodon.app.ui.settings.StyleElements.linkedColorButton;
-import static org.mastodon.app.ui.settings.StyleElements.linkedComboBoxEnumSelector;
-import static org.mastodon.app.ui.settings.StyleElements.linkedSliderPanel;
-import static org.mastodon.app.ui.settings.StyleElements.separator;
+import static org.mastodon.app.ui.StyleElements.booleanElement;
+import static org.mastodon.app.ui.StyleElements.colorElement;
+import static org.mastodon.app.ui.StyleElements.doubleElement;
+import static org.mastodon.app.ui.StyleElements.enumElement;
+import static org.mastodon.app.ui.StyleElements.linkedCheckBox;
+import static org.mastodon.app.ui.StyleElements.linkedColorButton;
+import static org.mastodon.app.ui.StyleElements.linkedComboBoxEnumSelector;
+import static org.mastodon.app.ui.StyleElements.linkedSliderPanel;
+import static org.mastodon.app.ui.StyleElements.separator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -71,13 +71,13 @@ import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
-import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
-import org.mastodon.app.ui.settings.StyleElements.ColorElement;
-import org.mastodon.app.ui.settings.StyleElements.DoubleElement;
-import org.mastodon.app.ui.settings.StyleElements.EnumElement;
-import org.mastodon.app.ui.settings.StyleElements.Separator;
-import org.mastodon.app.ui.settings.StyleElements.StyleElement;
-import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
+import org.mastodon.app.ui.StyleElements.BooleanElement;
+import org.mastodon.app.ui.StyleElements.ColorElement;
+import org.mastodon.app.ui.StyleElements.DoubleElement;
+import org.mastodon.app.ui.StyleElements.EnumElement;
+import org.mastodon.app.ui.StyleElements.Separator;
+import org.mastodon.app.ui.StyleElements.StyleElement;
+import org.mastodon.app.ui.StyleElements.StyleElementVisitor;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.feature.FeatureProjection;

@@ -39,8 +39,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mastodon.app.ui.settings.style.AbstractStyleManager;
 import org.yaml.snakeyaml.Yaml;
+
+import bdv.ui.settings.style.AbstractStyleManager;
 
 /**
  * Manages a collection of {@link TrackSchemeStyle}.
@@ -73,8 +74,8 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 	public TrackSchemeStyleManager( final boolean loadStyles )
 	{
 		forwardDefaultStyle = TrackSchemeStyle.defaultStyle().copy();
-		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardDefaultListeners );
 		if ( loadStyles )
 			loadStyles();
 	}
@@ -85,13 +86,14 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 		return Collections.unmodifiableList( new ArrayList<>( TrackSchemeStyle.defaults ) );
 	}
 
+
 	@Override
-	public synchronized void setDefaultStyle( final TrackSchemeStyle style )
+	public synchronized void setSelectedStyle( final TrackSchemeStyle style )
 	{
-		defaultStyle.updateListeners().remove( updateForwardDefaultListeners );
-		defaultStyle = style;
-		forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		selectedStyle.updateListeners().remove( updateForwardDefaultListeners );
+		selectedStyle = style;
+		forwardDefaultStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardDefaultListeners );
 	}
 
 	/**
@@ -143,7 +145,7 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 					}
 				}
 			}
-			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+			setSelectedStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
 		{
@@ -165,7 +167,7 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = TrackSchemeStyleIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
-			objects.add( defaultStyle.getName() );
+			objects.add( selectedStyle.getName() );
 			objects.addAll( userStyles );
 			yaml.dumpAll( objects.iterator(), output );
 			output.close();

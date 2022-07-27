@@ -36,8 +36,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.mastodon.app.ui.settings.style.Style;
 import org.scijava.listeners.Listeners;
+
+import bdv.ui.settings.style.Style;
 
 public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 {

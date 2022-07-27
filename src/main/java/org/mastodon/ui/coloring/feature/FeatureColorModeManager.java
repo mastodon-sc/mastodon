@@ -39,9 +39,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mastodon.app.ui.settings.style.AbstractStyleManager;
 import org.scijava.listeners.Listeners;
 import org.yaml.snakeyaml.Yaml;
+
+import bdv.ui.settings.style.AbstractStyleManager;
 
 public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorModeManager, FeatureColorMode >
 {
@@ -91,7 +92,7 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 			new File( filename ).mkdirs(); // TODO pointless. FileWriter already opened or failed.
 			final Yaml yaml = FeatureColorModeIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
-			objects.add( defaultStyle.getName() );
+			objects.add( selectedStyle.getName() );
 			objects.addAll( userStyles );
 			yaml.dumpAll( objects.iterator(), output );
 		}
@@ -134,7 +135,7 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 					}
 				}
 			}
-			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+			setSelectedStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
 		{

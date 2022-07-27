@@ -39,9 +39,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mastodon.app.ui.settings.style.AbstractStyleManager;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.Yaml;
+
+import bdv.ui.settings.style.AbstractStyleManager;
 
 /**
  * Manages a list of {@link RenderSettings} for multiple BDV windows. Provides
@@ -72,8 +73,8 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 	public RenderSettingsManager( final boolean loadStyles )
 	{
 		forwardDefaultStyle = RenderSettings.defaultStyle().copy();
-		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardDefaultListeners );
 		if ( loadStyles )
 			loadStyles();
 	}
@@ -85,12 +86,12 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 	}
 
 	@Override
-	public synchronized void setDefaultStyle( final RenderSettings renderSettings )
+	public synchronized void setSelectedStyle( final RenderSettings renderSettings )
 	{
-		defaultStyle.updateListeners().remove( updateForwardDefaultListeners );
-		defaultStyle = renderSettings;
-		forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		selectedStyle.updateListeners().remove( updateForwardDefaultListeners );
+		selectedStyle = renderSettings;
+		forwardDefaultStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardDefaultListeners );
 	}
 
 	/**
@@ -142,7 +143,7 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 					}
 				}
 			}
-			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+			setSelectedStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
 		{
@@ -164,7 +165,7 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = RenderSettingsIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
-			objects.add( defaultStyle.getName() );
+			objects.add( selectedStyle.getName() );
 			objects.addAll( userStyles );
 			yaml.dumpAll( objects.iterator(), output );
 			output.close();

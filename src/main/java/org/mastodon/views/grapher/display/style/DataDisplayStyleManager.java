@@ -38,9 +38,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mastodon.app.ui.settings.style.AbstractStyleManager;
 import org.mastodon.ui.util.FileChooser;
 import org.yaml.snakeyaml.Yaml;
+
+import bdv.ui.settings.style.AbstractStyleManager;
 
 /**
  * Manages a collection of {@link DataDisplayStyle}.
@@ -73,8 +74,8 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 	public DataDisplayStyleManager( final boolean loadStyles )
 	{
 		forwardDefaultStyle = DataDisplayStyle.defaultStyle().copy();
-		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardDefaultListeners );
 		if ( loadStyles )
 			loadStyles();
 	}
@@ -86,12 +87,12 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 	}
 
 	@Override
-	public synchronized void setDefaultStyle( final DataDisplayStyle style )
+	public synchronized void setSelectedStyle( final DataDisplayStyle style )
 	{
-		defaultStyle.updateListeners().remove( updateForwardDefaultListeners );
-		defaultStyle = style;
-		forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		selectedStyle.updateListeners().remove( updateForwardDefaultListeners );
+		selectedStyle = style;
+		forwardDefaultStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardDefaultListeners );
 	}
 
 	/**
@@ -137,7 +138,7 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 					}
 				}
 			}
-			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+			setSelectedStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
 		{}
@@ -157,7 +158,7 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = DataDisplayStyleIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
-			objects.add( defaultStyle.getName() );
+			objects.add( selectedStyle.getName() );
 			objects.addAll( userStyles );
 			yaml.dumpAll( objects.iterator(), output );
 			output.close();

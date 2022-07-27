@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.ui.settings;
+package org.mastodon.app.ui;
 
 import java.awt.Color;
 import java.awt.Font;
