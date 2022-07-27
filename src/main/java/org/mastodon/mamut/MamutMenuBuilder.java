@@ -66,12 +66,12 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 
 		menuTexts.put( WindowManager.NEW_BDV_VIEW, "New Bdv" );
 		menuTexts.put( WindowManager.NEW_TRACKSCHEME_VIEW, "New TrackScheme" );
-		menuTexts.put( WindowManager.NEW_TABLE_VIEW, "New data table" );
-		menuTexts.put( WindowManager.NEW_SELECTION_TABLE_VIEW, "New selection table" );
-		menuTexts.put( WindowManager.NEW_GRAPHER_VIEW, "New grapher" );
-		menuTexts.put( WindowManager.NEW_BRANCH_BDV_VIEW, "New branch Bdv" );
-		menuTexts.put( WindowManager.NEW_BRANCH_TRACKSCHEME_VIEW, "New branch TrackScheme" );
-		menuTexts.put( WindowManager.NEW_HIERARCHY_TRACKSCHEME_VIEW, "New hierarchy TrackScheme" );
+		menuTexts.put( WindowManager.NEW_TABLE_VIEW, "New Data table" );
+		menuTexts.put( WindowManager.NEW_SELECTION_TABLE_VIEW, "New Selection table" );
+		menuTexts.put( WindowManager.NEW_GRAPHER_VIEW, "New Grapher" );
+		menuTexts.put( WindowManager.NEW_BRANCH_BDV_VIEW, "New Bdv Branch" );
+		menuTexts.put( WindowManager.NEW_BRANCH_TRACKSCHEME_VIEW, "New TrackScheme Branch" );
+		menuTexts.put( WindowManager.NEW_HIERARCHY_TRACKSCHEME_VIEW, "New TrackScheme Hierarchy" );
 		menuTexts.put( WindowManager.PREFERENCES_DIALOG, "Preferences..." );
 
 		menuTexts.put( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL, "Settings Toolbar" );
