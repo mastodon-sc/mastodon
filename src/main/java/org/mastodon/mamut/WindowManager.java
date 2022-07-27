@@ -332,8 +332,10 @@ public class WindowManager
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		newTableViewAction.setEnabled( appModel != null );
 		newSelectionTableViewAction.setEnabled( appModel != null );
+		newGrapherViewAction.setEnabled( appModel != null );
 		newBranchBdvViewAction.setEnabled( appModel != null );
 		newBranchTrackSchemeViewAction.setEnabled( appModel != null );
+		newHierarchyTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
 		featureComputationAction.setEnabled( appModel != null );
 	}
