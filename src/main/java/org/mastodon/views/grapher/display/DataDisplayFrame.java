@@ -82,7 +82,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final ContextChooser< V > contextChooser,
 			final DataDisplayOptions optional )
 	{
-		super( "Data" );
+		super( "Grapher" );
 
 		/*
 		 * Plot panel.
