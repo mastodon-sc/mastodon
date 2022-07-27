@@ -30,9 +30,10 @@ package org.mastodon.ui.keymap;
 
 import java.util.Objects;
 
-import org.mastodon.app.ui.settings.style.Style;
 import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+
+import bdv.ui.settings.style.Style;
 
 public class Keymap implements Style< Keymap >
 {

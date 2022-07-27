@@ -37,12 +37,13 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import org.mastodon.app.ui.settings.ModificationListener;
-import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
-import org.mastodon.app.ui.settings.SettingsPanel;
-import org.mastodon.app.ui.settings.style.StyleProfile;
-import org.mastodon.app.ui.settings.style.StyleProfileManager;
 import org.scijava.listeners.Listeners;
+
+import bdv.ui.settings.ModificationListener;
+import bdv.ui.settings.SelectAndEditProfileSettingsPage;
+import bdv.ui.settings.SettingsPanel;
+import bdv.ui.settings.style.StyleProfile;
+import bdv.ui.settings.style.StyleProfileManager;
 
 public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPage< StyleProfile< TrackSchemeStyle > >
 {
@@ -59,7 +60,7 @@ public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPa
 		super(
 				treePath,
 				new StyleProfileManager<>( styleManager, new TrackSchemeStyleManager( false ) ),
-				new TrackSchemeProfileEditPanel( styleManager.getDefaultStyle() ) );
+				new TrackSchemeProfileEditPanel( styleManager.getSelectedStyle() ) );
 	}
 
 	static class TrackSchemeProfileEditPanel implements TrackSchemeStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< TrackSchemeStyle > >
@@ -84,7 +85,7 @@ public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPa
 		public void trackSchemeStyleChanged()
 		{
 			if ( trackModifications )
-				modificationListeners.list.forEach( ModificationListener::modified );
+				modificationListeners.list.forEach( ModificationListener::setModified );
 		}
 
 		@Override

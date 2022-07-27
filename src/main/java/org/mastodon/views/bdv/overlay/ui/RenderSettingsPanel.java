@@ -28,14 +28,14 @@
  */
 package org.mastodon.views.bdv.overlay.ui;
 
-import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
-import static org.mastodon.app.ui.settings.StyleElements.colorElement;
-import static org.mastodon.app.ui.settings.StyleElements.doubleElement;
-import static org.mastodon.app.ui.settings.StyleElements.intElement;
-import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
-import static org.mastodon.app.ui.settings.StyleElements.linkedColorButton;
-import static org.mastodon.app.ui.settings.StyleElements.linkedSliderPanel;
-import static org.mastodon.app.ui.settings.StyleElements.separator;
+import static org.mastodon.app.ui.StyleElements.booleanElement;
+import static org.mastodon.app.ui.StyleElements.colorElement;
+import static org.mastodon.app.ui.StyleElements.doubleElement;
+import static org.mastodon.app.ui.StyleElements.intElement;
+import static org.mastodon.app.ui.StyleElements.linkedCheckBox;
+import static org.mastodon.app.ui.StyleElements.linkedColorButton;
+import static org.mastodon.app.ui.StyleElements.linkedSliderPanel;
+import static org.mastodon.app.ui.StyleElements.separator;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -54,13 +54,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
-import org.mastodon.app.ui.settings.StyleElements.ColorElement;
-import org.mastodon.app.ui.settings.StyleElements.DoubleElement;
-import org.mastodon.app.ui.settings.StyleElements.IntElement;
-import org.mastodon.app.ui.settings.StyleElements.Separator;
-import org.mastodon.app.ui.settings.StyleElements.StyleElement;
-import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
+import org.mastodon.app.ui.StyleElements.BooleanElement;
+import org.mastodon.app.ui.StyleElements.ColorElement;
+import org.mastodon.app.ui.StyleElements.DoubleElement;
+import org.mastodon.app.ui.StyleElements.IntElement;
+import org.mastodon.app.ui.StyleElements.Separator;
+import org.mastodon.app.ui.StyleElements.StyleElement;
+import org.mastodon.app.ui.StyleElements.StyleElementVisitor;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 
 import bdv.tools.brightness.SliderPanel;

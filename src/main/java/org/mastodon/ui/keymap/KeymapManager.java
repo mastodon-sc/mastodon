@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mastodon.app.ui.settings.style.AbstractStyleManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
@@ -52,6 +51,8 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
+
+import bdv.ui.settings.style.AbstractStyleManager;
 
 /**
  * Manages a collection of {@link Keymap}.
@@ -115,10 +116,10 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 	}
 
 	@Override
-	public synchronized void setDefaultStyle( final Keymap keymap )
+	public synchronized void setSelectedStyle( final Keymap keymap )
 	{
-		super.setDefaultStyle( keymap );
-		forwardDefaultKeymap.set( defaultStyle );
+		super.setSelectedStyle( keymap );
+		forwardDefaultKeymap.set( selectedStyle );
 	}
 
 	/**
@@ -186,7 +187,7 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 		{
 			e.printStackTrace();
 		}
-		setDefaultStyle( defaultStyle );
+		setSelectedStyle( defaultStyle );
 	}
 
 	@Override
@@ -202,7 +203,7 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 			new File( directory ).mkdirs();
 
 			final KeymapsListIO keymapsList = new KeymapsListIO(
-					defaultStyle.getName(),
+					selectedStyle.getName(),
 					userStyles.stream().map( Keymap::getName ).collect( Collectors.toList() ) );
 
 			String filename = KEYMAPS_PATH + "/keymaps.yaml";

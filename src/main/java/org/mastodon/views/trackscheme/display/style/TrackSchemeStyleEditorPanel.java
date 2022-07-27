@@ -28,11 +28,11 @@
  */
 package org.mastodon.views.trackscheme.display.style;
 
-import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
-import static org.mastodon.app.ui.settings.StyleElements.colorElement;
-import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
-import static org.mastodon.app.ui.settings.StyleElements.linkedColorButton;
-import static org.mastodon.app.ui.settings.StyleElements.separator;
+import static org.mastodon.app.ui.StyleElements.booleanElement;
+import static org.mastodon.app.ui.StyleElements.colorElement;
+import static org.mastodon.app.ui.StyleElements.linkedCheckBox;
+import static org.mastodon.app.ui.StyleElements.linkedColorButton;
+import static org.mastodon.app.ui.StyleElements.separator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -64,11 +64,11 @@ import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
-import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
-import org.mastodon.app.ui.settings.StyleElements.ColorElement;
-import org.mastodon.app.ui.settings.StyleElements.Separator;
-import org.mastodon.app.ui.settings.StyleElements.StyleElement;
-import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
+import org.mastodon.app.ui.StyleElements.BooleanElement;
+import org.mastodon.app.ui.StyleElements.ColorElement;
+import org.mastodon.app.ui.StyleElements.Separator;
+import org.mastodon.app.ui.StyleElements.StyleElement;
+import org.mastodon.app.ui.StyleElements.StyleElementVisitor;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.model.DefaultFocusModel;
 import org.mastodon.model.DefaultHighlightModel;

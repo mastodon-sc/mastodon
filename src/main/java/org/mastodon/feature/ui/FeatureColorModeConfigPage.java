@@ -30,14 +30,15 @@ package org.mastodon.feature.ui;
 
 import javax.swing.JPanel;
 
-import org.mastodon.app.ui.settings.ModificationListener;
-import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
-import org.mastodon.app.ui.settings.style.StyleProfile;
-import org.mastodon.app.ui.settings.style.StyleProfileManager;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.scijava.listeners.Listeners;
 import org.scijava.listeners.Listeners.SynchronizedList;
+
+import bdv.ui.settings.ModificationListener;
+import bdv.ui.settings.SelectAndEditProfileSettingsPage;
+import bdv.ui.settings.style.StyleProfile;
+import bdv.ui.settings.style.StyleProfileManager;
 
 public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage< StyleProfile< FeatureColorMode > >
 {
@@ -51,7 +52,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 		super( treePath,
 				new StyleProfileManager<>( featureColorModeManager, new FeatureColorModeManager( false ) ),
 				new FeatureColorModelEditPanel(
-						featureColorModeManager.getDefaultStyle(),
+						featureColorModeManager.getSelectedStyle(),
 						featureProjectionsManager,
 						vertexName,
 						edgeName ) );
@@ -121,7 +122,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 		public void featureColorModeChanged()
 		{
 			if ( trackModifications )
-				modificationListeners.list.forEach( ModificationListener::modified );
+				modificationListeners.list.forEach( ModificationListener::setModified );
 		}
 	}
 }

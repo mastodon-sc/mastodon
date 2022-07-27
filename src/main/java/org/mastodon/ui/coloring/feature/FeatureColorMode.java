@@ -34,10 +34,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.mastodon.app.ui.settings.style.Style;
 import org.mastodon.ui.coloring.ColorMap;
 import org.scijava.listeners.Listeners;
 import org.yaml.snakeyaml.Yaml;
+
+import bdv.ui.settings.style.Style;
 
 /**
  * Data class that stores a configuration for coloring graph objects based on

@@ -43,6 +43,10 @@ import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
+import bdv.ui.settings.ModificationListener;
+import bdv.ui.settings.SettingsPage;
+import bdv.ui.settings.SettingsPanel;
+
 public class SettingsPanelExample
 {
 	static class DummySettingsPage implements SettingsPage
