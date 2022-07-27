@@ -149,7 +149,7 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/mastodon-sc/mastodon</connection>
+		<connection>scm:git:https://github.com/mastodon-sc/mastodon</connection>
 		<developerConnection>scm:git:git@github.com:mastodon-sc/mastodon</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/mastodon-sc/mastodon</url>
@@ -159,8 +159,8 @@
 		<url>https://github.com/mastodon-sc/mastodon/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.com/mastodon-sc/mastodon</url>
+		<system>GitHub Actions</system>
+		<url>https://github.com/mastodon-sc/mastodon/actions</url>
 	</ciManagement>
 
 	<properties>
@@ -177,7 +177,7 @@
 		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
-		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 	</properties>
 
 	<developers>
