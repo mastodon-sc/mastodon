@@ -52,6 +52,11 @@
 			<artifactId>spim_data</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>cisd</groupId>
+			<artifactId>jhdf5</artifactId>
+		<version>19.04.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>ui-behaviour</artifactId>
 		</dependency>
@@ -123,7 +128,7 @@
 			<artifactId>humble-video-all</artifactId>
 			<version>0.3.0</version>
 		</dependency>
-	
+
 	</dependencies>
 
 	<build>
