@@ -606,18 +606,29 @@ public class ProjectManager
 		final String canonicalPath = new File( imagePath ).getCanonicalPath();
 		if ( !canonicalPath.endsWith( ".xml" ) )
 		{
-			// Assume it is a plain image file.
-			final ImagePlus imp = IJ.openImage( canonicalPath );
+			final ImagePlus imp;
 
-			// If it does not work file.
-			if ( imp == null )
-				throw new IOException( "Cannot open image " + canonicalPath );
+			// Do we have the ImagePlus already in memory?
+			if ( project instanceof MamutImagePlusProject )
+			{
+				imp = ( ( MamutImagePlusProject ) project ).getImagePlus();
+				// No need to morph.
+				localProject = project;
+			}
+			else
+			{
+				// Assume the path points to a plain image file.
+				imp = IJ.openImage( canonicalPath );
+				// If it does not work tell the user.
+				if ( imp == null )
+					throw new IOException( "Cannot open image " + canonicalPath );
 
-			// Morph the project.
-			localProject = new MamutImagePlusProject( imp );
-			localProject.setProjectRoot( project.getProjectRoot() );
-			localProject.setSpaceUnits( project.getSpaceUnits() );
-			localProject.setTimeUnits( project.getTimeUnits() );
+				// Morph the project.
+				localProject = new MamutImagePlusProject( imp );
+				localProject.setProjectRoot( project.getProjectRoot() );
+				localProject.setSpaceUnits( project.getSpaceUnits() );
+				localProject.setTimeUnits( project.getTimeUnits() );
+			}
 		}
 		else
 		{

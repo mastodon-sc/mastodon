@@ -408,6 +408,27 @@ public class MastodonLauncher extends JFrame
 							}
 						} );
 					}
+					
+					// Check whether the imp can be found on disk.
+					if ( imp.getOriginalFileInfo() == null ||
+							imp.getOriginalFileInfo().directory == null ||
+							imp.getOriginalFileInfo().fileName == null ||
+							!new File( imp.getOriginalFileInfo().directory, imp.getOriginalFileInfo().fileName ).exists() )
+					{
+						JOptionPane.showMessageDialog( gui,
+								"Warning.\n"
+										+ "\n"
+										+ "The image being used for this new \n"
+										+ "Mastodon project cannot be found \n"
+										+ "on disk.  \n"
+										+ "\n"
+										+ "Mastodon will not be able to reopen it \n"
+										+ "unless you resave the image as a BDV \n"
+										+ "file when saving the Mastodon project. ",
+								"Source image not saved",
+								JOptionPane.WARNING_MESSAGE,
+								MastodonIcons.MASTODON_ICON_MEDIUM );
+					}
 
 					windowManager.getProjectManager().open( new MamutImagePlusProject( imp ) );
 					mainWindow.setVisible( true );
