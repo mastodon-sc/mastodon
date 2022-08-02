@@ -124,7 +124,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 		actions.namedAction( editFocusVertexLabelAction, EDIT_FOCUS_LABEL_KEYS );
 	}
 
-	private EditFocusVertexLabelAction(
+	protected EditFocusVertexLabelAction(
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final UndoPointMarker undoPointMarker,
 			final TrackSchemePanel panel )
@@ -178,6 +178,12 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 	{
 		headerWidth = width;
 		headerHeight = height;
+	}
+
+	protected void changeLabel( TrackSchemeVertex vertex, String label )
+	{
+		vertex.setLabel( label );
+		undoPointMarker.setUndoPoint();
 	}
 
 	private class Editor extends JTextField
@@ -246,8 +252,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 			if ( killed )
 				return;
 
-			vertex.setLabel( getText().trim() );
-			undoPointMarker.setUndoPoint();
+			changeLabel( vertex, getText().trim() );
 		}
 
 		private void kill()
