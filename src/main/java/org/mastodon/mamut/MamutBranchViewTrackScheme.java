@@ -46,6 +46,7 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
+import org.mastodon.views.trackscheme.display.BranchTrackSchemeEditLabelAction;
 import org.mastodon.views.trackscheme.display.PaintBranchGraph;
 import org.mastodon.views.trackscheme.display.PaintDecorations;
 import org.mastodon.views.trackscheme.display.ShowSelectedTracksActions;
@@ -152,7 +153,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		BranchGraphUndoActions.install( viewActions, model, appModel.getBranchGraphSync() );
 		MastodonFrameViewActions.install( viewActions, this );
 		final ReentrantReadWriteLock lock = model.getGraph().getLock();
-		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
+		BranchTrackSchemeEditLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
 		FocusActions.install( viewActions, viewGraph, lock, focusModel, selectionModel );
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), lock, frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
