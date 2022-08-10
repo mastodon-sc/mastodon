@@ -34,32 +34,31 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * This class allows to iterate over a {@link Graph} in depth first iteration order.
- * <p>
- * (Warning: The graph must be a tree, the code won't terminate otherwise.)
  * <p>
  * "mastodon-graph" has another implementation of a
  * {@link org.mastodon.graph.algorithm.traversal.DepthFirstIterator depth first iteration}.
  * But this class provides additional features, necessary for {@link LineageTreeLayout}.
  * <ol>
- *    <li>It is possible the {@link #excludeNodeAction exclude subtrees} from the iteration.</li>
+ *    <li>It is possible the exclude subtrees from the iteration.</li>
  *    <li>Children are visited in the order of the respective outgoing edges.</li>
  *    <li>
- *        Non leaf nodes are visited twice. Once {@link #setVisitNodeBeforeChildrenAction before the child nodes}
- *        and once {@link #setVisitNodeAfterChildrenAction after the child nodes}.
+ *        Nodes that have children (non leafs) are visited twice. Once before
+ *        the child nodes will be visited, and once after the child nodes have
+ *        been visited.
  *    </li>
  * </ol>
- * Let's, as an example, consider this small graph:
+ * <p>
+ * (Warning: The iteration may not terminate if the graph contains a directed
+ * loop. Client code that should work with such graphs must detect this loops
+ * and call {@link Step#truncate()})
+ * <p>
+ * Let us look at a small example. Lets consider this small graph:
  * <pre>
  *  a -> b -> c
  *   \    \
@@ -71,166 +70,204 @@ import java.util.function.Predicate;
  * An depth first iteration can be executed using this code:
  * <pre>
  * {@code
- * DepthFirstIteration<Spot> df = new DepthFirstIteration<>( graph );
- * df.setVisitNodeBeforeChildrenAction(
- *     node -> System.out.println( "before node " + node.getLabel() )
- * );
- * df.setVisitLeafAction(
- *     leaf -> System.out.println( "leaf " + leaf.getLabel() )
- * );
- * df.setVisitNodeAfterChildrenAction(
- *     ( node, children ) -> System.out.println( "after node " + node.getLabel() )
- * );
- * df.runForRoot( a );
+ * for ( DepthFirstIteration.Step<Spot> step : DepthFirstIteration.forRoot( graph, root ) )
+ * {
+ *     Spot node = step.node();
+ *     if ( step.isFirstVisit() )
+ *        System.out.println( "first visit " + node.getLabel() );
+ *     if ( step.isSecondVisit() )
+ *        System.out.println( "second visit " + node.getLabel() );
+ *     if ( step.isLeaf() )
+ *        System.out.println( "leaf " + node.getLabel() );
+ * }
  * }
  * </pre>
- *
  * It will print the following on the console:
+ * <p>
  * <pre>
- * before node a
- * before node b
+ * first visit a
+ * first visit b
  * leaf c
  * leaf d
- * after node b
+ * second visit b
  * leaf e
- * after node a
+ * second visit a
  * </pre>
  *
  * @author Matthias Arzt
  */
-public class DepthFirstIteration<V extends Vertex<?>>
+public class DepthFirstIteration
 {
 
-	private final Graph<V, ?> graph;
-	private Predicate<V> excludeNodeAction = node -> false;
-	private Consumer<V> visitNodeBeforeChildrenAction = node -> {};
-	private Consumer<V> visitLeafAction = leaf -> {};
-	private BiConsumer<V, List<V>> visitNodeAfterChildrenAction = (node, children) -> {};
+	public interface Step<V extends Vertex<?>> {
 
-	public DepthFirstIteration( Graph<V, ?> graph ) {
-		this.graph = graph;
+		/*
+		 * @returns the node that is currently visited by the iterator.
+		 */
+		V node();
+
+		/**
+		 * @returns the length of the path from the root node the the
+		 * {@link #node() current node}.
+		 */
+		int depth();
+
+		/**
+		 * @return true if the {@link #node() node} has not outgoing edges / child nodes.
+		 */
+		boolean isLeaf();
+
+		/**
+		 * @return true if the {@link #node() node} is visited the first time
+		 * (before visiting all the child nodes).
+		 */
+		boolean isFirstVisit();
+
+		/**
+		 * @return true if the {@link #node() node} is visited the second time
+		 * (after visiting all the child nodes).
+		 */
+		boolean isSecondVisit();
+
+		/**
+		 * Calling this method when a {@link #node() node} is first visited,
+		 * will cause the iterator to skip all child nodes (and the entire
+		 * subtrees) of the current node.
+		 */
+		void truncate();
 	}
 
-	public void setExcludeNodeAction( Predicate<V> excludeNodeAction ) {
-		this.excludeNodeAction = excludeNodeAction;
-	}
-
-	public void setVisitNodeBeforeChildrenAction( Consumer<V> visitNodeBeforeChildrenAction )
+	public static <V extends Vertex<?>> Iterable<Step<V>> forRoot( Graph<V, ?> graph, V root )
 	{
-		this.visitNodeBeforeChildrenAction = visitNodeBeforeChildrenAction;
+		return () -> new DFIterator<>( graph, root );
 	}
 
-	public void setVisitLeafAction( Consumer<V> visitLeafAction )
+	private DepthFirstIteration( ) {
+	}
+
+	private enum Stage
 	{
-		this.visitLeafAction = visitLeafAction;
+		FIRST_VISIT, SECOND_VISIT, LEAF;
 	}
 
-	public void setVisitNodeAfterChildrenAction( BiConsumer<V, List<V>> visitNodeAfterChildrenAction )
+	private static class DFIterator<V extends Vertex<?>> implements Iterator<Step<V>>, Step<V>
 	{
-		this.visitNodeAfterChildrenAction = visitNodeAfterChildrenAction;
-	}
+		private final Graph<V, ?> graph;
+		private Stage stage = null;
+		private V node = null;
+		private boolean truncate = false;
+		private int depth = -1;
+		private final List<Entry<V>> stack = new ArrayList<>();
 
-	public void runForRoot(V root) {
-		push(root);
-		while(depth > 0) {
-			Entry<V> entry = next.get( depth - 1 );
-			V node = entry.node;
-			if( entry.first ) {
-				entry.first = false;
-				if( excludeNodeAction.test( node ))
-				{
-					lastVisited.add( node );
-					depth--;
-					continue;
-				}
-				if(!entry.edges.hasNext()) {
-					visitLeafAction.accept( node );
-					lastVisited.add( node );
-					depth--;
-					continue;
-				}
-				visitNodeBeforeChildrenAction.accept( node );
-			}
-			if( entry.edges.hasNext() ) {
-				entry.numberOfChildren++;
-				Edge<V> edge = entry.edges.next();
-				V child = edge.getTarget(graph.vertexRef());
-				push(child);
-			}
-			else {
-				int n = entry.numberOfChildren;
-				int size = lastVisited.size();
-				subList.setOffsetAndSize( size - n, n );
-				visitNodeAfterChildrenAction.accept( node, subList );
-				for ( int i = size - 1; i >= size - n; i-- )
-					graph.releaseRef( lastVisited.remove( i ) );
-				lastVisited.add( node );
-				depth--;
-			}
-		}
-		lastVisited.clear();
-	}
-
-	private void push( V root )
-	{
-		Entry<V> entry;
-		if(next.size() <= depth ) {
-			entry = new Entry<V>();
-			next.add( entry );
-		}
-		entry = next.get(depth);
-		entry.node = root;
-		entry.edges = Cast.unchecked( root.outgoingEdges().iterator() );
-		entry.first = true;
-		entry.numberOfChildren = 0;
-		depth++;
-	}
-
-	private static class Entry<V extends Vertex<?>> {
-		private V node;
-		private boolean first;
-		private Iterator<Edge<V>> edges;
-		private int numberOfChildren;
-	}
-
-	private int depth = 0;
-	private final List<Entry<V>> next = new ArrayList<>();
-	private final List<V> lastVisited = new ArrayList<>();
-	private final SubList<V> subList = new SubList<>( lastVisited );
-
-	private static class SubList<T> extends AbstractList<T>
-	{
-		private final List<T> source;
-
-		private int offset;
-
-		private int size;
-
-		public SubList( List<T> source )
+		public DFIterator( Graph<V, ?> graph, V root )
 		{
-			this.source = source;
-			this.size = source.size();
-			this.offset = 0;
-		}
-
-		public void setOffsetAndSize( int offset, int size )
-		{
-			this.offset = offset;
-			this.size = size;
+			this.graph = graph;
+			push( root );
 		}
 
 		@Override
-		public T get( int index )
+		public boolean hasNext()
 		{
-			if ( index < 0 || index >= size )
-				throw new NoSuchElementException();
-			return source.get( index + offset );
+			return depth > 0 || stage == Stage.FIRST_VISIT || stage == null;
 		}
 
 		@Override
-		public int size()
+		public Step<V> next()
 		{
-			return size;
+			if( stage == null) {
+				Entry<V> entry = stack.get( depth );
+				this.node = entry.node;
+				this.stage = entry.edges.hasNext() ? Stage.FIRST_VISIT : Stage.LEAF;
+				this.truncate = false;
+				return this;
+			}
+
+			if(stage == Stage.FIRST_VISIT && !truncate )
+			{
+				gotoNextChild();
+				return this;
+			}
+			graph.releaseRef( stack.get(depth).node );
+			depth--;
+			Entry<V> entry = stack.get( depth );
+			if(entry.edges.hasNext())
+			{
+				gotoNextChild();
+				return this;
+			}
+
+			this.stage = Stage.SECOND_VISIT;
+			this.node = entry.node;
+			return this;
 		}
+
+		private DFIterator<V> gotoNextChild()
+		{
+			Entry<V> entry = stack.get( depth );
+			Edge<V> edge = entry.edges.next();
+			V child = edge.getTarget( graph.vertexRef() );
+			push( child );
+			entry = stack.get( depth );
+			this.node = entry.node;
+			this.stage = entry.edges.hasNext() ? Stage.FIRST_VISIT : Stage.LEAF;
+			this.truncate = false;
+			return this;
+		}
+
+		@Override
+		public boolean isLeaf()
+		{
+			return stage == Stage.LEAF;
+		}
+
+		@Override
+		public boolean isFirstVisit()
+		{
+			return stage == Stage.FIRST_VISIT;
+		}
+
+		@Override
+		public boolean isSecondVisit()
+		{
+			return stage == Stage.SECOND_VISIT;
+		}
+
+		@Override
+		public V node()
+		{
+			return node;
+		}
+
+		@Override
+		public int depth()
+		{
+			return depth;
+		}
+
+		@Override
+		public void truncate()
+		{
+			this.truncate = true;
+		}
+
+		private void push( V root )
+		{
+			Entry<V> entry;
+			depth++;
+			if( stack.size() <= depth ) {
+				entry = new Entry<V>();
+				stack.add( entry );
+			}
+			entry = stack.get(depth);
+			entry.node = root;
+			entry.edges = Cast.unchecked( root.outgoingEdges().iterator() );
+		}
+
+		private static class Entry<V extends Vertex<?>> {
+			private V node;
+			private Iterator<Edge<V>> edges;
+		}
+
 	}
+
 }

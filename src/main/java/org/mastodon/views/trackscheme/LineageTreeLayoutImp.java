@@ -28,6 +28,7 @@
  */
 package org.mastodon.views.trackscheme;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,9 +36,7 @@ import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.graph.Edges;
-import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
@@ -669,31 +668,59 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	 */
 	protected void layoutX( final TrackSchemeVertex root )
 	{
-		DepthFirstIteration<TrackSchemeVertex> df = new DepthFirstIteration<>( graph );
-		df.setExcludeNodeAction( ( TrackSchemeVertex v ) -> {
-			vertexTable.add( v );
-			final boolean ghost = v.getLayoutTimestamp() < mark;
-			final boolean terminate = v.getLayoutTimestamp() < mark - 1;
-			v.setGhost( ghost );
-			v.setLayoutTimestamp( timestamp );
-			if ( terminate )
+		double[] firstX = new double[ 8 ];
+		double[] lastX = new double[ 8 ];
+		int[] numChildren = new int[ 8 ];
+		for ( DepthFirstIteration.Step<TrackSchemeVertex> step : DepthFirstIteration.forRoot( graph, root ) )
+		{
+
+			int depth = step.depth();
+
+			if ( depth >= firstX.length )
 			{
-				// This node, and it children will not be visited by the depth
-				// first iteration, but we still won't it to appear in the layout
-				// as a leaf.
-				v.setLayoutX( rightmost++ );
+				firstX = Arrays.copyOf( firstX, firstX.length * 2 );
+				lastX = Arrays.copyOf( firstX, firstX.length * 2 );
+				numChildren = Arrays.copyOf( numChildren, numChildren.length * 2 );
 			}
-			return terminate;
-		} );
-		df.setVisitLeafAction( leaf -> {
-			leaf.setLayoutX( rightmost++ );
-		} );
-		df.setVisitNodeAfterChildrenAction( (node, children) -> {
-			double firstX = children.get( 0 ).getLayoutX();
-			double lastX = children.get( children.size() - 1 ).getLayoutX();
-			node.setLayoutX( ( firstX + lastX ) / 2 );
-		} );
-		df.runForRoot( root );
+
+			TrackSchemeVertex v = step.node();
+
+			if ( step.isFirstVisit() || step.isLeaf() )
+			{
+
+				boolean hasBeenVisitedBefore = v.getLayoutTimestamp() >= timestamp;
+				if ( hasBeenVisitedBefore )
+				{
+					// This only happens if a node has two incoming edges.
+					step.truncate();
+					continue;
+				}
+
+				vertexTable.add( v );
+
+				final boolean ghost = v.getLayoutTimestamp() < mark;
+				v.setGhost( ghost );
+				final boolean truncate = v.getLayoutTimestamp() < mark - 1;
+				if ( truncate )
+					step.truncate();
+				v.setLayoutTimestamp( timestamp );
+
+				numChildren[ depth ] = 0;
+			}
+
+			if ( !step.isFirstVisit() || step.isLeaf() )
+			{
+				double x = numChildren[ depth ] == 0 ? rightmost++ : 0.5 * ( firstX[ depth ] + lastX[ depth ] );
+				v.setLayoutX( x );
+				if ( depth > 0 )
+				{
+					numChildren[ depth - 1 ]++;
+					if ( numChildren[ depth - 1 ] == 1 )
+						firstX[ depth - 1 ] = x;
+					lastX[ depth - 1 ] = x;
+				}
+			}
+		}
 	}
 
 	/**

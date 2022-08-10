@@ -30,15 +30,12 @@ package org.mastodon.views.trackscheme.display;
 
 import javax.swing.SwingUtilities;
 
-import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.collection.ref.RefSetImp;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.mamut.model.branch.BranchLink;
-import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
@@ -193,15 +190,14 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 	private RefList<TrackSchemeVertex> filterRootNodes( RefSet<TrackSchemeVertex> selectedVertices )
 	{
 		RefList<TrackSchemeVertex> roots = new RefArrayList<>( viewGraph.getVertexPool() );
-		DepthFirstIteration<TrackSchemeVertex> df = new DepthFirstIteration<>( viewGraph );
-		df.setExcludeNodeAction( node -> {
-			boolean isSelected = selectedVertices.contains( node );
-			if(isSelected)
-				roots.add(node);
-			return isSelected;
-		} );
 		for( TrackSchemeVertex realRoot : LexicographicalVertexOrder.sort( viewGraph, viewGraph.getRoots() ) )
-			df.runForRoot( realRoot );
+			for( DepthFirstIteration.Step<TrackSchemeVertex> step : DepthFirstIteration.forRoot(viewGraph, realRoot) ) {
+				TrackSchemeVertex node = step.node();
+				if(selectedVertices.contains( node )) {
+					roots.add( node );
+					step.truncate();
+				}
+			}
 		return roots;
 	}
 
