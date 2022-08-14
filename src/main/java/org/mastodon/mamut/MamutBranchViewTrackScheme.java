@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.mastodon.app.ui.BranchGraphSyncButton;
 import org.mastodon.app.ui.MastodonFrameViewActions;
@@ -229,7 +230,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		registerTagSetMenu( tagSetMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		// Listen to vertex labels being changed.
-		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+		model.getGraph().addVertexLabelListener( v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
 
 		// Restore colorbar state.
 		MamutView.restoreColorbarState( colorBarOverlay, guiState );

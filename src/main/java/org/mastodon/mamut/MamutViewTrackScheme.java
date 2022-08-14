@@ -44,6 +44,7 @@ import java.util.Map;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
@@ -256,7 +257,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		registerTagSetMenu( tagSetMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		// Listen to vertex labels being changed.
-		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+		model.getGraph().addVertexLabelListener( v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
 
 		// Restore colorbar state.
 		restoreColorbarState( colorBarOverlay, guiState );
