@@ -260,7 +260,9 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		{
 			new Thread( () -> {
 				appModel.getBranchGraphSync().sync();
-				frame.getTrackschemePanel().getTransformEventHandler().zoomOutFully();
+				// Reset zoom only if we did not receive a transform.
+				if ( null == tLoaded )
+					frame.getTrackschemePanel().getTransformEventHandler().zoomOutFully();
 			} ).start();
 		}
 	}
