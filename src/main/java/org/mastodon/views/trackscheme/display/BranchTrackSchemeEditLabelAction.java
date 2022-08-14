@@ -1,12 +1,13 @@
 package org.mastodon.views.trackscheme.display;
 
-import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchLink;
-import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import java.util.Iterator;
+
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.FocusModel;
+import org.mastodon.model.HasLabel;
+import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
@@ -14,50 +15,65 @@ import org.scijava.ui.behaviour.util.Actions;
 
 import net.imglib2.util.Cast;
 
-public class BranchTrackSchemeEditLabelAction extends EditFocusVertexLabelAction
+public class BranchTrackSchemeEditLabelAction
 {
+
 	private static final String[] EDIT_FOCUS_LABEL_KEYS = new String[] { "ENTER" };
 
-	private final Model model;
-
-	private final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph;
-
-	private final ModelBranchGraph branchGraph;
-
-	private final ModelGraph graph;
-
-	public static void install( final Actions actions, final TrackSchemePanel panel, final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus, final Model model )
+	public static < BV extends Vertex< BE >, BE extends Edge< BV >, V extends Vertex< E > & HasLabel, E extends Edge< V > > void install(
+			final Actions actions,
+			final TrackSchemePanel panel,
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final UndoPointMarker undoPointMarker,
+			final BranchGraph< BV, BE, V, E > branchGraph )
 	{
-		final EditFocusVertexLabelAction editFocusVertexLabelAction = new BranchTrackSchemeEditLabelAction( focus, model, panel );
-		panel.getScreenTransform().listeners().add( editFocusVertexLabelAction );
-		panel.getOffsetHeaders().listeners().add( editFocusVertexLabelAction );
-		actions.namedAction( editFocusVertexLabelAction, EDIT_FOCUS_LABEL_KEYS );
+		final BranchTrackSchemeEditLabelActionImp< BV, BE, V, E > editBranchVerticesLabelAction =
+				new BranchTrackSchemeEditLabelActionImp<>( focus, undoPointMarker, panel, branchGraph );
+		panel.getScreenTransform().listeners().add( editBranchVerticesLabelAction );
+		panel.getOffsetHeaders().listeners().add( editBranchVerticesLabelAction );
+		actions.namedAction( editBranchVerticesLabelAction, EDIT_FOCUS_LABEL_KEYS );
 	}
 
-	protected BranchTrackSchemeEditLabelAction( final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus, final Model model, final TrackSchemePanel panel )
+	private static class BranchTrackSchemeEditLabelActionImp< BV extends Vertex< BE >, BE extends Edge< BV >, V extends Vertex< E > & HasLabel, E extends Edge< V > >
+			extends EditFocusVertexLabelAction
 	{
-		super( focus, model, panel );
-		this.model = model;
-		this.graph = model.getGraph();
-		this.branchGraph = model.getBranchGraph();
-		this.trackSchemeGraph = Cast.unchecked( panel.getGraph() );
-	}
 
-	@Override
-	protected void changeLabel( final TrackSchemeVertex vertex, final String label )
-	{
-		vertex.setLabel( label );
-		final BranchSpot branchSpot = trackSchemeGraph.getVertexMap().getLeft( vertex );
-		final Spot vertexRef = graph.vertexRef();
-		Spot spot = branchGraph.getLinkedVertex( branchSpot, vertexRef );
-		while ( spot.incomingEdges().size() == 1 )
+		private static final long serialVersionUID = 1L;
+
+		private final TrackSchemeGraph< BV, BE > trackSchemeGraph;
+
+		private final BranchGraph< BV, BE, V, E > branchGraph;
+
+		protected BranchTrackSchemeEditLabelActionImp(
+				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+				final UndoPointMarker undoPointMarker,
+				final TrackSchemePanel panel,
+				final BranchGraph< BV, BE, V, E > branchGraph )
 		{
-			spot.setLabel( label );
-			spot = spot.incomingEdges().iterator().next().getSource( spot );
-			if ( spot.outgoingEdges().size() != 1 )
-				break;
+			super( focus, undoPointMarker, panel );
+			this.branchGraph = branchGraph;
+			this.trackSchemeGraph = Cast.unchecked( panel.getGraph() );
 		}
-		graph.releaseRef( spot );
-		model.setUndoPoint();
+
+		@Override
+		protected void changeLabel( final TrackSchemeVertex vertex, final String label )
+		{
+			final BV branchSpot = trackSchemeGraph.getVertexMap().getLeft( vertex );
+			if ( branchSpot.incomingEdges().isEmpty() )
+			{
+				vertex.setLabel( label );
+				return;
+			}
+
+			final BE link = branchSpot.incomingEdges().iterator().next();
+			final Iterator< V > it = branchGraph.vertexBranchIterator( link );
+			while ( it.hasNext() )
+			{
+				final V v = it.next();
+				v.setLabel( label );
+			}
+
+			undoPointMarker.setUndoPoint();
+		}
 	}
 }
