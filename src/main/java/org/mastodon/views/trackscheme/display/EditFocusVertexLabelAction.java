@@ -28,7 +28,6 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import bdv.viewer.TransformListener;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -56,6 +55,8 @@ import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListene
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
+
+import bdv.viewer.TransformListener;
 
 /**
  * Edit vertex label in TrackScheme.
@@ -90,9 +91,9 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 
 	private static final Font FONT = new Font( "SansSerif", Font.BOLD, 10 );
 
-	private final UndoPointMarker undoPointMarker;
+	protected final UndoPointMarker undoPointMarker;
 
-	private final TrackSchemePanel panel;
+	protected final TrackSchemePanel panel;
 
 	private final ScreenTransform screenTransform;
 
@@ -180,7 +181,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 		headerHeight = height;
 	}
 
-	protected void changeLabel( TrackSchemeVertex vertex, String label )
+	protected void changeLabel( final TrackSchemeVertex vertex, final String label )
 	{
 		vertex.setLabel( label );
 		undoPointMarker.setUndoPoint();
