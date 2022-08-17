@@ -57,7 +57,7 @@ public class LinkVelocityFeature implements Feature< Link >
 
 	public static final Spec SPEC = new Spec();
 
-	private final ModelGraph graph;
+	final ModelGraph graph;
 
 	private final String units;
 
