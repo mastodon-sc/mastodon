@@ -129,6 +129,7 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 
 		final ArrayList< SourceAndConverter< ? > > sources = bdvData.getSources();
 		int done = 0;
+		final ExecutorService executor = Executors.newFixedThreadPool( numThreads );
 		for ( int iSource = 0; iSource < sources.size(); iSource++ )
 		{
 			@SuppressWarnings( "unchecked" )
@@ -148,7 +149,6 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 						recomputeAll ) );
 				try
 				{
-					final ExecutorService executor = Executors.newFixedThreadPool( numThreads );
 					final List< Future< Void > > futures = executor.invokeAll( tasks );
 					for ( final Future< Void > future : futures )
 						future.get();
@@ -163,6 +163,7 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 				}
 			}
 		}
+		executor.shutdown();
 	}
 
 	@Override
