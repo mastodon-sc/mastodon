@@ -130,7 +130,14 @@ public class MamutRawFeatureModelIO
 				System.err.println( "Do not know how to deserialize a feature that targets " + targetClass );
 				continue;
 			}
-			featureModel.declareFeature( feature );
+
+			/*
+			 * Only declare the feature if it was properly deserialized. A null
+			 * value indicates that the feature we are trying to deserialize is
+			 * anyway computed on the fly and does not require deserialization.
+			 */
+			if ( feature != null )
+				featureModel.declareFeature( feature );
 		}
 		featureModel.resumeListeners();
 	}
