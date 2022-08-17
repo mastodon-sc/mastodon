@@ -76,7 +76,9 @@ public interface FeatureSerializer< F extends Feature< O >, O > extends SciJavaP
 	public void serialize( F feature, ObjectToFileIdMap< O > idmap, ObjectOutputStream oos ) throws IOException;
 
 	/**
-	 * Deserializes a feature from the specified input stream.
+	 * Deserializes a feature from the specified input stream. Returns
+	 * <code>null</code> if the feature values are computed on the fly and do
+	 * not need deseralization.
 	 *
 	 * @param idmap
 	 *            the {@link FileIdToObjectMap}.
@@ -85,13 +87,17 @@ public interface FeatureSerializer< F extends Feature< O >, O > extends SciJavaP
 	 *            the feature.
 	 * @param ois
 	 *            the input stream.
-	 * @return a new feature instance.
+	 * @return a new feature instance or <code>null</code> if the feature values
+	 *         are computed on the fly and do not need deseralization.
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the feature file.
 	 * @throws ClassNotFoundException
 	 *             if the class of the feature or the class of its target cannot
 	 *             be found.
 	 */
-	public F deserialize( final FileIdToObjectMap< O > idmap, final RefCollection< O > pool, ObjectInputStream ois ) throws IOException, ClassNotFoundException;
+	public default F deserialize( final FileIdToObjectMap< O > idmap, final RefCollection< O > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	{
+		return null;
+	}
 
 }
