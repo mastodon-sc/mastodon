@@ -552,7 +552,7 @@ public class ProjectManager
 			final Model model = windowManager.getAppModel().getModel();
 			final GraphToFileIdMap< Spot, Link > idmap = model.saveRaw( writer );
 			// Serialize feature model.
-			MamutRawFeatureModelIO.serialize( windowManager.getContext(), model.getFeatureModel(), idmap, writer );
+			MamutRawFeatureModelIO.serialize( windowManager.getContext(), model, idmap, writer );
 			// Serialize GUI state.
 			saveGUI( writer );
 			// Set save point.
