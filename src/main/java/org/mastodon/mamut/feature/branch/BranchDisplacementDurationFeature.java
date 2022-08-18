@@ -53,10 +53,13 @@ public class BranchDisplacementDurationFeature implements Feature< BranchLink >
 
 	final DoublePropertyMap< BranchLink > durMap;
 
+	final String lengthUnits;
+
 	BranchDisplacementDurationFeature( final DoublePropertyMap< BranchLink > dispMap, final DoublePropertyMap< BranchLink > durMap, final String lengthUnits )
 	{
 		this.dispMap = dispMap;
 		this.durMap = durMap;
+		this.lengthUnits = lengthUnits;
 		this.projectionMap = new LinkedHashMap<>( 2 );
 		projectionMap.put( key( DISPLACEMENT_PROJECTION_SPEC ), FeatureProjections.project( key( DISPLACEMENT_PROJECTION_SPEC ), dispMap, lengthUnits ) );
 		projectionMap.put( key( DURATION_PROJECTION_SPEC ), FeatureProjections.project( key( DURATION_PROJECTION_SPEC ), durMap, Dimension.NONE_UNITS ) );
