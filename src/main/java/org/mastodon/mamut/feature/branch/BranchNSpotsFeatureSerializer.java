@@ -32,18 +32,20 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.mastodon.collection.RefCollection;
 import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.IntPropertyMapSerializer;
 import org.mastodon.mamut.feature.branch.BranchNSpotsFeature.Spec;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )
-public class BranchNSpotsFeatureSerializer implements FeatureSerializer< BranchNSpotsFeature, BranchLink >
+public class BranchNSpotsFeatureSerializer implements BranchFeatureSerializer< BranchNSpotsFeature, BranchLink, Link >
 {
 
 	@Override
@@ -53,18 +55,32 @@ public class BranchNSpotsFeatureSerializer implements FeatureSerializer< BranchN
 	}
 
 	@Override
-	public void serialize( final BranchNSpotsFeature feature, final ObjectToFileIdMap< BranchLink > idmap, final ObjectOutputStream oos ) throws IOException
+	public BranchNSpotsFeature deserialize(
+			final FileIdToObjectMap< Link > idmap,
+			final ObjectInputStream ois,
+			final ModelBranchGraph branchGraph,
+			final ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
-		final IntPropertyMapSerializer< BranchLink > propertyMapSerializer = new IntPropertyMapSerializer<>( feature.map );
-		propertyMapSerializer.writePropertyMap( idmap, oos );
+		// Read the map link -> val.
+		final IntPropertyMap< Link > lmap = new IntPropertyMap<>( graph.edges(), -1 );
+		final IntPropertyMapSerializer< Link > propertyMapSerializer = new IntPropertyMapSerializer<>( lmap );
+		propertyMapSerializer.readPropertyMap( idmap, ois );
+
+		// Map to branch-link -> val.
+		return new BranchNSpotsFeature( BranchFeatureSerializer.mapToBranchLinkMap( lmap, branchGraph ) );
 	}
 
 	@Override
-	public BranchNSpotsFeature deserialize( final FileIdToObjectMap< BranchLink > idmap, final RefCollection< BranchLink > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	public void serialize(
+			final BranchNSpotsFeature feature,
+			final ObjectToFileIdMap< Link > idmap,
+			final ObjectOutputStream oos,
+			final ModelBranchGraph branchGraph,
+			final ModelGraph graph ) throws IOException
 	{
-		final IntPropertyMap< BranchLink > map = new IntPropertyMap<>( pool, -1 );
-		final IntPropertyMapSerializer< BranchLink > propertyMapSerializer = new IntPropertyMapSerializer<>( map );
-		propertyMapSerializer.readPropertyMap( idmap, ois );
-		return new BranchNSpotsFeature( map );
+		final IntPropertyMap< Link > lmap = BranchFeatureSerializer.branchLinkMapToMap( feature.map, branchGraph, graph );
+		final IntPropertyMapSerializer< Link > propertyMapSerializer = new IntPropertyMapSerializer<>( lmap );
+		propertyMapSerializer.writePropertyMap( idmap, oos );
 	}
+
 }
