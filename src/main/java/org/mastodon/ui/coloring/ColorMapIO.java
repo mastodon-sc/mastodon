@@ -33,9 +33,8 @@ import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -259,7 +258,7 @@ public class ColorMapIO
 		/*
 		 * Do we have a binary LUT file (size == 768 bytes)?
 		 */
-		final int fileLength = ( int ) path.toFile().length();
+		final long fileLength = Files.size( path );
 		final boolean isBinaryLUT = fileLength == 768 || fileLength == 970;
 
 		if ( isBinaryLUT )
@@ -268,7 +267,7 @@ public class ColorMapIO
 			 * LUT is stored in a binary file.
 			 */
 
-			try (DataInputStream f = new DataInputStream( new FileInputStream( path.toFile() ) ))
+			try (DataInputStream f = new DataInputStream( Files.newInputStream( path ) ))
 			{
 				final int nColors = 256;
 				final byte[] r = new byte[ nColors ];
@@ -301,7 +300,7 @@ public class ColorMapIO
 			 */
 
 			String firstLine = "";
-			try (BufferedReader brTest = new BufferedReader( new FileReader( path.toFile() ) ))
+			try (BufferedReader brTest = Files.newBufferedReader( path ))
 			{
 				firstLine = brTest.readLine();
 			}
