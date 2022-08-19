@@ -291,7 +291,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		return viewer;
 	}
 
-	private static OverlayGraphWrapper< BranchSpot, BranchLink > createViewBranchGraph( final MamutAppModel appModel )
+	private static OverlayGraphWrapper<BranchSpot, BranchLink> createViewBranchGraph( final MamutAppModel appModel )
 	{
 		// Model.
 		final Model model = appModel.getModel();
@@ -312,7 +312,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 				branchGraphIdBimap,
 				model.getBranchGraphSpatioTemporalIndex(),
 				graph.getLock(),
-				properties);
+				properties );
 		return overlayBranchGraph;
 	}
 }

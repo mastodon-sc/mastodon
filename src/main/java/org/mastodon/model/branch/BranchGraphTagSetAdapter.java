@@ -1,13 +1,14 @@
 package org.mastodon.model.branch;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.graph.branch_v2.BranchGraphV2;
 import org.mastodon.model.tag.ObjTagMap;
 import org.mastodon.model.tag.ObjTags;
 import org.mastodon.model.tag.ObjTagsAdapter;
@@ -20,7 +21,7 @@ import org.scijava.listeners.Listeners;
 public class BranchGraphTagSetAdapter< 
 	V extends Vertex< E >, 
 	E extends Edge< V >, 
-	BV extends Vertex< BE >, 
+	BV extends Vertex< BE >,
 	BE extends Edge< BV > >
 		extends AbstractBranchGraphAdapter< V, E, BV, BE >
 		implements TagSetModel< BV, BE >
@@ -33,7 +34,7 @@ public class BranchGraphTagSetAdapter<
 	private final ObjTags< E > edgeTags;
 
 	public BranchGraphTagSetAdapter(
-			final BranchGraph< BV, BE, V, E > branchGraph,
+			final BranchGraphV2< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final TagSetModel< V, E > tagsetModel )
@@ -47,16 +48,16 @@ public class BranchGraphTagSetAdapter<
 	@Override
 	public ObjTags< BV > getVertexTags()
 	{
-		// 1 to 1 correspondence.
-		final RefBimap< V, BV > map = new BranchGraphVertexBimap<>( branchGraph, graph );
-		return new ObjTagsAdapter<>( tagsetModel.getVertexTags(), map );
+		// 1 to many correspondence.
+		return new MyVertexTags();
 	}
 
 	@Override
 	public ObjTags< BE > getEdgeTags()
 	{
-		// 1 to many correspondence.
-		return new MyEdgeTags();
+		// 1 to 1 correspondence.
+		final RefBimap< E, BE > map = new BranchGraphEdgeBimap<>( branchGraph, graph );
+		return new ObjTagsAdapter<>( tagsetModel.getEdgeTags(), map );
 	}
 
 	@Override
@@ -95,63 +96,57 @@ public class BranchGraphTagSetAdapter<
 		tagsetModel.clear();
 	}
 
-	private void set( final BE edge, final Tag tag )
+	private void set( final BV branchVertex, final Tag tag )
 	{
-		final E eRef = graph.edgeRef();
-		final V vRef = graph.vertexRef();
-		final BE beRef = branchGraph.edgeRef();
-
-		E e = branchGraph.getLinkedEdge( edge, eRef );
-		edgeTags.set( e, tag );
-
-		V target = e.getTarget( vRef );
-		do
+		Iterator<V> vIter = branchGraph.vertexBranchIterator( branchVertex );
+		Iterator<E> eIter = branchGraph.edgeBranchIterator( branchVertex );
+		try
 		{
-			vertexTags.set( target, tag );
-			/*
-			 * The target vertex is still linked to the branch edge, so this
-			 * means that it is still in the middle of the branch. This in turn
-			 * means that it has only one outgoing edge.
-			 */
-			if ( target.outgoingEdges().isEmpty() )
-				break;
-			e = target.outgoingEdges().get( 0, eRef );
-			edgeTags.set( e, tag );
-			target = e.getTarget( vRef );
-		}
-		while ( edge.equals( branchGraph.getBranchEdge( target, beRef ) ) );
+			while ( vIter.hasNext() )
+			{
+				V v = vIter.next();
+				vertexTags.set( v, tag );
+			}
 
-		branchGraph.releaseRef( beRef );
-		graph.releaseRef( eRef );
-		graph.releaseRef( vRef );
+			while ( eIter.hasNext() )
+			{
+				E e = eIter.next();
+				edgeTags.set( e, tag );
+			}
+		}
+		finally
+		{
+			branchGraph.releaseIterator( vIter );
+			branchGraph.releaseIterator( eIter );
+		}
 	}
 
-	private class MyEdgeTags implements ObjTags< BE >
+	private class MyVertexTags implements ObjTags< BV >
 	{
 
 		@Override
-		public ObjTagMap< BE, Tag > tags( final TagSet tagSet )
+		public ObjTagMap< BV, Tag > tags( final TagSet tagSet )
 		{
 			// Wrap to ensure many to 1 correspondence
-			final ObjTagMap< V, Tag > vertexTasMap = vertexTags.tags( tagSet );
+			final ObjTagMap< V, Tag > vertexTagMap = vertexTags.tags( tagSet );
 			final ObjTagMap< E, Tag > edgeTagMap = edgeTags.tags( tagSet );
-			return new MyObjTagMap( vertexTasMap, edgeTagMap );
+			return new MyObjTagMap( vertexTagMap, edgeTagMap );
 		}
 
 		@Override
-		public void set( final BE edge, final Tag tag )
+		public void set( final BV vertex, final Tag tag )
 		{
-			BranchGraphTagSetAdapter.this.set( edge, tag );
+			BranchGraphTagSetAdapter.this.set( vertex, tag );
 		}
 
 		@Override
-		public Collection< BE > getTaggedWith( final Tag tag )
+		public Collection< BV > getTaggedWith( final Tag tag )
 		{
 			throw new UnsupportedOperationException( "getTaggedWith() is not supported for branch graphs." );
 		}
 	}
 
-	private class MyObjTagMap implements ObjTagMap< BE, Tag >
+	private class MyObjTagMap implements ObjTagMap< BV, Tag >
 	{
 
 		private final ObjTagMap< E, Tag > edgeTagMap;
@@ -165,84 +160,82 @@ public class BranchGraphTagSetAdapter<
 		}
 
 		@Override
-		public void set( final BE edge, final Tag tag )
+		public void set( final BV edge, final Tag tag )
 		{
 			BranchGraphTagSetAdapter.this.set( edge, tag );
 		}
 
 		@Override
-		public void remove( final BE edge )
+		public void remove( final BV branchVertex )
 		{
-			/*
-			 * We need to untag all core vertices and edges mapped to this
-			 * branch edge.
-			 */
-			final E eRef = graph.edgeRef();
-			final V vRef = graph.vertexRef();
-			final BE beRef = branchGraph.edgeRef();
-
-			E e = branchGraph.getLinkedEdge( edge, eRef );
-			edgeTagMap.remove( e );
-
-			V target = e.getTarget( vRef );
-			do
+			Iterator<V> vIter = branchGraph.vertexBranchIterator( branchVertex );
+			Iterator<E> eIter = branchGraph.edgeBranchIterator( branchVertex );
+			try
 			{
-				vertexTagMap.remove( target );
-				if ( target.outgoingEdges().isEmpty() )
-					break;
-				e = target.outgoingEdges().get( 0, eRef );
-				edgeTagMap.remove( e );
-				target = e.getTarget( vRef );
-			}
-			while ( edge.equals( branchGraph.getBranchEdge( target, beRef ) ) );
+				while ( vIter.hasNext() )
+				{
+					V v = vIter.next();
+					vertexTagMap.remove( v );
+				}
 
-			branchGraph.releaseRef( beRef );
-			graph.releaseRef( eRef );
-			graph.releaseRef( vRef );
+				while ( eIter.hasNext() )
+				{
+					E e = eIter.next();
+					edgeTagMap.remove( e );
+				}
+			}
+			finally
+			{
+				branchGraph.releaseIterator( vIter );
+				branchGraph.releaseIterator( eIter );
+			}
 		}
 
 		@Override
-		public Tag get( final BE edge )
+		public Tag get( final BV branchVertex )
 		{
-			/*
-			 * We return a tag only if all core vertices and edges mapped to
-			 * this branch edge are tagged with the same tag.
-			 */
-			final E eRef = graph.edgeRef();
 			final V vRef = graph.vertexRef();
-			final BE beRef = branchGraph.edgeRef();
 			try
 			{
-				E e = branchGraph.getLinkedEdge( edge, eRef );
-				final Tag tag = edgeTagMap.get( e );
-				if ( tag == null )
+				// NB: Return a tag only if all vertices and edges have the same
+				// tag.
+				V first = branchGraph.getFirstLinkedVertex( branchVertex, vRef );
+				Tag tag = vertexTagMap.get( first );
+				if(tag == null)
 					return null;
 
-				V target = e.getTarget( vRef );
-				do
+				Iterator<V> vIter = branchGraph.vertexBranchIterator( branchVertex );
+				Iterator<E> eIter = branchGraph.edgeBranchIterator( branchVertex );
+				try
 				{
-					if ( !tag.equals( vertexTagMap.get( target ) ) )
-						return null;
-					if ( target.outgoingEdges().isEmpty() )
-						break;
-					e = target.outgoingEdges().get( 0, eRef );
-					if ( !tag.equals( edgeTagMap.get( e ) ) )
-						return null;
-					target = e.getTarget( vRef );
+					while( vIter.hasNext() ) {
+						V v = vIter.next();
+						if( ! tag.equals( vertexTagMap.get(v) ) )
+							return null;
+					}
+
+					while( eIter.hasNext() ) {
+						E e = eIter.next();
+						if( ! tag.equals( edgeTagMap.get( e ) ) )
+							return null;
+					}
 				}
-				while ( edge.equals( branchGraph.getBranchEdge( target, beRef ) ) );
+				finally
+				{
+					branchGraph.releaseIterator( vIter );
+					branchGraph.releaseIterator( eIter );
+				}
+
 				return tag;
 			}
 			finally
 			{
-				branchGraph.releaseRef( beRef );
-				graph.releaseRef( eRef );
 				graph.releaseRef( vRef );
 			}
 		}
 
 		@Override
-		public Collection< BE > getTaggedWith( final Tag tag )
+		public Collection< BV > getTaggedWith( final Tag tag )
 		{
 			throw new UnsupportedOperationException( "getTaggedWith() is not supported for branch graphs." );
 		}

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.ItemIO;
@@ -29,22 +29,23 @@ public class BranchNSpotsFeatureComputer implements MamutFeatureComputer
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchNSpotsFeature( new IntPropertyMap<>( branchGraph.edges().getRefPool(), -1 ) );
+			output = new BranchNSpotsFeature( new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ) );
 	}
 
 	@Override
 	public void run()
 	{
-		for ( final BranchLink be : branchGraph.edges() )
+		for ( final BranchSpot bv : branchGraph.vertices() )
 		{
 			int nspots = 0;
-			final Iterator< Spot > it = branchGraph.vertexBranchIterator( be );
+			final Iterator< Spot > it = branchGraph.vertexBranchIterator( bv );
 			while ( it.hasNext() )
 			{
 				it.next();
 				nspots++;
 			}
-			output.map.set( be, nspots );
+			branchGraph.releaseIterator( it );
+			output.map.set( bv, nspots );
 		}
 	}
 }

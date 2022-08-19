@@ -2,9 +2,8 @@ package org.mastodon.ui.coloring;
 
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
-import org.mastodon.graph.Edges;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.graph.branch_v2.BranchGraphV2;
 
 public class BranchFeatureColorGeneratorIncomingEdge< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
 		extends AbstractBranchEdgeColorGenerator< V, E, BV, BE >
@@ -13,7 +12,7 @@ public class BranchFeatureColorGeneratorIncomingEdge< V extends Vertex< E >, E e
 
 	public BranchFeatureColorGeneratorIncomingEdge(
 			final FeatureProjection< BE > featureProjection,
-			final BranchGraph< BV, BE, V, E > branchGraph,
+			final BranchGraphV2< BV, BE, V, E > branchGraph,
 			final ColorMap colorMap,
 			final double min,
 			final double max )
@@ -24,11 +23,22 @@ public class BranchFeatureColorGeneratorIncomingEdge< V extends Vertex< E >, E e
 	@Override
 	public int color( final V v )
 	{
-		final Edges< E > edges = v.incomingEdges();
-		if ( edges.size() != 1 )
-			return 0;
-
-		final E e = edges.iterator().next();
-		return fromEdge( e );
+		final BE beRef = branchGraph.edgeRef();
+		final BV bvRef = branchGraph.vertexRef();
+		try
+		{
+			final BV bv = branchGraph.getBranchVertex( v, bvRef );
+			if(bv == null)
+				return 0;
+			if(bv.incomingEdges().size() != 1)
+				return 0;
+			BE be = bv.incomingEdges().get(0, beRef);
+			return colorGenerator.color( be, null, null );
+		}
+		finally
+		{
+			branchGraph.releaseRef( beRef );
+			branchGraph.releaseRef( bvRef );
+		}
 	}
 }

@@ -33,7 +33,7 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.graph.branch_v2.BranchGraphV2;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
@@ -62,13 +62,13 @@ public class ColoringModelMain<
 		implements TagSetModel.TagSetModelListener, FeatureColorModeManager.FeatureColorModesListener
 {
 
-	private final BranchGraph< BV, BE, V, E > branchGraph;
+	private final BranchGraphV2< BV, BE, V, E > branchGraph;
 
 	public ColoringModelMain(
 			final TagSetModel< ?, ? > tagSetModel,
 			final FeatureColorModeManager featureColorModeManager,
 			final FeatureModel featureModel,
-			final BranchGraph< BV, BE, V, E > branchGraph )
+			final BranchGraphV2< BV, BE, V, E > branchGraph )
 	{
 		super( tagSetModel, featureColorModeManager, featureModel );
 		this.branchGraph = branchGraph;
@@ -135,14 +135,8 @@ public class ColoringModelMain<
 					vertexRangeMin, vertexRangeMax );
 		case NONE:
 			return new DefaultColorGenerator<>();
-		case BRANCH_VERTEX_UP:
-			return new BranchUpFeatureColorGenerator<>(
-					Cast.unchecked( vertexProjection ),
-					branchGraph,
-					ColorMap.getColorMap( vertexColorMap ),
-					vertexRangeMin, vertexRangeMax );
-		case BRANCH_VERTEX_DOWN:
-			return new BranchDownFeatureColorGenerator<>(
+		case BRANCH_VERTEX:
+			return new BranchFeatureColorGenerator<>(
 					Cast.unchecked( vertexProjection ),
 					branchGraph,
 					ColorMap.getColorMap( vertexColorMap ),
@@ -188,36 +182,29 @@ public class ColoringModelMain<
 					edgeRangeMin, edgeRangeMax );
 		case NONE:
 			return new DefaultEdgeColorGenerator<>();
-		case SOURCE_BRANCH_VERTEX_UP:
-			return new BranchUpFeatureColorGeneratorSourceVertex<>(
+		case SOURCE_BRANCH_VERTEX:
+			return new BranchFeatureColorGeneratorSourceVertex<>(
 					Cast.unchecked( edgeProjection ),
 					branchGraph,
 					ColorMap.getColorMap( edgeColorMap ),
 					edgeRangeMin,
 					edgeRangeMax );
-		case TARGET_BRANCH_VERTEX_UP:
-			return new BranchUpFeatureColorGeneratorTargetVertex<>(
+		case TARGET_BRANCH_VERTEX:
+			return new BranchFeatureColorGeneratorTargetVertex<>(
 					Cast.unchecked( edgeProjection ),
 					branchGraph,
 					ColorMap.getColorMap( edgeColorMap ),
 					edgeRangeMin,
 					edgeRangeMax );
-		case SOURCE_BRANCH_VERTEX_DOWN:
-			return new BranchDownFeatureColorGeneratorSourceVertex<>(
+		case INCOMING_BRANCH_EDGE:
+			return new IncomingBranchEdgeFeatureColorGenerator<>(
 					Cast.unchecked( edgeProjection ),
 					branchGraph,
 					ColorMap.getColorMap( edgeColorMap ),
 					edgeRangeMin,
 					edgeRangeMax );
-		case TARGET_BRANCH_VERTEX_DOWN:
-			return new BranchDownFeatureColorGeneratorTargetVertex<>(
-					Cast.unchecked( edgeProjection ),
-					branchGraph,
-					ColorMap.getColorMap( edgeColorMap ),
-					edgeRangeMin,
-					edgeRangeMax );
-		case BRANCH_EDGE:
-			return new BranchEdgeFeatureColorGenerator<>(
+		case OUTGOING_BRANCH_EDGE:
+			return new OutgoingBranchEdgeFeatureColorGenerator<>(
 					Cast.unchecked( edgeProjection ),
 					branchGraph,
 					ColorMap.getColorMap( edgeColorMap ),

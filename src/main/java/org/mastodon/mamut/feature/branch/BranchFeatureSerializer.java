@@ -185,7 +185,7 @@ public interface BranchFeatureSerializer< F extends Feature< O >, O, Q > extends
 		{
 			for ( final BranchSpot bl : map.getMap().keySet() )
 			{
-				final Spot l = branchGraph.getLinkedVertex( bl, eref );
+				final Spot l = branchGraph.getLastLinkedVertex( bl, eref );
 				lmap.set( l, map.get( bl ) );
 			}
 		}
@@ -204,7 +204,7 @@ public interface BranchFeatureSerializer< F extends Feature< O >, O, Q > extends
 		{
 			for ( final BranchSpot bl : map.getMap().keySet() )
 			{
-				final Spot l = branchGraph.getLinkedVertex( bl, eref );
+				final Spot l = branchGraph.getLastLinkedVertex( bl, eref );
 				lmap.set( l, map.get( bl ) );
 			}
 		}

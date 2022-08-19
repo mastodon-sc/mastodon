@@ -4,7 +4,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.graph.branch_v2.BranchGraphV2;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
 import org.scijava.listeners.Listeners;
@@ -23,7 +23,7 @@ public class BranchGraphNavigationHandlerAdapter<
 	private final Listeners< NavigationListener< BV, BE > > listeners;
 
 	public BranchGraphNavigationHandlerAdapter(
-			final BranchGraph< BV, BE, V, E > branchGraph,
+			final BranchGraphV2< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idBimap,
 			final NavigationHandler< V, E > navigation )
@@ -37,7 +37,7 @@ public class BranchGraphNavigationHandlerAdapter<
 	public void notifyNavigateToVertex( final BV vertex )
 	{
 		final V vref = graph.vertexRef();
-		final V v = branchGraph.getLinkedVertex( vertex, vref );
+		final V v = branchGraph.getLastLinkedVertex( vertex, vref );
 		if ( isValid( v ) )
 			navigation.notifyNavigateToVertex( v );
 		graph.releaseRef( vref );
@@ -113,32 +113,37 @@ public class BranchGraphNavigationHandlerAdapter<
 		public void navigateToVertex( final V vertex )
 		{
 			final BV bvref = branchGraph.vertexRef();
-			final BV bv = branchGraph.getBranchVertex( vertex, bvref );
-			if ( bv != null )
+			try
 			{
-				listener.navigateToVertex( bv );
+				final BV bv = branchGraph.getBranchVertex( vertex, bvref );
+				if ( bv != null )
+					listener.navigateToVertex( bv );
 			}
-			else
+			finally
 			{
-				final BE beref = branchGraph.edgeRef();
-				final BE be = branchGraph.getBranchEdge( vertex, beref );
-				if ( be != null )
-					listener.navigateToEdge( be );
-
-				branchGraph.releaseRef( beref );
+				branchGraph.releaseRef( bvref );
 			}
-			branchGraph.releaseRef( bvref );
 		}
 
 		@Override
 		public void navigateToEdge( final E edge )
 		{
 			final BE beref = branchGraph.edgeRef();
-			final BE be = branchGraph.getBranchEdge( edge, beref );
-			if ( be != null )
-				listener.navigateToEdge( be );
-
-			branchGraph.releaseRef( beref );
+			final BV bvref = branchGraph.vertexRef();
+			try
+			{
+				final BE be = branchGraph.getBranchEdge( edge, beref );
+				if ( be != null )
+					listener.navigateToEdge( be );
+				final BV bv = branchGraph.getBranchVertex( edge, bvref );
+				if ( bv != null )
+					listener.navigateToVertex( bv );
+			}
+			finally
+			{
+				branchGraph.releaseRef( beref );
+				branchGraph.releaseRef( bvref );
+			}
 		}
 	}
 }

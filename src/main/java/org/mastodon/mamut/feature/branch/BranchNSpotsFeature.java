@@ -14,11 +14,11 @@ import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
-public class BranchNSpotsFeature implements Feature< BranchLink >
+public class BranchNSpotsFeature implements Feature< BranchSpot >
 {
 	public static final String KEY = "Branch N spots";
 
@@ -28,12 +28,12 @@ public class BranchNSpotsFeature implements Feature< BranchLink >
 
 	public static final Spec SPEC = new Spec();
 
-	final IntPropertyMap< BranchLink > map;
+	final IntPropertyMap< BranchSpot > map;
 
-	private final IntFeatureProjection< BranchLink > projection;
+	private final IntFeatureProjection< BranchSpot > projection;
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< BranchNSpotsFeature, BranchLink >
+	public static class Spec extends FeatureSpec< BranchNSpotsFeature, BranchSpot >
 	{
 		public Spec()
 		{
@@ -41,31 +41,31 @@ public class BranchNSpotsFeature implements Feature< BranchLink >
 					KEY,
 					INFO_STRING,
 					BranchNSpotsFeature.class,
-					BranchLink.class,
+					BranchSpot.class,
 					Multiplicity.SINGLE,
 					PROJECTION_SPEC );
 		}
 	}
 
-	BranchNSpotsFeature( final IntPropertyMap< BranchLink > map )
+	BranchNSpotsFeature( final IntPropertyMap< BranchSpot > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
 	}
 
-	public int get( final BranchLink branch )
+	public int get( final BranchSpot branch )
 	{
 		return map.getInt( branch );
 	}
 
 	@Override
-	public FeatureProjection< BranchLink > project( final FeatureProjectionKey key )
+	public FeatureProjection< BranchSpot > project( final FeatureProjectionKey key )
 	{
 		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
-	public Set< FeatureProjection< BranchLink > > projections()
+	public Set< FeatureProjection< BranchSpot > > projections()
 	{
 		return Collections.singleton( projection );
 	}
@@ -77,7 +77,7 @@ public class BranchNSpotsFeature implements Feature< BranchLink >
 	}
 
 	@Override
-	public void invalidate( final BranchLink spot )
+	public void invalidate( final BranchSpot spot )
 	{
 		map.remove( spot );
 	}

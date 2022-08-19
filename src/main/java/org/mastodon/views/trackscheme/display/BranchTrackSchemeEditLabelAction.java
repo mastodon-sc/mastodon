@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.graph.branch_v2.BranchGraphV2;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.undo.UndoPointMarker;
@@ -25,7 +26,7 @@ public class BranchTrackSchemeEditLabelAction
 			final TrackSchemePanel panel,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final UndoPointMarker undoPointMarker,
-			final BranchGraph< BV, BE, V, E > branchGraph )
+			final BranchGraphV2< BV, BE, V, E > branchGraph )
 	{
 		final BranchTrackSchemeEditLabelActionImp< BV, BE, V, E > editBranchVerticesLabelAction =
 				new BranchTrackSchemeEditLabelActionImp<>( focus, undoPointMarker, panel, branchGraph );
@@ -42,13 +43,13 @@ public class BranchTrackSchemeEditLabelAction
 
 		private final TrackSchemeGraph< BV, BE > trackSchemeGraph;
 
-		private final BranchGraph< BV, BE, V, E > branchGraph;
+		private final BranchGraphV2< BV, BE, V, E > branchGraph;
 
 		protected BranchTrackSchemeEditLabelActionImp(
 				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 				final UndoPointMarker undoPointMarker,
 				final TrackSchemePanel panel,
-				final BranchGraph< BV, BE, V, E > branchGraph )
+				final BranchGraphV2< BV, BE, V, E > branchGraph )
 		{
 			super( focus, undoPointMarker, panel );
 			this.branchGraph = branchGraph;
@@ -59,20 +60,12 @@ public class BranchTrackSchemeEditLabelAction
 		protected void changeLabel( final TrackSchemeVertex vertex, final String label )
 		{
 			final BV branchSpot = trackSchemeGraph.getVertexMap().getLeft( vertex );
-			if ( branchSpot.incomingEdges().isEmpty() )
-			{
-				vertex.setLabel( label );
-				return;
-			}
-
-			final BE link = branchSpot.incomingEdges().iterator().next();
-			final Iterator< V > it = branchGraph.vertexBranchIterator( link );
+			final Iterator< V > it = branchGraph.vertexBranchIterator( branchSpot );
 			while ( it.hasNext() )
 			{
 				final V v = it.next();
 				v.setLabel( label );
 			}
-
 			undoPointMarker.setUndoPoint();
 		}
 	}

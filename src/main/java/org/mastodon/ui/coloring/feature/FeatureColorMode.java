@@ -87,40 +87,33 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		 * vertex in the branch 'up' (backward in time) that is linked to their
 		 * source vertex.
 		 */
-		SOURCE_BRANCH_VERTEX_UP( "Source branch-vertex up", TargetType.BRANCH_VERTEX,
+		SOURCE_BRANCH_VERTEX( "Source branch-vertex", TargetType.BRANCH_VERTEX,
 				"Edges have a color determined by a numerical feature of the branch-"
-						+ "vertex in the branch 'up' (backward in time) that is linked to their "
-						+ "source vertex." ),
+						+ "vertex that is linked to their source vertex." ),
 		/**
 		 * Edges have a color determined by a numerical feature of the branch
 		 * vertex in the branch 'up' (backward in time) that is linked to their
 		 * target vertex.
 		 */
-		TARGET_BRANCH_VERTEX_UP( "Target branch-vertex up", TargetType.BRANCH_VERTEX,
-				"Edges have a color determined by a numerical feature of the branch-vertex in "
-						+ "the branch 'up' (backward in time) that is linked to their target vertex." ),
-		/**
-		 * Edges have a color determined by a numerical feature of the branch
-		 * vertex in the branch 'down' (forward in time) that is linked to their
-		 * source vertex.
-		 */
-		SOURCE_BRANCH_VERTEX_DOWN( "Source branch-vertex down", TargetType.BRANCH_VERTEX,
-				"Edges have a color determined by a numerical feature of the branch-vertex "
-						+ "in the branch 'down' (forward in time) that is linked to their source vertex." ),
-		/**
-		 * Edges have a color determined by a numerical feature of the branch
-		 * vertex in the branch 'down' (forward in time) that is linked to their
-		 * target vertex.
-		 */
-		TARGET_BRANCH_VERTEX_DOWN( "Target branch-vertex down", TargetType.BRANCH_VERTEX,
-				"Edges have a color determined by a numerical feature of the branch-vertex "
-						+ "in the branch 'down' (forward in time) that is linked to their target vertex." ),
+		TARGET_BRANCH_VERTEX( "Target branch-vertex", TargetType.BRANCH_VERTEX,
+				"Edges have a color determined by a numerical feature of the branch-"
+						+ "vertex that is linked to their target vertex." ),
 		/**
 		 * Edges have a color determined by a numerical feature of the
-		 * branch-link they are linked to.
+		 * branch-link they are linked to. Or the color of the incoming edge of
+		 * the branch-vertex they are linked to.
 		 */
-		BRANCH_EDGE( "Branch-edge", TargetType.BRANCH_EDGE,
-				"Edges have a color determined by a numerical feature of the branch-link they are linked to." );
+		INCOMING_BRANCH_EDGE( "Branch-edge up", TargetType.BRANCH_EDGE,
+				"Edges have a color determined by a numerical feature of the branch-edge they are linked to."
+						+ "Or the color of the incoming edge of the branch-vertex they are linked to. "),
+		/**
+		 * Edges have a color determined by a numerical feature of the
+		 * branch-link they are linked to. Or the color of the outgoing edge of
+		 * the branch-vertex they are linked to.
+		 */
+		OUTGOING_BRANCH_EDGE( "Branch-edge down", TargetType.BRANCH_EDGE,
+				"Edges have a color determined by a numerical feature of the branch-edge they are linked to."
+						+ "Or the color of the outgoing edge of the branch-vertex they are linked to. ");
 
 		private final String label;
 
@@ -189,22 +182,11 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 				"Vertices are painted with a default color." ),
 		/**
 		 * Each vertex has a color determined by a numerical feature defined for
-		 * the branch vertex 'up' in the branch (backward in time) it is linked
-		 * to.
+		 * the branch vertex it is linked to.
 		 */
-		BRANCH_VERTEX_UP( "Branch-vertex up", TargetType.BRANCH_VERTEX,
+		BRANCH_VERTEX( "Branch-vertex", TargetType.BRANCH_VERTEX,
 				"Each vertex has a color determined by a numerical feature defined "
-						+ "for the branch vertex 'up' in the branch (backward in time) it "
-						+ "is linked to." ),
-		/**
-		 * Each vertex has a color determined by a numerical feature defined for
-		 * the branch vertex 'down' in the branch (forward in time) it is linked
-		 * to.
-		 */
-		BRANCH_VERTEX_DOWN( "Branch-vertex down", TargetType.BRANCH_VERTEX,
-				"Each vertex has a color determined by a numerical feature defined for "
-						+ "the branch vertex 'down' in the branch (forward in time) it is "
-						+ "linked to." ),
+						+ "for the branch vertex it is linked to." ),
 		/**
 		 * Vertices have a color determined by a numerical feature of the
 		 * incoming branch-edge they are linked to, iff they have exactly one
