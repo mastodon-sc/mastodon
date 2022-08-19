@@ -431,12 +431,17 @@ public class ColorMap
 			{
 				for ( final Path path : folderStream )
 				{
-
-					final ColorMap cm = ColorMapIO.importLUT( path );
-					if ( null == cm )
-						System.err.println( "Could not read LUT file: " + path + ". Skipping." );
-					else
+					try
+					{
+						ColorMap cm = ColorMapIO.importLUT( path );
+						if ( null == cm )
+							throw new IOException();
 						cms.add( cm );
+					}
+					catch (IOException e)
+					{
+						System.err.println( "Could not read LUT file: " + path + ". Skipping." );
+					}
 				}
 			}
 		}
