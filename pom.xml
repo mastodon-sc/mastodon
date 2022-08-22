@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>31.1.0</version>
+		<version>32.0.0-beta-5</version>
 	</parent>
 
 	<groupId>org.mastodon</groupId>
@@ -54,7 +54,6 @@
 		<dependency>
 			<groupId>cisd</groupId>
 			<artifactId>jhdf5</artifactId>
-		<version>19.04.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>
@@ -100,14 +99,13 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>TrackMate</artifactId>
-			<version>7.0.4</version>
+			<version>7.7.1</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>MaMuT</artifactId>
-			<version>7.0.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -120,7 +118,6 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.13.1</version>
 		</dependency>
 		
 		<dependency>
@@ -178,8 +175,6 @@
 
 		<mastodon-collection.version>1.0.0-beta-24-SNAPSHOT</mastodon-collection.version>
 		<mastodon-graph.version>1.0.0-beta-22-SNAPSHOT</mastodon-graph.version>
-		<bigdataviewer-core.version>10.4.2</bigdataviewer-core.version>
-		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
