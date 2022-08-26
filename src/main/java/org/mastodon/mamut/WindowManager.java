@@ -228,6 +228,8 @@ public class WindowManager
 
 	private final Listeners.List< BdvViewCreatedListener > bdvViewCreatedListeners;
 
+	private final PreferencesDialog settings;
+
 	public WindowManager( final Context context )
 	{
 		this.context = context;
@@ -289,7 +291,7 @@ public class WindowManager
 		globalAppActions.namedAction( newHierarchyTrackSchemeViewAction, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
-		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", dataDisplayStyleManager ) );
@@ -714,6 +716,11 @@ public class WindowManager
 	public MamutAppModel getAppModel()
 	{
 		return appModel;
+	}
+
+	public PreferencesDialog getPreferencesDialog()
+	{
+		return settings;
 	}
 
 	Actions getGlobalAppActions()
