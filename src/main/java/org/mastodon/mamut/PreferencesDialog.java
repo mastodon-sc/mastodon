@@ -37,16 +37,15 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.CloseWindowActions;
+import org.mastodon.app.ui.SettingsPanel;
 import org.mastodon.ui.keymap.Keymap;
 import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.ui.settings.SettingsPage;
-import bdv.ui.settings.SettingsPanel;
 
 public class PreferencesDialog extends JDialog
 {
@@ -102,5 +101,18 @@ public class PreferencesDialog extends JDialog
 	public void removePage( final String path )
 	{
 		settingsPanel.removePage( path );
+	}
+
+	/**
+	 * Shows the settings page with the specified path. Does nothing if there is
+	 * not settings page for the path. This does not change the visibility of
+	 * this dialog.
+	 *
+	 * @param path
+	 *            the path of the settings page to show.
+	 */
+	public void showPage( final String path )
+	{
+		settingsPanel.showPage( path );
 	}
 }
