@@ -619,10 +619,16 @@ class MamutViewStateSerialization
 			{
 			case "MamutViewBdv":
 			{
-				final MamutViewBdv bdv = windowManager.createBigDataViewer( guiState );
+				try {
+					final MamutViewBdv bdv = windowManager.createBigDataViewer( guiState );
 
-				// Store context provider.
-				contextProviders.put( bdv.getContextProvider().getName(), bdv.getContextProvider() );
+					// Store context provider.
+					contextProviders.put( bdv.getContextProvider().getName(), bdv.getContextProvider() );
+				}
+				catch (IllegalArgumentException iae) {
+					System.err.println( "Info: Failed restoring state of a BigDataViewer window, thus not showing it.\n"
+							+ "      You may want to resave your project to replace the previous (failing) state with the current (okay) state." );
+				}
 				break;
 			}
 
