@@ -88,6 +88,23 @@
 			<artifactId>itextpdf</artifactId>
 		</dependency>		
 
+		<!-- DnD from IDE -->
+		<!-- compile time: necessary dependency -->
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
+		</dependency>
+		<!-- run time: makes the IOService somehow functional -->
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>IO_</artifactId>
+		</dependency>
+		<!-- run time: brings in the original IJ1 window -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
+		</dependency>
+
 		<!-- Test dependencies -->
 
 		<dependency>
