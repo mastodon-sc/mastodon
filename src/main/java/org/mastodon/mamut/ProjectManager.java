@@ -85,6 +85,7 @@ import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.mastodon.ui.util.XmlFileFilter;
 import org.mastodon.util.BDVImagePlusExporter;
+import org.mastodon.util.DummySpimData;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
@@ -604,7 +605,7 @@ public class ProjectManager
 		// Check whether the project points to a BDV file.
 		final String imagePath = project.getDatasetXmlFile().getAbsolutePath().replaceAll( "\\\\", "/" );
 		final String canonicalPath = new File( imagePath ).getCanonicalPath();
-		if ( !canonicalPath.endsWith( ".xml" ) )
+		if ( !canonicalPath.endsWith( ".xml" )  && !canonicalPath.endsWith( DummySpimData.DUMMY ) )
 		{
 			final ImagePlus imp;
 

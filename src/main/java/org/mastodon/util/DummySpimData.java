@@ -70,7 +70,7 @@ import net.imglib2.view.Views;
  */
 public class DummySpimData
 {
-	static final String DUMMY = ".dummy";
+	static public final String DUMMY = ".dummy";
 
 	/**
 	 * Create a dummy {@link SpimDataMinimal} with a {@code BasicImgLoader} that
