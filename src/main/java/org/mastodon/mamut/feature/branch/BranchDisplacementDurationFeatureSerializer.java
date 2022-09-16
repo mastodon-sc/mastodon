@@ -37,15 +37,15 @@ import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.mamut.feature.branch.BranchDisplacementDurationFeature.Spec;
-import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )
-public class BranchDisplacementDurationFeatureSerializer implements BranchFeatureSerializer< BranchDisplacementDurationFeature, BranchLink, Link >
+public class BranchDisplacementDurationFeatureSerializer implements BranchFeatureSerializer< BranchDisplacementDurationFeature, BranchSpot, Spot>
 {
 
 	@Override
@@ -56,39 +56,39 @@ public class BranchDisplacementDurationFeatureSerializer implements BranchFeatur
 
 	@Override
 	public BranchDisplacementDurationFeature deserialize(
-			final FileIdToObjectMap< Link > idmap,
+			final FileIdToObjectMap< Spot > idmap,
 			final ObjectInputStream ois,
 			final ModelBranchGraph branchGraph,
 			final ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
 		// Read the map link -> val.
-		final DoublePropertyMap< Link > dispLMap = new DoublePropertyMap<>( graph.edges(), Double.NaN );
-		final DoublePropertyMap< Link > durLMap = new DoublePropertyMap<>( graph.edges(), Double.NaN );
-		final DoublePropertyMapSerializer< Link > dispPms = new DoublePropertyMapSerializer<>( dispLMap );
-		final DoublePropertyMapSerializer< Link > durPms = new DoublePropertyMapSerializer<>( durLMap );
+		final DoublePropertyMap< Spot > dispLMap = new DoublePropertyMap<>( graph.vertices(), Double.NaN );
+		final DoublePropertyMap< Spot > durLMap = new DoublePropertyMap<>( graph.vertices(), Double.NaN );
+		final DoublePropertyMapSerializer< Spot > dispPms = new DoublePropertyMapSerializer<>( dispLMap );
+		final DoublePropertyMapSerializer< Spot > durPms = new DoublePropertyMapSerializer<>( durLMap );
 		final String lengthUnits = ois.readUTF();
 		dispPms.readPropertyMap( idmap, ois );
 		durPms.readPropertyMap( idmap, ois );
 
 		// Map to branch-link -> val.
 		return new BranchDisplacementDurationFeature(
-				BranchFeatureSerializer.mapToBranchLinkMap( dispLMap, branchGraph ),
-				BranchFeatureSerializer.mapToBranchLinkMap( durLMap, branchGraph ),
+				BranchFeatureSerializer.mapToBranchSpotMap( dispLMap, branchGraph ),
+				BranchFeatureSerializer.mapToBranchSpotMap( durLMap, branchGraph ),
 				lengthUnits );
 	}
 
 	@Override
 	public void serialize(
 			final BranchDisplacementDurationFeature feature,
-			final ObjectToFileIdMap< Link > idmap,
+			final ObjectToFileIdMap< Spot > idmap,
 			final ObjectOutputStream oos,
 			final ModelBranchGraph branchGraph,
 			final ModelGraph graph ) throws IOException
 	{
-		final DoublePropertyMap< Link > dispLMap = BranchFeatureSerializer.branchLinkMapToMap( feature.dispMap, branchGraph, graph );
-		final DoublePropertyMap< Link > durLMap = BranchFeatureSerializer.branchLinkMapToMap( feature.durMap, branchGraph, graph );
-		final DoublePropertyMapSerializer< Link > dispPms = new DoublePropertyMapSerializer<>( dispLMap );
-		final DoublePropertyMapSerializer< Link > durPms = new DoublePropertyMapSerializer<>( durLMap );
+		final DoublePropertyMap< Spot > dispLMap = BranchFeatureSerializer.branchSpotMapToMap( feature.dispMap, branchGraph, graph );
+		final DoublePropertyMap< Spot > durLMap = BranchFeatureSerializer.branchSpotMapToMap( feature.durMap, branchGraph, graph );
+		final DoublePropertyMapSerializer< Spot > dispPms = new DoublePropertyMapSerializer<>( dispLMap );
+		final DoublePropertyMapSerializer< Spot > durPms = new DoublePropertyMapSerializer<>( durLMap );
 		oos.writeUTF( feature.lengthUnits );
 		dispPms.writePropertyMap( idmap, oos );
 		durPms.writePropertyMap( idmap, oos );
