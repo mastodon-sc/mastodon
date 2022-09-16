@@ -31,6 +31,7 @@ package org.mastodon.views.trackscheme.display;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.mastodon.model.tag.TagSetStructure.Tag;
@@ -270,7 +271,7 @@ public class ColorBarOverlay implements OverlayRenderer
 	{
 		if ( !featureColorMode.getVertexColorMap().equals( featureColorMode.getEdgeColorMap() ) )
 			return false;
-		if ( !featureColorMode.getVertexFeatureProjection().equals( featureColorMode.getEdgeFeatureProjection() ) )
+		if ( !Objects.equals(featureColorMode.getVertexFeatureProjection(), featureColorMode.getEdgeFeatureProjection()) )
 			return false;
 		if ( featureColorMode.getVertexRangeMin() != featureColorMode.getEdgeRangeMin() )
 			return false;
@@ -282,6 +283,8 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private static String toString( final FeatureProjectionId featureProjectionId )
 	{
+		if(featureProjectionId == null)
+			return "null";
 		final StringBuilder sb = new StringBuilder( featureProjectionId.getProjectionKey() );
 		final int[] sourceIndices;
 		switch ( featureProjectionId.getMultiplicity() )
