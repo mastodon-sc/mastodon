@@ -633,6 +633,7 @@ public class ProjectManager
 		}
 		else
 		{
+			// Opening a project with standard BDV (or DUMMY) image data
 			localProject = project;
 		}
 

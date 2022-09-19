@@ -366,6 +366,7 @@ public class SharedBigDataViewerData
 		{
 			try
 			{
+				//trying to load the actual (not-dummy) data
 				spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 			}
 			catch ( final SpimDataIOException | RuntimeException e )
@@ -378,12 +379,15 @@ public class SharedBigDataViewerData
 				}
 				else
 				{
-					System.err.println( "Could not open image data file. " );
-					e.printStackTrace();
+					System.err.println( "Could not open image data file: " + e.getMessage() );
 				}
-				final DatasetInfoParser info = DatasetInfoParser.inspect( spimDataXmlFilename );
-				System.err.println( "Opening with dummy dataset. Please fix dataset path in the mastodon project file." );
-				spimData = info.toDummySpimData();
+				System.err.println( "Despite that, still going to try to load the project but over a dummy\n"
+						+ "image dataset. Please fix the dataset path in the mastodon project file afterwards\n"
+						+ "by using menu entry: Mastodon -> File -> Fix Image Path.");
+
+				// Try to resurrect/figure-out as many parameters as possible from the .xml file,
+				// and build dummy data after it fails (it must fail, otherwise we wouldn't get here)
+				spimData = DatasetInfoParser.inspect( spimDataXmlFilename ).toDummySpimData();
 			}
 		}
 
