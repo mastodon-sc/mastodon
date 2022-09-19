@@ -16,12 +16,15 @@ public class BranchSpotPool extends AbstractListenableVertexPool<
 
 	public static class BranchVertexLayout extends AbstractVertexLayout
 	{
-		final IntField linkedVertexID = intField();
+		final IntField firstLinkedVertexId = intField();
+		final IntField lastLinkedVertexId = intField();
 	}
 
 	public static final BranchVertexLayout layout = new BranchVertexLayout();
 
-	protected final IntAttribute< BranchSpot > spotID;
+	protected final IntAttribute< BranchSpot > firstSpotId;
+
+	protected final IntAttribute< BranchSpot > lastSpotId;
 
 	private final RefPool< Spot > vertexPool;
 
@@ -29,7 +32,8 @@ public class BranchSpotPool extends AbstractListenableVertexPool<
 	{
 		super( initialCapacity, layout, BranchSpot.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
 		this.vertexPool = vertexPool;
-		this.spotID = new IntAttribute<>( layout.linkedVertexID, this );
+		this.firstSpotId = new IntAttribute<>( layout.firstLinkedVertexId, this );
+		this.lastSpotId = new IntAttribute<>( layout.lastLinkedVertexId, this );
 	}
 
 	@Override

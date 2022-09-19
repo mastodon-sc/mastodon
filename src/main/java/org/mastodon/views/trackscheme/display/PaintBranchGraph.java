@@ -32,6 +32,8 @@ import org.mastodon.util.GeometryUtil;
 import org.mastodon.views.trackscheme.ScreenEdge;
 import org.mastodon.views.trackscheme.ScreenVertex;
 
+import java.awt.Color;
+
 public class PaintBranchGraph extends PaintGraph
 {
 
@@ -50,7 +52,7 @@ public class PaintBranchGraph extends PaintGraph
 		final int sx = ( int ) vs.getX();
 		final int sy = ( int ) vs.getY();
 		final int tx = ( int ) vt.getX();
-		final int ty = ( int ) vt.getY();
+		final int ty = ( int ) vt.getYStart();
 		g2.drawLine( sx, sy, tx, sy );
 		g2.drawLine( tx, sy, tx, ty );
 	}
@@ -61,7 +63,7 @@ public class PaintBranchGraph extends PaintGraph
 		final double xs = source.getX();
 		final double xt = target.getX();
 		final double ys = source.getY();
-		final double yt = target.getY();
+		final double yt = target.getYStart();
 		if ( xs == xt )
 			return GeometryUtil.segmentDist( x0, y0, xs, ys, xt, yt );
 
@@ -69,4 +71,55 @@ public class PaintBranchGraph extends PaintGraph
 		final double d2 = GeometryUtil.segmentDist( x0, y0, xt, ys, xt, yt );
 		return Math.min( d1, d2 );
 	}
+
+	@Override
+	public boolean isInsidePaintedVertex( double x, double y, ScreenVertex vertex )
+	{
+		if( y >= vertex.getYStart() && y <= vertex.getY() && Math.abs( x - vertex.getX() ) <= 2 )
+			return true;
+		return super.isInsidePaintedVertex( x, y, vertex );
+	}
+
+	@Override
+	protected void drawVertex( ScreenVertex vertex )
+	{
+		boolean resetStroke = setStroke( vertex );
+		g2.drawLine( (int) vertex.getX(), (int) vertex.getYStart(), (int) vertex.getX(), (int) vertex.getY());
+		resetStroke( resetStroke );
+
+		super.drawVertex( vertex );
+	}
+
+	private boolean setStroke( ScreenVertex vertex )
+	{
+		final ScreenVertex.Transition transition = vertex.getTransition();
+		final double ratio = vertex.getInterpolationCompletionRatio();
+
+		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
+		final boolean selected = vertex.isSelected();
+		final boolean ghost = vertex.isGhost();
+
+		final Color drawColor = getColor( selected, ghost, transition, ratio, 0,
+				style.getVertexDrawColor(), style.getSelectedVertexDrawColor(),
+				style.getGhostVertexDrawColor(), style.getGhostSelectedVertexDrawColor() );
+
+		g2.setColor( drawColor );
+		if ( highlighted )
+			g2.setStroke( style.getVertexHighlightStroke() );
+		else if ( focused )
+			// An animation might be better for the focus, but for now this is it.
+			g2.setStroke( style.getFocusStroke() );
+		else if ( ghost )
+			g2.setStroke( style.getVertexGhostStroke() );
+		boolean resetStroke = highlighted || focused || ghost;
+		return resetStroke;
+	}
+
+	private void resetStroke( boolean resetStroke )
+	{
+		if ( resetStroke )
+			g2.setStroke( style.getVertexStroke() );
+	}
+
 }

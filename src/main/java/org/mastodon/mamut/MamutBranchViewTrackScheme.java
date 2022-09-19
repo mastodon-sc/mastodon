@@ -311,7 +311,15 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 			final Model model = appModel.getModel();
 			final ModelBranchGraph graph = model.getBranchGraph();
 			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
-			final ModelGraphProperties< BranchSpot, BranchLink > properties = new DefaultModelGraphProperties<>();
+			final ModelGraphProperties< BranchSpot, BranchLink > properties =
+					new DefaultModelGraphProperties<BranchSpot, BranchLink>() {
+
+						@Override
+						public int getFirstTimePoint( BranchSpot branchSpot )
+						{
+							return branchSpot.getFirstTimePoint();
+						}
+					};
 			final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph =
 					new TrackSchemeGraph<>( graph, idmap, properties );
 			return trackSchemeGraph;

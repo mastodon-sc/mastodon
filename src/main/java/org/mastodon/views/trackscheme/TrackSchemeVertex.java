@@ -133,8 +133,20 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 
 	protected void updateTimepointFromModel()
 	{
+		setFirstTimepoint( modelVertex.getFirstTimepoint() );
 		setTimepoint( modelVertex.getTimepoint() );
 	}
+
+	public int getFirstTimepoint()
+	{
+		return pool.firstTimepoint.get( this );
+	}
+
+	protected void setFirstTimepoint( final int timepoint )
+	{
+		pool.firstTimepoint.setQuiet( this, timepoint );
+	}
+
 
 	/**
 	 * Internal pool index of last {@link ScreenVertex} that was created for

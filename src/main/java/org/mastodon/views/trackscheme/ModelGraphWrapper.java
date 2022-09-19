@@ -93,6 +93,11 @@ public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		{
 			return idmap.getVertex( vertex.getModelVertexId(), ref );
 		}
+
+		public int getFirstTimepoint()
+		{
+			return modelGraphProperties.getFirstTimePoint( getModelVertex() );
+		}
 	}
 
 	class ModelEdgeWrapper

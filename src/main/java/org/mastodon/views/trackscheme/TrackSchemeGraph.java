@@ -556,6 +556,7 @@ public class TrackSchemeGraph<
 		final IntField layoutTimeStamp = intField();
 		final IndexField layoutInEdgeIndex = indexField();
 		final DoubleField layoutX = doubleField();
+		final IntField firstTimepoint = intField();
 		final IntField timepoint = intField();
 		final IndexField screenVertexIndex = indexField();
 		final BooleanField ghost = booleanField();
@@ -571,6 +572,7 @@ public class TrackSchemeGraph<
 		final IntAttribute< TrackSchemeVertex > layoutTimeStamp = new IntAttribute<>( vertexLayout.layoutTimeStamp, this );
 		final IndexAttribute< TrackSchemeVertex > layoutInEdgeIndex = new IndexAttribute<>( vertexLayout.layoutInEdgeIndex, this );
 		final DoubleAttribute< TrackSchemeVertex > layoutX = new DoubleAttribute<>( vertexLayout.layoutX, this );
+		final IntAttribute< TrackSchemeVertex > firstTimepoint = new IntAttribute<>( vertexLayout.firstTimepoint, this );
 		final IntAttribute< TrackSchemeVertex > timepoint = new IntAttribute<>( vertexLayout.timepoint, this );
 		final IndexAttribute< TrackSchemeVertex > screenVertexIndex = new IndexAttribute<>( vertexLayout.screenVertexIndex, this );
 		final BooleanAttribute< TrackSchemeVertex > ghost = new BooleanAttribute<>( vertexLayout.ghost, this );

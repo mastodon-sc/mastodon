@@ -56,6 +56,8 @@ public interface ModelGraphProperties< V, E >
 {
 	public int getTimepoint( V v );
 
+	default public int getFirstTimePoint(V v) { return getTimepoint( v ); };
+
 	public String getLabel( V v );
 
 	public void setLabel( V v, String label );
