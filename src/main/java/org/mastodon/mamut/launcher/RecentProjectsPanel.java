@@ -4,6 +4,13 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Desktop;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
@@ -82,6 +89,12 @@ public class RecentProjectsPanel extends JPanel
 
 		if ( recentProjects != null && !recentProjects.isempty() )
 		{
+			gbc.gridy++;
+			final JLabel lblTitleHint = new JLabel( "Double-click to open the containing folder." );
+			lblTitleHint.setFont( lblTitleHint.getFont().deriveFont( lblTitleHint.getFont().getStyle() | Font.ITALIC ) );
+			lblTitleHint.setHorizontalAlignment( SwingConstants.CENTER );
+			add( lblTitleHint, gbc );
+
 			for ( final String projectPath : recentProjects )
 			{
 				gbc.gridy++;
@@ -89,6 +102,7 @@ public class RecentProjectsPanel extends JPanel
 				final JTextArea ta = new JTextArea( projectPath );
 				ta.setEditable( false );
 				ta.setLineWrap( true );
+				ta.addMouseListener( new MouseDblClickOpenPath( projectPath ) );
 				add( ta, gbc );
 
 				gbc.gridx = 1;
@@ -139,5 +153,45 @@ public class RecentProjectsPanel extends JPanel
 
 		revalidate();
 		repaint();
+	}
+
+
+	public static final class MouseDblClickOpenPath implements MouseListener {
+		final String Uri;
+		public MouseDblClickOpenPath(final String pathOnDblClick) {
+			Uri = Paths.get(pathOnDblClick).getParent().toUri().toString();
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent mouseEvent) {
+			if (mouseEvent.getClickCount() == 2) openUrl( Uri );
+		}
+
+		@Override
+		public void mousePressed(MouseEvent mouseEvent) { /* empty */ }
+		@Override
+		public void mouseReleased(MouseEvent mouseEvent) { /* empty */ }
+		@Override
+		public void mouseEntered(MouseEvent mouseEvent) { /* empty */ }
+		@Override
+		public void mouseExited(MouseEvent mouseEvent) { /* empty */ }
+	}
+
+	public static void openUrl(final String url) {
+		final String myOS = System.getProperty("os.name").toLowerCase();
+		try {
+			if (myOS.contains("mac")) {
+				Runtime.getRuntime().exec("open "+url);
+			}
+			else if (myOS.contains("nux") || myOS.contains("nix")) {
+				Runtime.getRuntime().exec("xdg-open "+url);
+			}
+			else if (Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().browse(new URI(url));
+			}
+			else {
+				System.out.println("Please, open this URL yourself: "+url);
+			}
+		} catch (IOException | URISyntaxException ignored) {}
 	}
 }
