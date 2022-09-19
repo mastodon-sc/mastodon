@@ -97,6 +97,9 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+
 public class SharedBigDataViewerData
 {
 	private final ArrayList< SourceAndConverter< ? > > sources;
@@ -382,8 +385,22 @@ public class SharedBigDataViewerData
 					System.err.println( "Could not open image data file: " + e.getMessage() );
 				}
 				System.err.println( "Despite that, still going to try to load the project but over a dummy\n"
-						+ "image dataset. Please fix the dataset path in the mastodon project file afterwards\n"
+						+ "image dataset. Please fix the dataset path in the Mastodon project file afterwards\n"
 						+ "by using menu entry: Mastodon -> File -> Fix Image Path.");
+
+				final int val = JOptionPane.showConfirmDialog(
+						null,
+						"Failed opening the original image data.\n"
+								+ "\n"
+								+ "Despite that, still going to try to load\n"
+								+ "the project but over a dummy image dataset.\n"
+								+ "\n"
+								+ "Please fix the dataset path in the Mastodon\n"
+								+ "project file afterwards by using menu entry:\n"
+								+ "Mastodon -> File -> Fix Image Path.",
+						"Image data not accessible",
+						JOptionPane.CLOSED_OPTION,
+						JOptionPane.WARNING_MESSAGE );
 
 				// Try to resurrect/figure-out as many parameters as possible from the .xml file,
 				// and build dummy data after it fails (it must fail, otherwise we wouldn't get here)
