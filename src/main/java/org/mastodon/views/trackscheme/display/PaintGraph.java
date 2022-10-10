@@ -34,7 +34,9 @@ import static org.mastodon.views.trackscheme.ScreenVertex.Transition.NONE;
 import static org.mastodon.views.trackscheme.ScreenVertex.Transition.SELECTING;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
@@ -119,6 +121,8 @@ public class PaintGraph
 	protected Stroke edgeHighlightStroke;
 
 	protected Stroke edgeGhostStroke;
+
+	private final Rectangle tmpRectangle = new Rectangle();
 
 	public void paintGraph(
 			final Graphics2D g2,
@@ -437,14 +441,22 @@ public class PaintGraph
 				if ( specifiedColor != 0 )
 					g2.setColor( textColorForBackground( fillColor ) );
 
-				final FontRenderContext frc = g2.getFontRenderContext();
-				final TextLayout layout = new TextLayout( label, style.getFont(), frc );
-				final Rectangle2D bounds = layout.getBounds();
-				final float tx = ( float ) ( x - bounds.getCenterX() );
-				final float ty = ( float ) ( y - bounds.getCenterY() );
-				layout.draw( g2, tx, ty );
+				drawTextCentered( x, y, label, style.getFont() );
 			}
 		}
+	}
+
+	private void drawTextCentered( double x, double y, String label, Font font )
+	{
+		if( ! g2.getClipBounds( tmpRectangle ).contains( x, y ) )
+			return;
+
+		final FontRenderContext frc = g2.getFontRenderContext();
+		final TextLayout layout = new TextLayout( label, font, frc );
+		final Rectangle2D bounds = layout.getBounds();
+		final float tx = ( float ) ( x - bounds.getCenterX() );
+		final float ty = ( float ) ( y - bounds.getCenterY() );
+		layout.draw( g2, tx, ty );
 	}
 
 	protected Color getColor(
