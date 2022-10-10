@@ -33,6 +33,7 @@ import org.mastodon.model.BranchTrackSchemeRootsModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.RootsModel;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
@@ -75,7 +76,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(), LongEdgesLineageTreeLayout::new );
+		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(), LongEdgesLineageTreeLayout::new, null );
 	}
 
 	protected MamutBranchViewTrackScheme(
@@ -83,7 +84,8 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 			final Map< String, Object > guiState,
 			final BranchTrackSchemeFactory trackSchemeGraphFactory,
 			final TrackSchemeOverlayFactory overlayFactory,
-			final LineageTreeLayout.LineageTreeLayoutFactory layoutFactory )
+			final LineageTreeLayout.LineageTreeLayoutFactory layoutFactory,
+			final TimepointModel timepointModel)
 	{
 		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
 
@@ -117,7 +119,7 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 				viewGraph,
 				highlightModel,
 				navigateFocusModel,
-				timepointModel,
+				(timepointModel == null) ? this.timepointModel : timepointModel,
 				selectionModel,
 				rootsModel,
 				navigationHandler,
