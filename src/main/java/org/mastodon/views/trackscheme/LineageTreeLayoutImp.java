@@ -489,7 +489,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 			final int columnWidth = xRight - xLeft;
 
 			final TrackSchemeVertex root = currentLayoutColumnRoot.get( ic - 1 );
-			final ScreenColumn column = new ScreenColumn( root.getLabel(), xLeft, columnWidth );
+			final ScreenColumn column = new ScreenColumn( root.getRootLabel(), xLeft, columnWidth );
 			screenColumns.add( column );
 		}
 	}

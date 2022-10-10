@@ -142,4 +142,12 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 		vertexBimap.getObject( getLastLinkedVertexId(), ref ).setLabel( label );
 		vertexBimap.releaseRef( ref );
 	}
+
+	public String getFirstLabel()
+	{
+		final Spot ref = vertexBimap.createRef();
+		final String label = vertexBimap.getObject( getFirstLinkedVertexId(), ref ).getLabel();
+		vertexBimap.releaseRef( ref );
+		return label;
+	}
 }

@@ -98,6 +98,11 @@ public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		{
 			return modelGraphProperties.getFirstTimePoint( getModelVertex() );
 		}
+
+		public String getRootLabel()
+		{
+			return modelGraphProperties.getFirstLabel( getModelVertex() );
+		}
 	}
 
 	class ModelEdgeWrapper

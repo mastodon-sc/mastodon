@@ -315,6 +315,11 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 					new DefaultModelGraphProperties<BranchSpot, BranchLink>() {
 
 						@Override
+						public String getFirstLabel( BranchSpot branchSpot ) {
+							return branchSpot.getFirstLabel();
+						}
+
+						@Override
 						public int getFirstTimePoint( BranchSpot branchSpot )
 						{
 							return branchSpot.getFirstTimePoint();

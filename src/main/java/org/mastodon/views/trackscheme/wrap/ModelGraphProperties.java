@@ -56,11 +56,19 @@ public interface ModelGraphProperties< V, E >
 {
 	public int getTimepoint( V v );
 
-	default public int getFirstTimePoint(V v) { return getTimepoint( v ); };
+	default public int getFirstTimePoint(V v)
+	{
+		return getTimepoint( v );
+	};
 
 	public String getLabel( V v );
 
 	public void setLabel( V v, String label );
+
+	default String getFirstLabel( V v )
+	{
+		return getLabel( v );
+	}
 
 	public E addEdge( V source, V target, E ref );
 
@@ -73,4 +81,5 @@ public interface ModelGraphProperties< V, E >
 	public void removeVertex( V v );
 
 	public void notifyGraphChanged();
+
 }

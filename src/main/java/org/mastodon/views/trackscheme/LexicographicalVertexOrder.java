@@ -79,7 +79,7 @@ public class LexicographicalVertexOrder
 		{
 			final VertexKey token;
 			if ( v.incomingEdges().isEmpty() )
-				token = new VertexKey( v.getLabel() );
+				token = new VertexKey( v.getRootLabel() );
 			else
 			{
 				final TrackSchemeVertex ref = graph.vertexRef();

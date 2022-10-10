@@ -226,4 +226,9 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	{
 		pool.ghost.setQuiet( this, ghost );
 	}
+
+	public String getRootLabel()
+	{
+		return modelVertex.getRootLabel();
+	}
 }
