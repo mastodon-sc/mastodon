@@ -326,14 +326,18 @@ public class FeatureSelectionPanel
 			featureKeys.sort( Comparator.naturalOrder() );
 
 			final String previousSelection = ( String ) cbFeatures.getSelectedItem();
-			final int selectIndex = Math.max( 0, featureKeys.indexOf( previousSelection ) );
 
 			cbFeatures.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
-			cbFeatures.setSelectedIndex( selectIndex );
-			// If selectIndex != 0, this will trigger refreshProjections().
-			// Otherwise, we do it explicitly
-			if ( selectIndex == 0 )
-				refreshProjections();
+			if(!featureKeys.isEmpty())
+			{
+				final int selectIndex = Math.max( 0, featureKeys.indexOf( previousSelection ) );
+				cbFeatures.setSelectedIndex( selectIndex );
+
+				// If selectIndex != 0, this will trigger refreshProjections().
+				// Otherwise, we do it explicitly
+				if ( selectIndex == 0 )
+					refreshProjections();
+			}
 		}
 	}
 

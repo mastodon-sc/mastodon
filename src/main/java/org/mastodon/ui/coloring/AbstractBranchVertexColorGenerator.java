@@ -38,65 +38,16 @@ public abstract class AbstractBranchVertexColorGenerator< V extends Vertex< E >,
 		this.colorGenerator = new FeatureColorGenerator<>( featureProjection, colorMap, min, max );
 	}
 
-	protected final int downwardFromVertex( final V v )
+	protected int branchVertexColor( V v )
 	{
-		final BV bvref = branchGraph.vertexRef();
-		try
-		{
-
-			final BV bv = branchGraph.getBranchVertex( v, bvref );
-			if ( bv != null )
-				return colorGenerator.color( bv );
-
-			final BE beref = branchGraph.edgeRef();
-			try
-			{
-				final BE be = branchGraph.getBranchEdge( v, beref );
-				if ( be == null )
-					return 0;
-
-				final BV target = be.getTarget( bvref );
-				return colorGenerator.color( target );
-			}
-			finally
-			{
-				branchGraph.releaseRef( beref );
-			}
+		BV bvRef = branchGraph.vertexRef();
+		try {
+			BV branchVertex = branchGraph.getBranchVertex( v, bvRef );
+			return colorGenerator.color( branchVertex );
 		}
 		finally
 		{
-			branchGraph.releaseRef( bvref );
-		}
-	}
-
-	protected final int upwardFromVertex( final V v )
-	{
-		final BV bvref = branchGraph.vertexRef();
-		try
-		{
-
-			final BV bv = branchGraph.getBranchVertex( v, bvref );
-			if ( bv != null )
-				return colorGenerator.color( bv );
-
-			final BE beref = branchGraph.edgeRef();
-			try
-			{
-				final BE be = branchGraph.getBranchEdge( v, beref );
-				if ( be == null )
-					return 0;
-
-				final BV target = be.getSource( bvref );
-				return colorGenerator.color( target );
-			}
-			finally
-			{
-				branchGraph.releaseRef( beref );
-			}
-		}
-		finally
-		{
-			branchGraph.releaseRef( bvref );
+			branchGraph.releaseRef( bvRef );
 		}
 	}
 }

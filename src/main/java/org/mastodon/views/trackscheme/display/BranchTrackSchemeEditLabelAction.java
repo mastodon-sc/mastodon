@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.undo.UndoPointMarker;
@@ -59,20 +60,12 @@ public class BranchTrackSchemeEditLabelAction
 		protected void changeLabel( final TrackSchemeVertex vertex, final String label )
 		{
 			final BV branchSpot = trackSchemeGraph.getVertexMap().getLeft( vertex );
-			if ( branchSpot.incomingEdges().isEmpty() )
-			{
-				vertex.setLabel( label );
-				return;
-			}
-
-			final BE link = branchSpot.incomingEdges().iterator().next();
-			final Iterator< V > it = branchGraph.vertexBranchIterator( link );
+			final Iterator< V > it = branchGraph.vertexBranchIterator( branchSpot );
 			while ( it.hasNext() )
 			{
 				final V v = it.next();
 				v.setLabel( label );
 			}
-
 			undoPointMarker.setUndoPoint();
 		}
 	}

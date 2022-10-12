@@ -15,11 +15,11 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
-public class BranchDisplacementDurationFeature implements Feature< BranchLink >
+public class BranchDisplacementDurationFeature implements Feature< BranchSpot >
 {
 	public static final String KEY = "Branch duration and displacement";
 
@@ -32,7 +32,7 @@ public class BranchDisplacementDurationFeature implements Feature< BranchLink >
 	public static final Spec SPEC = new Spec();
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< BranchDisplacementDurationFeature, BranchLink >
+	public static class Spec extends FeatureSpec< BranchDisplacementDurationFeature, BranchSpot >
 	{
 		public Spec()
 		{
@@ -40,22 +40,22 @@ public class BranchDisplacementDurationFeature implements Feature< BranchLink >
 					KEY,
 					INFO_STRING,
 					BranchDisplacementDurationFeature.class,
-					BranchLink.class,
+					BranchSpot.class,
 					Multiplicity.SINGLE,
 					DISPLACEMENT_PROJECTION_SPEC,
 					DURATION_PROJECTION_SPEC );
 		}
 	}
 
-	private final Map< FeatureProjectionKey, FeatureProjection< BranchLink > > projectionMap;
+	private final Map< FeatureProjectionKey, FeatureProjection< BranchSpot > > projectionMap;
 
-	final DoublePropertyMap< BranchLink > dispMap;
+	final DoublePropertyMap< BranchSpot > dispMap;
 
-	final DoublePropertyMap< BranchLink > durMap;
+	final DoublePropertyMap< BranchSpot > durMap;
 
 	final String lengthUnits;
 
-	BranchDisplacementDurationFeature( final DoublePropertyMap< BranchLink > dispMap, final DoublePropertyMap< BranchLink > durMap, final String lengthUnits )
+	BranchDisplacementDurationFeature( final DoublePropertyMap< BranchSpot > dispMap, final DoublePropertyMap< BranchSpot > durMap, final String lengthUnits )
 	{
 		this.dispMap = dispMap;
 		this.durMap = durMap;
@@ -65,24 +65,24 @@ public class BranchDisplacementDurationFeature implements Feature< BranchLink >
 		projectionMap.put( key( DURATION_PROJECTION_SPEC ), FeatureProjections.project( key( DURATION_PROJECTION_SPEC ), durMap, Dimension.NONE_UNITS ) );
 	}
 
-	public double getDuration( final BranchLink branch )
+	public double getDuration( final BranchSpot branch )
 	{
 		return durMap.get( branch );
 	}
 
-	public double getDisplacement( final BranchLink branch )
+	public double getDisplacement( final BranchSpot branch )
 	{
 		return dispMap.get( branch );
 	}
 
 	@Override
-	public FeatureProjection< BranchLink > project( final FeatureProjectionKey key )
+	public FeatureProjection< BranchSpot > project( final FeatureProjectionKey key )
 	{
 		return projectionMap.get( key );
 	}
 
 	@Override
-	public Set< FeatureProjection< BranchLink > > projections()
+	public Set< FeatureProjection< BranchSpot > > projections()
 	{
 		return new LinkedHashSet<>( projectionMap.values() );
 	}
@@ -94,7 +94,7 @@ public class BranchDisplacementDurationFeature implements Feature< BranchLink >
 	}
 
 	@Override
-	public void invalidate( final BranchLink branch )
+	public void invalidate( final BranchSpot branch )
 	{
 		dispMap.remove( branch );
 		durMap.remove( branch );

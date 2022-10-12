@@ -1,6 +1,7 @@
 package org.mastodon.model.branch;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
@@ -49,148 +50,128 @@ public class BranchGraphSelectionAdapter<
 	@Override
 	public boolean isSelected( final BV vertex )
 	{
-		final V vRef = graph.vertexRef();
-		final V v = branchGraph.getLinkedVertex( vertex, vRef );
-		final boolean selected = v == null ? false : selection.isSelected( v );
-		graph.releaseRef( vRef );
+		Iterator<V> vIter = branchGraph.vertexBranchIterator( vertex );
+		Iterator<E> eIter = branchGraph.edgeBranchIterator( vertex );
+		try
+		{
+			while ( vIter.hasNext() )
+			{
+				V v = vIter.next();
+				if ( !selection.isSelected( v ) )
+					return false;
+			}
 
-		return selected;
+			while ( eIter.hasNext() )
+			{
+				E e = eIter.next();
+				if ( !selection.isSelected( e ) )
+					return false;
+			}
+
+			return true;
+		}
+		finally
+		{
+			branchGraph.releaseIterator( vIter );
+			branchGraph.releaseIterator( eIter );
+		}
 	}
 
 	@Override
 	public boolean isSelected( final BE edge )
 	{
-		boolean selected = true;
-
-		final BE beRef = branchGraph.edgeRef();
-		final BV bvRef = branchGraph.vertexRef();
 		final E eRef = graph.edgeRef();
-		final V vRef = graph.vertexRef();
-
-		/*
-		 * The branch edge is selected iff all the edges and vertices of the
-		 * branch are selected, except the source and target.
-		 */
-
-		E e = branchGraph.getLinkedEdge( edge, eRef );
-		if ( e == null )
-			return false;
-
-		if ( !selection.isSelected( e ) )
+		try
 		{
-			selected = false;
+			final E e = branchGraph.getLinkedEdge( edge, eRef );
+			return e != null && selection.isSelected( e );
 		}
-		else
+		finally
 		{
-			V target = e.getTarget( vRef );
-			if ( !selection.isSelected( target ) )
-			{
-				selected = false;
-			}
-			else
-			{
-				while ( edge.equals( branchGraph.getBranchEdge( target, beRef ) ) )
-				{
-					/*
-					 * The target vertex is still linked to the branch edge, so
-					 * this means that it is still in the middle of the branch.
-					 * This in turn means that it has only one outgoing edge.
-					 */
-					e = target.outgoingEdges().get( 0, eRef );
-					if ( !isValid( e ) )
-						return false;
-					target = e.getTarget( vRef );
-					if ( !selection.isSelected( e ) ||
-							( branchGraph.getBranchVertex( target, bvRef ) == null && !selection.isSelected( target ) ) )
-					{
-						selected = false;
-						break;
-					}
-				}
-			}
+			graph.releaseRef( eRef );
 		}
-
-		branchGraph.releaseRef( beRef );
-		branchGraph.releaseRef( bvRef );
-		graph.releaseRef( eRef );
-		graph.releaseRef( vRef );
-
-		return selected;
 	}
 
 	@Override
 	public void setSelected( final BV vertex, final boolean selected )
 	{
-		final V vRef = graph.vertexRef();
-		selection.setSelected( branchGraph.getLinkedVertex( vertex, vRef ), selected );
-		graph.releaseRef( vRef );
+		selection.pauseListeners();
+		setVertexSelected( vertex, selected );
+		selection.resumeListeners();
+	}
+
+	private boolean setVertexSelected( final BV branchVertex, final boolean selected )
+	{
+		Iterator<V> vertices = branchGraph.vertexBranchIterator( branchVertex );
+		Iterator<E> edges = branchGraph.edgeBranchIterator( branchVertex );
+		try
+		{
+			boolean changed = false;
+			while ( vertices.hasNext() )
+			{
+				V v = vertices.next();
+				changed = changed || selected != selection.isSelected( v );
+				selection.setSelected( v, selected );
+			}
+
+			while ( edges.hasNext() )
+			{
+				E e = edges.next();
+				changed = changed || selected != selection.isSelected( e );
+				selection.setSelected( e, selected );
+			}
+
+			return changed;
+		}
+		finally
+		{
+			branchGraph.releaseIterator( vertices );
+			branchGraph.releaseIterator( edges );
+		}
 	}
 
 	@Override
 	public void setSelected( final BE edge, final boolean selected )
 	{
-		selection.pauseListeners();
-		setEdgeSelected( edge, selected );
-		selection.resumeListeners();
+		final E eRef = graph.edgeRef();
+		try
+		{
+			E e = branchGraph.getLinkedEdge( edge, eRef );
+			if( e != null )
+				selection.setSelected( e, selected );
+		}
+		finally
+		{
+			graph.releaseRef( eRef );
+		}
 	}
 
 	/**
 	 * Determines whether this call changed the underlying selection model.
 	 *
-	 * @param edge
+	 * @param branchEdge
 	 *            the branch edge to select.
 	 * @param selected
 	 *            whether to select the specified edge.
 	 * @return <code>true</code> if the selection model has been changed by this
 	 *         call.
 	 */
-	private boolean setEdgeSelected( final BE edge, final boolean selected )
+	private boolean setEdgeSelected( final BE branchEdge, final boolean selected )
 	{
 		final E eRef = graph.edgeRef();
-		final V vRef = graph.vertexRef();
-		final BE beRef = branchGraph.edgeRef();
 
 		try
 		{
-			E e = branchGraph.getLinkedEdge( edge, eRef );
+			E e = branchGraph.getLinkedEdge( branchEdge, eRef );
 			if ( !isValid( e ) )
 				return false;
-
-			boolean changed = false;
-			if ( !changed && ( selection.isSelected( e ) != selected ) )
-				changed = true;
-
+			boolean changed = selection.isSelected( e ) == selected;
 			selection.setSelected( e, selected );
-			V target = e.getTarget( vRef );
-			do
-			{
-				if ( !changed && ( selection.isSelected( target ) != selected ) )
-					changed = true;
-
-				selection.setSelected( target, selected );
-				/*
-				 * The target vertex is still linked to the branch edge, so this
-				 * means that it is still in the middle of the branch. This in
-				 * turn means that it has only one outgoing edge.
-				 */
-				if ( target.outgoingEdges().isEmpty() )
-					break;
-				e = target.outgoingEdges().get( 0, eRef );
-				if ( !changed && ( selection.isSelected( e ) != selected ) )
-					changed = true;
-
-				selection.setSelected( e, selected );
-				target = e.getTarget( vRef );
-			}
-			while ( edge.equals( branchGraph.getBranchEdge( target, beRef ) ) );
 			return changed;
-
 		}
 		finally
 		{
-			branchGraph.releaseRef( beRef );
 			graph.releaseRef( eRef );
-			graph.releaseRef( vRef );
 		}
 	}
 
@@ -224,17 +205,8 @@ public class BranchGraphSelectionAdapter<
 	{
 		boolean changed = false;
 		selection.pauseListeners();
-
-		final V vRef = graph.vertexRef();
 		for ( final BV vertex : vertices )
-		{
-			final V v = branchGraph.getLinkedVertex( vertex, vRef );
-			if ( !changed && ( selection.isSelected( v ) != selected ) )
-				changed = true;
-			selection.setSelected( v, selected );
-		}
-
-		graph.releaseRef( vRef );
+			changed = setVertexSelected( vertex, selected ) || changed;
 		selection.resumeListeners();
 		return changed;
 	}
@@ -242,49 +214,45 @@ public class BranchGraphSelectionAdapter<
 	@Override
 	public RefSet< BE > getSelectedEdges()
 	{
-		final RefSet< BE > edges = RefCollections.createRefSet( branchGraph.edges() );
-
-		// Find branch edges linked to selected edges.
-		final RefSet< E > selectedEdges = selection.getSelectedEdges();
 		final BE beRef = branchGraph.edgeRef();
-		for ( final E e : selectedEdges )
-		{
-			final BE edge = branchGraph.getBranchEdge( e, beRef );
-			// Test if it is selected according to branch edge selection.
-			if ( isSelected( edge ) )
-				edges.add( edge );
-		}
+		try {
+			final RefSet< BE > branchEdges =
+					RefCollections.createRefSet( branchGraph.edges() );
 
-		// Find branch edges linked to selected vertices.
-		final RefSet< V > selectedVertices = selection.getSelectedVertices();
-		for ( final V v : selectedVertices )
-		{
-			final BE edge = branchGraph.getBranchEdge( v, beRef );
-			// Test if it is selected according to branch edge selection.
-			if ( null != edge && isSelected( edge ) )
-				edges.add( edge );
-		}
+			for ( final E edges : selection.getSelectedEdges() )
+			{
+				final BE branchEdge = branchGraph.getBranchEdge( edges, beRef );
+				if ( branchEdge != null )
+					branchEdges.add( branchEdge );
+			}
 
-		branchGraph.releaseRef( beRef );
-		return edges;
+			return branchEdges;
+		}
+		finally {
+			branchGraph.releaseRef( beRef );
+		}
 	}
 
 	@Override
 	public RefSet< BV > getSelectedVertices()
 	{
-		final RefSet< V > selectedVertices = selection.getSelectedVertices();
-		final RefSet< BV > vertices = RefCollections.createRefSet( branchGraph.vertices() );
-
 		final BV bvRef = branchGraph.vertexRef();
-		for ( final V v : selectedVertices )
+		try
 		{
-			final BV vertex = branchGraph.getBranchVertex( v, bvRef );
-			if ( null != vertex )
-				vertices.add( vertex );
-		}
+			final RefSet<BV> branchVertices = RefCollections.createRefSet( branchGraph.vertices() );
 
-		branchGraph.releaseRef( bvRef );
-		return vertices;
+			for ( final V v : selection.getSelectedVertices() )
+			{
+				final BV branchVertex = branchGraph.getBranchVertex( v, bvRef );
+				if ( branchVertex != null && isSelected( branchVertex ) )
+					branchVertices.add( branchVertex );
+			}
+
+			return branchVertices;
+		}
+		finally {
+			branchGraph.releaseRef( bvRef );
+		}
 	}
 
 	@Override
@@ -296,7 +264,9 @@ public class BranchGraphSelectionAdapter<
 	@Override
 	public boolean isEmpty()
 	{
-		return selection.isEmpty();
+		if( selection.isEmpty() )
+			return true;
+		return getSelectedEdges().isEmpty() && getSelectedVertices().isEmpty();
 	}
 
 	@Override

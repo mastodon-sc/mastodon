@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,26 +26,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.ui.coloring;
 
-import org.mastodon.collection.RefList;
-import org.mastodon.model.RootsModel;
-import org.mastodon.model.SelectionModel;
-import org.mastodon.ui.coloring.GraphColorGenerator;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraph;
 
-public class HierarchyLayout extends LineageTreeLayoutImp
+public class BranchFeatureColorGenerator< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+		extends AbstractBranchVertexColorGenerator< V, E, BV, BE >
+		implements ColorGenerator< V >
 {
 
-	public HierarchyLayout( RootsModel<TrackSchemeVertex> rootsModel, TrackSchemeGraph<?, ?> graph, SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selection )
+	public BranchFeatureColorGenerator(
+			final FeatureProjection< BV > featureProjection,
+			final BranchGraph< BV, BE, V, E > branchGraph,
+			final ColorMap colorMap,
+			final double min,
+			final double max )
 	{
-		super( rootsModel, graph, selection );
+		super( featureProjection, branchGraph, colorMap, min, max );
 	}
 
 	@Override
-	protected void addScreenVertex( GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator, RefList<ScreenVertex> screenVertices, ScreenVertex.ScreenVertexPool screenVertexPool, TrackSchemeVertex v1, ScreenVertex sv, double x, double y )
+	public int color( final V v )
 	{
-		super.addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y );
-		if(v1.outgoingEdges().size() == 1)
-			sv.setLabel( "" );
+		return branchVertexColor( v );
 	}
+
 }

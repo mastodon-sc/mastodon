@@ -57,6 +57,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final IndexField origVertex = indexField();
 		final DoubleField xOffset = doubleField();
 		final DoubleField yOffset = doubleField();
+		final DoubleField yStart = doubleField();
 		final DoubleField vertexDist = doubleField();
 		final BooleanField selected = booleanField();
 		final BooleanField ghost = booleanField();
@@ -75,6 +76,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final IndexAttribute< ScreenVertex > origVertex = new IndexAttribute<>( layout.origVertex, this );
 		final DoubleAttribute< ScreenVertex > xOffset = new DoubleAttribute<>( layout.xOffset, this );
 		final DoubleAttribute< ScreenVertex > yOffset = new DoubleAttribute<>( layout.yOffset, this );
+		final DoubleAttribute< ScreenVertex > yStart = new DoubleAttribute<>( layout.yStart, this );
 		final DoubleAttribute< ScreenVertex > vertexDist = new DoubleAttribute<>( layout.vertexDist, this );
 		final BooleanAttribute< ScreenVertex > selected = new BooleanAttribute<>( layout.selected, this );
 		final BooleanAttribute< ScreenVertex > ghost = new BooleanAttribute<>( layout.ghost, this );
@@ -199,6 +201,23 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	protected void setY( final double y )
 	{
 		pool.yOffset.setQuiet( this, y );
+	}
+
+	/**
+	 * Get the Y screen coordinate of the first timepoint that
+	 * may be represented by the branch spot. NaN is this does
+	 * not represent a branch spot.
+	 *
+	 * @return Y screen coordinate.
+	 */
+	public double getYStart()
+	{
+		return pool.yStart.get( this );
+	}
+
+	protected void setYStart( final double y )
+	{
+		pool.yStart.setQuiet( this, y );
 	}
 
 	/**
@@ -360,6 +379,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		setLabel( v.getLabel() );
 		setX( v.getX() );
 		setY( v.getY() );
+		setYStart( v.getYStart() );
 		setVertexDist( v.getVertexDist() );
 		setSelected( v.isSelected() );
 		setGhost( v.isGhost() );

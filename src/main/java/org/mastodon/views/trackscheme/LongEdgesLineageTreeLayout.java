@@ -28,11 +28,7 @@
  */
 package org.mastodon.views.trackscheme;
 
-import java.util.List;
-
-import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefList;
-import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
@@ -130,7 +126,8 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 			{
 				vertexList.get( i, v1 );
 				final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-				addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y );
+				final double fy = ( v1.getFirstTimepoint() - minY ) * yScale + decorationsOffsetY;
+				addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y, fy );
 
 				minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
 				prevX = x;
@@ -154,7 +151,8 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 						// ScreenVertex for v2 not found. Adding one...
 						final double nx = ( v2.getLayoutX() - minX ) * xScale + decorationsOffsetX;
 						final double ny = ( v2.getTimepoint() - minY ) * yScale + decorationsOffsetY;
-						addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v2, sv, nx, ny );
+						final double nfy = ( v1.getFirstTimepoint() - minY ) * yScale + decorationsOffsetY;
+						addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v2, sv, nx, ny, nfy );
 					}
 
 					final int eid = edge.getInternalPoolIndex();

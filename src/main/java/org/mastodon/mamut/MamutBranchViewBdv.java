@@ -81,7 +81,6 @@ import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.OverlayNavigation;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings.UpdateListener;
-import org.mastodon.views.bdv.overlay.wrap.OverlayBranchGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
@@ -95,7 +94,7 @@ import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 
 public class MamutBranchViewBdv extends MamutBranchView< 
-	OverlayBranchGraphWrapper< BranchSpot, BranchLink, Spot, Link >, 
+	OverlayGraphWrapper< BranchSpot, BranchLink >,
 	OverlayVertexWrapper< BranchSpot, BranchLink >, 
 	OverlayEdgeWrapper< BranchSpot, BranchLink > >
 {
@@ -199,11 +198,9 @@ public class MamutBranchViewBdv extends MamutBranchView<
 			viewer.state().setViewerTransform( tLoaded );
 
 		// Renderer.
-		final OverlayGraphWrapper< Spot, Link > overlayGraph = viewGraph.getGraphWrapper();
 		final OverlayGraphRenderer< OverlayVertexWrapper< BranchSpot, BranchLink >, OverlayEdgeWrapper< BranchSpot, BranchLink > > tracksOverlay =
 				new OverlayBranchGraphRenderer<>(
 						viewGraph,
-						overlayGraph,
 						highlightModel,
 						focusModel,
 						selectionModel,
@@ -294,7 +291,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		return viewer;
 	}
 
-	private static OverlayBranchGraphWrapper< BranchSpot, BranchLink, Spot, Link > createViewBranchGraph( final MamutAppModel appModel )
+	private static OverlayGraphWrapper<BranchSpot, BranchLink> createViewBranchGraph( final MamutAppModel appModel )
 	{
 		// Model.
 		final Model model = appModel.getModel();
@@ -308,23 +305,14 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		final GraphIdBimap< Spot, Link > graphIdBimap = model.getGraphIdBimap();
 		final BoundingSphereRadiusStatistics radiusStats = appModel.getRadiusStats();
 
-		// Overlay graph.
-		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
-				graph,
-				graphIdBimap,
-				appModel.getModel().getSpatioTemporalIndex(),
-				appModel.getModel().getGraph().getLock(),
-				new ModelOverlayProperties( graph, radiusStats ) );
-
 		final OverlayProperties< BranchSpot, BranchLink > properties =
 				new BranchGraphModelOverlayProperties( branchGraph, graph, radiusStats );
-		final OverlayBranchGraphWrapper< BranchSpot, BranchLink, Spot, Link > overlayBranchGraph = new OverlayBranchGraphWrapper<>(
+		final OverlayGraphWrapper< BranchSpot, BranchLink > overlayBranchGraph = new OverlayGraphWrapper<>(
 				branchGraph,
 				branchGraphIdBimap,
 				model.getBranchGraphSpatioTemporalIndex(),
 				graph.getLock(),
-				properties,
-				overlayGraph );
+				properties );
 		return overlayBranchGraph;
 	}
 }

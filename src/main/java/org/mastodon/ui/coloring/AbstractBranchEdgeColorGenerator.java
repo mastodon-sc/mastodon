@@ -38,17 +38,4 @@ public abstract class AbstractBranchEdgeColorGenerator< V extends Vertex< E >, E
 		this.colorGenerator = new FeatureEdgeColorGenerator<>( featureProjection, colorMap, min, max );
 	}
 
-	protected final int fromEdge( final E e )
-	{
-		final BE beref = branchGraph.edgeRef();
-		try
-		{
-			final BE be = branchGraph.getBranchEdge( e, beref );
-			return colorGenerator.color( be, null, null );
-		}
-		finally
-		{
-			branchGraph.releaseRef( beref );
-		}
-	}
 }

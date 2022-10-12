@@ -69,7 +69,7 @@ public class BranchTrackSchemeRootsModel
 		for ( TrackSchemeVertex root : roots )
 		{
 			BranchSpot branchSpot = vertexMap.getLeft( root );
-			Spot spot = branchGraph.getLinkedVertex( branchSpot, spotRef );
+			Spot spot = branchGraph.getFirstLinkedVertex( branchSpot, spotRef );
 			list.add( spot );
 		}
 		modelGraph.releaseRef( spotRef );

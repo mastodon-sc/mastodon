@@ -38,7 +38,7 @@ public class BranchGraphFocusAdapter<
 		else
 		{
 			final V vRef = graph.vertexRef();
-			final V v = branchGraph.getLinkedVertex( vertex, vRef );
+			final V v = branchGraph.getLastLinkedVertex( vertex, vRef );
 			focus.focusVertex( v );
 			graph.releaseRef( vRef );
 		}

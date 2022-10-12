@@ -24,21 +24,14 @@ public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE 
 		extends OverlayGraphRenderer< BV, BE >
 {
 
-	private final OverlayBranchGraph< BV, BE, V, E > branchGraph;
-
-	private final OverlayGraph< V, E > wrappedGraph;
-
 	public OverlayBranchGraphRenderer(
-			final OverlayBranchGraph< BV, BE, V, E > branchGraph,
-			final OverlayGraph< V, E > graph,
+			final OverlayGraph< BV, BE > graph,
 			final HighlightModel< BV, BE > highlight,
 			final FocusModel< BV, BE > focus,
 			final SelectionModel< BV, BE > selection,
 			final GraphColorGenerator< BV, BE > coloring )
 	{
-		super( branchGraph, highlight, focus, selection, coloring );
-		this.branchGraph = branchGraph;
-		this.wrappedGraph = graph;
+		super( graph, highlight, focus, selection, coloring );
 	}
 
 	@Override
@@ -276,8 +269,8 @@ public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE 
 		{
 			index.readLock().unlock();
 		}
-		branchGraph.releaseRef( ref1 );
-		branchGraph.releaseRef( ref2 );
+		graph.releaseRef( ref1 );
+		graph.releaseRef( ref2 );
 	}
 
 	@Override

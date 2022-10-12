@@ -40,7 +40,7 @@ public class BranchGraphHighlightAdapter<
 		}
 
 		final V vRef = graph.vertexRef();
-		highlight.highlightVertex( branchGraph.getLinkedVertex( vertex, vRef ) );
+		highlight.highlightVertex( branchGraph.getLastLinkedVertex( vertex, vRef ) );
 		graph.releaseRef( vRef );
 	}
 
@@ -61,17 +61,25 @@ public class BranchGraphHighlightAdapter<
 	@Override
 	public BV getHighlightedVertex( final BV ref )
 	{
-		final V vref = graph.vertexRef();
-		final V highlighted = highlight.getHighlightedVertex( vref );
-		if ( highlighted == null )
+		final V vRef = graph.vertexRef();
+		final E eRef = graph.edgeRef();
+		try
 		{
-			graph.releaseRef( vref );
-			return null;
-		}
+			final V highlighted = highlight.getHighlightedVertex( vRef );
+			if ( null != highlighted )
+				return branchGraph.getBranchVertex( highlighted, ref );
 
-		final BV bv = branchGraph.getBranchVertex( highlighted, ref );
-		graph.releaseRef( vref );
-		return bv;
+			final E highlightedEdge = highlight.getHighlightedEdge( eRef );
+			if ( null != highlightedEdge )
+				return branchGraph.getBranchVertex( highlightedEdge, ref );
+
+			return null;
+
+		}
+		finally {
+			graph.releaseRef( vRef );
+			graph.releaseRef( eRef );
+		}
 	}
 
 
@@ -79,29 +87,16 @@ public class BranchGraphHighlightAdapter<
 	public BE getHighlightedEdge( final BE ref )
 	{
 		final E eRef = graph.edgeRef();
-		final E highlightedEdge = highlight.getHighlightedEdge( eRef );
-		if ( highlightedEdge == null )
-		{
-			// Check if a vertex is highlighted.
-			final V vRef = graph.vertexRef();
-			final V highlightedVertex = highlight.getHighlightedVertex( vRef );
-			if ( null == highlightedVertex )
-			{
-				// No, nothing.
-				graph.releaseRef( vRef );
-				graph.releaseRef( eRef );
+		try {
+			final E highlightedEdge = highlight.getHighlightedEdge( eRef );
+			if ( highlightedEdge == null )
 				return null;
-			}
 
-			// Highlight its linked branch edge, if any.
-			final BE be = branchGraph.getBranchEdge( highlightedVertex, ref );
-			graph.releaseRef( vRef );
-			graph.releaseRef( eRef );
-			return be;
+			return branchGraph.getBranchEdge( highlightedEdge, ref );
 		}
-
-		graph.releaseRef( eRef );
-		return branchGraph.getBranchEdge( highlightedEdge, ref );
+		finally {
+			graph.releaseRef( eRef );
+		}
 	}
 
 	@Override

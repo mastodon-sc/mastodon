@@ -10,9 +10,10 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.model.DefaultTimepointModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.views.trackscheme.HierarchyLayout;
+import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
@@ -37,14 +38,11 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 
 	public MamutBranchViewTrackSchemeHierarchy( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		super( appModel, guiState, new BranchHierarchyTrackSchemeFactory(), new HierarchyTrackSchemeOverlayFactory(), HierarchyLayout::new );
+		super( appModel, guiState, new BranchHierarchyTrackSchemeFactory(), new HierarchyTrackSchemeOverlayFactory(), LineageTreeLayoutImp::new, new DefaultTimepointModel() );
 
 		// Window title.
 		final TrackSchemeFrame frame = getFrame();
 		frame.setTitle( "TrackScheme Hierarchy" );
-
-		// Remove timepoint listener.
-		timepointModel.listeners().removeAll();
 
 		// Min & max levels.
 		final GraphChangeListener gcl = () -> {
@@ -113,6 +111,12 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 				while ( it.hasNext() && it.next().incomingEdges().size() > 0 )
 					level++;
 				return level;
+			}
+
+			@Override
+			public String getFirstLabel( BranchSpot branchSpot )
+			{
+				return branchSpot.getFirstLabel();
 			}
 		}
 	}

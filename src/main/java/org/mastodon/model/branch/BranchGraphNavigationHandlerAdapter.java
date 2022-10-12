@@ -37,7 +37,7 @@ public class BranchGraphNavigationHandlerAdapter<
 	public void notifyNavigateToVertex( final BV vertex )
 	{
 		final V vref = graph.vertexRef();
-		final V v = branchGraph.getLinkedVertex( vertex, vref );
+		final V v = branchGraph.getLastLinkedVertex( vertex, vref );
 		if ( isValid( v ) )
 			navigation.notifyNavigateToVertex( v );
 		graph.releaseRef( vref );
@@ -113,32 +113,37 @@ public class BranchGraphNavigationHandlerAdapter<
 		public void navigateToVertex( final V vertex )
 		{
 			final BV bvref = branchGraph.vertexRef();
-			final BV bv = branchGraph.getBranchVertex( vertex, bvref );
-			if ( bv != null )
+			try
 			{
-				listener.navigateToVertex( bv );
+				final BV bv = branchGraph.getBranchVertex( vertex, bvref );
+				if ( bv != null )
+					listener.navigateToVertex( bv );
 			}
-			else
+			finally
 			{
-				final BE beref = branchGraph.edgeRef();
-				final BE be = branchGraph.getBranchEdge( vertex, beref );
-				if ( be != null )
-					listener.navigateToEdge( be );
-
-				branchGraph.releaseRef( beref );
+				branchGraph.releaseRef( bvref );
 			}
-			branchGraph.releaseRef( bvref );
 		}
 
 		@Override
 		public void navigateToEdge( final E edge )
 		{
 			final BE beref = branchGraph.edgeRef();
-			final BE be = branchGraph.getBranchEdge( edge, beref );
-			if ( be != null )
-				listener.navigateToEdge( be );
-
-			branchGraph.releaseRef( beref );
+			final BV bvref = branchGraph.vertexRef();
+			try
+			{
+				final BE be = branchGraph.getBranchEdge( edge, beref );
+				if ( be != null )
+					listener.navigateToEdge( be );
+				final BV bv = branchGraph.getBranchVertex( edge, bvref );
+				if ( bv != null )
+					listener.navigateToVertex( bv );
+			}
+			finally
+			{
+				branchGraph.releaseRef( beref );
+				branchGraph.releaseRef( bvref );
+			}
 		}
 	}
 }

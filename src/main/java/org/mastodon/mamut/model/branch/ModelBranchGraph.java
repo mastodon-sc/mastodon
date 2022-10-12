@@ -31,14 +31,14 @@ public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchSpot, Br
 	}
 
 	@Override
-	public BranchSpot init( final BranchSpot bv, final Spot v )
+	public BranchSpot init( final BranchSpot branchVertex, final Spot branchStart, final Spot branchEnd )
 	{
-		return bv.init( v );
+		return branchVertex.init( branchStart, branchEnd );
 	}
 
 	@Override
-	public BranchLink init( final BranchLink be, final Link e )
+	public BranchLink init( final BranchLink branchEdge, final Link edge )
 	{
-		return be.init();
+		return branchEdge.init();
 	}
 }

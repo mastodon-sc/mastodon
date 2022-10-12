@@ -127,8 +127,7 @@ public class ColoringModelBranchGraph< V extends Vertex< E >, E extends Edge< V 
 						vertexRangeMin, vertexRangeMax );
 				break;
 			case VERTEX:
-			case BRANCH_VERTEX_DOWN:
-			case BRANCH_VERTEX_UP:
+			case BRANCH_VERTEX:
 				vertexColorGenerator = new FeatureColorGenerator<>(
 						( FeatureProjection< V > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
@@ -155,23 +154,22 @@ public class ColoringModelBranchGraph< V extends Vertex< E >, E extends Edge< V 
 			switch ( fcm.getEdgeColorMode() )
 			{
 			case SOURCE_VERTEX:
-			case SOURCE_BRANCH_VERTEX_DOWN:
-			case SOURCE_BRANCH_VERTEX_UP:
+			case SOURCE_BRANCH_VERTEX:
 				edgeColorGenerator = new FeatureColorGeneratorSourceVertex<>(
 						( FeatureProjection< V > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin, edgeRangeMax );
 				break;
 			case TARGET_VERTEX:
-			case TARGET_BRANCH_VERTEX_DOWN:
-			case TARGET_BRANCH_VERTEX_UP:
+			case TARGET_BRANCH_VERTEX:
 				edgeColorGenerator = new FeatureColorGeneratorTargetVertex<>(
 						( FeatureProjection< V > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),
 						edgeRangeMin, edgeRangeMax );
 				break;
 			case EDGE:
-			case BRANCH_EDGE:
+			case INCOMING_BRANCH_EDGE:
+			case OUTGOING_BRANCH_EDGE:
 				edgeColorGenerator = new FeatureEdgeColorGenerator<>(
 						( FeatureProjection< E > ) edgeProjection,
 						ColorMap.getColorMap( edgeColorMap ),

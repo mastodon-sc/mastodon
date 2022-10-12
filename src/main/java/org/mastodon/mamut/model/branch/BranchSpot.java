@@ -15,37 +15,46 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 
 	private final RefPool< Spot > vertexBimap;
 
-	private final IntAttributeValue spotID;
+	private final IntAttributeValue firstSpotId;
+
+	private final IntAttributeValue lastSpotId;
 
 	protected BranchSpot( final BranchSpotPool vertexPool, final RefPool< Spot > vertexBimap )
 	{
 		super( vertexPool );
 		this.vertexBimap = vertexBimap;
-		this.spotID = pool.spotID.createAttributeValue( this );
+		this.firstSpotId = pool.firstSpotId.createAttributeValue( this );
+		this.lastSpotId = pool.lastSpotId.createAttributeValue( this );
 	}
 
 	@Override
 	public String toString()
 	{
 		final Spot ref = vertexBimap.createRef();
-		final String str = vertexBimap.getObject( getLinkedVertexId(), ref ).toString();
+		final String str = vertexBimap.getObject( getLastLinkedVertexId(), ref ).toString();
 		vertexBimap.releaseRef( ref );
 		return "bv(" + getInternalPoolIndex() + ") -> " + str;
 	}
 
-	protected int getLinkedVertexId()
+	protected int getFirstLinkedVertexId()
 	{
-		return spotID.get();
+		return firstSpotId.get();
 	}
 
-	protected void setLinkedVertexId( final int id )
+	protected int getLastLinkedVertexId()
 	{
-		spotID.set( id );
+		return lastSpotId.get();
 	}
 
-	public BranchSpot init( final Spot spot )
+	protected void setLinkedVertexId( final int firstSpotId, final int lastSpotId )
 	{
-		setLinkedVertexId( vertexBimap.getId( spot ) );
+		this.firstSpotId.set( firstSpotId );
+		this.lastSpotId.set( lastSpotId );
+	}
+
+	public BranchSpot init( final Spot branchStart, final Spot branchEnd )
+	{
+		setLinkedVertexId( vertexBimap.getId( branchStart ), vertexBimap.getId( branchEnd ) );
 		initDone();
 		return this;
 	}
@@ -54,14 +63,14 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 	protected void setToUninitializedState() throws IllegalStateException
 	{
 		super.setToUninitializedState();
-		setLinkedVertexId( -1 );
+		setLinkedVertexId( -1, -1 );
 	}
 
 	@Override
 	public int numDimensions()
 	{
 		final Spot ref = vertexBimap.createRef();
-		final int n = vertexBimap.getObject( getLinkedVertexId(), ref ).numDimensions();
+		final int n = vertexBimap.getObject( getLastLinkedVertexId(), ref ).numDimensions();
 		vertexBimap.releaseRef( ref );
 		return n;
 	}
@@ -70,7 +79,7 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 	public void localize( final float[] position )
 	{
 		final Spot ref = vertexBimap.createRef();
-		vertexBimap.getObject( getLinkedVertexId(), ref ).localize( position );
+		vertexBimap.getObject( getLastLinkedVertexId(), ref ).localize( position );
 		vertexBimap.releaseRef( ref );
 	}
 
@@ -78,7 +87,7 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 	public void localize( final double[] position )
 	{
 		final Spot ref = vertexBimap.createRef();
-		vertexBimap.getObject( getLinkedVertexId(), ref ).localize( position );
+		vertexBimap.getObject( getLastLinkedVertexId(), ref ).localize( position );
 		vertexBimap.releaseRef( ref );
 	}
 
@@ -86,7 +95,7 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 	public float getFloatPosition( final int d )
 	{
 		final Spot ref = vertexBimap.createRef();
-		final float x = vertexBimap.getObject( getLinkedVertexId(), ref ).getFloatPosition( d );
+		final float x = vertexBimap.getObject( getLastLinkedVertexId(), ref ).getFloatPosition( d );
 		vertexBimap.releaseRef( ref );
 		return x;
 	}
@@ -95,16 +104,24 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 	public double getDoublePosition( final int d )
 	{
 		final Spot ref = vertexBimap.createRef();
-		final double x = vertexBimap.getObject( getLinkedVertexId(), ref ).getDoublePosition( d );
+		final double x = vertexBimap.getObject( getLastLinkedVertexId(), ref ).getDoublePosition( d );
 		vertexBimap.releaseRef( ref );
 		return x;
+	}
+
+	public int getFirstTimePoint()
+	{
+		final Spot ref = vertexBimap.createRef();
+		final int t = vertexBimap.getObject( getFirstLinkedVertexId(), ref ).getTimepoint();
+		vertexBimap.releaseRef( ref );
+		return t;
 	}
 
 	@Override
 	public int getTimepoint()
 	{
 		final Spot ref = vertexBimap.createRef();
-		final int t = vertexBimap.getObject( getLinkedVertexId(), ref ).getTimepoint();
+		final int t = vertexBimap.getObject( getLastLinkedVertexId(), ref ).getTimepoint();
 		vertexBimap.releaseRef( ref );
 		return t;
 	}
@@ -113,7 +130,7 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 	public String getLabel()
 	{
 		final Spot ref = vertexBimap.createRef();
-		final String label = vertexBimap.getObject( getLinkedVertexId(), ref ).getLabel();
+		final String label = vertexBimap.getObject( getLastLinkedVertexId(), ref ).getLabel();
 		vertexBimap.releaseRef( ref );
 		return label;
 	}
@@ -122,7 +139,15 @@ public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink
 	public void setLabel( final String label )
 	{
 		final Spot ref = vertexBimap.createRef();
-		vertexBimap.getObject( getLinkedVertexId(), ref ).setLabel( label );
+		vertexBimap.getObject( getLastLinkedVertexId(), ref ).setLabel( label );
 		vertexBimap.releaseRef( ref );
+	}
+
+	public String getFirstLabel()
+	{
+		final Spot ref = vertexBimap.createRef();
+		final String label = vertexBimap.getObject( getFirstLinkedVertexId(), ref ).getLabel();
+		vertexBimap.releaseRef( ref );
+		return label;
 	}
 }

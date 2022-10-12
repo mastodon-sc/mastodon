@@ -33,12 +33,12 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 
-public class BranchDownFeatureColorGeneratorTargetVertex< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+public class BranchFeatureColorGeneratorSourceVertex< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
 		extends AbstractBranchVertexColorGenerator< V, E, BV, BE >
 		implements EdgeColorGenerator< V, E >
 {
 
-	public BranchDownFeatureColorGeneratorTargetVertex(
+	public BranchFeatureColorGeneratorSourceVertex(
 			final FeatureProjection< BV > featureProjection,
 			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ColorMap colorMap,
@@ -51,6 +51,6 @@ public class BranchDownFeatureColorGeneratorTargetVertex< V extends Vertex< E >,
 	@Override
 	public int color( final E edge, final V source, final V target )
 	{
-		return downwardFromVertex( target );
+		return branchVertexColor( source );
 	}
 }

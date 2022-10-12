@@ -387,7 +387,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 					{
 						vertexList.get( i, v1 );
 						final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-						addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y );
+						addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y, y );
 
 						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
 						prevX = x;
@@ -405,7 +405,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 								// ScreenVertex for v2 not found. Adding one...
 								final double nx = ( v2.getLayoutX() - minX ) * xScale + decorationsOffsetX;
 								final double ny = ( v2.getTimepoint() - minY ) * yScale + decorationsOffsetY;
-								addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v2, sv, nx, ny );
+								addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v2, sv, nx, ny, ny );
 							}
 
 							final int eid = edge.getInternalPoolIndex();
@@ -445,7 +445,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		buildScreenColumns( screenEntities, decorationsOffsetX, minX, maxX, xScale );
 	}
 
-	protected void addScreenVertex( GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator, RefList<ScreenVertex> screenVertices, ScreenVertexPool screenVertexPool, TrackSchemeVertex v1, ScreenVertex sv, double x, double y )
+	protected void addScreenVertex( GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator, RefList<ScreenVertex> screenVertices, ScreenVertexPool screenVertexPool, TrackSchemeVertex v1, ScreenVertex sv, double x, double y, double firstY )
 	{
 		final int v1si = screenVertices.size();
 		v1.setScreenVertexIndex( v1si );
@@ -453,7 +453,8 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		final String label = v1.getLabel();
 		final boolean selected = selection.isSelected( v1 );
 		final boolean ghost = v1.isGhost();
-		screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, colorGenerator.color( v1 ) );
+		// TODO move setYStart into init
+		screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, colorGenerator.color( v1 ) ).setYStart( firstY );
 		screenVertices.add( sv );
 	}
 
@@ -488,7 +489,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 			final int columnWidth = xRight - xLeft;
 
 			final TrackSchemeVertex root = currentLayoutColumnRoot.get( ic - 1 );
-			final ScreenColumn column = new ScreenColumn( root.getLabel(), xLeft, columnWidth );
+			final ScreenColumn column = new ScreenColumn( root.getRootLabel(), xLeft, columnWidth );
 			screenColumns.add( column );
 		}
 	}

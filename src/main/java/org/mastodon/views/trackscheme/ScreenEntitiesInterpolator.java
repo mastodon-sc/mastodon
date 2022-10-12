@@ -205,13 +205,16 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		double startX = vStart.getX();
 		double startY = vStart.getY();
+		double startYStart = vStart.getYStart();
 		if ( incrementalStartTransform != null )
 		{
 			startX = incrementalStartTransform.layoutToScreenX( startX );
 			startY = incrementalStartTransform.layoutToScreenY( startY );
+			startYStart = incrementalStartTransform.layoutToScreenY( startYStart );
 		}
 		vCurrent.setX( ratio * vEnd.getX() + ( 1 - ratio ) * startX );
 		vCurrent.setY( ratio * vEnd.getY() + ( 1 - ratio ) * startY );
+		vCurrent.setYStart( ratio * vEnd.getYStart() + ( 1 - ratio ) * startYStart );
 		vCurrent.setTransition(
 				( vStart.isSelected() == endSelected )
 						? NONE
@@ -232,13 +235,16 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setVertexDist( vStart.getVertexDist() );
 		double startX = vStart.getX();
 		double startY = vStart.getY();
+		double startYStart = vStart.getYStart();
 		if ( incrementalStartTransform != null )
 		{
 			startX = incrementalStartTransform.layoutToScreenX( startX );
 			startY = incrementalStartTransform.layoutToScreenY( startY );
+			startYStart = incrementalStartTransform.layoutToScreenY( startYStart );
 		}
 		vCurrent.setX( startX );
 		vCurrent.setY( startY );
+		vCurrent.setYStart( startYStart );
 		vCurrent.setTransition( DISAPPEAR );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 		vCurrent.setColor( vStart.getColor() );
@@ -253,6 +259,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		vCurrent.setX( vEnd.getX() );
 		vCurrent.setY( vEnd.getY() );
+		vCurrent.setYStart( vEnd.getYStart() );
 		vCurrent.setTransition( APPEAR );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 		vCurrent.setColor( vEnd.getColor() );

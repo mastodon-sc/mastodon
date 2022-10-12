@@ -47,7 +47,7 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	public void getCovariance( final BranchSpot v, final double[][] mat )
 	{
 		final Spot ref = graph.vertexRef();
-		branchGraph.getLinkedVertex( v, ref ).getCovariance( mat );
+		branchGraph.getLastLinkedVertex( v, ref ).getCovariance( mat );
 		graph.releaseRef( ref );
 	}
 
@@ -55,7 +55,7 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	public double getBoundingSphereRadiusSquared( final BranchSpot v )
 	{
 		final Spot ref = graph.vertexRef();
-		final double r2 = branchGraph.getLinkedVertex( v, ref ).getBoundingSphereRadiusSquared();
+		final double r2 = branchGraph.getLastLinkedVertex( v, ref ).getBoundingSphereRadiusSquared();
 		graph.releaseRef( ref );
 		return r2;
 	}
