@@ -33,7 +33,7 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch_v2.BranchGraphV2;
+import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
@@ -62,13 +62,13 @@ public class ColoringModelMain<
 		implements TagSetModel.TagSetModelListener, FeatureColorModeManager.FeatureColorModesListener
 {
 
-	private final BranchGraphV2< BV, BE, V, E > branchGraph;
+	private final BranchGraph< BV, BE, V, E > branchGraph;
 
 	public ColoringModelMain(
 			final TagSetModel< ?, ? > tagSetModel,
 			final FeatureColorModeManager featureColorModeManager,
 			final FeatureModel featureModel,
-			final BranchGraphV2< BV, BE, V, E > branchGraph )
+			final BranchGraph< BV, BE, V, E > branchGraph )
 	{
 		super( tagSetModel, featureColorModeManager, featureModel );
 		this.branchGraph = branchGraph;

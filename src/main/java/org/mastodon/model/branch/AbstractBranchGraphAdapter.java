@@ -4,7 +4,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch_v2.BranchGraphV2;
+import org.mastodon.graph.branch.BranchGraph;
 
 /**
  * Base class for classes that adapt a model component of a core graph to a
@@ -19,7 +19,7 @@ public abstract class AbstractBranchGraphAdapter<
 	BE extends Edge< BV > >
 {
 
-	protected final BranchGraphV2< BV, BE, V, E > branchGraph;
+	protected final BranchGraph< BV, BE, V, E > branchGraph;
 
 	protected final ReadOnlyGraph< V, E > graph;
 
@@ -30,7 +30,7 @@ public abstract class AbstractBranchGraphAdapter<
 	private final V vref;
 
 	protected AbstractBranchGraphAdapter( 
-			final BranchGraphV2< BV, BE, V, E > branchGraph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap )
 	{

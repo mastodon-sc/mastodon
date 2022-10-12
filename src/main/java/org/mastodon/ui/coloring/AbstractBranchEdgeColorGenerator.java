@@ -3,7 +3,7 @@ package org.mastodon.ui.coloring;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch_v2.BranchGraphV2;
+import org.mastodon.graph.branch.BranchGraph;
 
 /**
  * Mother class for color generators that return a color based on feature
@@ -25,11 +25,11 @@ public abstract class AbstractBranchEdgeColorGenerator< V extends Vertex< E >, E
 
 	protected final FeatureEdgeColorGenerator< BV, BE > colorGenerator;
 
-	protected final BranchGraphV2< BV, BE, V, E > branchGraph;
+	protected final BranchGraph< BV, BE, V, E > branchGraph;
 
 	public AbstractBranchEdgeColorGenerator(
 			final FeatureProjection< BE > featureProjection,
-			final BranchGraphV2< BV, BE, V, E > branchGraph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ColorMap colorMap,
 			final double min,
 			final double max )

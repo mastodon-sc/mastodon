@@ -9,7 +9,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch_v2.BranchGraphV2;
+import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
 import org.scijava.listeners.Listeners;
@@ -26,7 +26,7 @@ public class BranchGraphSelectionAdapter<
 	private final SelectionModel< V, E > selection;
 
 	public BranchGraphSelectionAdapter(
-			final BranchGraphV2< BV, BE, V, E > branchGraph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final SelectionModel< V, E > selection )

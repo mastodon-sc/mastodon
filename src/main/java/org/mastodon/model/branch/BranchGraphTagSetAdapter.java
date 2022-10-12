@@ -8,7 +8,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch_v2.BranchGraphV2;
+import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.tag.ObjTagMap;
 import org.mastodon.model.tag.ObjTags;
 import org.mastodon.model.tag.ObjTagsAdapter;
@@ -34,7 +34,7 @@ public class BranchGraphTagSetAdapter<
 	private final ObjTags< E > edgeTags;
 
 	public BranchGraphTagSetAdapter(
-			final BranchGraphV2< BV, BE, V, E > branchGraph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final TagSetModel< V, E > tagsetModel )

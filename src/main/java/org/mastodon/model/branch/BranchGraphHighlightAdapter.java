@@ -4,7 +4,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch_v2.BranchGraphV2;
+import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
 import org.scijava.listeners.Listeners;
@@ -21,7 +21,7 @@ public class BranchGraphHighlightAdapter<
 	private final HighlightModel< V, E > highlight;
 
 	public BranchGraphHighlightAdapter(
-			final BranchGraphV2< BV, BE, V, E > branchGraph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final HighlightModel< V, E > highlight )

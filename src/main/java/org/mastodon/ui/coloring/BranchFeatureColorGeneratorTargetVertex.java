@@ -31,7 +31,7 @@ package org.mastodon.ui.coloring;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch_v2.BranchGraphV2;
+import org.mastodon.graph.branch.BranchGraph;
 
 public class BranchFeatureColorGeneratorTargetVertex< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
 		extends AbstractBranchVertexColorGenerator< V, E, BV, BE >
@@ -40,7 +40,7 @@ public class BranchFeatureColorGeneratorTargetVertex< V extends Vertex< E >, E e
 
 	public BranchFeatureColorGeneratorTargetVertex(
 			final FeatureProjection< BV > featureProjection,
-			final BranchGraphV2< BV, BE, V, E > branchGraph,
+			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ColorMap colorMap,
 			final double min,
 			final double max )

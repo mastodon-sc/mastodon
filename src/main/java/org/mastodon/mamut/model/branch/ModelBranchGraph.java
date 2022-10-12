@@ -1,6 +1,6 @@
 package org.mastodon.mamut.model.branch;
 
-import org.mastodon.graph.branch_v2.BranchGraphV2Imp;
+import org.mastodon.graph.branch.BranchGraphImp;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -17,7 +17,7 @@ import net.imglib2.RealLocalizable;
  * @author Jean-Yves Tinevez.
  *
  */
-public class ModelBranchGraph extends BranchGraphV2Imp< Spot, Link, BranchSpot, BranchLink, BranchSpotPool, BranchLinkPool, ByteMappedElement >
+public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchSpot, BranchLink, BranchSpotPool, BranchLinkPool, ByteMappedElement >
 {
 
 	public ModelBranchGraph( final ModelGraph graph )

@@ -4,7 +4,7 @@ import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch_v2.BranchGraphV2;
+import org.mastodon.graph.branch.BranchGraph;
 
 /**
  * Maps a graph vertices to the vertices in the branch graph they are linked to.
@@ -19,11 +19,11 @@ import org.mastodon.graph.branch_v2.BranchGraphV2;
 public class BranchGraphEdgeBimap< E extends Edge< ? >, BE extends Edge< ? > > implements RefBimap<E, BE>
 {
 
-	private final BranchGraphV2< ?, BE, ?, E > branchGraph;
+	private final BranchGraph< ?, BE, ?, E > branchGraph;
 
 	private final ReadOnlyGraph< ?, E > graph;
 
-	public BranchGraphEdgeBimap( final BranchGraphV2< ?, BE, ?, E > branchGraph, final ReadOnlyGraph< ?, E > graph )
+	public BranchGraphEdgeBimap( final BranchGraph< ?, BE, ?, E > branchGraph, final ReadOnlyGraph< ?, E > graph )
 	{
 		this.branchGraph = branchGraph;
 		this.graph = graph;
