@@ -66,6 +66,7 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import net.miginfocom.swing.MigLayout;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -89,118 +90,62 @@ public class MainWindow extends JFrame
 		final ActionMap actionMap = windowManager.getGlobalAppActions().getActionMap();
 
 		final JPanel buttonsPanel = new JPanel();
-		final GridBagLayout gbl = new GridBagLayout();
-		gbl.columnWeights = new double[] { 1.0, 1.0 };
-		gbl.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-		buttonsPanel.setLayout( gbl );
+		buttonsPanel.setLayout( new MigLayout() );
 
-		final GridBagConstraints separator_gbc = new GridBagConstraints();
-		separator_gbc.fill = GridBagConstraints.HORIZONTAL;
-		separator_gbc.gridwidth = 2;
-		separator_gbc.insets = new Insets( 5, 5, 5, 5 );
-		separator_gbc.gridx = 0;
-
-		final GridBagConstraints label_gbc = new GridBagConstraints();
-		label_gbc.fill = GridBagConstraints.HORIZONTAL;
-		label_gbc.gridwidth = 2;
-		label_gbc.insets = new Insets( 5, 5, 5, 5 );
-		label_gbc.gridx = 0;
-
-		final GridBagConstraints button_gbc_right = new GridBagConstraints();
-		button_gbc_right.fill = GridBagConstraints.BOTH;
-		button_gbc_right.insets = new Insets( 0, 0, 5, 10 );
-		button_gbc_right.gridx = 1;
-
-		final GridBagConstraints button_gbc_left = new GridBagConstraints();
-		button_gbc_left.fill = GridBagConstraints.BOTH;
-		button_gbc_left.insets = new Insets( 0, 10, 5, 5 );
-		button_gbc_left.gridx = 0;
-
-		int gridy = 0;
-
-		label_gbc.gridy = gridy;
+		// Views:
 		final JLabel viewsLabel = new JLabel( "Views:" );
 		viewsLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
-		buttonsPanel.add( viewsLabel, label_gbc );
-
-		++gridy;
+		buttonsPanel.add( viewsLabel, "span, wrap" );
 
 		final JButton tableButton = new JButton( actionMap.get( WindowManager.NEW_TABLE_VIEW ) );
 		prepareButton( tableButton, "table", TABLE_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( tableButton, button_gbc_left );
+		buttonsPanel.add( tableButton, "grow" );
 
 		final JButton bdvButton = new JButton( actionMap.get( WindowManager.NEW_BDV_VIEW ) );
 		prepareButton( bdvButton, "bdv", BDV_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( bdvButton, button_gbc_right );
-
-		++gridy;
+		buttonsPanel.add( bdvButton, "grow, wrap" );
 
 		final JButton selectionTableButton = new JButton( actionMap.get( WindowManager.NEW_SELECTION_TABLE_VIEW ) );
 		prepareButton( selectionTableButton, "selection table", TABLE_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( selectionTableButton, button_gbc_left );
+		buttonsPanel.add( selectionTableButton, "grow" );
 
 		final JButton trackschemeButton = new JButton( actionMap.get( WindowManager.NEW_TRACKSCHEME_VIEW ) );
 		prepareButton( trackschemeButton, "trackscheme", TRACKSCHEME_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( trackschemeButton, button_gbc_right );
+		buttonsPanel.add( trackschemeButton, "grow, wrap" );
 
-		++gridy;
+		buttonsPanel.add( new JSeparator(), "span, grow, wrap" );
 
-		separator_gbc.gridy = gridy;
-		buttonsPanel.add( new JSeparator(), separator_gbc );
-
-		++gridy;
-
-		label_gbc.gridy = gridy;
+		// Processing:
 		final JLabel processingLabel = new JLabel( "Processing:" );
 		processingLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
-		buttonsPanel.add( processingLabel, label_gbc );
-
-		++gridy;
+		buttonsPanel.add( processingLabel, "span, wrap" );
 
 		final JButton grapherButton = new JButton( actionMap.get( WindowManager.NEW_GRAPHER_VIEW ) );
 		prepareButton( grapherButton, "grapher", FEATURES_ICON_MEDIUM );
-		button_gbc_left.gridy = gridy;
-		buttonsPanel.add( grapherButton, button_gbc_left );
+		buttonsPanel.add( grapherButton, "grow" );
 
 		final JButton featureComputationButton = new JButton( actionMap.get( WindowManager.COMPUTE_FEATURE_DIALOG ) );
 		prepareButton( featureComputationButton, "compute features", FEATURES_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( featureComputationButton, button_gbc_right );
-
-		++gridy;
+		buttonsPanel.add( featureComputationButton, "grow, wrap" );
 
 		final JButton editTagSetsButton = new JButton( actionMap.get( WindowManager.TAGSETS_DIALOG ) );
 		prepareButton( editTagSetsButton, "configure tags", TAGS_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( editTagSetsButton, button_gbc_right );
+		buttonsPanel.add( editTagSetsButton, "grow, wrap" );
 
-		++gridy;
+		buttonsPanel.add( new JSeparator(), "span, grow, wrap" );
 
-		separator_gbc.gridy = gridy;
-		buttonsPanel.add( new JSeparator(), separator_gbc );
-
-		++gridy;
-
-		label_gbc.gridy = gridy;
+		// Saving:
 		final JLabel ioLabel = new JLabel( "Saving:" );
 		ioLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
-		buttonsPanel.add( ioLabel, label_gbc );
-
-		++gridy;
+		buttonsPanel.add( ioLabel, "span, wrap" );
 
 		final JButton saveProjectButton = new JButton( actionMap.get( ProjectManager.SAVE_PROJECT ) );
 		prepareButton( saveProjectButton, "save", SAVE_ICON_MEDIUM );
-		button_gbc_left.gridy = gridy;
-		buttonsPanel.add( saveProjectButton, button_gbc_left );
+		buttonsPanel.add( saveProjectButton, "grow" );
 
 		final JButton loadProjectButton = new JButton( actionMap.get( ProjectManager.SAVE_PROJECT_AS ) );
 		prepareButton( loadProjectButton, "save as...", SAVE_AS_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( loadProjectButton, button_gbc_right );
+		buttonsPanel.add( loadProjectButton, "grow, wrap" );
 
 		/*
 		 * Background with an image.
