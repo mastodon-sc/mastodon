@@ -147,13 +147,13 @@ public class DepthFirstIteration
 
 	private enum Stage
 	{
-		FIRST_VISIT, SECOND_VISIT, LEAF;
+		INIT, FIRST_VISIT, SECOND_VISIT, LEAF;
 	}
 
 	private static class DFIterator<V extends Vertex<?>> implements Iterator<Step<V>>, Step<V>
 	{
 		private final Graph<V, ?> graph;
-		private Stage stage = null;
+		private Stage stage = Stage.INIT;
 		private V node = null;
 		private boolean truncate = false;
 		private int depth = -1;
@@ -168,13 +168,15 @@ public class DepthFirstIteration
 		@Override
 		public boolean hasNext()
 		{
-			return depth > 0 || stage == Stage.FIRST_VISIT || stage == null;
+			return depth > 0 ||
+					(stage == Stage.FIRST_VISIT && !truncate) ||
+					stage == Stage.INIT;
 		}
 
 		@Override
 		public Step<V> next()
 		{
-			if( stage == null) {
+			if( stage == Stage.INIT) {
 				Entry<V> entry = stack.get( depth );
 				this.node = entry.node;
 				this.stage = entry.edges.hasNext() ? Stage.FIRST_VISIT : Stage.LEAF;

@@ -110,6 +110,17 @@ public class DepthFirstIterationTest
 		assertEquals( "first visit a, first visit b, second visit a", log.toString() );
 	}
 
+	@Test
+	public void testTruncateRoot() {
+		StringJoiner log = new StringJoiner( ", " );
+		for(DepthFirstIteration.Step<Spot> step : DepthFirstIteration.forRoot( graph, root )) {
+			Spot node = step.node();
+			log.add( stage(step) + " " + node.getLabel() );
+			step.truncate();
+		}
+		assertEquals( "first visit a", log.toString() );
+	}
+
 	private Spot addNode( ModelGraph graph, String label )
 	{
 		Spot a = graph.addVertex();
