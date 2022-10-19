@@ -119,7 +119,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus = new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
 		final TimepointModel timepoint = new DefaultTimepointModel();
 		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
-		final RootsModel<TrackSchemeVertex> roots = new DefaultRootsModel( example, graph );
+		final RootsModel< TrackSchemeVertex > roots = new DefaultRootsModel< DummyVertex, DummyEdge >( example, graph );
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new DefaultNavigationHandler<>();
 		final TrackSchemeOptions options = TrackSchemeOptions.options().style( style );
 		final TrackSchemePanel previewPanel = new TrackSchemePanel( graph, highlight, focus, timepoint, selection, roots, navigation, options );

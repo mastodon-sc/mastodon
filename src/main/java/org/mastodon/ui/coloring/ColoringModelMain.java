@@ -28,7 +28,6 @@
  */
 package org.mastodon.ui.coloring;
 
-import net.imglib2.util.Cast;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
@@ -37,6 +36,8 @@ import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
+
+import net.imglib2.util.Cast;
 
 /**
  * ColoringModel knows which coloring scheme is currently active. Possible
@@ -89,7 +90,6 @@ public class ColoringModelMain<
 	}
 
 	@Override
-	@SuppressWarnings( "unchecked" )
 	public GraphColorGenerator< V, E > getFeatureGraphColorGenerator()
 	{
 		final FeatureColorMode fcm = featureColorMode;
@@ -111,7 +111,7 @@ public class ColoringModelMain<
 		return new CompositeGraphColorGenerator<>( vertexColorGenerator, edgeColorGenerator );
 	}
 
-	private ColorGenerator<V> createVertexColorGenerator( FeatureColorMode fcm, FeatureProjection<?> vertexProjection )
+	private ColorGenerator<V> createVertexColorGenerator( final FeatureColorMode fcm, final FeatureProjection<?> vertexProjection )
 	{
 		final String vertexColorMap = fcm.getVertexColorMap();
 		final double vertexRangeMin = fcm.getVertexRangeMin();
@@ -158,7 +158,7 @@ public class ColoringModelMain<
 		}
 	}
 
-	private EdgeColorGenerator<V, E> createEdgeColorGenerator( FeatureColorMode fcm, FeatureProjection<?> edgeProjection )
+	private EdgeColorGenerator<V, E> createEdgeColorGenerator( final FeatureColorMode fcm, final FeatureProjection<?> edgeProjection )
 	{
 		final String edgeColorMap = fcm.getEdgeColorMap();
 		final double edgeRangeMin = fcm.getEdgeRangeMin();
