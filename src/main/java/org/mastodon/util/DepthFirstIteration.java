@@ -28,30 +28,31 @@
  */
 package org.mastodon.util;
 
-import net.imglib2.util.Cast;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import net.imglib2.util.Cast;
 
 /**
- * This class allows to iterate over a {@link Graph} in depth first iteration order.
+ * This class allows to iterate over a {@link Graph} in depth first iteration
+ * order.
  * <p>
  * "mastodon-graph" has another implementation of a
- * {@link org.mastodon.graph.algorithm.traversal.DepthFirstIterator depth first iteration}.
- * But this class provides additional features, necessary for {@link LineageTreeLayout}.
+ * {@link org.mastodon.graph.algorithm.traversal.DepthFirstIterator depth first
+ * iteration}. But this class provides additional features, necessary for
+ * {@link LineageTreeLayout}.
  * <ol>
- *    <li>It is possible the exclude subtrees from the iteration.</li>
- *    <li>Children are visited in the order of the respective outgoing edges.</li>
- *    <li>
- *        Nodes that have children (non leafs) are visited twice. Once before
- *        the child nodes will be visited, and once after the child nodes have
- *        been visited.
- *    </li>
+ * <li>It is possible the exclude subtrees from the iteration.</li>
+ * <li>Children are visited in the order of the respective outgoing edges.</li>
+ * <li>Nodes that have children (non leafs) are visited twice. Once before the
+ * child nodes will be visited, and once after the child nodes have been
+ * visited.</li>
  * </ol>
  * <p>
  * (Warning: The iteration may not terminate if the graph contains a directed
@@ -59,15 +60,17 @@ import java.util.List;
  * and call {@link Step#truncate()})
  * <p>
  * Let us look at a small example. Lets consider this small graph:
+ * 
  * <pre>
- *  a -> b -> c
+ *  a -&gt; b -&gt; c
  *   \    \
- *    \    -> d
+ *    \    -&gt; d
  *     \
- *    	->e
+ *      -&gt; e
  * </pre>
  *
  * An depth first iteration can be executed using this code:
+ * 
  * <pre>
  * {@code
  * for ( DepthFirstIteration.Step<Spot> step : DepthFirstIteration.forRoot( graph, root ) )
@@ -82,8 +85,10 @@ import java.util.List;
  * }
  * }
  * </pre>
+ * 
  * It will print the following on the console:
  * <p>
+ * 
  * <pre>
  * first visit a
  * first visit b
@@ -107,8 +112,8 @@ public class DepthFirstIteration
 		V node();
 
 		/**
-		 * @returns the length of the path from the root node the the
-		 * {@link #node() current node}.
+		 * @return the length of the path from the root node the the
+		 *         {@link #node() current node}.
 		 */
 		int depth();
 
@@ -137,7 +142,7 @@ public class DepthFirstIteration
 		void truncate();
 	}
 
-	public static <V extends Vertex<?>> Iterable<Step<V>> forRoot( Graph<V, ?> graph, V root )
+	public static <V extends Vertex<?>> Iterable<Step<V>> forRoot( final Graph<V, ?> graph, final V root )
 	{
 		return () -> new DFIterator<>( graph, root );
 	}
@@ -159,7 +164,7 @@ public class DepthFirstIteration
 		private int depth = -1;
 		private final List<Entry<V>> stack = new ArrayList<>();
 
-		public DFIterator( Graph<V, ?> graph, V root )
+		public DFIterator( final Graph<V, ?> graph, final V root )
 		{
 			this.graph = graph;
 			push( root );
@@ -177,7 +182,7 @@ public class DepthFirstIteration
 		public Step<V> next()
 		{
 			if( stage == Stage.INIT) {
-				Entry<V> entry = stack.get( depth );
+				final Entry<V> entry = stack.get( depth );
 				this.node = entry.node;
 				this.stage = entry.edges.hasNext() ? Stage.FIRST_VISIT : Stage.LEAF;
 				this.truncate = false;
@@ -191,7 +196,7 @@ public class DepthFirstIteration
 			}
 			graph.releaseRef( stack.get(depth).node );
 			depth--;
-			Entry<V> entry = stack.get( depth );
+			final Entry<V> entry = stack.get( depth );
 			if(entry.edges.hasNext())
 			{
 				gotoNextChild();
@@ -206,8 +211,8 @@ public class DepthFirstIteration
 		private DFIterator<V> gotoNextChild()
 		{
 			Entry<V> entry = stack.get( depth );
-			Edge<V> edge = entry.edges.next();
-			V child = edge.getTarget( graph.vertexRef() );
+			final Edge<V> edge = entry.edges.next();
+			final V child = edge.getTarget( graph.vertexRef() );
 			push( child );
 			entry = stack.get( depth );
 			this.node = entry.node;
@@ -252,7 +257,7 @@ public class DepthFirstIteration
 			this.truncate = true;
 		}
 
-		private void push( V root )
+		private void push( final V root )
 		{
 			Entry<V> entry;
 			depth++;

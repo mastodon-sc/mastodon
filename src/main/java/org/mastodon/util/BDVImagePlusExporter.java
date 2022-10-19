@@ -68,7 +68,8 @@ import net.imglib2.util.Intervals;
  * Function to export the current image to xml/hdf5. Taken and adapted from
  * BDV-core fiji.
  * 
- * @see https://github.com/bigdataviewer/bigdataviewer_fiji/blob/master/src/main/java/bdv/ij/ExportImagePlusPlugIn.java
+ * @see <a href=
+ *      "https://github.com/bigdataviewer/bigdataviewer_fiji/blob/master/src/main/java/bdv/ij/ExportImagePlusPlugIn.java">ExportImagePlusPlugIn</a>
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

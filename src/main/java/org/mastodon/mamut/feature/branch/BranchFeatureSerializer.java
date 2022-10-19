@@ -37,7 +37,7 @@ import org.mastodon.properties.IntPropertyMap;
  * @param <O>
  *            the type of object the feature is defined for.
  * @param <Q>
- *            the type of object the map object -> file ID is defined for.
+ *            the type of object the map object -&gt; file ID is defined for.
  */
 public interface BranchFeatureSerializer< F extends Feature< O >, O, Q > extends FeatureSerializer< F, O >
 {
