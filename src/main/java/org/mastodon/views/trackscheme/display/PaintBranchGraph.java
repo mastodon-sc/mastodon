@@ -99,8 +99,9 @@ public class PaintBranchGraph extends PaintGraph
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
 		final boolean ghost = vertex.isGhost();
+		final int specifiedColor = vertex.getColor();
 
-		final Color drawColor = getColor( selected, ghost, transition, ratio, 0,
+		final Color drawColor = getColor( selected, ghost, transition, ratio, specifiedColor,
 				style.getVertexDrawColor(), style.getSelectedVertexDrawColor(),
 				style.getGhostVertexDrawColor(), style.getGhostSelectedVertexDrawColor() );
 
