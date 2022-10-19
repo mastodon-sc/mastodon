@@ -28,15 +28,15 @@
  */
 package org.mastodon.views.trackscheme;
 
-import net.imglib2.RealLocalizable;
-import org.mastodon.collection.RefList;
+import java.util.Collection;
+
 import org.mastodon.collection.RefSet;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.scijava.listeners.Listeners;
 
-import java.util.Collection;
+import net.imglib2.RealLocalizable;
 
 public interface LineageTreeLayout
 {

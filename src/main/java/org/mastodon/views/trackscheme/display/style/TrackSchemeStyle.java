@@ -33,7 +33,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
