@@ -301,7 +301,6 @@ public class MamutBranchViewBdv extends MamutBranchView<
 
 		// Graph.
 		final ModelGraph graph = model.getGraph();
-		final GraphIdBimap< Spot, Link > graphIdBimap = model.getGraphIdBimap();
 		final BoundingSphereRadiusStatistics radiusStats = appModel.getRadiusStats();
 
 		final OverlayProperties< BranchSpot, BranchLink > properties =

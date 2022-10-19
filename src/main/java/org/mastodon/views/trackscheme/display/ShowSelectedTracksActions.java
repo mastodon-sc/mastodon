@@ -43,7 +43,6 @@ import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.views.trackscheme.LexicographicalVertexOrder;
-import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
@@ -88,8 +87,6 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 
 	private final TrackSchemeGraph<V, E> viewGraph;
 
-	private final LineageTreeLayout layout;
-
 	private final SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel;
 
 	private final RootsModel<TrackSchemeVertex> rootsModel;
@@ -103,22 +100,21 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 	private final RunnableAction showAllTracksAction = new RunnableAction( SHOW_ALL_TRACKS, this::showAllTracks );
 
 	public static <V extends Vertex<E>, E extends Edge<V>> void install(
-			Actions actions,
-			TrackSchemeGraph<V, E> viewGraph,
-			SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel,
-			RootsModel<TrackSchemeVertex> rootsModel,
-			TrackSchemePanel trackschemePanel )
+			final Actions actions,
+			final TrackSchemeGraph<V, E> viewGraph,
+			final SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel,
+			final RootsModel<TrackSchemeVertex> rootsModel,
+			final TrackSchemePanel trackschemePanel )
 	{
 		new ShowSelectedTracksActions<>( viewGraph, selectionModel, rootsModel, trackschemePanel).install(actions);
 	}
 
-	private ShowSelectedTracksActions( TrackSchemeGraph<V, E> viewGraph,
-			SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel,
-			RootsModel<TrackSchemeVertex> rootsModel,
-			TrackSchemePanel panel )
+	private ShowSelectedTracksActions( final TrackSchemeGraph<V, E> viewGraph,
+			final SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selectionModel,
+			final RootsModel<TrackSchemeVertex> rootsModel,
+			final TrackSchemePanel panel )
 	{
 		this.viewGraph = viewGraph;
-		this.layout = panel.getLineageTreeLayout();
 		this.selectionModel = selectionModel;
 		this.rootsModel = rootsModel;
 		this.panel = panel;
@@ -134,7 +130,7 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 		} );
 	}
 
-	private void install( Actions actions )
+	private void install( final Actions actions )
 	{
 		actions.namedAction( showTrackDownwardAction, SHOW_TRACK_DOWNWARD_KEYS );
 		actions.namedAction( showSelectedTracksAction, SHOW_SELECTED_TRACKS_KEYS );
@@ -156,7 +152,7 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 		setLayoutRoots( new RefArrayList<>( viewGraph.getVertexPool() ) );
 	}
 
-	private void setLayoutRoots( RefList<TrackSchemeVertex> roots )
+	private void setLayoutRoots( final RefList<TrackSchemeVertex> roots )
 	{
 		rootsModel.setRoots( roots );
 		panel.graphChanged();
@@ -165,7 +161,7 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 
 	private RefList<TrackSchemeVertex> getSelectedSubtreeRoots()
 	{
-		RefSet<TrackSchemeVertex> selectedNodes = new RefSetImp<>( viewGraph.getVertexPool() );
+		final RefSet<TrackSchemeVertex> selectedNodes = new RefSetImp<>( viewGraph.getVertexPool() );
 		selectedNodes.addAll( selectionModel.getSelectedVertices() );
 		addEdgeTargets( selectedNodes, selectionModel.getSelectedEdges() );
 		return filterRootNodes( selectedNodes );
@@ -173,26 +169,26 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 
 	private RefList<TrackSchemeVertex> getSelectedWholeTrackRoots()
 	{
-		RefSet<TrackSchemeVertex> selectedNodes = new RefSetImp<>( viewGraph.getVertexPool() );
+		final RefSet<TrackSchemeVertex> selectedNodes = new RefSetImp<>( viewGraph.getVertexPool() );
 		selectedNodes.addAll( selectionModel.getSelectedVertices() );
 		addEdgeTargets( selectedNodes, selectionModel.getSelectedEdges() );
 		return getRealRoots( selectedNodes );
 	}
 
-	private void addEdgeTargets( RefSet<TrackSchemeVertex> selected, RefSet<TrackSchemeEdge> selectedEdges )
+	private void addEdgeTargets( final RefSet<TrackSchemeVertex> selected, final RefSet<TrackSchemeEdge> selectedEdges )
 	{
-		TrackSchemeVertex targetRef = viewGraph.vertexRef();
-		for(TrackSchemeEdge edge : selectedEdges )
+		final TrackSchemeVertex targetRef = viewGraph.vertexRef();
+		for(final TrackSchemeEdge edge : selectedEdges )
 			selected.add(edge.getTarget(targetRef));
 		viewGraph.releaseRef( targetRef );
 	}
 
-	private RefList<TrackSchemeVertex> filterRootNodes( RefSet<TrackSchemeVertex> selectedVertices )
+	private RefList<TrackSchemeVertex> filterRootNodes( final RefSet<TrackSchemeVertex> selectedVertices )
 	{
-		RefList<TrackSchemeVertex> roots = new RefArrayList<>( viewGraph.getVertexPool() );
-		for( TrackSchemeVertex realRoot : LexicographicalVertexOrder.sort( viewGraph, viewGraph.getRoots() ) )
-			for( DepthFirstIteration.Step<TrackSchemeVertex> step : DepthFirstIteration.forRoot(viewGraph, realRoot) ) {
-				TrackSchemeVertex node = step.node();
+		final RefList<TrackSchemeVertex> roots = new RefArrayList<>( viewGraph.getVertexPool() );
+		for( final TrackSchemeVertex realRoot : LexicographicalVertexOrder.sort( viewGraph, viewGraph.getRoots() ) )
+			for( final DepthFirstIteration.Step<TrackSchemeVertex> step : DepthFirstIteration.forRoot(viewGraph, realRoot) ) {
+				final TrackSchemeVertex node = step.node();
 				if(selectedVertices.contains( node )) {
 					roots.add( node );
 					step.truncate();
@@ -201,11 +197,11 @@ public class ShowSelectedTracksActions<V extends Vertex<E>, E extends Edge<V>>
 		return roots;
 	}
 
-	private RefList<TrackSchemeVertex> getRealRoots( RefSet<TrackSchemeVertex> selectedNodes )
+	private RefList<TrackSchemeVertex> getRealRoots( final RefSet<TrackSchemeVertex> selectedNodes )
 	{
-		TrackSchemeVertex parent = viewGraph.vertexRef();
-		RefSet<TrackSchemeVertex> roots = new RefSetImp<>( viewGraph.getVertexPool() );
-		A: for(TrackSchemeVertex vertex : selectedNodes ) {
+		final TrackSchemeVertex parent = viewGraph.vertexRef();
+		final RefSet<TrackSchemeVertex> roots = new RefSetImp<>( viewGraph.getVertexPool() );
+		A: for(final TrackSchemeVertex vertex : selectedNodes ) {
 			parent.refTo( vertex );
 			while ( ! parent.incomingEdges().isEmpty() )
 			{

@@ -59,9 +59,9 @@ import org.mastodon.ui.NavigationEtiquette;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
-import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
 import org.mastodon.views.trackscheme.ContextLayout;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
+import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
 import org.mastodon.views.trackscheme.ScreenEntities;
 import org.mastodon.views.trackscheme.ScreenEntitiesInterpolator;
 import org.mastodon.views.trackscheme.ScreenTransform;
@@ -177,8 +177,6 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
-
 	private final TimepointModel timepoint;
 
 	private final TrackSchemeAutoFocus autoFocus;
@@ -207,7 +205,6 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
-		this.focus = focus;
 		this.timepoint = timepoint;
 
 		final Values options = optional.values;

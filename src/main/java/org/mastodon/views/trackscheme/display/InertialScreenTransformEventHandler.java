@@ -28,10 +28,9 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import bdv.TransformEventHandler;
-import bdv.viewer.TransformListener;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -47,6 +46,8 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
+
+import bdv.TransformEventHandler;
 
 public class InertialScreenTransformEventHandler
 	implements
@@ -198,11 +199,6 @@ public class InertialScreenTransformEventHandler
 	private boolean stayFullyZoomedOut;
 
 	/**
-	 * Whom to notify when the current transform is changed.
-	 */
-	private TransformListener< ScreenTransform > listener;
-
-	/**
 	 * Timer that runs {@link #currentTimerTask}.
 	 */
 	private final Timer timer;
@@ -230,6 +226,7 @@ public class InertialScreenTransformEventHandler
 		zoomScrollBehaviourXY = new ZoomScrollBehaviour( ZOOM_XY, ScrollAxis.XY );
 	}
 
+	@Override
 	public void install( final Behaviours behaviours )
 	{
 		behaviours.namedBehaviour( translateDragBehaviour, DRAG_TRANSLATE_KEYS );

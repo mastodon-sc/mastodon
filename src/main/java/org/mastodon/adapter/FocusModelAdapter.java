@@ -56,8 +56,6 @@ public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 
 	private final RefBimap< V, WV > vertexMap;
 
-	private final RefBimap< E, WE > edgeMap;
-
 	private final ForwardedListeners< FocusListener > listeners;
 
 	public FocusModelAdapter(
@@ -67,7 +65,6 @@ public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 	{
 		this.focus = focus;
 		this.vertexMap = vertexMap;
-		this.edgeMap = edgeMap;
 		this.listeners = new ForwardedListeners.List<>( focus.listeners() );
 	}
 

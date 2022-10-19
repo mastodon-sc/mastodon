@@ -71,8 +71,6 @@ import org.mastodon.mamut.project.MamutProjectIO;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
 
-import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.tools.bookmarks.Bookmarks;
 import bdv.viewer.ViewerOptions;
 import fiji.plugin.mamut.SourceSettings;
@@ -330,7 +328,6 @@ public class MaMuTExporterTest
 		final MamutProject project = new MamutProjectIO().load( MASTODON_FILE );
 
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
-		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 		final SharedBigDataViewerData sharedBdvData = SharedBigDataViewerData.fromSpimDataXmlFile( spimDataXmlFilename, new ViewerOptions(), () -> {} );
 
 		final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
