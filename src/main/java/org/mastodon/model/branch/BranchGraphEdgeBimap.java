@@ -3,7 +3,6 @@ package org.mastodon.model.branch;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
-import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 
 /**

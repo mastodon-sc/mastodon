@@ -45,9 +45,6 @@ import static org.mastodon.mamut.MamutMenuBuilder.windowMenu;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -66,11 +63,12 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-import net.miginfocom.swing.MigLayout;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
+
+import net.miginfocom.swing.MigLayout;
 
 public class MainWindow extends JFrame
 {

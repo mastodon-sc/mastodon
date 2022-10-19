@@ -5,7 +5,6 @@ import java.util.Iterator;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
-import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.undo.UndoPointMarker;
