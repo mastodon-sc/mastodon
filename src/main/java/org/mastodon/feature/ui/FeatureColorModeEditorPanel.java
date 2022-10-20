@@ -363,8 +363,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 		switch ( mode.getVertexColorMode() )
 		{
 		case BRANCH_VERTEX:
-			// TODO
-			mode.setEdgeColorMode( EdgeColorMode.SOURCE_BRANCH_VERTEX );
+			mode.setEdgeColorMode( EdgeColorMode.TARGET_BRANCH_VERTEX );
 			break;
 		case INCOMING_BRANCH_EDGE:
 			mode.setEdgeColorMode( EdgeColorMode.INCOMING_BRANCH_EDGE );
