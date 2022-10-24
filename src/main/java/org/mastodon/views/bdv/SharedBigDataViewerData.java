@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -96,9 +98,6 @@ import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
-
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 
 public class SharedBigDataViewerData
 {
@@ -388,7 +387,7 @@ public class SharedBigDataViewerData
 						+ "image dataset. Please fix the dataset path in the Mastodon project file afterwards\n"
 						+ "by using menu entry: Mastodon -> File -> Fix Image Path.");
 
-				final int val = JOptionPane.showConfirmDialog(
+				JOptionPane.showConfirmDialog(
 						null,
 						"Failed opening the original image data.\n"
 								+ "\n"
