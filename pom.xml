@@ -29,6 +29,7 @@
 	</licenses>
 
 	<dependencies>
+		<!-- Mastodon dependencies -->
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon-collection</artifactId>
@@ -39,10 +40,19 @@
 			<artifactId>mastodon-graph</artifactId>
 			<version>${mastodon-graph.version}</version>
 		</dependency>
+		
+		<!-- Fiji & ImageJ dependencies -->
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
 		</dependency>
+		<!-- run time: brings in the original IJ1 window -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
+		</dependency>		
+		
+		<!-- BDV and spimdata dependecies -->
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
@@ -55,6 +65,8 @@
 			<groupId>cisd</groupId>
 			<artifactId>jhdf5</artifactId>
 		</dependency>
+		
+		<!-- ImgLib2 dependencies -->
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>ui-behaviour</artifactId>
@@ -67,6 +79,19 @@
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-roi</artifactId>
 		</dependency>
+		
+		<!-- Open remote images dependencies -->
+		<dependency>
+			<groupId>org.embl.mobie</groupId>
+			<artifactId>mobie-io</artifactId>
+			<version>1.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		
+		<!-- Misc dependencies. -->
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
@@ -87,6 +112,11 @@
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itextpdf</artifactId>
 		</dependency>		
+		<dependency>
+			<groupId>io.humble</groupId>
+			<artifactId>humble-video-all</artifactId>
+			<version>0.3.0</version>
+		</dependency>		
 
 		<!-- DnD from IDE -->
 		<!-- compile time: necessary dependency -->
@@ -99,49 +129,24 @@
 			<groupId>sc.fiji</groupId>
 			<artifactId>IO_</artifactId>
 		</dependency>
-		<!-- run time: brings in the original IJ1 window -->
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej-legacy</artifactId>
-		</dependency>
 
 		<!-- Test dependencies -->
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>TrackMate</artifactId>
-			<version>7.7.1</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>MaMuT</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.embl.mobie</groupId>
-			<artifactId>mobie-io</artifactId>
-			<version>1.2.8</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-		</dependency>
 		
-		<dependency>
-			<groupId>io.humble</groupId>
-			<artifactId>humble-video-all</artifactId>
-			<version>0.3.0</version>
-		</dependency>
 
 	</dependencies>
 
