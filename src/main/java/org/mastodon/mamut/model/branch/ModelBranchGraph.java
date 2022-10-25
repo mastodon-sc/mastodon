@@ -37,6 +37,8 @@ import org.mastodon.spatial.HasTimepoint;
 
 import net.imglib2.RealLocalizable;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * A branch-graph specific for {@link ModelGraph}, whose vertices implements the
  * {@link RealLocalizable} and {@link HasTimepoint} interfaces, exposing the
@@ -47,6 +49,7 @@ import net.imglib2.RealLocalizable;
  */
 public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchSpot, BranchLink, BranchSpotPool, BranchLinkPool, ByteMappedElement >
 {
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 	public ModelBranchGraph( final ModelGraph graph )
 	{
@@ -56,6 +59,11 @@ public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchSpot, Br
 	public ModelBranchGraph( final ModelGraph graph, final int initialCapacity )
 	{
 		super( graph, new BranchLinkPool( initialCapacity, new BranchSpotPool( initialCapacity, graph.vertices().getRefPool() ) ) );
+	}
+
+	public ReentrantReadWriteLock getLock()
+	{
+		return lock;
 	}
 
 	@Override
@@ -68,5 +76,32 @@ public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchSpot, Br
 	public BranchLink init( final BranchLink branchEdge, final Link edge )
 	{
 		return branchEdge.init();
+	}
+
+	@Override
+	public void graphRebuilt()
+	{
+		if ( lock == null )
+		{
+			// NB: graphRebuilt() is called the first time, even before the lock
+			// is initialized. This is because the super class (BranchGraphImp)
+			// calls graphRebuilt() in its constructor.
+			// But that's not a problem. We don't need to use the lock while the
+			// constructor is run, since no other thread can access the
+			// branch graph before the constructor finished.
+			super.graphRebuilt();
+		}
+		else
+		{
+			lock.writeLock().lock();
+			try
+			{
+				super.graphRebuilt();
+			}
+			finally
+			{
+				lock.writeLock().unlock();
+			}
+		}
 	}
 }
