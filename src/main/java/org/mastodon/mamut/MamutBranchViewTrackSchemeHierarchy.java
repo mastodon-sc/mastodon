@@ -113,7 +113,7 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
 			final ModelGraphProperties< BranchSpot, BranchLink > properties = new MyModelGraphProperties( graph );
 			final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph =
-					new TrackSchemeGraph<>( graph, idmap, properties );
+					new TrackSchemeGraph<>( graph, idmap, properties, graph.getLock() );
 			return trackSchemeGraph;
 		}
 
