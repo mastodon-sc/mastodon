@@ -148,7 +148,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		// Restore group handle.
 		restoreGroupHandle( groupHandle, guiState );
 
-		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
+		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler, timepointModel );
 
 		final RootsModel<TrackSchemeVertex> rootsModel = new DefaultRootsModel<>( model.getGraph(), viewGraph );
 

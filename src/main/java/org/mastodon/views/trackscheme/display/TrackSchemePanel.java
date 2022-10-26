@@ -537,10 +537,7 @@ public class TrackSchemePanel extends JPanel implements
 	public void navigateToVertex( final TrackSchemeVertex v )
 	{
 		if ( v.getLayoutTimestamp() == layout.getCurrentLayoutTimestamp() )
-		{
-			timepoint.setTimepoint( v.getTimepoint() );
 			navigationBehaviour.navigateToVertex( v, screenTransform.get() );
-		}
 	}
 
 	@Override
@@ -552,10 +549,7 @@ public class TrackSchemePanel extends JPanel implements
 		final TrackSchemeVertex target = edge.getTarget( graph.vertexRef() );
 		final int clts = layout.getCurrentLayoutTimestamp();
 		if ( target.getLayoutTimestamp() == clts && source.getLayoutTimestamp() == clts )
-		{
-			timepoint.setTimepoint( target.getTimepoint() );
 			navigationBehaviour.navigateToEdge( edge, source, target, screenTransform.get() );
-		}
 		graph.releaseRef( source );
 		graph.releaseRef( target );
 	}
