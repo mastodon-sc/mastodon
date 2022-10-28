@@ -155,42 +155,37 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		MastodonFrameViewActions.install( viewActions, this );
 		BigDataViewerActionsMamut.install( viewActions, bdv );
 
-		final ViewMenu menu = new ViewMenu( this );
-		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
-
+		
+		/*
+		 * We have to build the coloring menu handles now. But the other actions
+		 * need to be included in the menus later, after they have been
+		 * installed (otherwise they won't be active). To keep the future menu
+		 * order, we build an empty menu but already with all su-bmenus in
+		 * order.
+		 */
 		final JMenuHandle menuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
-		MainWindow.addMenus( menu, actionMap );
+		final ViewMenu menu = new ViewMenu( this );
+		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		MamutMenuBuilder.build( menu, actionMap,
-				fileMenu(
-						separator(),
-						item( BigDataViewerActions.LOAD_SETTINGS ),
-						item( BigDataViewerActions.SAVE_SETTINGS ),
-						separator(),
-						item( RecordMovieDialog.RECORD_MOVIE_DIALOG ),
-						item( RecordMaxProjectionMovieDialog.RECORD_MIP_MOVIE_DIALOG ) ),
+				fileMenu(),
 				viewMenu(
 						colorMenu( menuHandle ),
-						colorbarMenu( colorbarMenuHandle ),
-						separator(),
-						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
-				editMenu(
-						item( UndoActions.UNDO ),
-						item( UndoActions.REDO ),
-						separator(),
-						item( SelectionActions.DELETE_SELECTION ),
-						item( SelectionActions.SELECT_WHOLE_TRACK ),
-						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
-						item( SelectionActions.SELECT_TRACK_UPWARD ),
-						separator(),
-						tagSetMenu( tagSetMenuHandle ) ),
-				ViewMenuBuilder.menu( "Settings",
-						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
-						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
-		appModel.getPlugins().addMenus( menu );
+						colorbarMenu( colorbarMenuHandle ) ),
+				editMenu(),
+				ViewMenuBuilder.menu( "Settings" ) );
 
+		// The view panel.
 		viewer = bdv.getViewer();
+
+		// we need the coloring now.
+		final GraphColorGeneratorAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > coloring =
+				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+		coloringModel = registerColoring( coloring, menuHandle,
+				() -> viewer.getDisplay().repaint() );
+		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> viewer.getBackground() );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> viewer.getDisplay().repaint() );
 
 		// Restore BDV state.
 		final Element stateEl = ( Element ) guiState.get( BDV_STATE_KEY );
@@ -203,9 +198,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 			InitializeViewerState.initTransform( viewer );
 		else
 			viewer.state().setViewerTransform( tLoaded );
-
-		final GraphColorGeneratorAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > coloring =
-				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = createRenderer(
 				viewGraph,
@@ -221,20 +213,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
 
-		coloringModel = registerColoring( coloring, menuHandle,
-				() -> viewer.getDisplay().repaint() );
-		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> viewer.getBackground() );
-		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> viewer.getDisplay().repaint() );
-
-		registerTagSetMenu( tagSetMenuHandle,
-				() -> viewer.getDisplay().repaint() );
-
-		// Restore coloring.
-		restoreColoring( coloringModel, guiState );
-
-		// Restore colorbar state.
-		restoreColorbarState( colorBarOverlay, guiState );
-		viewer.getDisplay().overlays().add( colorBarOverlay );
 
 		highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		focusModel.listeners().add( () -> viewer.getDisplay().repaint() );
@@ -305,8 +283,43 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		frame.setVisible( true );
 
-//		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
-//			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
+		MainWindow.addMenus( menu, actionMap );
+		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						separator(),
+						item( BigDataViewerActions.LOAD_SETTINGS ),
+						item( BigDataViewerActions.SAVE_SETTINGS ),
+						separator(),
+						item( RecordMovieDialog.RECORD_MOVIE_DIALOG ),
+						item( RecordMaxProjectionMovieDialog.RECORD_MIP_MOVIE_DIALOG ) ),
+				viewMenu(
+						separator(),
+						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
+				editMenu(
+						item( UndoActions.UNDO ),
+						item( UndoActions.REDO ),
+						separator(),
+						item( SelectionActions.DELETE_SELECTION ),
+						item( SelectionActions.SELECT_WHOLE_TRACK ),
+						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
+						item( SelectionActions.SELECT_TRACK_UPWARD ),
+						separator(),
+						tagSetMenu( tagSetMenuHandle ) ),
+				ViewMenuBuilder.menu( "Settings",
+						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
+						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
+		appModel.getPlugins().addMenus( menu );
+
+		registerTagSetMenu( tagSetMenuHandle,
+				() -> viewer.getDisplay().repaint() );
+
+		// Restore coloring.
+		restoreColoring( coloringModel, guiState );
+
+		// Restore colorbar state.
+		restoreColorbarState( colorBarOverlay, guiState );
+		viewer.getDisplay().overlays().add( colorBarOverlay );
+
 	}
 
 	protected OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > createRenderer(
