@@ -28,13 +28,6 @@
  */
 package org.mastodon.views.bdv;
 
-import bdv.BigDataViewerActions;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
-import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.scijava.plugin.Plugin;
-import org.scijava.ui.behaviour.util.Actions;
-
 import static bdv.BigDataViewerActions.BRIGHTNESS_SETTINGS;
 import static bdv.BigDataViewerActions.BRIGHTNESS_SETTINGS_KEYS;
 import static bdv.BigDataViewerActions.COLLAPSE_CARDS;
@@ -53,6 +46,14 @@ import static bdv.BigDataViewerActions.SET_BOOKMARK;
 import static bdv.BigDataViewerActions.SET_BOOKMARK_KEYS;
 import static bdv.BigDataViewerActions.VISIBILITY_AND_GROUPING;
 import static bdv.BigDataViewerActions.VISIBILITY_AND_GROUPING_KEYS;
+
+import org.mastodon.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.ui.keymap.CommandDescriptions;
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.util.Actions;
+
+import bdv.BigDataViewerActions;
 
 public class BigDataViewerActionsMamut
 {
@@ -95,7 +96,7 @@ public class BigDataViewerActionsMamut
 			final Actions actions,
 			final BigDataViewerMamut bdv )
 	{
-		BigDataViewerActions.dialog( actions, bdv.getVisibilityAndGroupingDialog() );
+		BigDataViewerActions.toggleDialogAction( actions, bdv.getVisibilityAndGroupingDialog(), VISIBILITY_AND_GROUPING, VISIBILITY_AND_GROUPING_KEYS );
 		BigDataViewerActions.bookmarks( actions, bdv.getBookmarksEditor() );
 
 		/*
@@ -104,7 +105,8 @@ public class BigDataViewerActionsMamut
 		 * This requires modifications in bigdataviewer-core: The group setup
 		 * should be shared between multiple windows.
 		 */
-		BigDataViewerActions.dialog( actions, bdv.getBrightnessDialog() );
+		BigDataViewerActions.toggleDialogAction( actions, bdv.getBrightnessDialog(), BRIGHTNESS_SETTINGS, BRIGHTNESS_SETTINGS_KEYS );
+
 		actions.runnableAction( bdv::saveSettings, SAVE_SETTINGS, SAVE_SETTINGS_KEYS );
 		actions.runnableAction( bdv::loadSettings, LOAD_SETTINGS, LOAD_SETTINGS_KEYS );
 

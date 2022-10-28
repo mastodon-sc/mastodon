@@ -216,7 +216,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		viewer.getDisplay().overlays().add( tracksOverlay );
 		viewer.renderTransformListeners().add( tracksOverlay );
-		viewer.addTimePointListener( tracksOverlay );
+		viewer.timePointListeners().add( tracksOverlay );
 
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
@@ -284,7 +284,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		NavigationActions.install( viewActions, viewer, sharedBdvData.is2D() );
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
-		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
+		viewer.timePointListeners().add( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
 		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultStyle();
