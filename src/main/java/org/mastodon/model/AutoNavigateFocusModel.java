@@ -72,7 +72,7 @@ public class AutoNavigateFocusModel< V extends Vertex< E > & HasTimepoint, E ext
 	@Override
 	public void focusVertex( final V vertex )
 	{
-		if( timepointModel != null )
+		if ( timepointModel != null && vertex != null )
 			timepointModel.setTimepoint( vertex.getTimepoint() );
 		focus.focusVertex( vertex );
 		navigation.notifyNavigateToVertex( vertex );
