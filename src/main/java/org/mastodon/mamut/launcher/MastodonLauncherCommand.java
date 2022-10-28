@@ -28,11 +28,6 @@
  */
 package org.mastodon.mamut.launcher;
 
-import java.util.Locale;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;
@@ -45,7 +40,6 @@ public class MastodonLauncherCommand extends ContextCommand
 	@Override
 	public void run()
 	{
-		setSystemLookAndFeelAndLocale();
 		final MastodonLauncher launcher = new MastodonLauncher( getContext() );
 		launcher.setLocationByPlatform( true );
 		launcher.setLocationRelativeTo( null );
@@ -54,25 +48,11 @@ public class MastodonLauncherCommand extends ContextCommand
 
 	public static void main( final String[] args ) throws Exception
 	{
-		setSystemLookAndFeelAndLocale();
 		final MastodonLauncherCommand launcher = new MastodonLauncherCommand();
 		try (Context context = new Context())
 		{
 			context.inject( launcher );
 			launcher.run();
-		}
-	}
-
-	private static final void setSystemLookAndFeelAndLocale()
-	{
-		Locale.setDefault( Locale.ROOT );
-		try
-		{
-			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-		}
-		catch ( ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e )
-		{
-			e.printStackTrace();
 		}
 	}
 }
