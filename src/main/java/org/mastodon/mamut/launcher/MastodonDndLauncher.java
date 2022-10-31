@@ -68,12 +68,16 @@ public class MastodonDndLauncher extends AbstractIOPlugin<Object> {
 
 		final String projectPath = fsource.getFile().getAbsolutePath();
 
+		//make sure that the menus appear on top of the screen
+		//to look natively in the Apple world
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+
+		//start up "the main object behind the scenes" -- the WindowManager,
 		final WindowManager windowManager = new WindowManager( getContext() );
 
+		//start up the main/central Mastodon window
 		final MainWindow mainWindow = new MainWindow( windowManager );
 		mainWindow.setVisible( true );
-		mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 
 		try {
 			final MamutProject project = new MamutProjectIO().load( projectPath );
