@@ -38,10 +38,11 @@ import org.scijava.ui.UIService;
  */
 public class StartImageJ
 {
-	public static void main( String... args )
+	public static void main( final String... args )
 	{
-		Context context = new Context();
-		UIService uiService = context.service( UIService.class );
+		@SuppressWarnings( "resource" )
+		final Context context = new Context();
+		final UIService uiService = context.service( UIService.class );
 		uiService.showUI();
 	}
 }
