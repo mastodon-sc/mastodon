@@ -196,7 +196,7 @@
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
 		<mastodon-collection.version>1.0.0-beta-24</mastodon-collection.version>
-		<mastodon-graph.version>1.0.0-beta-22</mastodon-graph.version>
+		<mastodon-graph.version>1.0.0-beta-23</mastodon-graph.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
