@@ -129,15 +129,15 @@ public class RecentProjectsPanel extends JPanel
 				gbc.gridy++;
 				gbc.gridx = 0;
 				final JTextArea ta = new JTextArea( projectPath );
-				ta.setEditable( false );
+				ta.setEditable( true );
 				ta.setLineWrap( true );
-				ta.addMouseListener( new MouseDblClickOpenPath( projectPath ) );
+				ta.addMouseListener( new MouseDblClickOpenPath( ta.getText() ) );
 				add( ta, gbc );
 
 				gbc.gridx = 1;
 				final JButton btnOpen = new JButton( MastodonIcons.LOAD_ICON_SMALL );
 				btnOpen.addActionListener( l -> {
-					projectOpener.accept( projectPath );
+					projectOpener.accept( ta.getText() );
 					// Recent projects will be updated in the launcher method.
 				} );
 				add( btnOpen, gbc );
