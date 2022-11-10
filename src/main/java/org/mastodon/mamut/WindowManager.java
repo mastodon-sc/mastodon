@@ -76,6 +76,8 @@ import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
+import org.mastodon.views.trackscheme.ScreenTransform;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Context;
@@ -90,7 +92,21 @@ import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
 import bdv.util.InvokeOnEDT;
+import bdv.viewer.ViewerPanel;
+import net.imglib2.realtransform.AffineTransform3D;
 
+/**
+ * Main GUI class for the Mastodon Mamut application.
+ * <p>
+ * It controls the creation of new views, and maintain a list of currently
+ * opened views. It has a {@link #getProjectManager()} instance that can be used
+ * to open or create Mastodon projects. It has also the main app-model for the
+ * session.
+ * 
+ * @author Tobias Pietzsch
+ * @author Jean-Yves Tinevez
+ *
+ */
 public class WindowManager
 {
 	
@@ -230,6 +246,12 @@ public class WindowManager
 
 	private final PreferencesDialog settings;
 
+	/**
+	 * Creates a new, empty WindowManager instance using the specified context.
+	 * 
+	 * @param context
+	 *            the context to use. Cannot be <code>null</code>.
+	 */
 	public WindowManager( final Context context )
 	{
 		this.context = context;
@@ -402,11 +424,6 @@ public class WindowManager
 		w.onClose( () -> bbdvWindows.remove( w ) );
 	}
 
-	public void forEachBdvView( final Consumer< ? super MamutViewBdv > action )
-	{
-		bdvWindows.forEach( action );
-	}
-
 	private synchronized void addTsWindow( final MamutViewTrackScheme w )
 	{
 		tsWindows.add( w );
@@ -443,32 +460,81 @@ public class WindowManager
 		} );
 	}
 
+	/**
+	 * Executes the specified action for all the currently opened BDV views.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
+	public void forEachBdvView( final Consumer< ? super MamutViewBdv > action )
+	{
+		bdvWindows.forEach( action );
+	}
+
+	/**
+	 * Executes the specified action for all the currently opened Table views.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
 	public void forEachTableView( final Consumer< ? super MamutViewTable > action )
 	{
 		tableWindows.forEach( action );
 	}
 
+	/**
+	 * Executes the specified action for all the currently opened Grapher views.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
 	public void forEachGrapherView( final Consumer< ? super MamutViewGrapher > action )
 	{
 		grapherWindows.forEach( action );
 	}
 
+	/**
+	 * Executes the specified action for all the currently opened TrackScheme
+	 * views.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
 	public void forEachTrackSchemeView( final Consumer< ? super MamutViewTrackScheme > action )
 	{
 		tsWindows.forEach( action );
 	}
 
+	/**
+	 * Executes the specified action for all the currently opened
+	 * Branch-TrackScheme views.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
 	public void forEachBranchTrackSchemeView( final Consumer< ? super MamutBranchViewTrackScheme > action )
 	{
 		btsWindows.forEach( action );
 	}
 	
+	/**
+	 * Executes the specified action for all the currently opened Branch-BDV
+	 * views.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
 	private void forEachBranchBdvView( final Consumer< ? super MamutBranchViewBdv > action )
 	{
 		bbdvWindows.forEach( action );
 	}
 
-
+	/**
+	 * Executes the specified action for all the currently opened views.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
 	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
 	{
 		forEachBdvView( action );
@@ -477,17 +543,62 @@ public class WindowManager
 		forEachGrapherView( action );
 	}
 
+	/**
+	 * Executes the specified action for all the currently opened branch-graph
+	 * views.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
 	public void forEachBranchView( final Consumer< ? super MamutBranchView< ?, ?, ? > > action )
 	{
 		forEachBranchBdvView( action );
 		forEachBranchTrackSchemeView( action );
 	}
 
+	/**
+	 * Creates and displays a new BDV view, with default display settings.
+	 */
 	public MamutViewBdv createBigDataViewer()
 	{
 		return createBigDataViewer( new HashMap<>() );
 	}
 
+	/**
+	 * Creates and displays a new BDV view, using a map to specify the display
+	 * settings.
+	 * <p>
+	 * The display settings are specified as a map of strings to objects. The
+	 * accepted key and value types are:
+	 * <ul>
+	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
+	 * elements: x, y, width and height.
+	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
+	 * group id.
+	 * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
+	 * whether the settings panel is visible on this view.
+	 * <li><code>'BdvState'</code> &rarr; a XML Element that specifies the BDV
+	 * window state. See {@link ViewerPanel#stateToXml()} and
+	 * {@link ViewerPanel#stateFromXml(org.jdom2.Element)} for more information.
+	 * <li><code>'BdvTransform'</code> &rarr; an {@link AffineTransform3D} that
+	 * specifies the view point.
+	 * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
+	 * feature or tag coloring will be ignored.
+	 * <li><code>'TagSet'</code> &rarr; a string specifying the name of the
+	 * tag-set to use for coloring. If not <code>null</code>, the coloring will
+	 * be done using the tag-set.
+	 * <li><code>'FeatureColorMode'</code> &rarr; a String specifying the name
+	 * of the feature color mode to use for coloring. If not <code>null</code>,
+	 * the coloring will be done using the feature color mode.
+	 * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether
+	 * the colorbar is visible for tag-set and feature-based coloring.
+	 * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying
+	 * the position of the colorbar.
+	 * </ul>
+	 * 
+	 * @param guiState
+	 *            the map of settings.
+	 */
 	public MamutViewBdv createBigDataViewer( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
@@ -501,11 +612,48 @@ public class WindowManager
 		return null;
 	}
 
+	/**
+	 * Creates and displays a new TrackScheme view, with default display
+	 * settings.
+	 */
 	public MamutViewTrackScheme createTrackScheme()
 	{
 		return createTrackScheme( new HashMap<>() );
 	}
 
+	/**
+	 * Creates and displays a new BDV view, using a map to specify the display
+	 * settings.
+	 * <p>
+	 * The display settings are specified as a map of strings to objects. The
+	 * accepted key and value types are:
+	 * <ul>
+	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
+	 * elements: x, y, width and height.
+	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
+	 * group id.
+	 * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
+	 * whether the settings panel is visible on this view.
+	 * <li><code>'TrackSchemeTransform'</code> &rarr; a {@link ScreenTransform}
+	 * that defines the starting view zone in TrackScheme.
+	 * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
+	 * feature or tag coloring will be ignored.
+	 * <li><code>'TagSet'</code> &rarr; a string specifying the name of the
+	 * tag-set to use for coloring. If not <code>null</code>, the coloring will
+	 * be done using the tag-set.
+	 * <li><code>'FeatureColorMode'</code> &rarr; a @link String specifying the
+	 * name of the feature color mode to use for coloring. If not
+	 * <code>null</code>, the coloring will be done using the feature color
+	 * mode.
+	 * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether
+	 * the colorbar is visible for tag-set and feature-based coloring.
+	 * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying
+	 * the position of the colorbar.
+	 * </ul>
+	 * 
+	 * @param guiState
+	 *            the map of settings.
+	 */
 	public MamutViewTrackScheme createTrackScheme( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
@@ -518,6 +666,43 @@ public class WindowManager
 		return null;
 	}
 
+	/**
+	 * Creates and displays a new Table or a Selection Table view, using a map
+	 * to specify the display settings.
+	 * <p>
+	 * The display settings are specified as a map of strings to objects. The
+	 * accepted key and value types are:
+	 * <ul>
+	 * <li><code>'TableSelectionOnly'</code> &rarr; a boolean specifying whether
+	 * the table to create will be a selection table of a full table. If
+	 * <code>true</code>, the table will only display the current content of the
+	 * selection, and will listen to its changes. If <code>false</code>, the
+	 * table will display the full graph content, listen to its changes, and
+	 * will be able to edit the selection.
+	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
+	 * elements: x, y, width and height.
+	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
+	 * group id.
+	 * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
+	 * whether the settings panel is visible on this view.
+	 * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
+	 * feature or tag coloring will be ignored.
+	 * <li><code>'TagSet'</code> &rarr; a string specifying the name of the
+	 * tag-set to use for coloring. If not <code>null</code>, the coloring will
+	 * be done using the tag-set.
+	 * <li><code>'FeatureColorMode'</code> &rarr; a @link String specifying the
+	 * name of the feature color mode to use for coloring. If not
+	 * <code>null</code>, the coloring will be done using the feature color
+	 * mode.
+	 * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether
+	 * the colorbar is visible for tag-set and feature-based coloring.
+	 * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying
+	 * the position of the colorbar.
+	 * </ul>
+	 * 
+	 * @param guiState
+	 *            the map of settings.
+	 */
 	public MamutViewTable createTable( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
@@ -531,7 +716,8 @@ public class WindowManager
 	}
 
 	/**
-	 * Creates, shows and registers a new table view.
+	 * Creates and display a new Table or Selection Table view with default
+	 * settings.
 	 *
 	 * @param selectionOnly
 	 *            if <code>true</code>, the table will only display the current
@@ -548,11 +734,49 @@ public class WindowManager
 		return createTable( guiState );
 	}
 
+	/**
+	 * Creates and displays a new Grapher view, with default display settings.
+	 */
 	public MamutViewGrapher createGrapher()
 	{
 		return createGrapher( new HashMap<>() );
 	}
 
+	/**
+	 * Creates and displays a new Grapher view, using a map to specify the
+	 * display settings.
+	 * <p>
+	 * The display settings are specified as a map of strings to objects. The
+	 * accepted key and value types are:
+	 * <ul>
+	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
+	 * elements: x, y, width and height.
+	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
+	 * group id.
+	 * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
+	 * whether the settings panel is visible on this view.
+	 * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
+	 * feature or tag coloring will be ignored.
+	 * <li><code>'TagSet'</code> &rarr; a string specifying the name of the
+	 * tag-set to use for coloring. If not <code>null</code>, the coloring will
+	 * be done using the tag-set.
+	 * <li><code>'FeatureColorMode'</code> &rarr; a @link String specifying the
+	 * name of the feature color mode to use for coloring. If not
+	 * <code>null</code>, the coloring will be done using the feature color
+	 * mode.
+	 * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether
+	 * the colorbar is visible for tag-set and feature-based coloring.
+	 * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying
+	 * the position of the colorbar.
+	 * <li><code>'GrapherTransform'</code> &rarr; a
+	 * {@link org.mastodon.views.grapher.datagraph.ScreenTransform} specifying
+	 * the region to initially zoom on the XY plot.
+	 * 
+	 * </ul>
+	 * 
+	 * @param guiState
+	 *            the map of settings.
+	 */
 	public MamutViewGrapher createGrapher( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
@@ -565,11 +789,23 @@ public class WindowManager
 		return null;
 	}
 
+	/**
+	 * Creates and displays a new Branch-BDV view, with default display
+	 * settings. The branch version of this view displays the branch graph.
+	 */
 	public MamutBranchViewBdv createBranchBigDataViewer()
 	{
 		return createBranchBigDataViewer( new HashMap<>() );
 	}
 
+	/**
+	 * Creates and displays a new Branch-BDV view, using a map to specify the
+	 * display settings.
+	 * 
+	 * @see #createBigDataViewer(Map)
+	 * @param guiState
+	 *            the settings map.
+	 */
 	public MamutBranchViewBdv createBranchBigDataViewer( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
@@ -582,11 +818,23 @@ public class WindowManager
 		return null;
 	}
 
+	/**
+	 * Creates and displays a new Branch-TrackScheme view, with default display
+	 * settings. The branch version of this view displays the branch graph.
+	 */
 	public MamutBranchViewTrackScheme createBranchTrackScheme()
 	{
 		return createBranchTrackScheme( new HashMap<>() );
 	}
 
+	/**
+	 * Creates and displays a new Branch-TrackScheme view, using a map to
+	 * specify the display settings.
+	 * 
+	 * @see #createTrackScheme(Map)
+	 * @param guiState
+	 *            the settings map.
+	 */
 	public MamutBranchViewTrackScheme createBranchTrackScheme( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
@@ -599,11 +847,23 @@ public class WindowManager
 		return null;
 	}
 
+	/**
+	 * Creates and displays a new Hierarchy-TrackScheme view, with default
+	 * display settings.
+	 */
 	public MamutBranchViewTrackScheme createHierarchyTrackScheme()
 	{
 		return createHierarchyTrackScheme( new HashMap<>() );
 	}
 
+	/**
+	 * Creates and displays a new Hierarchy-TrackScheme view, using a map to
+	 * specify the display settings.
+	 * 
+	 * @see #createTrackScheme(Map)
+	 * @param guiState
+	 *            the settings map.
+	 */
 	public MamutBranchViewTrackScheme createHierarchyTrackScheme( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
@@ -616,6 +876,9 @@ public class WindowManager
 		return null;
 	}
 
+	/**
+	 * Opens the online documentation in a browser window.
+	 */
 	public void openOnlineDocumentation()
 	{
 		new Thread( () -> {
@@ -630,6 +893,9 @@ public class WindowManager
 		} ).start();
 	}
 
+	/**
+	 * Displays the tag-set editor dialog.
+	 */
 	public void editTagSets()
 	{
 		if ( appModel != null )
@@ -638,6 +904,9 @@ public class WindowManager
 		}
 	}
 
+	/**
+	 * Displays the feature computation dialog.
+	 */
 	public void computeFeatures()
 	{
 		if ( appModel != null )
@@ -646,6 +915,9 @@ public class WindowManager
 		}
 	}
 
+	/**
+	 * Close all opened views and dialogs.
+	 */
 	public void closeAllWindows()
 	{
 		final ArrayList< Window > windows = new ArrayList<>();

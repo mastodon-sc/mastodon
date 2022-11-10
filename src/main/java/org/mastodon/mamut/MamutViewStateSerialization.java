@@ -80,7 +80,7 @@ class MamutViewStateSerialization
 
 	/**
 	 * Key to the parameter that stores the frame position for
-	 * {@link MastodonFrameView}s. Value is and <code>int[]</code> array of 4
+	 * {@link MastodonFrameView}s. Value is an <code>int[]</code> array of 4
 	 * elements: x, y, width and height.
 	 */
 	static final String FRAME_POSITION_KEY = "FramePosition";
@@ -625,7 +625,7 @@ class MamutViewStateSerialization
 					// Store context provider.
 					contextProviders.put( bdv.getContextProvider().getName(), bdv.getContextProvider() );
 				}
-				catch (IllegalArgumentException iae) {
+				catch (final IllegalArgumentException iae) {
 					System.err.println( "Info: Failed restoring state of a BigDataViewer window, thus not showing it.\n"
 							+ "      You may want to resave your project to replace the previous (failing) state with the current (okay) state." );
 				}
