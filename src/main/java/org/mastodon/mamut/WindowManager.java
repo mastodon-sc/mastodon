@@ -318,12 +318,14 @@ public class WindowManager
 		{
 			try
 			{
+				// comment
 				final MamutPlugin plugin = info.createInstance();
 				context.inject( plugin );
 				plugins.register( plugin );
 			}
-			catch ( final InstantiableException e )
+			catch ( final Throwable e )
 			{
+				System.err.println("INFO: Exception while discovering the Mastodon plugin: " + info.getClassName());
 				e.printStackTrace();
 			}
 		}
