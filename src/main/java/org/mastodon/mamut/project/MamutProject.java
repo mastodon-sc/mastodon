@@ -76,6 +76,8 @@ public class MamutProject
 
 	static final String GUI_FILE_NAME = "gui.xml";
 
+	static final String BACKUP_DATASET_XML_FILE_NAME = "dataset.xml.backup";
+
 	public MamutProject( final String projectRoot )
 	{
 		this( new File( projectRoot ), null );
@@ -189,8 +191,10 @@ public class MamutProject
 		 * @return the collection of feature keys.
 		 */
 		Collection< String > getFeatureKeys();
-		
+
 		InputStream getGuiInputStream() throws IOException;
+
+		InputStream getBackupDatasetXmlInputStream() throws IOException;
 	}
 
 	public interface ProjectWriter extends Closeable
@@ -204,6 +208,8 @@ public class MamutProject
 		OutputStream getFeatureOutputStream( String featureKey ) throws IOException;
 
 		OutputStream getGuiOutputStream() throws IOException;
+
+		OutputStream getBackupDatasetXmlOutputStream() throws IOException;
 	}
 
 	private class ReadFromDirectory implements ProjectReader
@@ -251,6 +257,12 @@ public class MamutProject
 		public InputStream getGuiInputStream() throws IOException
 		{
 			return new FileInputStream( new File( projectRoot, GUI_FILE_NAME ) );
+		}
+
+		@Override
+		public InputStream getBackupDatasetXmlInputStream() throws IOException
+		{
+			return new FileInputStream( new File( projectRoot, BACKUP_DATASET_XML_FILE_NAME ) );
 		}
 
 		@Override
@@ -306,6 +318,12 @@ public class MamutProject
 		}
 
 		@Override
+		public InputStream getBackupDatasetXmlInputStream() throws IOException
+		{
+			return zip.getInputStream( BACKUP_DATASET_XML_FILE_NAME );
+		}
+
+		@Override
 		public void close() throws IOException
 		{
 			zip.close();
@@ -346,6 +364,12 @@ public class MamutProject
 		public OutputStream getGuiOutputStream() throws IOException
 		{
 			return new FileOutputStream( new File( projectRoot, GUI_FILE_NAME ) );
+		}
+
+		@Override
+		public OutputStream getBackupDatasetXmlOutputStream() throws IOException
+		{
+			return new FileOutputStream( new File( projectRoot, BACKUP_DATASET_XML_FILE_NAME ) );
 		}
 
 		@Override
@@ -390,6 +414,12 @@ public class MamutProject
 		public OutputStream getGuiOutputStream() throws IOException
 		{
 			return zip.getOutputStream( GUI_FILE_NAME );
+		}
+
+		@Override
+		public OutputStream getBackupDatasetXmlOutputStream() throws IOException
+		{
+			return zip.getOutputStream( BACKUP_DATASET_XML_FILE_NAME );
 		}
 
 		@Override

@@ -342,7 +342,9 @@ public class DummyBdvPanel extends JPanel
 
 		private static final String RAW_TAGS_FILE_NAME = "/tags.raw";
 
-		private static final String GUI_FILE_NAME = "gui.xml";
+		private static final String GUI_FILE_NAME = "/gui.xml";
+
+		private static final String SPIM_DATA_FILE_BACKUP = "/dataset.xml.backup";
 
 		private final String resourceName;
 
@@ -383,6 +385,12 @@ public class DummyBdvPanel extends JPanel
 		public InputStream getGuiInputStream() throws IOException
 		{
 			return DummyBdvPanel.class.getResourceAsStream( resourceName + GUI_FILE_NAME );
+		}
+
+		@Override
+		public InputStream getBackupDatasetXmlInputStream() throws IOException
+		{
+			return DummyBdvPanel.class.getResourceAsStream( resourceName + SPIM_DATA_FILE_BACKUP );
 		}
 
 		@Override
