@@ -43,7 +43,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -546,6 +550,9 @@ public class ProjectManager
 		if ( project == null )
 			return;
 
+		File tmpDatasetXml = originalOrBackupDatasetXml( project );
+
+		// update project root
 		project.setProjectRoot( projectRoot );
 		try (final MamutProject.ProjectWriter writer = project.openForWriting())
 		{
@@ -556,6 +563,8 @@ public class ProjectManager
 			MamutRawFeatureModelIO.serialize( windowManager.getContext(), model, idmap, writer );
 			// Serialize GUI state.
 			saveGUI( writer );
+			// Save a copy of the Spim Data Xml File
+			saveBackupDatasetXml( tmpDatasetXml, writer );
 			// Set save point.
 			model.setSavePoint();
 		}
@@ -864,7 +873,10 @@ public class ProjectManager
 		guiRoot.addContent( windows );
 		final Document doc = new Document( guiRoot );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
-		xout.output( doc, writer.getGuiOutputStream() );
+		try (OutputStream outputStream = writer.getGuiOutputStream())
+		{
+			xout.output( doc, outputStream );
+		}
 	}
 
 	private static void loadGUI( final ProjectReader reader, final WindowManager windowManager ) throws IOException
@@ -928,5 +940,51 @@ public class ProjectManager
 				project.getDatasetXmlFile().getAbsolutePath(),
 				options,
 				() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
+	}
+
+	private static File originalOrBackupDatasetXml( MamutProject project )
+	{
+		try
+		{
+			File datasetXml = project.getDatasetXmlFile();
+			if ( datasetXml.exists() )
+				return datasetXml;
+			else
+				return copyBackupDatasetXmlToTmpFile( project );
+		}
+		catch ( IOException e )
+		{
+			return null;
+		}
+	}
+
+	private static File copyBackupDatasetXmlToTmpFile( MamutProject project ) throws IOException
+	{
+		try ( final MamutProject.ProjectReader reader = project.openForReading();
+				final InputStream is = reader.getBackupDatasetXmlInputStream() )
+		{
+			File tmp = File.createTempFile( "mastodon-dataset-xml-backup", ".xml" );
+			tmp.deleteOnExit();
+			Files.copy( is, tmp.toPath(), StandardCopyOption.REPLACE_EXISTING );
+			return tmp;
+		}
+	}
+
+	/**
+	 * Saves a copy of the dataset.xml (if there is any) to the projection location.
+	 */
+	private void saveBackupDatasetXml( final File tmpDatasetXml, final ProjectWriter projectWriter )
+	{
+		if( tmpDatasetXml == null )
+			return;
+
+		try ( OutputStream out = projectWriter.getBackupDatasetXmlOutputStream() )
+		{
+			Files.copy( tmpDatasetXml.toPath(), out );
+		}
+		catch ( IOException e )
+		{
+			System.err.println( "Could not create backup of the dataset.xml file. Reason: '" + e.getMessage() + "'." );
+		}
 	}
 }
