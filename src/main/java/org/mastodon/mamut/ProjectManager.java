@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
@@ -57,6 +58,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import bdv.viewer.RequestRepaint;
+import mpicbg.spim.data.SpimDataIOException;
+import mpicbg.spim.data.XmlKeys;
 import org.embl.mobie.io.ome.zarr.openers.OMEZarrS3Opener;
 import org.embl.mobie.io.util.S3Utils;
 import org.jdom2.Document;
@@ -359,7 +363,7 @@ public class ProjectManager
 		{
 			proposedProjectRoot = file;
 			final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
-			open( project, true );
+			openWithDialog( project );
 		}
 		catch ( final IOException | SpimDataException e )
 		{
@@ -445,7 +449,7 @@ public class ProjectManager
 							xout.output( doc, new FileWriter( settings ) );
 
 							// Reopen the image data from the new BDV file.
-							final SharedBigDataViewerData sharedBdvData = openImageData( project, windowManager );
+							final SharedBigDataViewerData sharedBdvData = openImageData( project, windowManager, false );
 
 							// Recreate app model.
 							final MamutAppModel nAppModel = new MamutAppModel(
@@ -587,7 +591,30 @@ public class ProjectManager
 	 */
 	public synchronized void open( final MamutProject project ) throws IOException, SpimDataException
 	{
-		open( project, false );
+		open( project, false, false );
+	}
+
+	/**
+	 * Opens a project. GUI state is restored. And if the image data cannot
+	 * be loaded a dialog shows up telling the user about the problem, and
+	 * offering to start Mastodon on dummy image data.
+	 */
+	public synchronized void openWithDialog( final MamutProject project ) throws IOException, SpimDataException
+	{
+		try
+		{
+			open( project, true, false );
+		}
+		catch ( final SpimDataIOException | RuntimeException e )
+		{
+			if ( getUserPermissionToOpenDummyData( project, e ) )
+			{
+				open( project, true, true );
+				return;
+			}
+
+			throw e;
+		}
 	}
 
 	/**
@@ -601,19 +628,24 @@ public class ProjectManager
 	 *            if <code>true</code>, the GUI state settings will be read from
 	 *            the project file, and if found, the saved GUI state will be
 	 *            restored.
+	 * @param loadDummyData
+	 *            Load dummy image data (black images), this also works if the
+	 *            dataset XML is missing.
 	 * @throws IOException
 	 *             if an IO exception occurs during opening.
 	 * @throws SpimDataException
 	 *             if a spim-data exception occurs while opening the spim-data
 	 *             XML file.
 	 */
-	public synchronized void open( final MamutProject project, final boolean restoreGUIState ) throws IOException, SpimDataException
+	public synchronized void open(
+			final MamutProject project,
+			final boolean restoreGUIState,
+			final boolean loadDummyData ) throws IOException, SpimDataException
 	{
 		final MamutProject localProject;
 
 		// Check whether the project points to a BDV file.
-		final String imagePath = project.getDatasetXmlFile().getAbsolutePath().replaceAll( "\\\\", "/" );
-		final String canonicalPath = new File( imagePath ).getCanonicalPath();
+		final String canonicalPath = project.getDatasetXmlFile().getAbsolutePath();
 		if ( !canonicalPath.endsWith( ".xml" )  && !canonicalPath.endsWith( DummySpimData.DUMMY ) )
 		{
 			final ImagePlus imp;
@@ -647,7 +679,7 @@ public class ProjectManager
 		}
 
 		// Prepare image data.
-		final SharedBigDataViewerData sharedBdvData = openImageData( localProject, windowManager );
+		final SharedBigDataViewerData sharedBdvData = openImageData( localProject, windowManager, loadDummyData );
 
 		// Load model.
 		loadModel( windowManager, sharedBdvData, localProject, restoreGUIState );
@@ -670,6 +702,7 @@ public class ProjectManager
 							.findFirst()
 							.orElse( "pixel" ) );
 		}
+
 		if ( project.getTimeUnits() == null )
 		{
 			project.setTimeUnits( "frame" );
@@ -883,9 +916,9 @@ public class ProjectManager
 	{
 		final SAXBuilder sax = new SAXBuilder();
 		Document guiDoc;
-		try
+		try (InputStream inputStream = reader.getGuiInputStream())
 		{
-			guiDoc = sax.build( reader.getGuiInputStream() );
+			guiDoc = sax.build( inputStream );
 		}
 		catch ( final JDOMException e )
 		{
@@ -905,41 +938,105 @@ public class ProjectManager
 	/**
 	 * Opens and prepares the shared image data, based on whether the Mamut
 	 * project points to a BDV XML/H5 pair or an opened ImagePlus.
-	 * 
+	 *
 	 * @param project
 	 *            the project.
 	 * @param windowManager
 	 *            the {@link WindowManager} instance, used to create a lambda
 	 *            that refreshes all BDV views and get the session
 	 *            {@link KeyPressedManager}.
-	 * @return a new {@link SharedBigDataViewerData} instance
-	 * @throws SpimDataException
-	 * @throws IOException
+	 * @param dummyData
+	 *            if {@code true}: in case image data was not found during
+	 *            opening, the user will be provided with work around options
+	 *            (e.g. loading dummy image data, fixing the project manually)
+	 * @return a new {@link SharedBigDataViewerData} instance or {@code null},
+	 *         if image data (BDV) was not found and the user decided to not
+	 *         open dummy image data instead
 	 */
 	private static final SharedBigDataViewerData openImageData(
 			final MamutProject project,
-			final WindowManager windowManager ) throws SpimDataException, IOException
+			final WindowManager windowManager,
+			final boolean dummyData ) throws SpimDataException, IOException
 	{
 		// Prepare base view options.
 		final ViewerOptions options = ViewerOptions.options()
 				.shareKeyPressedEvents( windowManager.getKeyPressedManager() )
 				.msgOverlay( new MessageOverlayAnimator( 1500, 0.005, 0.02 ) );
 
+		RequestRepaint requestRepaint = () -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint );
+
 		// Is it based on ImagePlus?
 		if ( project instanceof MamutImagePlusProject )
 		{
 			final MamutImagePlusProject mipp = ( MamutImagePlusProject ) project;
-			return SharedBigDataViewerData.fromImagePlus(
-					mipp.getImagePlus(),
-					options,
-					() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
+			return SharedBigDataViewerData.fromImagePlus( mipp.getImagePlus(), options, requestRepaint );
 		}
 
-		// Assume it is a BDV file.
-		return SharedBigDataViewerData.fromSpimDataXmlFile(
-				project.getDatasetXmlFile().getAbsolutePath(),
+		// Open dummy data string?
+		String spimDataXmlFilename = project.getDatasetXmlFile().getPath();
+		if( DummySpimData.isDummyString( spimDataXmlFilename ) )
+			return SharedBigDataViewerData.fromDummyFilename( spimDataXmlFilename, options, requestRepaint );
+
+		// Open dummy data flag?
+		if( dummyData )
+			return openDummyImageData(project, options, requestRepaint);
+
+		return SharedBigDataViewerData.fromSpimDataXmlFile( project.getDatasetXmlFile().getAbsolutePath(),
 				options,
-				() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
+				requestRepaint );
+	}
+
+	private static SharedBigDataViewerData openDummyImageData( MamutProject project, ViewerOptions options, RequestRepaint requestRepaint )
+	{
+		try
+		{
+			String backupDatasetXml = originalOrBackupDatasetXml( project ).getAbsolutePath();
+			return SharedBigDataViewerData.createDummyDataFromSpimDataXml( backupDatasetXml, options, requestRepaint );
+		}
+		catch( Throwable e )
+		{
+			return simpleDummyData( project, options, requestRepaint );
+		}
+	}
+
+	private static SharedBigDataViewerData simpleDummyData( MamutProject project, ViewerOptions options, RequestRepaint requestRepaint )
+	{
+		try (final MamutProject.ProjectReader reader = project.openForReading())
+		{
+			final Model model = new Model( "pixel", "frame" );
+			model.loadRaw( reader );
+			String requiredImageSizeAsString = requiredImageSizeAsString( model );
+			return SharedBigDataViewerData.fromDummyFilename( requiredImageSizeAsString, options, requestRepaint );
+		}
+		catch ( IOException e )
+		{
+			throw new RuntimeException( e );
+		}
+	}
+
+	private static String requiredImageSizeAsString( Model model )
+	{
+		int time = 0;
+		double x = 0;
+		double y = 0;
+		double z = 0;
+		for(Spot spot : model.getGraph().vertices()) {
+			time = Math.max( time, spot.getTimepoint() );
+			double radius = Math.sqrt( spot.getBoundingSphereRadiusSquared() );
+			x = Math.max( x, spot.getDoublePosition( 0 ) + radius );
+			y = Math.max( y, spot.getDoublePosition( 1 ) + radius );
+			z = Math.max( z, spot.getDoublePosition( 2 ) + radius );
+		}
+		return String.format( "x=%s y=%s z=%s t=%s.dummy",
+				roundUp(x) + 1,
+				roundUp(y) + 1,
+				roundUp(z) + 1,
+				time + 1);
+	}
+
+	private static long roundUp( double x )
+	{
+		return (long) Math.ceil( x );
 	}
 
 	private static File originalOrBackupDatasetXml( MamutProject project )
@@ -985,6 +1082,63 @@ public class ProjectManager
 		catch ( IOException e )
 		{
 			System.err.println( "Could not create backup of the dataset.xml file. Reason: '" + e.getMessage() + "'." );
+		}
+	}
+
+	/**
+	 * Show an dialog the explains to the user why the image data could not been
+	 * loaded, and offers to open Mastodon with dummy image data.
+	 */
+	private static boolean getUserPermissionToOpenDummyData( MamutProject project, Exception e )
+	{
+		String problemDescription = getProblemDescription( project, e );
+		System.err.println( problemDescription );
+		String title = "Problem Opening Mastodon Project";
+		String message = "";
+		message += "Mastodon could not find the images associated with this project.\n";
+		message += "\n";
+		message += problemDescription + "\n";
+		message += "\n";
+		message += "It is still possible to open the project.\n";
+		message += "You can inspect and modify the tracking data.\n";
+		message += "But you won't be able to see the image data.\n";
+		message += "\n";
+		message += "You may fix this problem by correcting the image path in the Mastodon project.\n";
+		message += "In the Mastodon menu select: File -> Fix Image Path.\n";
+		message += "\n";
+		message += "How would you like to continue?";
+		String[] options = { "Open With Dummy Images", "Cancel" };
+		int dialogResult = JOptionPane.showOptionDialog( null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, null );
+		return dialogResult == JOptionPane.YES_OPTION;
+	}
+
+	private static String getProblemDescription( MamutProject project, Exception e )
+	{
+		File datasetXml = project.getDatasetXmlFile();
+		if( !datasetXml.exists() )
+			return "The image data XML was not found:\n" + datasetXml;
+		final Throwable cause = e.getCause();
+		if ( cause instanceof UnknownHostException )
+			return errorMessageUnknownHost( datasetXml, cause.getMessage() );
+		return e.getMessage();
+	}
+
+	private static String errorMessageUnknownHost( final File datasetXml, final String host )
+	{
+		final SAXBuilder sax = new SAXBuilder();
+		try
+		{
+			final Document doc = sax.build( datasetXml );
+			final Element root = doc.getRootElement();
+			final String baseUrl = root
+					.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
+					.getChild( XmlKeys.IMGLOADER_TAG )
+					.getChildText( "baseUrl" );
+			return "Cannot reach host  " + host + " for the dataset URL: " + baseUrl;
+		}
+		catch ( final Exception e )
+		{
+			return "Unparsable dataset file: " + e.getMessage();
 		}
 	}
 }

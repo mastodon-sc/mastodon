@@ -56,7 +56,7 @@ public class MamutPlayground
 		final Context context = new Context();
 		final MamutProject project = new MamutProjectIO().load( "../TrackMate3/samples/mamutproject.mastodon" );
 		final WindowManager windowManager = new WindowManager( context );
-		windowManager.getProjectManager().open( project, true );
+		windowManager.getProjectManager().openWithDialog( project );
 		final Model model = windowManager.getAppModel().getModel();
 
 		System.out.println( "\n\n\n___________________________________\nData loaded.\n" );

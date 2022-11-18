@@ -67,7 +67,7 @@ public class StartMastodonWithMissingImageDemo extends JFrame
 		{
 			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 			final WindowManager windowManager = new WindowManager( new Context() );
-			windowManager.getProjectManager().open( new MamutProjectIO().load( file ), true );
+			windowManager.getProjectManager().openWithDialog( new MamutProjectIO().load( file ) );
 			final MainWindow win = new MainWindow( windowManager );
 			win.setVisible( true );
 

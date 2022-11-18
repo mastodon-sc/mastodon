@@ -29,7 +29,9 @@
 package org.mastodon.mamut;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -39,6 +41,7 @@ import java.util.zip.ZipFile;
 
 import mpicbg.spim.data.SpimDataException;
 import org.junit.Test;
+import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProjectIO;
 import org.scijava.Context;
 
@@ -58,6 +61,7 @@ public class ProjectManagerTest
 	@Test
 	public void testSaveDatasetXmlBackup() throws IOException, SpimDataException
 	{
+		assumeFalse( GraphicsEnvironment.isHeadless() );
 		Path outputProject = Files.createTempFile( "test", ".mastodon" );
 		openAndSaveMastodonProject( tinyExampleProject, outputProject );
 		assertProjectContainsBackupDatasetXml( outputProject );
@@ -67,6 +71,7 @@ public class ProjectManagerTest
 	@Test
 	public void testSaveDatasetXmlBackupUnderManyConditions() throws IOException, SpimDataException
 	{
+		assumeFalse( GraphicsEnvironment.isHeadless() );
 		// The following use case is tested.
 		Path projectA = Files.createTempFile( "test", ".mastodon" );
 		// 1. Open mastodon project and save it
@@ -90,7 +95,8 @@ public class ProjectManagerTest
 			throws IOException, SpimDataException
 	{
 		WindowManager windowManager = new WindowManager( context );
-		windowManager.getProjectManager().open( new MamutProjectIO().load( open.toFile().getAbsolutePath() ) );
+		MamutProject project = new MamutProjectIO().load( open.toFile().getAbsolutePath() );
+		windowManager.getProjectManager().open( project, false, true );
 		windowManager.getProjectManager().saveProject( save.toFile() );
 	}
 
