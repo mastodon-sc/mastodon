@@ -627,7 +627,8 @@ public class MastodonLauncher extends JFrame
 					try
 					{
 						final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
-						windowManager.getProjectManager().open( project, true );
+						windowManager.getProjectManager().openWithDialog( project );
+
 						new MainWindow( windowManager ).setVisible( true );
 						dispose();
 						/*

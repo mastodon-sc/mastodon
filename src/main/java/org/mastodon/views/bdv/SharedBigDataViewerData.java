@@ -32,12 +32,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -45,7 +42,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.mastodon.util.DatasetInfoParser;
 import org.mastodon.util.DummySpimData;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
@@ -82,8 +78,6 @@ import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.process.LUT;
 import mpicbg.spim.data.SpimDataException;
-import mpicbg.spim.data.SpimDataIOException;
-import mpicbg.spim.data.XmlKeys;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicImgLoader;
@@ -332,81 +326,45 @@ public class SharedBigDataViewerData
 		return true;
 	}
 
-	private static final String errorMessageUnknownHost( final String xmlFilename, final String host )
+	public static SharedBigDataViewerData fromSpimDataXmlFile(
+			final String spimDataXmlFilename,
+			final ViewerOptions viewerOptions,
+			final RequestRepaint requestRepaint ) throws SpimDataException
 	{
-		final SAXBuilder sax = new SAXBuilder();
-		try
-		{
-			final Document doc = sax.build( xmlFilename );
-			final Element root = doc.getRootElement();
-			final String baseUrl = root
-					.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
-					.getChild( XmlKeys.IMGLOADER_TAG )
-					.getChildText( "baseUrl" );
-			return "Cannot reach host  " + host + " for the dataset URL: " + baseUrl;
-		}
-		catch ( final Exception e )
-		{
-			return "Unparsable dataset file: " + e.getMessage();
-		}
+		AbstractSpimData<?> spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
 	}
 
-	/*
-	 * FROM BDV FILE OR URL.
-	 */
-
-	public static SharedBigDataViewerData fromSpimDataXmlFile(
-			String spimDataXmlFilename,
+	public static SharedBigDataViewerData fromDummyFilename(
+			final String spimDataXmlFilename,
 			final ViewerOptions viewerOptions,
-			final RequestRepaint requestRepaint ) throws SpimDataException, IOException
+			final RequestRepaint requestRepaint )
 	{
-		// Load SpimData
-		spimDataXmlFilename = spimDataXmlFilename.replaceAll( "\\\\", "/" );
-		spimDataXmlFilename = new File( spimDataXmlFilename ).getCanonicalPath();
-		AbstractSpimData< ? > spimData = DummySpimData.tryCreate( spimDataXmlFilename );
-		if ( spimData == null )
-		{
-			try
-			{
-				//trying to load the actual (not-dummy) data
-				spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
-			}
-			catch ( final SpimDataIOException | RuntimeException e )
-			{
-				final Throwable cause = e.getCause();
-				if ( cause instanceof UnknownHostException )
-				{
-					// Try to make a sensible error message.
-					System.err.println( errorMessageUnknownHost( spimDataXmlFilename, cause.getMessage() ) );
-				}
-				else
-				{
-					System.err.println( "Could not open image data file: " + e.getMessage() );
-				}
-				System.err.println( "Despite that, still going to try to load the project but over a dummy\n"
-						+ "image dataset. Please fix the dataset path in the Mastodon project file afterwards\n"
-						+ "by using menu entry: Mastodon -> File -> Fix Image Path.");
+		AbstractSpimData<?> spimData = DummySpimData.tryCreate( spimDataXmlFilename );
+		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
+	}
 
-				JOptionPane.showConfirmDialog(
-						null,
-						"Failed opening the original image data.\n"
-								+ "\n"
-								+ "Despite that, still going to try to load\n"
-								+ "the project but over a dummy image dataset.\n"
-								+ "\n"
-								+ "Please fix the dataset path in the Mastodon\n"
-								+ "project file afterwards by using menu entry:\n"
-								+ "Mastodon -> File -> Fix Image Path.",
-						"Image data not accessible",
-						JOptionPane.CLOSED_OPTION,
-						JOptionPane.WARNING_MESSAGE );
+	/**
+	 * @return a "dummy" {@link SharedBigDataViewerData} object. Pixel sizes,
+	 * image sizes, and image transformations are read from the given
+	 * BigDataViewer XML. The actual image data is not loaded, all pixels
+	 * are black.
+	 */
+	public static SharedBigDataViewerData createDummyDataFromSpimDataXml(
+			final String spimDataXmlFilename,
+			final ViewerOptions viewerOptions,
+			final RequestRepaint requestRepaint ) throws SpimDataException
+	{
+		AbstractSpimData<?> spimData = DummySpimData.fromSpimDataXml( spimDataXmlFilename );
+		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
+	}
 
-				// Try to resurrect/figure-out as many parameters as possible from the .xml file,
-				// and build dummy data after it fails (it must fail, otherwise we wouldn't get here)
-				spimData = DatasetInfoParser.inspect( spimDataXmlFilename ).toDummySpimData();
-			}
-		}
-
+	private static SharedBigDataViewerData formSpimData(
+			final String spimDataXmlFilename,
+			final AbstractSpimData<?> spimData,
+			final ViewerOptions viewerOptions,
+			final RequestRepaint requestRepaint )
+	{
 		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
 		final int numTimepoints = seq.getTimePoints().size();
 		final CacheControl cache = ( ( ViewerImgLoader ) seq.getImgLoader() ).getCacheControl();

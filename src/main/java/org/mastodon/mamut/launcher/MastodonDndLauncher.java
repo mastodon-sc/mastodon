@@ -41,7 +41,6 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.log.LogService;
 
-import javax.swing.WindowConstants;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -75,13 +74,13 @@ public class MastodonDndLauncher extends AbstractIOPlugin<Object> {
 		//start up "the main object behind the scenes" -- the WindowManager,
 		final WindowManager windowManager = new WindowManager( getContext() );
 
-		//start up the main/central Mastodon window
-		final MainWindow mainWindow = new MainWindow( windowManager );
-		mainWindow.setVisible( true );
-
 		try {
 			final MamutProject project = new MamutProjectIO().load( projectPath );
-			windowManager.getProjectManager().open( project, true );
+			windowManager.getProjectManager().openWithDialog( project );
+
+			//start up the main/central Mastodon window
+			final MainWindow mainWindow = new MainWindow( windowManager );
+			mainWindow.setVisible( true );
 		} catch (Exception e) {
 			logService.error( "Error reading Mastodon project file: " + projectPath );
 			logService.error( "Error was: " + e.getMessage() );
