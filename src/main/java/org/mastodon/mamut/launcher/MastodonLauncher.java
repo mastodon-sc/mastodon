@@ -29,6 +29,10 @@
 package org.mastodon.mamut.launcher;
 
 import java.awt.Color;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -118,6 +122,8 @@ public class MastodonLauncher extends JFrame
 
 		getContentPane().add( gui );
 		setSize( 630, 660 );
+
+		setDropTarget( new LauncherDropTarget() );
 	}
 
 	private void importSimi()
@@ -654,5 +660,28 @@ public class MastodonLauncher extends JFrame
 	private WindowManager createWindowManager()
 	{
 		return new WindowManager( context );
+	}
+
+	private class LauncherDropTarget extends DropTarget
+	{
+		@Override
+		public synchronized void drop( DropTargetDropEvent dropTargetDropEvent )
+		{
+			try
+			{
+				dropTargetDropEvent.acceptDrop( DnDConstants.ACTION_COPY );
+				@SuppressWarnings( "unchecked" )
+				List< File > droppedFiles = ( List< File > ) dropTargetDropEvent.getTransferable().getTransferData( DataFlavor.javaFileListFlavor );
+				for ( File file : droppedFiles )
+				{
+					// process files
+					loadMastodonProject( file.getAbsolutePath() );
+				}
+			}
+			catch ( Exception e )
+			{
+				e.printStackTrace( System.err );
+			}
+		}
 	}
 }
