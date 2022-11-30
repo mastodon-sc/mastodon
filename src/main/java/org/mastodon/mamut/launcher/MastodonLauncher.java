@@ -39,6 +39,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -613,11 +614,15 @@ public class MastodonLauncher extends JFrame
 					final File file;
 					if ( projectPath == null )
 					{
+						// Use the the most recent opened location as initial
+						// location for the file chooser
+						Iterator<String> iterator = RecentProjectsPanel.recentProjects.iterator();
+						String previousPath = iterator.hasNext() ? iterator.next() : null;
 						// We have to use the JFileChooser to open folders.
 						file = FileChooser.chooseFile(
 								true,
 								this,
-								null,
+								previousPath,
 								new ExtensionFileFilter( "mastodon" ),
 								"Open Mastodon Project",
 								FileChooser.DialogType.LOAD,
