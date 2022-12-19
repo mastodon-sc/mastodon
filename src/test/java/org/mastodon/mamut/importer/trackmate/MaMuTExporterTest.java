@@ -129,7 +129,7 @@ public class MaMuTExporterTest
 		final fiji.plugin.trackmate.Model exportedModel = reader.getModel();
 
 		// Check number of spots in whole model.
-		assertEquals( "Unexpected numbe of spots in the exported model.",
+		assertEquals( "Unexpected number of spots in the exported model.",
 				sourceModel.getGraph().vertices().size(), exportedModel.getSpots().getNSpots( false ) );
 
 		final NavigableSet< Integer > timepoints = exportedModel.getSpots().keySet();
