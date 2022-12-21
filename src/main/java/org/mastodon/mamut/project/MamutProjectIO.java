@@ -97,14 +97,21 @@ public class MamutProjectIO
 
 	public void fromXml( final MamutProject project, final Element root )
 	{
-		final File datasetXmlFile = XmlHelpers.loadPath( root, SPIMDATAFILE_TAG, project.getProjectRoot() ).toPath().normalize().toFile();
-		project.setDatasetXmlFile( datasetXmlFile );
+		project.setDatasetXmlFile( getDatasetPathFromXml( project, root ) );
 		final boolean datasetXmlPathRelative = XmlHelpers.isPathRelative( root, SPIMDATAFILE_TAG );
 		project.setDatasetXmlPathRelative( datasetXmlPathRelative );
 		final String spaceUnits = XmlHelpers.getText( root, SPACE_UNITS_TAG );
 		final String timeUnits = XmlHelpers.getText( root, TIME_UNITS_TAG );
 		project.setSpaceUnits( spaceUnits );
 		project.setTimeUnits( timeUnits );
+	}
+
+	private File getDatasetPathFromXml( MamutProject project, Element root )
+	{
+		File datasetXml = XmlHelpers.loadPath( root, SPIMDATAFILE_TAG, project.getProjectRoot() );
+		datasetXml = new File( datasetXml.getPath().replace( "\\", "/" ) );
+		datasetXml = datasetXml.toPath().normalize().toFile();
+		return datasetXml;
 	}
 
 	public static boolean mkdirs( final String fileName )
