@@ -331,37 +331,40 @@ public class SharedBigDataViewerData
 			final ViewerOptions viewerOptions,
 			final RequestRepaint requestRepaint ) throws SpimDataException
 	{
-		AbstractSpimData<?> spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+		final AbstractSpimData< ? > spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
 	}
 
-	public static SharedBigDataViewerData fromDummyFilename(
-			final String spimDataXmlFilename,
-			final ViewerOptions viewerOptions,
-			final RequestRepaint requestRepaint )
+	public static
+			SharedBigDataViewerData fromDummyFilename(
+					final String spimDataXmlFilename,
+					final ViewerOptions viewerOptions,
+					final RequestRepaint requestRepaint )
 	{
-		AbstractSpimData<?> spimData = DummySpimData.tryCreate( spimDataXmlFilename );
+		final AbstractSpimData< ? > spimData = DummySpimData.tryCreate( spimDataXmlFilename );
 		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
 	}
 
 	/**
-	 * @return a "dummy" {@link SharedBigDataViewerData} object. Pixel sizes,
+	 * Returns a "dummy" {@link SharedBigDataViewerData} object. Pixel sizes,
 	 * image sizes, and image transformations are read from the given
-	 * BigDataViewer XML. The actual image data is not loaded, all pixels
-	 * are black.
+	 * BigDataViewer XML. The actual image data is not loaded, all pixels are
+	 * black.
+	 * 
+	 * @return a "dummy" {@link SharedBigDataViewerData} object.
 	 */
 	public static SharedBigDataViewerData createDummyDataFromSpimDataXml(
 			final String spimDataXmlFilename,
 			final ViewerOptions viewerOptions,
 			final RequestRepaint requestRepaint ) throws SpimDataException
 	{
-		AbstractSpimData<?> spimData = DummySpimData.fromSpimDataXml( spimDataXmlFilename );
+		final AbstractSpimData< ? > spimData = DummySpimData.fromSpimDataXml( spimDataXmlFilename );
 		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
 	}
 
 	private static SharedBigDataViewerData formSpimData(
 			final String spimDataXmlFilename,
-			final AbstractSpimData<?> spimData,
+			final AbstractSpimData< ? > spimData,
 			final ViewerOptions viewerOptions,
 			final RequestRepaint requestRepaint )
 	{
