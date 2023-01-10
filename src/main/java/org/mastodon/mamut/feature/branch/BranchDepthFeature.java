@@ -46,6 +46,30 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Represents the depth of branch spots within lineage track tree.
+ * <p>
+ * In the following example this number would equal to following branchSpots as
+ * follows:
+ *
+ * <pre>
+ *                         branchSpot0
+ *  	       ┌──────────────┴─────────────────┐
+ *  	       │                                │
+ *  	   branchSpot1                      branchSpot2
+ *  	┌──────┴───────┐
+ *  	│              │
+ *  branchSpot3    branchSpot4
+ * </pre>
+ *
+ * <ul>
+ * <li>{@code branchSpot0 = 0}</li>
+ * <li>{@code branchSpot1 = 1}</li>
+ * <li>{@code branchSpot2 = 1}</li>
+ * <li>{@code branchSpot3 = 2}</li>
+ * <li>{@code branchSpot4 = 2}</li>
+ * </ul>
+ */
 public class BranchDepthFeature implements Feature< BranchSpot >
 {
 

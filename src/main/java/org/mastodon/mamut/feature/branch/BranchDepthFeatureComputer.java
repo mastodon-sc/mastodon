@@ -40,6 +40,9 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Computes {@link BranchDepthFeature}
+ */
 @Plugin( type = MamutFeatureComputer.class )
 public class BranchDepthFeatureComputer implements MamutFeatureComputer
 {

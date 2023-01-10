@@ -39,6 +39,9 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Computes the {@link BranchDisplacementDurationFeature}
+ */
 @Plugin( type = MamutFeatureComputer.class )
 public class BranchDisplacementDurationFeatureComputer implements MamutFeatureComputer
 {
