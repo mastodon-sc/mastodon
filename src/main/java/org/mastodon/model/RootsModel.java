@@ -32,9 +32,9 @@ import org.mastodon.collection.RefList;
 
 import java.util.List;
 
-public interface RootsModel<V>
+public interface RootsModel< V >
 {
-	void setRoots( List<V> roots );
+	void setRoots( List< V > roots );
 
-	RefList<V> getRoots();
+	RefList< V > getRoots();
 }

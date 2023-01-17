@@ -50,7 +50,8 @@ import org.scijava.listeners.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public class TagSetModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > > implements TagSetModel< WV, WE >
+public class TagSetModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
+		WE extends Edge< WV > > implements TagSetModel< WV, WE >
 {
 	private final TagSetModel< V, E > tagSetModel;
 

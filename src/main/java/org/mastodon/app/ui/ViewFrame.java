@@ -81,7 +81,8 @@ public class ViewFrame extends JFrame
 		isSettingsPanelVisible = true;
 
 		SwingUtilities.replaceUIActionMap( settingsPanel, keybindings.getConcatenatedActionMap() );
-		SwingUtilities.replaceUIInputMap( settingsPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+		SwingUtilities.replaceUIInputMap( settingsPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+				keybindings.getConcatenatedInputMap() );
 
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );

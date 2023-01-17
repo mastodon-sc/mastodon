@@ -113,7 +113,8 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( RECORD_MIP_MOVIE_DIALOG, RECORD_MIP_MOVIE_DIALOG_KEYS, "Show the record max-projection movie dialog." );
+			descriptions.add( RECORD_MIP_MOVIE_DIALOG, RECORD_MIP_MOVIE_DIALOG_KEYS,
+					"Show the record max-projection movie dialog." );
 		}
 	}
 
@@ -149,14 +150,16 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 				colorBarOverlay );
 		dialog.setTitle( "Record max projection movie on " + bdv.getViewerFrame().getTitle() );
 		bdv.getViewer().getDisplay().overlays().add( dialog );
-		actions.namedAction( new RecordMovieDialog.MyToggleDialogAction( RECORD_MIP_MOVIE_DIALOG, dialog ), RECORD_MIP_MOVIE_DIALOG_KEYS );
+		actions.namedAction( new RecordMovieDialog.MyToggleDialogAction( RECORD_MIP_MOVIE_DIALOG, dialog ),
+				RECORD_MIP_MOVIE_DIALOG_KEYS );
 
 		// Register some keymaps to the dialog itself.
 		if ( keymap != null )
 		{
 			final InputActionBindings keybindings = new InputActionBindings();
 			SwingUtilities.replaceUIActionMap( dialog.rootPane, keybindings.getConcatenatedActionMap() );
-			SwingUtilities.replaceUIInputMap( dialog.rootPane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+			SwingUtilities.replaceUIInputMap( dialog.rootPane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+					keybindings.getConcatenatedInputMap() );
 
 			final Actions dialogActions = new Actions( keymap.getConfig(), KeyConfigContexts.BIGDATAVIEWER );
 			dialogActions.install( keybindings, "view" );
@@ -169,10 +172,11 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 				dialog.dispose();
 			};
 
-			dialogActions.namedAction( new RecordMovieDialog.MyToggleDialogAction( RECORD_MIP_MOVIE_DIALOG, dialog ), RECORD_MIP_MOVIE_DIALOG_KEYS );
+			dialogActions.namedAction( new RecordMovieDialog.MyToggleDialogAction( RECORD_MIP_MOVIE_DIALOG, dialog ),
+					RECORD_MIP_MOVIE_DIALOG_KEYS );
 			return onClose;
 		}
-		
+
 		return () -> {
 			dialog.setVisible( false );
 			dialog.dispose();
@@ -182,11 +186,17 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 	private static final long serialVersionUID = 1L;
 
 	private static final String EXPORT_TO_MOVIE_KEY = "ExportToMovie";
+
 	private static final String PNG_EXPORT_PATH_KEY = "PNGExportPath";
+
 	private static final String MOVIE_EXPORT_PATH_KEY = "MovieExportPath";
+
 	private static final String FPS_KEY = "FPS";
+
 	private static final String NUM_STEPS_KEY = "NumSteps";
+
 	private static final String STEP_SIZE_KEY = "StepSize";
+
 	private static final String PROJECT_OVERLAY_KEY = "ProjectOverlay";
 
 	private final int maxTimepoint;
@@ -220,7 +230,8 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 		gblBoxes.columnWidths = new int[] { 309, 0 };
 		gblBoxes.rowHeights = new int[] { 0, 0, 0, 0, 30, 0, 25, 30, 0, 0, 30, 10, 30, 0 };
 		gblBoxes.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gblBoxes.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gblBoxes.rowWeights =
+				new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		boxes.setLayout( gblBoxes );
 
 		final JPanel timepointsPanel = new JPanel();
@@ -488,7 +499,6 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 			}
 		} );
 
-
 		btnBrowsePNGs.addActionListener( e -> {
 			final File file = FileChooser.chooseFile(
 					FileChooser.useJFileChooser,
@@ -546,9 +556,12 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 		 * Persistence.
 		 */
 
-		rdbtnToMovie.setSelected( prefService.getBoolean( RecordMaxProjectionMovieDialog.class, EXPORT_TO_MOVIE_KEY, true ) );
-		tfPathPNGs.setText( prefService.get( RecordMaxProjectionMovieDialog.class, PNG_EXPORT_PATH_KEY, System.getProperty( "user.home" ) ) );
-		tfPathMovie.setText( prefService.get( RecordMaxProjectionMovieDialog.class, MOVIE_EXPORT_PATH_KEY, new File( System.getProperty( "user.home" ), "BDVCapture.mp4" ).getAbsolutePath() ) );
+		rdbtnToMovie.setSelected(
+				prefService.getBoolean( RecordMaxProjectionMovieDialog.class, EXPORT_TO_MOVIE_KEY, true ) );
+		tfPathPNGs.setText( prefService.get( RecordMaxProjectionMovieDialog.class, PNG_EXPORT_PATH_KEY,
+				System.getProperty( "user.home" ) ) );
+		tfPathMovie.setText( prefService.get( RecordMaxProjectionMovieDialog.class, MOVIE_EXPORT_PATH_KEY,
+				new File( System.getProperty( "user.home" ), "BDVCapture.mp4" ).getAbsolutePath() ) );
 		int fps = prefService.getInt( RecordMaxProjectionMovieDialog.class, FPS_KEY, 10 );
 		fps = Math.min( 200, Math.max( 1, fps ) );
 		spinnerFPS.setValue( fps );
@@ -558,13 +571,18 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 		double stepSize = prefService.getDouble( RecordMaxProjectionMovieDialog.class, STEP_SIZE_KEY, 1. );
 		stepSize = Math.min( 20., Math.max( 0.01, stepSize ) );
 		spinnerStepSize.setValue( stepSize );
-		chckbxProjectOverlay.setSelected( prefService.getBoolean( RecordMaxProjectionMovieDialog.class, PROJECT_OVERLAY_KEY, false ) );
+		chckbxProjectOverlay.setSelected(
+				prefService.getBoolean( RecordMaxProjectionMovieDialog.class, PROJECT_OVERLAY_KEY, false ) );
 
-		spinnerFPS.addChangeListener( e -> prefService.put( RecordMaxProjectionMovieDialog.class, FPS_KEY, ( ( Number ) spinnerFPS.getValue() ).intValue() ) );
-		spinnerNumSteps.addChangeListener( e -> prefService.put( RecordMaxProjectionMovieDialog.class, NUM_STEPS_KEY, ( ( Number ) spinnerNumSteps.getValue() ).intValue() ) );
-		spinnerStepSize.addChangeListener( e -> prefService.put( RecordMaxProjectionMovieDialog.class, STEP_SIZE_KEY, ( ( Number ) spinnerStepSize.getValue() ).doubleValue() ) );
-		chckbxProjectOverlay.addChangeListener( e -> prefService.put( RecordMaxProjectionMovieDialog.class, PROJECT_OVERLAY_KEY, chckbxProjectOverlay.isSelected() ) );
-		
+		spinnerFPS.addChangeListener( e -> prefService.put( RecordMaxProjectionMovieDialog.class, FPS_KEY,
+				( ( Number ) spinnerFPS.getValue() ).intValue() ) );
+		spinnerNumSteps.addChangeListener( e -> prefService.put( RecordMaxProjectionMovieDialog.class, NUM_STEPS_KEY,
+				( ( Number ) spinnerNumSteps.getValue() ).intValue() ) );
+		spinnerStepSize.addChangeListener( e -> prefService.put( RecordMaxProjectionMovieDialog.class, STEP_SIZE_KEY,
+				( ( Number ) spinnerStepSize.getValue() ).doubleValue() ) );
+		chckbxProjectOverlay.addChangeListener( e -> prefService.put( RecordMaxProjectionMovieDialog.class,
+				PROJECT_OVERLAY_KEY, chckbxProjectOverlay.isSelected() ) );
+
 		setCanvasSize( viewer.getWidth(), viewer.getHeight() );
 
 		/*
@@ -598,7 +616,8 @@ public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements
 				{
 					final String filename = tfPathMovie.getText();
 					final int fps = ( ( Number ) spinnerFPS.getValue() ).intValue();
-					recorder = new MovieFileBDVRecorder( viewer, tracksOverlay, colorBarOverlay, progressWriter, filename, fps );
+					recorder = new MovieFileBDVRecorder( viewer, tracksOverlay, colorBarOverlay, progressWriter,
+							filename, fps );
 				}
 
 				final int minTimepointIndex = ( Integer ) spinnerMinTimepoint.getValue();

@@ -65,7 +65,8 @@ public class KeyConfigUtils
 		{
 			if ( c instanceof JComponent )
 			{
-				final InputMap inputMap = ( ( JComponent ) c ).getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+				final InputMap inputMap =
+						( ( JComponent ) c ).getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
 				final KeyStroke[] tableKeys = inputMap.allKeys();
 				if ( tableKeys != null )
 					allTableKeys.addAll( Arrays.asList( tableKeys ) );

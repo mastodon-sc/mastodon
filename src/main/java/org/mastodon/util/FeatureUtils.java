@@ -56,7 +56,8 @@ public class FeatureUtils
 	 *            the class of objects whose features we want to extract.
 	 * @return a new map.
 	 */
-	public static final < O > Map< FeatureSpec< ?, O >, Feature< O > > collectFeatureMap( final FeatureModel featureModel, final Class< O > clazz )
+	public static final < O > Map< FeatureSpec< ?, O >, Feature< O > >
+			collectFeatureMap( final FeatureModel featureModel, final Class< O > clazz )
 	{
 		final Set< FeatureSpec< ?, ? > > featureSpecs = featureModel.getFeatureSpecs().stream()
 				.filter( ( fs ) -> fs.getTargetClass().isAssignableFrom( clazz ) )

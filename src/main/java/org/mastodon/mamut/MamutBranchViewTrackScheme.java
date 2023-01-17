@@ -90,7 +90,8 @@ import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.views.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 
-public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGraph< BranchSpot, BranchLink >, TrackSchemeVertex, TrackSchemeEdge >
+public class MamutBranchViewTrackScheme
+		extends MamutBranchView< TrackSchemeGraph< BranchSpot, BranchLink >, TrackSchemeVertex, TrackSchemeEdge >
 {
 
 	private final ColorBarOverlay colorBarOverlay;
@@ -104,7 +105,8 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(), LongEdgesLineageTreeLayout::new, null );
+		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(),
+				LongEdgesLineageTreeLayout::new, null );
 	}
 
 	protected MamutBranchViewTrackScheme(
@@ -113,9 +115,10 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 			final BranchTrackSchemeFactory trackSchemeGraphFactory,
 			final TrackSchemeOverlayFactory overlayFactory,
 			final LineageTreeLayout.LineageTreeLayoutFactory layoutFactory,
-			final TimepointModel timepointModel)
+			final TimepointModel timepointModel )
 	{
-		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ), new String[] { KeyConfigContexts.TRACKSCHEME } );
+		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ),
+				new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		// TrackScheme options.
 		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter =
@@ -141,13 +144,15 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 
 		// Show TrackSchemeFrame.
 		final Model model = appModel.getModel();
-		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
-		final RootsModel< TrackSchemeVertex > rootsModel = new BranchTrackSchemeRootsModel( model.getGraph(), model.getBranchGraph(), viewGraph);
+		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel =
+				new AutoNavigateFocusModel<>( focusModel, navigationHandler );
+		final RootsModel< TrackSchemeVertex > rootsModel =
+				new BranchTrackSchemeRootsModel( model.getGraph(), model.getBranchGraph(), viewGraph );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
 				highlightModel,
 				navigateFocusModel,
-				(timepointModel == null) ? this.timepointModel : timepointModel,
+				( timepointModel == null ) ? this.timepointModel : timepointModel,
 				selectionModel,
 				rootsModel,
 				navigationHandler,
@@ -177,20 +182,26 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		frame.getSettingsPanel().add( new BranchGraphSyncButton( appModel.getBranchGraphSync() ) );
 
 		// Search vertex label.
-		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getTrackschemePanel() );
+		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
+				focusModel, frame.getTrackschemePanel() );
 		frame.getSettingsPanel().add( searchPanel );
 
 		// Actions.
 		BranchGraphUndoActions.install( viewActions, model, appModel.getBranchGraphSync() );
 		MastodonFrameViewActions.install( viewActions, this );
 		final ReentrantReadWriteLock lock = model.getGraph().getLock();
-		BranchTrackSchemeEditLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model, model.getBranchGraph() );
+		BranchTrackSchemeEditLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model,
+				model.getBranchGraph() );
 		FocusActions.install( viewActions, viewGraph, lock, focusModel, selectionModel );
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
-		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), lock, frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
-		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
+		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(),
+				appModel.getSelectionModel(), lock, frame.getTrackschemePanel(),
+				frame.getTrackschemePanel().getDisplay(), model );
+		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel,
+				frame.getTrackschemePanel() );
 
-		frame.getTrackschemePanel().getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
+		frame.getTrackschemePanel().getNavigationActions().install( viewActions,
+				TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
 		frame.getTrackschemePanel().getNavigationBehaviours().install( viewBehaviours );
 		frame.getTrackschemePanel().getTransformEventHandler().install( viewBehaviours );
 
@@ -253,14 +264,16 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 		coloringModel = registerBranchColoring( coloringAdapter, coloringMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> frame.getTrackschemePanel().getBackground() );
-		frame.getTrackschemePanel().getOffsetHeaders().listeners().add( ( w, h ) -> colorBarOverlay.setInsets( h + 15, w + 15, 15, 15 ) );
+		frame.getTrackschemePanel().getOffsetHeaders().listeners()
+				.add( ( w, h ) -> colorBarOverlay.setInsets( h + 15, w + 15, 15, 15 ) );
 		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> frame.getTrackschemePanel().repaint() );
 
 		// Listen to user changing the tag-set menu.
 		registerTagSetMenu( tagSetMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		// Listen to vertex labels being changed.
-		model.getGraph().addVertexLabelListener( v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
+		model.getGraph().addVertexLabelListener(
+				v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
 
 		// Restore colorbar state.
 		MamutView.restoreColorbarState( colorBarOverlay, guiState );
@@ -312,7 +325,8 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 				final TrackSchemeOptions options )
 		{
-			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(), new PaintBranchGraph(), options );
+			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(), new PaintBranchGraph(),
+					options );
 		}
 	}
 
@@ -340,10 +354,12 @@ public class MamutBranchViewTrackScheme extends MamutBranchView< TrackSchemeGrap
 			final ModelBranchGraph graph = model.getBranchGraph();
 			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
 			final ModelGraphProperties< BranchSpot, BranchLink > properties =
-					new DefaultModelGraphProperties<BranchSpot, BranchLink>() {
+					new DefaultModelGraphProperties< BranchSpot, BranchLink >()
+					{
 
 						@Override
-						public String getFirstLabel( BranchSpot branchSpot ) {
+						public String getFirstLabel( BranchSpot branchSpot )
+						{
 							return branchSpot.getFirstLabel();
 						}
 

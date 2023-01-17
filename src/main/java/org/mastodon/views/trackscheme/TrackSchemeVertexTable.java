@@ -60,15 +60,17 @@ public class TrackSchemeVertexTable
 	 */
 	private final TIntObjectMap< TrackSchemeVertexList > timepointToOrderedVertices;
 
-	private final TrackSchemeGraph<?, ?> graph;
+	private final TrackSchemeGraph< ?, ? > graph;
 
-	public TrackSchemeVertexTable( TrackSchemeGraph<?, ?> graph ) {
+	public TrackSchemeVertexTable( TrackSchemeGraph< ?, ? > graph )
+	{
 		this.graph = graph;
 		timepoints = new TIntArrayList();
-		timepointToOrderedVertices = new TIntObjectArrayMap< >();
+		timepointToOrderedVertices = new TIntObjectArrayMap<>();
 	}
 
-	public void clear() {
+	public void clear()
+	{
 		timepoints.clear();
 		timepointToOrderedVertices.clear();
 	}
@@ -78,8 +80,9 @@ public class TrackSchemeVertexTable
 		return timepoints;
 	}
 
-	public TrackSchemeVertexList getOrderedVertices(int timepoint ) {
-		return timepointToOrderedVertices.get(timepoint);
+	public TrackSchemeVertexList getOrderedVertices( int timepoint )
+	{
+		return timepointToOrderedVertices.get( timepoint );
 	}
 
 	public void add( TrackSchemeVertex v )
@@ -95,7 +98,7 @@ public class TrackSchemeVertexTable
 		vlist.add( v );
 	}
 
-	public RefSet<TrackSchemeVertex> getVerticesWithin( double lx1, double ly1, double lx2, double ly2 )
+	public RefSet< TrackSchemeVertex > getVerticesWithin( double lx1, double ly1, double lx2, double ly2 )
 	{
 		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
 		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;
@@ -120,7 +123,8 @@ public class TrackSchemeVertexTable
 		return vertexSet;
 	}
 
-	public TrackSchemeVertex getClosestVertex( RealLocalizable layoutPos, double aspectRatioXtoY, TrackSchemeVertex ref )
+	public TrackSchemeVertex getClosestVertex( RealLocalizable layoutPos, double aspectRatioXtoY,
+			TrackSchemeVertex ref )
 	{
 		final double lx = layoutPos.getDoublePosition( 0 );
 		final double ly = layoutPos.getDoublePosition( 1 );
@@ -129,7 +133,7 @@ public class TrackSchemeVertexTable
 		int closestVertexIndex = -1;
 
 		final TIntIterator tpIter = new TIntAlternatingIterator( timepoints, ( int ) ly );
-		while( tpIter.hasNext() )
+		while ( tpIter.hasNext() )
 		{
 			final int tp = tpIter.next();
 			final double diffy = ( ly - tp ) * aspectRatioXtoY;
@@ -160,7 +164,8 @@ public class TrackSchemeVertexTable
 		return ref;
 	}
 
-	public TrackSchemeVertex getClosestVertexWithin( double lx1, double ly1, double lx2, double ly2, double aspectRatioXtoY, TrackSchemeVertex ref )
+	public TrackSchemeVertex getClosestVertexWithin( double lx1, double ly1, double lx2, double ly2,
+			double aspectRatioXtoY, TrackSchemeVertex ref )
 	{
 		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
 		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;

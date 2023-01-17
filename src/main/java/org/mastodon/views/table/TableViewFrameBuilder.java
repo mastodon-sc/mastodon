@@ -102,7 +102,8 @@ public class TableViewFrameBuilder
 		return this;
 	}
 
-	public < V extends Vertex< E >, E extends Edge< V > > GraphTableBuilder< V, E > addGraph( final ReadOnlyGraph< V, E > graph )
+	public < V extends Vertex< E >, E extends Edge< V > > GraphTableBuilder< V, E >
+			addGraph( final ReadOnlyGraph< V, E > graph )
 	{
 		final GraphTableBuilder< V, E > builder = new GraphTableBuilder<>( graph, this );
 		graphBuilders.add( builder );
@@ -271,7 +272,8 @@ public class TableViewFrameBuilder
 						graphBuilder.selectionModel.clearSelection();
 						final int[] selectedRows = vt.getSelectedRows();
 						for ( final int row : selectedRows )
-							graphBuilder.selectionModel.setSelected( vertexTable.getObjectForViewRow( row, ref ), true );
+							graphBuilder.selectionModel.setSelected( vertexTable.getObjectForViewRow( row, ref ),
+									true );
 						for ( final EE e : selectedEdges )
 							graphBuilder.selectionModel.setSelected( e, true );
 						graphBuilder.selectionModel.resumeListeners();
@@ -590,11 +592,13 @@ public class TableViewFrameBuilder
 			ignoreTableSelectionChange = true;
 			final Map< ?, ? > map1 = FeatureUtils.collectFeatureMap( featureModel, vref1.getClass() );
 			@SuppressWarnings( "unchecked" )
-			final Map< FeatureSpec< ?, VV >, Feature< VV > > vertexFeatures = ( Map< FeatureSpec< ?, VV >, Feature< VV > > ) map1;
+			final Map< FeatureSpec< ?, VV >, Feature< VV > > vertexFeatures =
+					( Map< FeatureSpec< ?, VV >, Feature< VV > > ) map1;
 			vertexTable.setFeatures( vertexFeatures );
 			final Map< ?, ? > map2 = FeatureUtils.collectFeatureMap( featureModel, eref.getClass() );
 			@SuppressWarnings( "unchecked" )
-			final Map< FeatureSpec< ?, EE >, Feature< EE > > edgeFeatures = ( Map< FeatureSpec< ?, EE >, Feature< EE > > ) map2;
+			final Map< FeatureSpec< ?, EE >, Feature< EE > > edgeFeatures =
+					( Map< FeatureSpec< ?, EE >, Feature< EE > > ) map2;
 			edgeTable.setFeatures( edgeFeatures );
 			if ( mirrorSelection )
 				selectionChanged();
@@ -777,7 +781,6 @@ public class TableViewFrameBuilder
 	public static class MyTableViewFrame extends ViewFrame
 	{
 
-
 		private static final long serialVersionUID = 1L;
 
 		public final List< ContextChooser< ? > > contextChoosers;
@@ -792,7 +795,8 @@ public class TableViewFrameBuilder
 			add( pane, BorderLayout.CENTER );
 
 			SwingUtilities.replaceUIActionMap( pane, keybindings.getConcatenatedActionMap() );
-			SwingUtilities.replaceUIInputMap( pane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+			SwingUtilities.replaceUIInputMap( pane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+					keybindings.getConcatenatedInputMap() );
 		}
 
 		public FeatureTagTablePanel< ? > getCurrentlyDisplayedTable()
@@ -815,8 +819,8 @@ public class TableViewFrameBuilder
 		public List< FeatureTagTablePanel< ? > > getTables()
 		{
 			final int nTabs = pane.getTabCount();
-			final ArrayList< FeatureTagTablePanel< ? > > tables = new ArrayList<>(nTabs);
-			for(int i = 0; i < nTabs; i++)
+			final ArrayList< FeatureTagTablePanel< ? > > tables = new ArrayList<>( nTabs );
+			for ( int i = 0; i < nTabs; i++ )
 			{
 				final FeatureTagTablePanel< ? > table = ( FeatureTagTablePanel< ? > ) pane.getComponentAt( i );
 				tables.add( table );

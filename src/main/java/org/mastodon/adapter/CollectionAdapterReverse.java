@@ -87,7 +87,8 @@ public class CollectionAdapterReverse< O, WO >
 	public Iterator< WO > iterator()
 	{
 		final Iterator< O > iter = collection.iterator();
-		return new Iterator< WO >() {
+		return new Iterator< WO >()
+		{
 			@Override
 			public boolean hasNext()
 			{

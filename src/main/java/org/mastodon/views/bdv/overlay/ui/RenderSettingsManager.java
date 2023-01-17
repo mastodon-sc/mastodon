@@ -125,8 +125,8 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 				if ( obj instanceof String )
 				{
 					defaultStyleName = ( String ) obj;
-//					System.out.println( "RenderSettingsManager.loadStyles" );
-//					System.out.println( defaultStyleName );
+					//					System.out.println( "RenderSettingsManager.loadStyles" );
+					//					System.out.println( defaultStyleName );
 				}
 				else if ( obj instanceof RenderSettings )
 				{
@@ -138,7 +138,7 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 							userStyles.add( ts );
 						else
 						{
-//							System.out.println( "Discarded style with duplicate name \"" + ts.getName() + "\"." );
+							//							System.out.println( "Discarded style with duplicate name \"" + ts.getName() + "\"." );
 						}
 					}
 				}
@@ -147,7 +147,7 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 		}
 		catch ( final FileNotFoundException e )
 		{
-//			System.out.println( "Bdv style file " + filename + " not found. Using builtin styles." );
+			//			System.out.println( "Bdv style file " + filename + " not found. Using builtin styles." );
 		}
 	}
 

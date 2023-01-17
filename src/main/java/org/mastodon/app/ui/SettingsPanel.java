@@ -221,7 +221,6 @@ public class SettingsPanel extends JPanel
 		pages.repaint();
 	}
 
-
 	public SettingsPanel()
 	{
 		root = new DefaultMutableTreeNode( new SettingsNodeData( "root", null ) );
@@ -258,7 +257,8 @@ public class SettingsPanel extends JPanel
 					@Override
 					public void valueChanged( final TreeSelectionEvent e )
 					{
-						final DefaultMutableTreeNode selectedNode = ( DefaultMutableTreeNode ) tree.getLastSelectedPathComponent();
+						final DefaultMutableTreeNode selectedNode =
+								( DefaultMutableTreeNode ) tree.getLastSelectedPathComponent();
 						if ( selectedNode != null )
 						{
 							setBreadCrumbs( selectedNode );
@@ -269,9 +269,9 @@ public class SettingsPanel extends JPanel
 					}
 				} );
 
-		final JButton cancel = new JButton("Cancel");
-		apply = new JButton("Apply");
-		final JButton ok = new JButton("OK");
+		final JButton cancel = new JButton( "Cancel" );
+		apply = new JButton( "Apply" );
+		final JButton ok = new JButton( "OK" );
 		final JPanel buttons = new JPanel();
 		buttons.setLayout( new BoxLayout( buttons, BoxLayout.LINE_AXIS ) );
 		buttons.add( Box.createHorizontalGlue() );

@@ -67,7 +67,8 @@ public class FeatureSpecPair implements Comparable< FeatureSpecPair >
 	 */
 	private final boolean incoming;
 
-	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final boolean isEdgeFeature, final boolean incoming )
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final boolean isEdgeFeature,
+			final boolean incoming )
 	{
 		assert f.getMultiplicity() == Multiplicity.SINGLE;
 		this.featureSpec = f;
@@ -78,7 +79,8 @@ public class FeatureSpecPair implements Comparable< FeatureSpecPair >
 		this.incoming = incoming;
 	}
 
-	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1, final boolean isEdgeFeature, final boolean incoming )
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1,
+			final boolean isEdgeFeature, final boolean incoming )
 	{
 		assert f.getMultiplicity() == Multiplicity.ON_SOURCES;
 		this.featureSpec = f;
@@ -89,7 +91,8 @@ public class FeatureSpecPair implements Comparable< FeatureSpecPair >
 		this.incoming = incoming;
 	}
 
-	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1, final int c2, final boolean isEdgeFeature, final boolean incoming )
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1, final int c2,
+			final boolean isEdgeFeature, final boolean incoming )
 	{
 		assert f.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS;
 		this.featureSpec = f;

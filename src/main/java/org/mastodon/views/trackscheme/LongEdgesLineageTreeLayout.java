@@ -54,9 +54,9 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 {
 
 	public LongEdgesLineageTreeLayout(
-			final RootsModel<TrackSchemeVertex> rootsModel,
-			final TrackSchemeGraph<?, ?> graph,
-			final SelectionModel<TrackSchemeVertex, TrackSchemeEdge> selection )
+			final RootsModel< TrackSchemeVertex > rootsModel,
+			final TrackSchemeGraph< ?, ? > graph,
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		super( rootsModel, graph, selection );
 	}
@@ -115,7 +115,8 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 				maxIndex++;
 
 			final double minLayoutX = vertexList.getMinLayoutXDistance();
-			TIntArrayList denseRanges = vertexList.getDenseRanges( minIndex, maxIndex + 1, minLayoutX, allowedMinD, 3, v1 );
+			TIntArrayList denseRanges =
+					vertexList.getDenseRanges( minIndex, maxIndex + 1, minLayoutX, allowedMinD, 3, v1 );
 			if ( denseRanges == null )
 				denseRanges = new TIntArrayList();
 			denseRanges.add( maxIndex + 1 );
@@ -137,7 +138,7 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 				{
 					edge.getSource( v2 );
 
-					if( v2.getLayoutTimestamp() != timestamp )
+					if ( v2.getLayoutTimestamp() != timestamp )
 						continue;
 
 					// Check if the edge has some parts on the screen.
@@ -146,7 +147,8 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 						continue;
 
 					int v2si = v2.getScreenVertexIndex();
-					if ( v2si < 0 || v2si >= screenVertices.size() || screenVertices.get( v2si, sv ).getTrackSchemeVertexId() != v2.getInternalPoolIndex() )
+					if ( v2si < 0 || v2si >= screenVertices.size()
+							|| screenVertices.get( v2si, sv ).getTrackSchemeVertexId() != v2.getInternalPoolIndex() )
 					{
 						// ScreenVertex for v2 not found. Adding one...
 						final double nx = ( v2.getLayoutX() - minX ) * xScale + decorationsOffsetX;
@@ -159,7 +161,8 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 					final int sourceScreenVertexIndex = v2.getScreenVertexIndex();
 					final int targetScreenVertexIndex = v1.getScreenVertexIndex();
 					final boolean eselected = selection.isSelected( edge );
-					screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( edge, v2, v1 ) );
+					screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected,
+							colorGenerator.color( edge, v2, v1 ) );
 					screenEdges.add( se );
 					final int sei = se.getInternalPoolIndex();
 					edge.setScreenEdgeIndex( sei );

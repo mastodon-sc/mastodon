@@ -155,7 +155,8 @@ public class TrackMateImporter
 			imageFile = new File( file.getParent(), imageFilename );
 			if ( !imageFile.exists() )
 			{
-				System.err.println( "Warning. Cannot find the image data file: \"" + imageFilename + "\" in \"" + imageFolder + "\" nor in \""
+				System.err.println( "Warning. Cannot find the image data file: \"" + imageFilename + "\" in \""
+						+ imageFolder + "\" nor in \""
 						+ file.getParent() + "\". Substituting default void image." );
 				imageFile = makDummyImage( imageDataEl );
 			}
@@ -209,8 +210,8 @@ public class TrackMateImporter
 		final String dzel = imageDataEl.getAttributeValue( VOXEL_DEPTH_ATTRIBUTE );
 		final double dz = dzel == null ? 1. : Double.parseDouble( dzel );
 
-//		final String dtel = imageDataEl.getAttributeValue( TIME_INTERVAL_ATTRIBUTE );
-//		final double dt = dtel == null ? 1. : Double.parseDouble( dtel );
+		//		final String dtel = imageDataEl.getAttributeValue( TIME_INTERVAL_ATTRIBUTE );
+		//		final double dt = dtel == null ? 1. : Double.parseDouble( dtel );
 
 		final String dummyStr = String.format( "x=%d y=%d z=%d sx=%f sy=%f sz=%f t=%d.dummy",
 				width, height, depth, dx, dy, dz, nTimepoints );
@@ -274,26 +275,30 @@ public class TrackMateImporter
 			final List< Element > spotFeatureEls = spotFeatureDeclarationEl.getChildren( FEATURE_TAG );
 			final Map< String, DoublePropertyMap< Spot > > spotDoubleFeatureMap = new HashMap<>();
 			final Map< String, IntPropertyMap< Spot > > spotIntFeatureMap = new HashMap<>();
-			final Set< String > ignoredSpotFeatureKeys = MamutExporter.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Spot.class );
+			final Set< String > ignoredSpotFeatureKeys = MamutExporter
+					.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Spot.class );
 			for ( final Element featureEl : spotFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
 				if ( ignoredSpotFeatureKeys.contains( featureKey ) )
 					continue;
-//				final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
-//				final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
+				//				final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
+				//				final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
 				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
 				final String units = dimensionToUnits( featureDimension, spaceUnits, timeUnits );
-				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
+				final boolean featureIsInt =
+						Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
 				{
-					final IntPropertyMap< Spot > values = new IntPropertyMap<>( graph.vertices().getRefPool(), Integer.MIN_VALUE );
+					final IntPropertyMap< Spot > values =
+							new IntPropertyMap<>( graph.vertices().getRefPool(), Integer.MIN_VALUE );
 					spotFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
 					spotIntFeatureMap.put( featureKey, values );
 				}
 				else
 				{
-					final DoublePropertyMap< Spot > values = new DoublePropertyMap<>( graph.vertices().getRefPool(), Double.NaN );
+					final DoublePropertyMap< Spot > values =
+							new DoublePropertyMap<>( graph.vertices().getRefPool(), Double.NaN );
 					spotFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
 					spotDoubleFeatureMap.put( featureKey, values );
 				}
@@ -305,26 +310,30 @@ public class TrackMateImporter
 			final List< Element > edgeFeatureEls = edgeFeatureDeclarationEl.getChildren( FEATURE_TAG );
 			final Map< String, DoublePropertyMap< Link > > linkDoubleFeatureMap = new HashMap<>();
 			final Map< String, IntPropertyMap< Link > > linkIntFeatureMap = new HashMap<>();
-			final Set< String > ignoredLinkFeatureKeys = MamutExporter.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Link.class );
+			final Set< String > ignoredLinkFeatureKeys = MamutExporter
+					.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Link.class );
 			for ( final Element featureEl : edgeFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
 				if ( ignoredLinkFeatureKeys.contains( featureKey ) )
 					continue;
-//				final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
-//				final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
+				//				final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
+				//				final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
 				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
 				final String units = dimensionToUnits( featureDimension, spaceUnits, timeUnits );
-				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
+				final boolean featureIsInt =
+						Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
 				{
-					final IntPropertyMap< Link > values = new IntPropertyMap<>( graph.edges().getRefPool(), Integer.MIN_VALUE );
+					final IntPropertyMap< Link > values =
+							new IntPropertyMap<>( graph.edges().getRefPool(), Integer.MIN_VALUE );
 					linkFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
 					linkIntFeatureMap.put( featureKey, values );
 				}
 				else
 				{
-					final DoublePropertyMap< Link > values = new DoublePropertyMap<>( graph.edges().getRefPool(), Double.NaN );
+					final DoublePropertyMap< Link > values =
+							new DoublePropertyMap<>( graph.edges().getRefPool(), Double.NaN );
 					linkFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
 					linkDoubleFeatureMap.put( featureKey, values );
 				}
@@ -357,7 +366,8 @@ public class TrackMateImporter
 					final List< Element > frameSpotsEl = frameEl.getChildren( SPOT_ELEMENT_TAG );
 					for ( final Element spotEl : frameSpotsEl )
 					{
-						final boolean visible = Integer.parseInt( spotEl.getAttributeValue( VISIBILITY_FEATURE_NAME ) ) != 0;
+						final boolean visible =
+								Integer.parseInt( spotEl.getAttributeValue( VISIBILITY_FEATURE_NAME ) ) != 0;
 						if ( !visible )
 							continue;
 
@@ -507,7 +517,8 @@ public class TrackMateImporter
 		}
 	}
 
-	private static final String dimensionToUnits( final String dimension, final String spaceUnits, final String timeUnits )
+	private static final String dimensionToUnits( final String dimension, final String spaceUnits,
+			final String timeUnits )
 	{
 		switch ( dimension )
 		{

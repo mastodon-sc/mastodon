@@ -141,7 +141,8 @@ public abstract class AbstractBDVRecorder
 			public void setRenderResult( final BufferedImageRenderResult renderResult )
 			{
 				final BufferedImage bufferedImage = renderResult.getBufferedImage();
-				final Img< ARGBType > argbs = ArrayImgs.argbs( ( ( DataBufferInt ) bufferedImage.getData().getDataBuffer() ).getData(), width, height );
+				final Img< ARGBType > argbs = ArrayImgs.argbs(
+						( ( DataBufferInt ) bufferedImage.getData().getDataBuffer() ).getData(), width, height );
 				final Cursor< ARGBType > c = argbs.cursor();
 				for ( final ARGBType acc : accumulated )
 				{
@@ -246,7 +247,8 @@ public abstract class AbstractBDVRecorder
 				colorBarOverlay.drawOverlays( g2 );
 
 			writeFrame( bi, timepoint );
-			progressWriter.setProgress( ( double ) ( timepoint - minTimepointIndex + 1 ) / ( maxTimepointIndex - minTimepointIndex + 1 ) );
+			progressWriter.setProgress(
+					( double ) ( timepoint - minTimepointIndex + 1 ) / ( maxTimepointIndex - minTimepointIndex + 1 ) );
 		}
 
 		closeRecorder();
@@ -362,7 +364,8 @@ public abstract class AbstractBDVRecorder
 			}
 
 			writeFrame( bi, timepoint );
-			progressWriter.setProgress( ( double ) ( timepoint - minTimepointIndex + 1 ) / ( maxTimepointIndex - minTimepointIndex + 1 ) );
+			progressWriter.setProgress(
+					( double ) ( timepoint - minTimepointIndex + 1 ) / ( maxTimepointIndex - minTimepointIndex + 1 ) );
 		}
 
 		closeRecorder();

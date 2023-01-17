@@ -171,8 +171,7 @@ public class DefaultObjTagMap< O, T > implements ObjTagMap< O, T >
 			tagToId.put( tag, id );
 			idToTag.put( id, tag );
 		}
-		idToTag.keySet().forEach( id ->
-				idToOtherIds.put( id,
-						idToTag.keySet().stream().filter( oid -> oid != id ).collect( Collectors.toList() ) ) );
+		idToTag.keySet().forEach( id -> idToOtherIds.put( id,
+				idToTag.keySet().stream().filter( oid -> oid != id ).collect( Collectors.toList() ) ) );
 	}
 }

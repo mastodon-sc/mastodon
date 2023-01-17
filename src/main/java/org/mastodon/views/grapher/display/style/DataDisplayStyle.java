@@ -43,7 +43,8 @@ import bdv.ui.settings.style.Style;
 
 public class DataDisplayStyle implements Style< DataDisplayStyle >
 {
-	private static final Stroke DEFAULT_FOCUS_STROKE = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
+	private static final Stroke DEFAULT_FOCUS_STROKE =
+			new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 
 	private String name;
 
@@ -92,7 +93,7 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	private Stroke axisStroke;
 
 	private boolean drawVertexName;
-	
+
 	/*
 	 * GETTERS for non public fields.
 	 */
@@ -212,6 +213,7 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	{
 		return vertexHighlightStroke;
 	}
+
 	public Stroke getVertexStroke()
 	{
 		return vertexStroke;
@@ -356,7 +358,6 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		}
 		return this;
 	}
-
 
 	public DataDisplayStyle selectedEdgeColor( final Color color )
 	{
@@ -567,46 +568,27 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	static
 	{
 		final Color fill = new Color( 128, 255, 128 );
-		df = new DataDisplayStyle().name( "default" ).
-				autoVertexSize( true ).
-				axisColor( new Color( 89, 89, 89 ) ).
-				axisTickFont( new Font( "SansSerif", Font.PLAIN, 9 ) ).
-				axisLabelFont( new Font( "SansSerif", Font.PLAIN, 10 ) ).
-				axisStroke( new BasicStroke() ).
-				backgroundColor( new Color( 204, 204, 204 ) ).
-				drawVertexName( true ).
-				edgeColor( Color.BLACK ).
-				edgeHighlightStroke( new BasicStroke( 2f ) ).
-				edgeStroke( new BasicStroke() ).
-				focusStroke( DEFAULT_FOCUS_STROKE ).
-				font( new Font( "SansSerif", Font.PLAIN, 9 ) ).
-				selectedVertexFillColor( fill ).
-				selectedSimplifiedVertexFillColor( new Color( 0, 128, 0 ) ).
-				selectedVertexDrawColor( Color.BLACK ).
-				selectedEdgeColor( fill.darker() ).
-				simplifiedVertexFillColor( Color.BLACK ).
-				vertexDrawColor( Color.BLACK ).
-				vertexDrawShape( VertexDrawShape.CIRCLE ).
-				vertexFillColor( Color.WHITE ).
-				vertexFixedSize( 10. ).
-				vertexHighlightStroke( new BasicStroke( 3f ) ).
-				vertexStroke( new BasicStroke() );
+		df = new DataDisplayStyle().name( "default" ).autoVertexSize( true ).axisColor( new Color( 89, 89, 89 ) )
+				.axisTickFont( new Font( "SansSerif", Font.PLAIN, 9 ) )
+				.axisLabelFont( new Font( "SansSerif", Font.PLAIN, 10 ) ).axisStroke( new BasicStroke() )
+				.backgroundColor( new Color( 204, 204, 204 ) ).drawVertexName( true ).edgeColor( Color.BLACK )
+				.edgeHighlightStroke( new BasicStroke( 2f ) ).edgeStroke( new BasicStroke() )
+				.focusStroke( DEFAULT_FOCUS_STROKE ).font( new Font( "SansSerif", Font.PLAIN, 9 ) )
+				.selectedVertexFillColor( fill ).selectedSimplifiedVertexFillColor( new Color( 0, 128, 0 ) )
+				.selectedVertexDrawColor( Color.BLACK ).selectedEdgeColor( fill.darker() )
+				.simplifiedVertexFillColor( Color.BLACK ).vertexDrawColor( Color.BLACK )
+				.vertexDrawShape( VertexDrawShape.CIRCLE ).vertexFillColor( Color.WHITE ).vertexFixedSize( 10. )
+				.vertexHighlightStroke( new BasicStroke( 3f ) ).vertexStroke( new BasicStroke() );
 	}
 
 	private static final DataDisplayStyle discreet;
 	static
 	{
 		final Color mainColor = new Color( 0, 83, 140 );
-		discreet = df.copy( "discreet" ).
-				autoVertexSize( false ).
-				drawVertexName( false ).
-				edgeColor(mainColor ).
-				vertexFixedSize( 7. ).
-				edgeStroke( new BasicStroke( 0.5f ) ).
-				vertexDrawColor( df.getBackgroundColor() ).
-				vertexDrawShape( VertexDrawShape.SQUARE ).
-				vertexFillColor( mainColor );
-		}
+		discreet = df.copy( "discreet" ).autoVertexSize( false ).drawVertexName( false ).edgeColor( mainColor )
+				.vertexFixedSize( 7. ).edgeStroke( new BasicStroke( 0.5f ) ).vertexDrawColor( df.getBackgroundColor() )
+				.vertexDrawShape( VertexDrawShape.SQUARE ).vertexFillColor( mainColor );
+	}
 
 	public static Collection< DataDisplayStyle > defaults;
 	static

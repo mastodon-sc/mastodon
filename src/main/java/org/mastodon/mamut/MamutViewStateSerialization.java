@@ -284,7 +284,8 @@ class MamutViewStateSerialization
 		}
 		else if ( value instanceof org.mastodon.views.grapher.datagraph.ScreenTransform )
 		{
-			final org.mastodon.views.grapher.datagraph.ScreenTransform t = ( org.mastodon.views.grapher.datagraph.ScreenTransform ) value;
+			final org.mastodon.views.grapher.datagraph.ScreenTransform t =
+					( org.mastodon.views.grapher.datagraph.ScreenTransform ) value;
 			el = XmlHelpers.doubleArrayElement( key, new double[] {
 					t.getMinX(),
 					t.getMaxX(),
@@ -495,7 +496,8 @@ class MamutViewStateSerialization
 	 * @param guiState
 	 *            the map to store info into.
 	 */
-	private static void getGuiStateBranchTrackScheme( final MamutBranchViewTrackScheme view, final Map< String, Object > guiState )
+	private static void getGuiStateBranchTrackScheme( final MamutBranchViewTrackScheme view,
+			final Map< String, Object > guiState )
 	{
 		final TrackSchemePanel trackschemePanel = view.getFrame().getTrackschemePanel();
 
@@ -590,7 +592,8 @@ class MamutViewStateSerialization
 				guiState.put( FEATURE_COLOR_MODE_KEY, coloringModel.getFeatureColorMode().getName() );
 	}
 
-	private static void getColorBarOverlayState( final ColorBarOverlay colorBarOverlay, final Map< String, Object > guiState )
+	private static void getColorBarOverlayState( final ColorBarOverlay colorBarOverlay,
+			final Map< String, Object > guiState )
 	{
 		guiState.put( COLORBAR_VISIBLE_KEY, colorBarOverlay.isVisible() );
 		guiState.put( COLORBAR_POSITION_KEY, colorBarOverlay.getPosition() );
@@ -619,13 +622,15 @@ class MamutViewStateSerialization
 			{
 			case "MamutViewBdv":
 			{
-				try {
+				try
+				{
 					final MamutViewBdv bdv = windowManager.createBigDataViewer( guiState );
 
 					// Store context provider.
 					contextProviders.put( bdv.getContextProvider().getName(), bdv.getContextProvider() );
 				}
-				catch (final IllegalArgumentException iae) {
+				catch ( final IllegalArgumentException iae )
+				{
 					System.err.println( "Info: Failed restoring state of a BigDataViewer window, thus not showing it.\n"
 							+ "      You may want to resave your project to replace the previous (failing) state with the current (okay) state." );
 				}
@@ -732,13 +737,15 @@ class MamutViewStateSerialization
 			case TRACKSCHEME_TRANSFORM_KEY:
 			{
 				final double[] arr = XmlHelpers.getDoubleArray( viewEl, key );
-				value = new ScreenTransform( arr[ 0 ], arr[ 1 ], arr[ 2 ], arr[ 3 ], ( int ) arr[ 4 ], ( int ) arr[ 5 ] );
+				value = new ScreenTransform( arr[ 0 ], arr[ 1 ], arr[ 2 ], arr[ 3 ], ( int ) arr[ 4 ],
+						( int ) arr[ 5 ] );
 				break;
 			}
 			case GRAPHER_TRANSFORM_KEY:
 			{
 				final double[] arr = XmlHelpers.getDoubleArray( viewEl, key );
-				value = new org.mastodon.views.grapher.datagraph.ScreenTransform( arr[ 0 ], arr[ 1 ], arr[ 2 ], arr[ 3 ], ( int ) arr[ 4 ], ( int ) arr[ 5 ] );
+				value = new org.mastodon.views.grapher.datagraph.ScreenTransform( arr[ 0 ], arr[ 1 ], arr[ 2 ],
+						arr[ 3 ], ( int ) arr[ 4 ], ( int ) arr[ 5 ] );
 				break;
 			}
 			case TABLE_SELECTION_ONLY:

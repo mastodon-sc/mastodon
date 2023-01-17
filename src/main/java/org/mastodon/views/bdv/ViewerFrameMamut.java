@@ -124,7 +124,8 @@ public class ViewerFrameMamut extends ViewFrame
 		} );
 
 		SwingUtilities.replaceUIActionMap( viewer, keybindings.getConcatenatedActionMap() );
-		SwingUtilities.replaceUIInputMap( viewer, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+		SwingUtilities.replaceUIInputMap( viewer, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+				keybindings.getConcatenatedInputMap() );
 
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );

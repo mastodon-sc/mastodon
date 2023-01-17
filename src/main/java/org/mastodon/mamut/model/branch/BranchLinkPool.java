@@ -38,7 +38,8 @@ public class BranchLinkPool extends AbstractListenableEdgePool< BranchLink, Bran
 
 	BranchLinkPool( final int initialCapacity, final BranchSpotPool vertexPool )
 	{
-		super( initialCapacity, AbstractListenableEdgePool.layout, BranchLink.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ), vertexPool );
+		super( initialCapacity, AbstractListenableEdgePool.layout, BranchLink.class,
+				SingleArrayMemPool.factory( ByteMappedElementArray.factory ), vertexPool );
 	}
 
 	@Override

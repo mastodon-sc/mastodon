@@ -48,12 +48,13 @@ public class BranchTrackSchemeEditLabelAction
 
 	private static final String[] EDIT_FOCUS_LABEL_KEYS = new String[] { "ENTER" };
 
-	public static < BV extends Vertex< BE >, BE extends Edge< BV >, V extends Vertex< E > & HasLabel, E extends Edge< V > > void install(
-			final Actions actions,
-			final TrackSchemePanel panel,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final UndoPointMarker undoPointMarker,
-			final BranchGraph< BV, BE, V, E > branchGraph )
+	public static < BV extends Vertex< BE >, BE extends Edge< BV >, V extends Vertex< E > & HasLabel,
+			E extends Edge< V > > void install(
+					final Actions actions,
+					final TrackSchemePanel panel,
+					final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+					final UndoPointMarker undoPointMarker,
+					final BranchGraph< BV, BE, V, E > branchGraph )
 	{
 		final BranchTrackSchemeEditLabelActionImp< BV, BE, V, E > editBranchVerticesLabelAction =
 				new BranchTrackSchemeEditLabelActionImp<>( focus, undoPointMarker, panel, branchGraph );
@@ -62,7 +63,8 @@ public class BranchTrackSchemeEditLabelAction
 		actions.namedAction( editBranchVerticesLabelAction, EDIT_FOCUS_LABEL_KEYS );
 	}
 
-	private static class BranchTrackSchemeEditLabelActionImp< BV extends Vertex< BE >, BE extends Edge< BV >, V extends Vertex< E > & HasLabel, E extends Edge< V > >
+	private static class BranchTrackSchemeEditLabelActionImp< BV extends Vertex< BE >, BE extends Edge< BV >,
+			V extends Vertex< E > & HasLabel, E extends Edge< V > >
 			extends EditFocusVertexLabelAction
 	{
 

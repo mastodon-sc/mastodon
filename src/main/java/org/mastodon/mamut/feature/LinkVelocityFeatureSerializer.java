@@ -49,7 +49,8 @@ public class LinkVelocityFeatureSerializer implements FeatureSerializer< LinkVel
 	}
 
 	@Override
-	public void serialize( final LinkVelocityFeature feature, final ObjectToFileIdMap< Link > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final LinkVelocityFeature feature, final ObjectToFileIdMap< Link > idmap,
+			final ObjectOutputStream oos ) throws IOException
 	{
 		LazyFeatureSerializer.serialize( feature, feature.graph.edges(), idmap, oos );
 	}

@@ -63,7 +63,8 @@ public class DataDisplayStyleSettingsPage extends SelectAndEditProfileSettingsPa
 				new DataGraphProfileEditPanel( styleManager.getSelectedStyle() ) );
 	}
 
-	static class DataGraphProfileEditPanel implements DataDisplayStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< DataDisplayStyle > >
+	static class DataGraphProfileEditPanel implements DataDisplayStyle.UpdateListener,
+			SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< DataDisplayStyle > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 

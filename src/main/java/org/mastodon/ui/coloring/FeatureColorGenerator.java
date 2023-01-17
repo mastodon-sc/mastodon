@@ -40,7 +40,8 @@ public class FeatureColorGenerator< T > implements ColorGenerator< T >
 
 	private final double max;
 
-	public FeatureColorGenerator( final FeatureProjection< T > featureProjection, final ColorMap colorMap, final double min, final double max )
+	public FeatureColorGenerator( final FeatureProjection< T > featureProjection, final ColorMap colorMap,
+			final double min, final double max )
 	{
 		this.featureProjection = featureProjection;
 		this.colorMap = colorMap;

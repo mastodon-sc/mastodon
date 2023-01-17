@@ -139,9 +139,10 @@ public class ContextLayout
 	 * Mark all recursively visited vertices as ghosts. In case (B), add the
 	 * final vertex to set of roots.
 	 */
-	private void buildContextTraceParents( final TrackSchemeVertex tv, final int ghostmark, final int minTimepoint, final RefList< TrackSchemeVertex > roots )
+	private void buildContextTraceParents( final TrackSchemeVertex tv, final int ghostmark, final int minTimepoint,
+			final RefList< TrackSchemeVertex > roots )
 	{
-		if( tv.incomingEdges().isEmpty() )
+		if ( tv.incomingEdges().isEmpty() )
 			roots.add( tv );
 		else
 		{

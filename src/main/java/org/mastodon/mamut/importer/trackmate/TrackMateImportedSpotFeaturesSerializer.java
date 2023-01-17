@@ -39,7 +39,8 @@ import org.mastodon.mamut.model.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )
-public class TrackMateImportedSpotFeaturesSerializer extends TrackMateImportedFeaturesSerializer< TrackMateImportedSpotFeatures, Spot >
+public class TrackMateImportedSpotFeaturesSerializer
+		extends TrackMateImportedFeaturesSerializer< TrackMateImportedSpotFeatures, Spot >
 {
 
 	@Override
@@ -49,7 +50,8 @@ public class TrackMateImportedSpotFeaturesSerializer extends TrackMateImportedFe
 	}
 
 	@Override
-	public TrackMateImportedSpotFeatures deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	public TrackMateImportedSpotFeatures deserialize( final FileIdToObjectMap< Spot > idmap,
+			final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		final TrackMateImportedSpotFeatures feature = new TrackMateImportedSpotFeatures();
 		deserializeInto( feature, idmap, pool, ois );

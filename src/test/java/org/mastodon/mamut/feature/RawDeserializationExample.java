@@ -55,7 +55,8 @@ import net.imglib2.util.StopWatch;
 public class RawDeserializationExample
 {
 
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, IOException, SpimDataException
+	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException, IOException, SpimDataException
 	{
 		Locale.setDefault( Locale.US );
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
@@ -68,12 +69,14 @@ public class RawDeserializationExample
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		// Compute features.
-		final MamutFeatureComputerService featureComputerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService =
+				windowManager.getContext().getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "\nComputing features..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
-		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute( featureComputerService.getFeatureSpecs() );
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =
+				featureComputerService.compute( featureComputerService.getFeatureSpecs() );
 		featureModel.clear();
 		features.values().forEach( featureModel::declareFeature );
 		stopWatch.stop();

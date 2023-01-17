@@ -86,7 +86,8 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		}
 	}
 
-	public static < V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > void install( final Behaviours behaviours, final DataDisplayPanel< V, E > panel )
+	public static < V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > void
+			install( final Behaviours behaviours, final DataDisplayPanel< V, E > panel )
 	{
 		final DataDisplayZoom< V, E > zoom = new DataDisplayZoom<>( panel );
 

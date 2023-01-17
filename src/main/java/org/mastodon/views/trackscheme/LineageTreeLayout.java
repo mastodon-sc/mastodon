@@ -42,9 +42,9 @@ public interface LineageTreeLayout
 {
 	void layout();
 
-	void layout( Collection<TrackSchemeVertex> layoutRoots );
+	void layout( Collection< TrackSchemeVertex > layoutRoots );
 
-	void layout( Collection<TrackSchemeVertex> layoutRoots, int mark );
+	void layout( Collection< TrackSchemeVertex > layoutRoots, int mark );
 
 	double getCurrentLayoutMinX();
 
@@ -54,11 +54,14 @@ public interface LineageTreeLayout
 
 	int nextLayoutTimestamp();
 
-	void cropAndScale( ScreenTransform transform, ScreenEntities screenEntities, int decorationsOffsetX, int decorationsOffsetY, GraphColorGenerator<TrackSchemeVertex, TrackSchemeEdge> colorGenerator );
+	void cropAndScale( ScreenTransform transform, ScreenEntities screenEntities, int decorationsOffsetX,
+			int decorationsOffsetY, GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator );
 
-	TrackSchemeVertex getClosestActiveVertex( RealLocalizable layoutPos, double aspectRatioXtoY, TrackSchemeVertex ref );
+	TrackSchemeVertex getClosestActiveVertex( RealLocalizable layoutPos, double aspectRatioXtoY,
+			TrackSchemeVertex ref );
 
-	TrackSchemeVertex getClosestActiveVertexWithin( double lx1, double ly1, double lx2, double ly2, double aspectRatioXtoY, TrackSchemeVertex ref );
+	TrackSchemeVertex getClosestActiveVertexWithin( double lx1, double ly1, double lx2, double ly2,
+			double aspectRatioXtoY, TrackSchemeVertex ref );
 
 	RefSet< TrackSchemeVertex > getActiveVerticesWithin( double lx1, double ly1, double lx2, double ly2 );
 
@@ -86,7 +89,7 @@ public interface LineageTreeLayout
 
 	interface LineageTreeLayoutFactory
 	{
-		LineageTreeLayout create( final RootsModel<TrackSchemeVertex> rootsModel,
+		LineageTreeLayout create( final RootsModel< TrackSchemeVertex > rootsModel,
 				final TrackSchemeGraph< ?, ? > graph,
 				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection );
 	}

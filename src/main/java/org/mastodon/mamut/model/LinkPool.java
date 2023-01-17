@@ -38,7 +38,8 @@ public class LinkPool extends AbstractListenableEdgePool< Link, Spot, ByteMapped
 {
 	LinkPool( final int initialCapacity, final SpotPool vertexPool )
 	{
-		super( initialCapacity, AbstractEdgePool.layout, Link.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ), vertexPool );
+		super( initialCapacity, AbstractEdgePool.layout, Link.class,
+				SingleArrayMemPool.factory( ByteMappedElementArray.factory ), vertexPool );
 	}
 
 	@Override

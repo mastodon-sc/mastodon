@@ -104,7 +104,7 @@ public class TgmmImporter extends ModelImporter
 			final int setupID,
 			final double nSigmas,
 			final Model model )
-		throws JDOMException, IOException
+			throws JDOMException, IOException
 	{
 		new TgmmImporter(
 				tgmmFileNameFormat,
@@ -126,7 +126,7 @@ public class TgmmImporter extends ModelImporter
 			final double nSigmas,
 			final double[][] useThisCovariance,
 			final Model model )
-		throws JDOMException, IOException
+			throws JDOMException, IOException
 	{
 		new TgmmImporter(
 				tgmmFileNameFormat,
@@ -148,7 +148,7 @@ public class TgmmImporter extends ModelImporter
 			final double nSigmas,
 			final double[][] useThisCovariance,
 			final Model model )
-		throws JDOMException, IOException
+			throws JDOMException, IOException
 	{
 		super( model );
 		startImport();
@@ -166,7 +166,8 @@ public class TgmmImporter extends ModelImporter
 		{
 			final int timepointId = timepoint.getId();
 			final int timepointIndex = timepointToIndex.get( timepoint );
-			final AffineTransform3D transform = viewRegistrations.getViewRegistration( timepointId, setupID ).getModel();
+			final AffineTransform3D transform =
+					viewRegistrations.getViewRegistration( timepointId, setupID ).getModel();
 			final String tgmmFileName = String.format( tgmmFileNameFormat, timepointId );
 			System.out.println( tgmmFileName );
 
@@ -183,10 +184,11 @@ public class TgmmImporter extends ModelImporter
 					final double[] m = getDoubleArrayAttribute( elem, "m" );
 					final double[] W = getDoubleArrayAttribute( elem, "W" );
 					final int id = getIntAttribute( elem, "id" );
-//					final int lineage = getIntAttribute( elem, "lineage" );
+					//					final int lineage = getIntAttribute( elem, "lineage" );
 					final int parentId = getIntAttribute( elem, "parent" );
 
-					final double[][] S = ( useThisCovariance != null ) ? useThisCovariance : getCovariance( transform, nu / ( nSigmas * nSigmas ), W );
+					final double[][] S = ( useThisCovariance != null ) ? useThisCovariance
+							: getCovariance( transform, nu / ( nSigmas * nSigmas ), W );
 					graph.addVertex( spot ).init(
 							timepointIndex,
 							getPosition( transform, m ),
@@ -225,12 +227,12 @@ public class TgmmImporter extends ModelImporter
 		final Matrix covMat = precMat.inverse();
 		final double[][] S = covMat.getArray();
 
-		final double[][] T = new double[3][3];
+		final double[][] T = new double[ 3 ][ 3 ];
 		for ( int r = 0; r < 3; ++r )
 			for ( int c = 0; c < 3; ++c )
-				T[r][c] = transform.get( r, c );
+				T[ r ][ c ] = transform.get( r, c );
 
-		final double[][] TS = new double[3][3];
+		final double[][] TS = new double[ 3 ][ 3 ];
 		LinAlgHelpers.mult( T, S, TS );
 		LinAlgHelpers.multABT( TS, T, S );
 
@@ -255,11 +257,11 @@ public class TgmmImporter extends ModelImporter
 
 	public static void main( final String[] args ) throws ParseException, SpimDataException, JDOMException, IOException
 	{
-//		final String tgmmFiles = "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/GMEMfinalResult_frame%04d.xml";
-//		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
-//		final int setupID = 0;
-//		final String target = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
-//		final TimePoints timepoints = new TimePointsPattern( "0-30" );
+		//		final String tgmmFiles = "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/GMEMfinalResult_frame%04d.xml";
+		//		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
+		//		final int setupID = 0;
+		//		final String target = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
+		//		final TimePoints timepoints = new TimePointsPattern( "0-30" );
 
 		final String tgmmFiles = "/Volumes/Data/TGMM_TL0-528_xmls_curated/GMEMfinalResult_frame%04d.xml";
 		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";

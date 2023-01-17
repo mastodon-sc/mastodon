@@ -63,7 +63,8 @@ public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPa
 				new TrackSchemeProfileEditPanel( styleManager.getSelectedStyle() ) );
 	}
 
-	static class TrackSchemeProfileEditPanel implements TrackSchemeStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< TrackSchemeStyle > >
+	static class TrackSchemeProfileEditPanel implements TrackSchemeStyle.UpdateListener,
+			SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< TrackSchemeStyle > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 

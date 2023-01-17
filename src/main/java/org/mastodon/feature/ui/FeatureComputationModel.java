@@ -60,7 +60,6 @@ public class FeatureComputationModel
 
 	private final Map< FeatureSpec< ?, ? >, Collection< FeatureSpec< ?, ? > > > deps;
 
-
 	public FeatureComputationModel()
 	{
 		this.updateListeners = new Listeners.SynchronizedList<>();
@@ -134,7 +133,8 @@ public class FeatureComputationModel
 	 * @param dependencies
 	 *            its dependencies.
 	 */
-	public void put( final Class< ? > target, final FeatureSpec< ?, ? > spec, final Collection< FeatureSpec< ?, ? > > dependencies )
+	public void put( final Class< ? > target, final FeatureSpec< ?, ? > spec,
+			final Collection< FeatureSpec< ?, ? > > dependencies )
 	{
 		featureSpecsKeys.put( spec.getKey(), spec );
 		featureSpecsTargetMap.computeIfAbsent( target, ( k ) -> new ArrayList<>() ).add( spec );

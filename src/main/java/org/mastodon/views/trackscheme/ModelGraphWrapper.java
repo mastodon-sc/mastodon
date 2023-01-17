@@ -109,12 +109,12 @@ public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 	{
 		private final E ref;
 
-//		private final TrackSchemeEdge edge;
+		//		private final TrackSchemeEdge edge;
 
 		public ModelEdgeWrapper( final E ref, final TrackSchemeEdge edge )
 		{
 			this.ref = ref;
-//			this.edge = edge;
+			//			this.edge = edge;
 		}
 
 		public E getReusableRef()
@@ -122,9 +122,9 @@ public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 			return ref;
 		}
 
-//		private E getModelEdge()
-//		{
-//			return idmap.getEdge( edge.getModelEdgeId(), ref );
-//		}
+		//		private E getModelEdge()
+		//		{
+		//			return idmap.getEdge( edge.getModelEdgeId(), ref );
+		//		}
 	}
 }

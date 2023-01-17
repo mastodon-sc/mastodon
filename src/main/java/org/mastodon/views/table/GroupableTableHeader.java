@@ -87,7 +87,8 @@ public class GroupableTableHeader extends JTableHeader
 		{
 			final ColumnGroup cGroup = en.nextElement();
 			final Vector< ? > v_ret = cGroup.getColumnGroups( col, new Vector< ColumnGroup >() );
-			if ( v_ret != null ) { return v_ret.elements(); }
+			if ( v_ret != null )
+			{ return v_ret.elements(); }
 		}
 		return null;
 	}
@@ -106,7 +107,7 @@ public class GroupableTableHeader extends JTableHeader
 	{
 		if ( columnGroups == null )
 			return;
-//    final int columnMargin = getColumnModel().getColumnMargin();
+		//    final int columnMargin = getColumnModel().getColumnMargin();
 		final Enumeration< ColumnGroup > en = columnGroups.elements();
 		while ( en.hasMoreElements() )
 		{

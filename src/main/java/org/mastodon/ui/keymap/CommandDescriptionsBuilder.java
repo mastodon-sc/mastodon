@@ -75,7 +75,8 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 		for ( final ProviderAndContext pac : registered )
 		{
 			if ( pac.context.equals( context ) && pac.provider.getClass().equals( provider.getClass() ) )
-				System.err.println( "Potential problem: a provider of class " + provider.getClass() + " is already registered for context \"" + context + "\"." );
+				System.err.println( "Potential problem: a provider of class " + provider.getClass()
+						+ " is already registered for context \"" + context + "\"." );
 		}
 		registered.add( new ProviderAndContext( provider, context ) );
 	}
@@ -90,7 +91,7 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	 * @param contexts
 	 *            the list of contexts to add to.
 	 */
-	public void addManually( final CommandDescriptionProvider provider, final String ... contexts )
+	public void addManually( final CommandDescriptionProvider provider, final String... contexts )
 	{
 		Arrays.stream( contexts ).forEachOrdered( context -> addManually( provider, context ) );
 	}
@@ -102,7 +103,8 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	 */
 	public void discoverProviders()
 	{
-		final List< CommandDescriptionProvider > providers = pluginService.createInstancesOfType( CommandDescriptionProvider.class );
+		final List< CommandDescriptionProvider > providers =
+				pluginService.createInstancesOfType( CommandDescriptionProvider.class );
 		for ( final CommandDescriptionProvider provider : providers )
 			for ( final String context : provider.getExpectedContexts() )
 				registered.add( new ProviderAndContext( provider, context ) );
@@ -116,7 +118,8 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	public void verifyManuallyAdded()
 	{
 		final List< ProviderAndContext > discovered = new ArrayList<>();
-		final List< CommandDescriptionProvider > providers = pluginService.createInstancesOfType( CommandDescriptionProvider.class );
+		final List< CommandDescriptionProvider > providers =
+				pluginService.createInstancesOfType( CommandDescriptionProvider.class );
 		for ( final CommandDescriptionProvider provider : providers )
 			for ( final String context : provider.getExpectedContexts() )
 				discovered.add( new ProviderAndContext( provider, context ) );
@@ -128,7 +131,8 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 			for ( final ProviderAndContext d : discovered )
 				if ( r.context.equals( d.context ) && r.provider.getClass().equals( d.provider.getClass() ) )
 					continue A;
-			System.err.println( r.provider.getClass() + " (\"" + r.context + "\") is manually registered, but could not be discovered." );
+			System.err.println( r.provider.getClass() + " (\"" + r.context
+					+ "\") is manually registered, but could not be discovered." );
 			anyFailed = true;
 		}
 		if ( anyFailed )
@@ -140,7 +144,8 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 			for ( final ProviderAndContext r : registered )
 				if ( r.context.equals( d.context ) && r.provider.getClass().equals( d.provider.getClass() ) )
 					continue A;
-			System.err.println( d.provider.getClass() + " (\"" + d.context + "\") was discovered, but was not manually registered." );
+			System.err.println( d.provider.getClass() + " (\"" + d.context
+					+ "\") was discovered, but was not manually registered." );
 		}
 	}
 

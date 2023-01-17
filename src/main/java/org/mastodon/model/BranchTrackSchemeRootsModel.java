@@ -42,17 +42,18 @@ import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import java.util.List;
 
 public class BranchTrackSchemeRootsModel
-		implements RootsModel<TrackSchemeVertex>
+		implements RootsModel< TrackSchemeVertex >
 {
 	private final ModelGraph modelGraph;
 
 	private final ModelBranchGraph branchGraph;
 
-	private final TrackSchemeGraph<BranchSpot, BranchLink> viewGraph;
+	private final TrackSchemeGraph< BranchSpot, BranchLink > viewGraph;
 
-	private final RefArrayList<Spot> list;
+	private final RefArrayList< Spot > list;
 
-	public BranchTrackSchemeRootsModel( ModelGraph graph, ModelBranchGraph branchGraph, TrackSchemeGraph<BranchSpot, BranchLink> viewGraph )
+	public BranchTrackSchemeRootsModel( ModelGraph graph, ModelBranchGraph branchGraph,
+			TrackSchemeGraph< BranchSpot, BranchLink > viewGraph )
 	{
 		this.modelGraph = graph;
 		this.branchGraph = branchGraph;
@@ -61,11 +62,11 @@ public class BranchTrackSchemeRootsModel
 	}
 
 	@Override
-	public void setRoots( List<TrackSchemeVertex> roots )
+	public void setRoots( List< TrackSchemeVertex > roots )
 	{
 		list.clear();
 		Spot spotRef = modelGraph.vertexRef();
-		RefBimap<BranchSpot, TrackSchemeVertex> vertexMap = viewGraph.getVertexMap();
+		RefBimap< BranchSpot, TrackSchemeVertex > vertexMap = viewGraph.getVertexMap();
 		for ( TrackSchemeVertex root : roots )
 		{
 			BranchSpot branchSpot = vertexMap.getLeft( root );
@@ -76,10 +77,10 @@ public class BranchTrackSchemeRootsModel
 	}
 
 	@Override
-	public RefList<TrackSchemeVertex> getRoots()
+	public RefList< TrackSchemeVertex > getRoots()
 	{
-		RefArrayList<TrackSchemeVertex> roots = new RefArrayList<>( viewGraph.getVertexPool() );
-		RefBimap<BranchSpot, TrackSchemeVertex> vertexMap = viewGraph.getVertexMap();
+		RefArrayList< TrackSchemeVertex > roots = new RefArrayList<>( viewGraph.getVertexPool() );
+		RefBimap< BranchSpot, TrackSchemeVertex > vertexMap = viewGraph.getVertexMap();
 		BranchSpot branchSpotRef = branchGraph.vertexRef();
 		TrackSchemeVertex vertexRef = viewGraph.vertexRef();
 		for ( Spot root : list )

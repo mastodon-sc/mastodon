@@ -69,11 +69,13 @@ class NewMastodonProjectPanel extends JPanel
 		gblNewMastodonProjectPanel.columnWidths = new int[] { 0, 0 };
 		gblNewMastodonProjectPanel.rowHeights = new int[] { 35, 70, 65, 0, 25, 45, 0, 0, 25, 0, 0, 0 };
 		gblNewMastodonProjectPanel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gblNewMastodonProjectPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gblNewMastodonProjectPanel.rowWeights =
+				new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
 		setLayout( gblNewMastodonProjectPanel );
 
 		final JLabel lblNewMastodonProject = new JLabel( panelTitle );
-		lblNewMastodonProject.setFont( lblNewMastodonProject.getFont().deriveFont( lblNewMastodonProject.getFont().getStyle() | Font.BOLD ) );
+		lblNewMastodonProject.setFont(
+				lblNewMastodonProject.getFont().deriveFont( lblNewMastodonProject.getFont().getStyle() | Font.BOLD ) );
 		final GridBagConstraints gbcLblNewMastodonProject = new GridBagConstraints();
 		gbcLblNewMastodonProject.insets = new Insets( 5, 5, 5, 5 );
 		gbcLblNewMastodonProject.gridx = 0;

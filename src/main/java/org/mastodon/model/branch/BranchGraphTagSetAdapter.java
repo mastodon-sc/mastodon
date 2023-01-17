@@ -46,11 +46,11 @@ import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.scijava.listeners.Listeners;
 
-public class BranchGraphTagSetAdapter< 
-	V extends Vertex< E >, 
-	E extends Edge< V >, 
-	BV extends Vertex< BE >,
-	BE extends Edge< BV > >
+public class BranchGraphTagSetAdapter<
+		V extends Vertex< E >,
+		E extends Edge< V >,
+		BV extends Vertex< BE >,
+		BE extends Edge< BV > >
 		extends AbstractBranchGraphAdapter< V, E, BV, BE >
 		implements TagSetModel< BV, BE >
 {
@@ -126,8 +126,8 @@ public class BranchGraphTagSetAdapter<
 
 	private void set( final BV branchVertex, final Tag tag )
 	{
-		Iterator<V> vIter = branchGraph.vertexBranchIterator( branchVertex );
-		Iterator<E> eIter = branchGraph.edgeBranchIterator( branchVertex );
+		Iterator< V > vIter = branchGraph.vertexBranchIterator( branchVertex );
+		Iterator< E > eIter = branchGraph.edgeBranchIterator( branchVertex );
 		try
 		{
 			while ( vIter.hasNext() )
@@ -196,8 +196,8 @@ public class BranchGraphTagSetAdapter<
 		@Override
 		public void remove( final BV branchVertex )
 		{
-			Iterator<V> vIter = branchGraph.vertexBranchIterator( branchVertex );
-			Iterator<E> eIter = branchGraph.edgeBranchIterator( branchVertex );
+			Iterator< V > vIter = branchGraph.vertexBranchIterator( branchVertex );
+			Iterator< E > eIter = branchGraph.edgeBranchIterator( branchVertex );
 			try
 			{
 				while ( vIter.hasNext() )
@@ -229,22 +229,24 @@ public class BranchGraphTagSetAdapter<
 				// tag.
 				V first = branchGraph.getFirstLinkedVertex( branchVertex, vRef );
 				Tag tag = vertexTagMap.get( first );
-				if(tag == null)
+				if ( tag == null )
 					return null;
 
-				Iterator<V> vIter = branchGraph.vertexBranchIterator( branchVertex );
-				Iterator<E> eIter = branchGraph.edgeBranchIterator( branchVertex );
+				Iterator< V > vIter = branchGraph.vertexBranchIterator( branchVertex );
+				Iterator< E > eIter = branchGraph.edgeBranchIterator( branchVertex );
 				try
 				{
-					while( vIter.hasNext() ) {
+					while ( vIter.hasNext() )
+					{
 						V v = vIter.next();
-						if( ! tag.equals( vertexTagMap.get(v) ) )
+						if ( !tag.equals( vertexTagMap.get( v ) ) )
 							return null;
 					}
 
-					while( eIter.hasNext() ) {
+					while ( eIter.hasNext() )
+					{
 						E e = eIter.next();
-						if( ! tag.equals( edgeTagMap.get( e ) ) )
+						if ( !tag.equals( edgeTagMap.get( e ) ) )
 							return null;
 					}
 				}

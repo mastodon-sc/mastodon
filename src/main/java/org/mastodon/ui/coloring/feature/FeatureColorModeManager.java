@@ -110,7 +110,8 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 	public void loadStyles( final String filename )
 	{
 		userStyles.clear();
-		final Set< String > names = builtinStyles.stream().map( FeatureColorMode::getName ).collect( Collectors.toSet() );
+		final Set< String > names =
+				builtinStyles.stream().map( FeatureColorMode::getName ).collect( Collectors.toSet() );
 		try (final FileReader input = new FileReader( filename ))
 		{
 			final Yaml yaml = FeatureColorModeIO.createYaml();

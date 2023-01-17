@@ -65,7 +65,7 @@ public interface Feature< T >
 	 */
 	public Set< FeatureProjection< T > > projections();
 
-	public FeatureSpec< ? extends Feature<T>, T > getSpec();
+	public FeatureSpec< ? extends Feature< T >, T > getSpec();
 
 	/**
 	 * Invalidates the value of this feature for the specified object.

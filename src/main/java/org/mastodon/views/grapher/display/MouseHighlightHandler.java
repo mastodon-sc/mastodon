@@ -41,7 +41,8 @@ import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 
 import bdv.viewer.TransformListener;
 
-public class MouseHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetAxesListener
+public class MouseHighlightHandler
+		implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetAxesListener
 {
 	private final DataDisplayOverlay graphOverlay;
 
@@ -116,7 +117,8 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 			if ( graphOverlay.getVertexAt( x, y, vertex ) != null )
 				highlight.highlightVertex( vertex );
 			// See if we can find an edge.
-			else if ( graphOverlay.getEdgeAt( x, y, DataDisplayNavigationBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+			else if ( graphOverlay.getEdgeAt( x, y, DataDisplayNavigationBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE,
+					edge ) != null )
 				highlight.highlightEdge( edge );
 			else
 				highlight.clearHighlight();

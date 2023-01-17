@@ -85,7 +85,8 @@ public class CollectionAdapter< O, WO >
 	{
 		final Iterator< O > iter = collection.iterator();
 		final WO ref = map.reusableRightRef();
-		return new Iterator< WO >() {
+		return new Iterator< WO >()
+		{
 			@Override
 			public boolean hasNext()
 			{

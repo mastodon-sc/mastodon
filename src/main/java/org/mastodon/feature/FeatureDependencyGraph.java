@@ -50,7 +50,8 @@ import org.scijava.command.CommandInfo;
  * Each edge represents a dependency, {@code A --> B} means "feature A depends
  * on feature B".
  */
-public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependencyGraph.Vertex, FeatureDependencyGraph.Edge >
+public class FeatureDependencyGraph
+		extends AbstractObjectGraph< FeatureDependencyGraph.Vertex, FeatureDependencyGraph.Edge >
 {
 	private final Map< FeatureSpec< ?, ? >, Vertex > features;
 
@@ -268,7 +269,8 @@ public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependen
 		{
 			return "Vertex{" +
 					"featureSpec=" + featureSpec.getKey() +
-					", featureComputer=" + ( featureComputer == null ? "null" : featureComputer.getClass().getSimpleName() ) +
+					", featureComputer="
+					+ ( featureComputer == null ? "null" : featureComputer.getClass().getSimpleName() ) +
 					'}';
 		}
 	}

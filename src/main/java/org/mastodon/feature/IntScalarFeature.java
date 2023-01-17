@@ -85,7 +85,8 @@ public abstract class IntScalarFeature< O > implements Feature< O >
 	 * @param map
 	 *            the values to store in this feature.
 	 */
-	protected IntScalarFeature( final String key, final Dimension dimension, final String units, final IntPropertyMap< O > map )
+	protected IntScalarFeature( final String key, final Dimension dimension, final String units,
+			final IntPropertyMap< O > map )
 	{
 		final FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
 		this.values = map;

@@ -132,7 +132,7 @@ public class Keymap implements Style< Keymap >
 		if ( !Objects.equals( this.name, name ) )
 		{
 			this.name = name;
-//			notifyListeners(); // TODO?
+			//			notifyListeners(); // TODO?
 		}
 	}
 }

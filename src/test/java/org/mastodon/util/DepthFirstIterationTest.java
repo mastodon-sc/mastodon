@@ -47,7 +47,8 @@ public class DepthFirstIterationTest
 
 	private final Spot root;
 
-	private static final String expected = "first visit a, first visit b, leaf c, leaf d, leaf e, second visit b, second visit a";
+	private static final String expected =
+			"first visit a, first visit b, leaf c, leaf d, leaf e, second visit b, second visit a";
 
 	public DepthFirstIterationTest()
 	{
@@ -65,57 +66,66 @@ public class DepthFirstIterationTest
 	}
 
 	@Test
-	public void testRunForRoot() {
+	public void testRunForRoot()
+	{
 		StringJoiner log = new StringJoiner( ", " );
-		for(DepthFirstIteration.Step<Spot> step : DepthFirstIteration.forRoot( graph, root ) ) {
+		for ( DepthFirstIteration.Step< Spot > step : DepthFirstIteration.forRoot( graph, root ) )
+		{
 			Spot node = step.node();
-			log.add( stage(step) + " " + node.getLabel() );
+			log.add( stage( step ) + " " + node.getLabel() );
 		}
-		assertEquals( expected, log.toString());
+		assertEquals( expected, log.toString() );
 	}
 
-	private String stage( DepthFirstIteration.Step<Spot> step )
+	private String stage( DepthFirstIteration.Step< Spot > step )
 	{
-		if( step.isLeaf())
+		if ( step.isLeaf() )
 			return "leaf";
-		if( step.isFirstVisit())
+		if ( step.isFirstVisit() )
 			return "first visit";
 		return "second visit";
 	}
 
 	@Test
-	public void testRunTwice() {
+	public void testRunTwice()
+	{
 		StringJoiner log = new StringJoiner( ", " );
-		Iterable<DepthFirstIteration.Step<Spot>> df = DepthFirstIteration.forRoot( graph, root );
-		for(DepthFirstIteration.Step<Spot> step : df ) {
+		Iterable< DepthFirstIteration.Step< Spot > > df = DepthFirstIteration.forRoot( graph, root );
+		for ( DepthFirstIteration.Step< Spot > step : df )
+		{
 			Spot node = step.node();
-			log.add( stage(step) + " " + node.getLabel() );
+			log.add( stage( step ) + " " + node.getLabel() );
 		}
-		for(DepthFirstIteration.Step<Spot> step : df ) {
+		for ( DepthFirstIteration.Step< Spot > step : df )
+		{
 			Spot node = step.node();
-			log.add( stage(step) + " " + node.getLabel() );
+			log.add( stage( step ) + " " + node.getLabel() );
 		}
-		assertEquals(expected + ", " + expected, log.toString());
+		assertEquals( expected + ", " + expected, log.toString() );
 	}
 
 	@Test
-	public void testTruncate() {
+	public void testTruncate()
+	{
 		StringJoiner log = new StringJoiner( ", " );
-		for(DepthFirstIteration.Step<Spot> step : DepthFirstIteration.forRoot( graph, root ) ) {
+		for ( DepthFirstIteration.Step< Spot > step : DepthFirstIteration.forRoot( graph, root ) )
+		{
 			Spot node = step.node();
-			log.add( stage(step) + " " + node.getLabel() );
-			if(node.getLabel().equals( "b" ))
+			log.add( stage( step ) + " " + node.getLabel() );
+			if ( node.getLabel().equals( "b" ) )
 				step.truncate();
 		}
 		assertEquals( "first visit a, first visit b, second visit a", log.toString() );
 	}
 
 	@Test
-	public void testTruncateRoot() {
+	public void testTruncateRoot()
+	{
 		StringJoiner log = new StringJoiner( ", " );
-		for(DepthFirstIteration.Step<Spot> step : DepthFirstIteration.forRoot( graph, root )) {
+		for ( DepthFirstIteration.Step< Spot > step : DepthFirstIteration.forRoot( graph, root ) )
+		{
 			Spot node = step.node();
-			log.add( stage(step) + " " + node.getLabel() );
+			log.add( stage( step ) + " " + node.getLabel() );
 			step.truncate();
 		}
 		assertEquals( "first visit a", log.toString() );

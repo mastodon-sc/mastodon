@@ -61,7 +61,6 @@ class ModelSerializer implements GraphSerializer< Spot, Link >
 		return edgeSerializer;
 	}
 
-
 	static class SpotSerializer extends PoolObjectAttributeSerializer< Spot >
 	{
 		public SpotSerializer()

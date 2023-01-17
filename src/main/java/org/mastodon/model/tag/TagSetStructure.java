@@ -116,7 +116,7 @@ public class TagSetStructure
 		{
 			// TagSet id.
 			final int tagSetId = ois.readInt();
-			if (tagSetId >= tagSetIDgenerator.get())
+			if ( tagSetId >= tagSetIDgenerator.get() )
 				tagSetIDgenerator.set( tagSetId + 1 );
 			// TagSet name.
 			final String tagSetName = ois.readUTF();
@@ -359,7 +359,8 @@ public class TagSetStructure
 		{
 			str.append( "\n  - " + tagSet.getName() + ", id = #" + tagSet.id + ":" );
 			for ( final Tag tag : tagSet.getTags() )
-				str.append( "\n      #" + tag.id() + ", " + tag.label() + ", color = " + String.format( "0x%08X", tag.color() ) );
+				str.append( "\n      #" + tag.id() + ", " + tag.label() + ", color = "
+						+ String.format( "0x%08X", tag.color() ) );
 		}
 		return str.toString();
 	}

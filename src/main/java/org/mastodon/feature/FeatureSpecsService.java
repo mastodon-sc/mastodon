@@ -92,7 +92,8 @@ public class FeatureSpecsService extends AbstractService implements SciJavaServi
 	private void add( final FeatureSpec< ?, ? > spec ) throws IllegalArgumentException
 	{
 		if ( keyToSpec.containsKey( spec.getKey() ) )
-			throw new IllegalArgumentException( "Trying to add " + spec + ". A feature with that name is already present." );
+			throw new IllegalArgumentException(
+					"Trying to add " + spec + ". A feature with that name is already present." );
 		specs.add( spec );
 		targetToSpecs.computeIfAbsent( spec.getTargetClass(), k -> new ArrayList<>() ).add( spec );
 		keyToSpec.put( spec.getKey(), spec );

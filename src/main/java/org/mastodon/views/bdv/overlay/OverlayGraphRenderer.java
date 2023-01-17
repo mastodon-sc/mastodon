@@ -452,7 +452,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	{
 		return settings.getDrawSpotCenters()
 				&& ( ( !settings.getDrawEllipsoidSliceIntersection() && !settings.getDrawEllipsoidSliceProjection() )
-				|| settings.getDrawSpotCentersForEllipses() );
+						|| settings.getDrawSpotCentersForEllipses() );
 	}
 
 	/**
@@ -474,7 +474,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	protected interface EdgeOperation< E >
 	{
-		void apply( final E edge, final double td0, final double td1, final double sd0, final double sd1, final int x0, final int y0, final int x1, final int y1 );
+		void apply( final E edge, final double td0, final double td1, final double sd0, final double sd1, final int x0,
+				final int y0, final int x1, final int y1 );
 	}
 
 	protected void forEachVisibleEdge(
@@ -551,7 +552,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final Graphics2D graphics = ( Graphics2D ) g;
 		final BasicStroke defaultVertexStroke = new BasicStroke( ( float ) settings.getSpotStrokeWidth() );
 		final BasicStroke highlightedVertexStroke = new BasicStroke( 4f );
-		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
+		final BasicStroke focusedVertexStroke =
+				new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 		final BasicStroke defaultEdgeStroke = new BasicStroke( ( float ) settings.getLinkStrokeWidth() );
 		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
 
@@ -587,7 +589,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		index.readLock().lock();
 		try
 		{
-			if ( settings.getDrawLinks())
+			if ( settings.getDrawLinks() )
 			{
 				final E highlighted = highlight.getHighlightedEdge( ref3 );
 				graphics.setStroke( defaultEdgeStroke );
@@ -788,7 +790,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		graph.releaseRef( target );
 	}
 
-	static void drawEllipse( final Graphics2D graphics, final Ellipse ellipse, AffineTransform torig, final boolean fillSpots )
+	static void drawEllipse( final Graphics2D graphics, final Ellipse ellipse, AffineTransform torig,
+			final boolean fillSpots )
 	{
 		if ( torig == null )
 			torig = graphics.getTransform();
@@ -807,7 +810,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final Color color = graphics.getColor();
 			graphics.setColor( Color.BLACK );
 			graphics.draw( ellipse2D );
-			graphics.setColor( color );	
+			graphics.setColor( color );
 		}
 		else
 		{
@@ -883,7 +886,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			boolean found = false;
 
 			@Override
-			public void apply( final E edge, final double td0, final double td1, final double sd0, final double sd1, final int x0, final int y0, final int x1, final int y1 )
+			public void apply( final E edge, final double td0, final double td1, final double sd0, final double sd1,
+					final int x0, final int y0, final int x1, final int y1 )
 			{
 				final double squDist = GeometryUtil.squSegmentDist( x, y, x0, y0, x1, y1 );
 				if ( squDist <= squTolerance && squDist < bestSquDist )
@@ -1036,7 +1040,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		if ( !found && settings.getDrawEllipsoidSliceIntersection() )
 		{
-			final IncrementalNearestNeighborSearch< V > inns = index.getSpatialIndex( currentTimepoint ).getIncrementalNearestNeighborSearch();
+			final IncrementalNearestNeighborSearch< V > inns =
+					index.getSpatialIndex( currentTimepoint ).getIncrementalNearestNeighborSearch();
 			final double maxSquDist = graph.getMaxBoundingSphereRadiusSquared( currentTimepoint );
 			inns.search( RealPoint.wrap( gPos ) );
 			while ( inns.hasNext() )

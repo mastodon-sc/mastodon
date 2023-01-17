@@ -85,7 +85,7 @@ public class BranchDisplacementDurationFeatureComputer implements MamutFeatureCo
 
 		// get source spot
 		Spot source = branchGraph.getFirstLinkedVertex( branchSpot, ref1 );
-		if(source.incomingEdges().size() == 1)
+		if ( source.incomingEdges().size() == 1 )
 			source = source.incomingEdges().iterator().next().getSource( ref1 );
 
 		// get target spot

@@ -59,7 +59,8 @@ public class FeatureComputationController implements GraphChangeListener
 
 	private final FeatureComputationStatusListener computationStatusListener;
 
-	public FeatureComputationController( final FeatureComputerService computerService, final Collection< Class< ? > > targets )
+	public FeatureComputationController( final FeatureComputerService computerService,
+			final Collection< Class< ? > > targets )
 	{
 		this.computerService = computerService;
 		model = createModel( targets );

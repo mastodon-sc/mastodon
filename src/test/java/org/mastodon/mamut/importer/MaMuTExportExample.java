@@ -72,14 +72,14 @@ public class MaMuTExportExample
 		 */
 
 		final Context context = windowManager.getContext();
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService =
+				context.getService( MamutFeatureComputerService.class );
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "Computing all discovered features: " + featureKeys );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute( featureKeys );
 		System.out.println( "Done." );
-
 
 		for ( final FeatureSpec< ?, ? > fs : features.keySet() )
 		{
@@ -91,13 +91,12 @@ public class MaMuTExportExample
 				System.out.println( "   - " + projection.getKey() );
 		}
 
-
 		/*
 		 * 1.1b. Pass them to the feature model.
 		 */
 
 		featureModel.clear();
-		for ( final FeatureSpec< ?, ? > spec: features.keySet() )
+		for ( final FeatureSpec< ?, ? > spec : features.keySet() )
 			featureModel.declareFeature( features.get( spec ) );
 
 		System.out.println();
@@ -135,9 +134,10 @@ public class MaMuTExportExample
 		featureComputerService.setModel( importedModel );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "Computing feature: " + TrackSizeFeature.SPEC );
-		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 = featureComputerService.compute( Collections.singleton( TrackSizeFeature.SPEC ) );
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 =
+				featureComputerService.compute( Collections.singleton( TrackSizeFeature.SPEC ) );
 		System.out.println( "Done." );
-		for ( final FeatureSpec< ?, ? > spec: features2.keySet() )
+		for ( final FeatureSpec< ?, ? > spec : features2.keySet() )
 			importedModel.getFeatureModel().declareFeature( features.get( spec ) );
 
 		System.out.println();

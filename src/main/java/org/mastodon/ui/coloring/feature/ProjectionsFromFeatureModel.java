@@ -79,7 +79,8 @@ public class ProjectionsFromFeatureModel implements Projections
 		return getFeatureProjection( id, featureSpec );
 	}
 
-	private < T > FeatureProjection< T > getFeatureProjection( final FeatureProjectionId id, final FeatureSpec< ?, T > featureSpec )
+	private < T > FeatureProjection< T > getFeatureProjection( final FeatureProjectionId id,
+			final FeatureSpec< ?, T > featureSpec )
 	{
 		if ( featureSpec == null )
 			return null;

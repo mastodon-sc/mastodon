@@ -84,16 +84,15 @@ public class BdvRendererUtil
 			final double viewerMinZ, final double viewerMaxZ )
 	{
 		final ConvexPolytope polytopeViewer = new ConvexPolytope(
-				new HyperPlane(  1,  0,  0, viewerMinX ),
-				new HyperPlane( -1,  0,  0, -viewerMaxX ),
-				new HyperPlane(  0,  1,  0, viewerMinY ),
-				new HyperPlane(  0, -1,  0, -viewerMaxY ),
-				new HyperPlane(  0,  0,  1, viewerMinZ),
-				new HyperPlane(  0,  0, -1, -viewerMaxZ ) );
+				new HyperPlane( 1, 0, 0, viewerMinX ),
+				new HyperPlane( -1, 0, 0, -viewerMaxX ),
+				new HyperPlane( 0, 1, 0, viewerMinY ),
+				new HyperPlane( 0, -1, 0, -viewerMaxY ),
+				new HyperPlane( 0, 0, 1, viewerMinZ ),
+				new HyperPlane( 0, 0, -1, -viewerMaxZ ) );
 		final ConvexPolytope polytopeGlobal = ConvexPolytope.transform( polytopeViewer, transform.inverse() );
 		return polytopeGlobal;
 	}
-
 
 	private BdvRendererUtil()
 	{}

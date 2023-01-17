@@ -417,9 +417,13 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	private final static Color BACKGROUND_COLOR = new Color( 255, 255, 255, 230 );
+
 	private static final Color LINE_COLOR = Color.ORANGE;
+
 	private final static int INSET = 5;
+
 	private static final int X_CORNER = 10;
+
 	private static final int Y_CORNER = 10;
 
 	private class TagSelectionOverlay implements OverlayRenderer
@@ -577,7 +581,8 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final InteractiveDisplayCanvas display,
 			final UndoPointMarker undo )
 	{
-		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, triggerBehaviourBindings, tagModel, selectionModel, lock, panel, display, undo );
+		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings,
+				triggerBehaviourBindings, tagModel, selectionModel, lock, panel, display, undo );
 		actions.runnableAction( editTagActions, PICK_TAGS, PICK_TAGS_KEYS );
 	}
 }

@@ -55,7 +55,8 @@ public class SpotQuickMeanIntensityFeatureSerializer implements FeatureSerialize
 	}
 
 	@Override
-	public void serialize( final SpotQuickMeanIntensityFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final SpotQuickMeanIntensityFeature feature, final ObjectToFileIdMap< Spot > idmap,
+			final ObjectOutputStream oos ) throws IOException
 	{
 		final int nSources = feature.means.size();
 		oos.writeInt( nSources );
@@ -64,7 +65,8 @@ public class SpotQuickMeanIntensityFeatureSerializer implements FeatureSerialize
 	}
 
 	@Override
-	public SpotQuickMeanIntensityFeature deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	public SpotQuickMeanIntensityFeature deserialize( final FileIdToObjectMap< Spot > idmap,
+			final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		final int nSources = ois.readInt();
 		final List< DoublePropertyMap< Spot > > maps = new ArrayList<>( nSources );

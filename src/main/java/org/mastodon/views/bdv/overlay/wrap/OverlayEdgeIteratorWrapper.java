@@ -35,7 +35,7 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
 
 public class OverlayEdgeIteratorWrapper< V extends Vertex< E >, E extends Edge< V > >
-	implements Iterator< OverlayEdgeWrapper< V, E > >
+		implements Iterator< OverlayEdgeWrapper< V, E > >
 {
 	private final OverlayEdgeWrapper< V, E > edge;
 

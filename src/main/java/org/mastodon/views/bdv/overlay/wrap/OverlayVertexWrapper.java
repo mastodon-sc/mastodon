@@ -39,7 +39,7 @@ import net.imglib2.Localizable;
 import net.imglib2.RealLocalizable;
 
 public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
-	implements OverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
+		implements OverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
 	private final int n = 3;
 
@@ -131,7 +131,8 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public OverlayVertexWrapper< V, E > init( final int timepoint, final double[] position, final double[][] covariance )
+	public OverlayVertexWrapper< V, E > init( final int timepoint, final double[] position,
+			final double[][] covariance )
 	{
 		overlayProperties.initVertex( wv, timepoint, position, covariance );
 		return this;
@@ -144,14 +145,12 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return incomingEdges;
 	}
 
-
 	@Override
 	public Edges< OverlayEdgeWrapper< V, E > > outgoingEdges()
 	{
 		outgoingEdges.wrap( wv.outgoingEdges() );
 		return outgoingEdges;
 	}
-
 
 	@Override
 	public Edges< OverlayEdgeWrapper< V, E > > edges()

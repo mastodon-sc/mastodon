@@ -74,8 +74,8 @@ public class MastodonFrameView<
 		ME extends AbstractListenableEdge< ME, MV, ?, ? >,
 		V extends Vertex< E >,
 		E extends Edge< V > >
-	extends MastodonView< M, VG, MV, ME, V, E >
-	implements IMastodonFrameView
+		extends MastodonView< M, VG, MV, ME, V, E >
+		implements IMastodonFrameView
 {
 	protected ViewFrame frame;
 

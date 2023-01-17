@@ -53,14 +53,16 @@ public class TrackSizeFeatureSerializer implements FeatureSerializer< TrackSizeF
 	}
 
 	@Override
-	public void serialize( final TrackSizeFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final TrackSizeFeature feature, final ObjectToFileIdMap< Spot > idmap,
+			final ObjectOutputStream oos ) throws IOException
 	{
 		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( feature.map );
 		propertyMapSerializer.writePropertyMap( idmap, oos );
 	}
 
 	@Override
-	public TrackSizeFeature deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	public TrackSizeFeature deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool,
+			final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		final IntPropertyMap< Spot > map = new IntPropertyMap<>( pool, -1 );
 		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( map );

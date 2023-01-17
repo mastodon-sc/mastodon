@@ -64,7 +64,8 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 				new RenderSettingsProfileEditPanel( renderSettingsManager.getSelectedStyle() ) );
 	}
 
-	static class RenderSettingsProfileEditPanel implements RenderSettings.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< RenderSettings > >
+	static class RenderSettingsProfileEditPanel implements RenderSettings.UpdateListener,
+			SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< RenderSettings > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 

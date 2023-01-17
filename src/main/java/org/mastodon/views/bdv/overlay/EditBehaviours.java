@@ -61,23 +61,39 @@ import net.imglib2.util.LinAlgHelpers;
 public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 {
 	public static final String MOVE_SPOT = "move spot";
+
 	public static final String ADD_SPOT = "add spot";
+
 	public static final String TOGGLE_AUTO_LINKING_MODE = "toggle auto-linking mode";
+
 	public static final String INCREASE_SPOT_RADIUS = "increase spot radius";
+
 	public static final String INCREASE_SPOT_RADIUS_ALOT = "increase spot radius a lot";
+
 	public static final String INCREASE_SPOT_RADIUS_ABIT = "increase spot radius a bit";
+
 	public static final String DECREASE_SPOT_RADIUS = "decrease spot radius";
+
 	public static final String DECREASE_SPOT_RADIUS_ALOT = "decrease spot radius a lot";
+
 	public static final String DECREASE_SPOT_RADIUS_ABIT = "decrease spot radius a bit";
 
 	static final String[] MOVE_SPOT_KEYS = new String[] { "SPACE" };
+
 	static final String[] ADD_SPOT_KEYS = new String[] { "A" };
+
 	static final String[] TOGGLE_AUTO_LINKING_MODE_KEYS = { "control L" };
+
 	static final String[] INCREASE_SPOT_RADIUS_KEYS = new String[] { "E" };
+
 	static final String[] INCREASE_SPOT_RADIUS_ALOT_KEYS = new String[] { "shift E" };
+
 	static final String[] INCREASE_SPOT_RADIUS_ABIT_KEYS = new String[] { "control E" };
+
 	static final String[] DECREASE_SPOT_RADIUS_KEYS = new String[] { "Q" };
+
 	static final String[] DECREASE_SPOT_RADIUS_ALOT_KEYS = new String[] { "shift Q" };
+
 	static final String[] DECREASE_SPOT_RADIUS_ABIT_KEYS = new String[] { "control Q" };
 
 	/**
@@ -101,15 +117,22 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		{
 			descriptions.add( MOVE_SPOT, MOVE_SPOT_KEYS, "Move spot by mouse-dragging." );
 			descriptions.add( ADD_SPOT, ADD_SPOT_KEYS, "Add spot at mouse position." );
-			descriptions.add( TOGGLE_AUTO_LINKING_MODE, TOGGLE_AUTO_LINKING_MODE_KEYS, "Toggle auto-linking mode. When on, "
-					+ "the next spot added will be automatically linked to the spot in the selection, if there is exactly "
-					+ "one spot selected." );
-			descriptions.add( INCREASE_SPOT_RADIUS, INCREASE_SPOT_RADIUS_KEYS, "Increase radius of spot at mouse position." );
-			descriptions.add( INCREASE_SPOT_RADIUS_ALOT, INCREASE_SPOT_RADIUS_ALOT_KEYS, "Increase radius of spot at mouse position (a lot)." );
-			descriptions.add( INCREASE_SPOT_RADIUS_ABIT, INCREASE_SPOT_RADIUS_ABIT_KEYS, "Increase radius of spot at mouse position (a little)." );
-			descriptions.add( DECREASE_SPOT_RADIUS, DECREASE_SPOT_RADIUS_KEYS, "Decrease radius of spot at mouse position." );
-			descriptions.add( DECREASE_SPOT_RADIUS_ALOT, DECREASE_SPOT_RADIUS_ALOT_KEYS, "Decrease radius of spot at mouse position (a lot)." );
-			descriptions.add( DECREASE_SPOT_RADIUS_ABIT, DECREASE_SPOT_RADIUS_ABIT_KEYS, "Decrease radius of spot at mouse position (a little)." );
+			descriptions.add( TOGGLE_AUTO_LINKING_MODE, TOGGLE_AUTO_LINKING_MODE_KEYS,
+					"Toggle auto-linking mode. When on, "
+							+ "the next spot added will be automatically linked to the spot in the selection, if there is exactly "
+							+ "one spot selected." );
+			descriptions.add( INCREASE_SPOT_RADIUS, INCREASE_SPOT_RADIUS_KEYS,
+					"Increase radius of spot at mouse position." );
+			descriptions.add( INCREASE_SPOT_RADIUS_ALOT, INCREASE_SPOT_RADIUS_ALOT_KEYS,
+					"Increase radius of spot at mouse position (a lot)." );
+			descriptions.add( INCREASE_SPOT_RADIUS_ABIT, INCREASE_SPOT_RADIUS_ABIT_KEYS,
+					"Increase radius of spot at mouse position (a little)." );
+			descriptions.add( DECREASE_SPOT_RADIUS, DECREASE_SPOT_RADIUS_KEYS,
+					"Decrease radius of spot at mouse position." );
+			descriptions.add( DECREASE_SPOT_RADIUS_ALOT, DECREASE_SPOT_RADIUS_ALOT_KEYS,
+					"Decrease radius of spot at mouse position (a lot)." );
+			descriptions.add( DECREASE_SPOT_RADIUS_ABIT, DECREASE_SPOT_RADIUS_ABIT_KEYS,
+					"Decrease radius of spot at mouse position (a little)." );
 		}
 	}
 
@@ -164,7 +187,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final UndoPointMarker undo,
 			final double minRadius )
 	{
-		final EditBehaviours< V, E > eb = new EditBehaviours<>( viewerPanel, overlayGraph, renderer, selection, focus, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE, minRadius );
+		final EditBehaviours< V, E > eb = new EditBehaviours<>( viewerPanel, overlayGraph, renderer, selection, focus,
+				undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE, minRadius );
 
 		behaviours.namedBehaviour( eb.moveSpotBehaviour, MOVE_SPOT_KEYS );
 		behaviours.namedBehaviour( eb.addSpotBehaviour, ADD_SPOT_KEYS );
@@ -215,11 +239,16 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		addSpotBehaviour = new AddSpotBehaviour( ADD_SPOT );
 		toggleAutoLinkingModeBehaviour = new ToggleAutoLinkingModeBehaviour( TOGGLE_AUTO_LINKING_MODE );
 		increaseSpotRadiusBehaviour = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS, normalRadiusChange, minRadius );
-		increaseSpotRadiusBehaviourALot = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ALOT, aLotRadiusChange, minRadius );
-		increaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ABIT, aBitRadiusChange, minRadius );
-		decreaseSpotRadiusBehaviour = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS, -normalRadiusChange / ( 1 + normalRadiusChange ), minRadius );
-		decreaseSpotRadiusBehaviourALot = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ALOT, -aLotRadiusChange / ( 1 + aLotRadiusChange ), minRadius );
-		decreaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ABIT, -aBitRadiusChange / ( 1 + aBitRadiusChange ), minRadius );
+		increaseSpotRadiusBehaviourALot =
+				new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ALOT, aLotRadiusChange, minRadius );
+		increaseSpotRadiusBehaviourABit =
+				new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS_ABIT, aBitRadiusChange, minRadius );
+		decreaseSpotRadiusBehaviour = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS,
+				-normalRadiusChange / ( 1 + normalRadiusChange ), minRadius );
+		decreaseSpotRadiusBehaviourALot = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ALOT,
+				-aLotRadiusChange / ( 1 + aLotRadiusChange ), minRadius );
+		decreaseSpotRadiusBehaviourABit = new ResizeSpotBehaviour( DECREASE_SPOT_RADIUS_ABIT,
+				-aBitRadiusChange / ( 1 + aBitRadiusChange ), minRadius );
 	}
 
 	private class ToggleAutoLinkingModeBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
@@ -240,7 +269,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private class AddSpotBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
 	{
-		
+
 		private final double[] pos;
 
 		public AddSpotBehaviour( final String name )

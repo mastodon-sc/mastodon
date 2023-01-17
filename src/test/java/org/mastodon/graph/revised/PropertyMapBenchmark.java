@@ -45,7 +45,8 @@ public class PropertyMapBenchmark
 		final Model model = new CreateLargeModelExample().run( 6, 18, 8 );
 		final int size = model.getGraph().vertices().size();
 		final long e = System.currentTimeMillis();
-		System.out.println( String.format( "Created a model with %d spots in %.1f s.", size, ( ( double ) e - s ) / 1000. ) );
+		System.out.println(
+				String.format( "Created a model with %d spots in %.1f s.", size, ( ( double ) e - s ) / 1000. ) );
 
 		final int[] storage = new int[ size ];
 
@@ -55,23 +56,27 @@ public class PropertyMapBenchmark
 		final long s1 = System.currentTimeMillis();
 		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> putPropertyValue( model, POSITIVE_NUMBER ) );
 		final long e1 = System.currentTimeMillis();
-		System.out.println( String.format( "Put a int property value in %d spots in %.1f ms.", size, ( ( double ) e1 - s1 ) / N_RUNS ) );
+		System.out.println( String.format( "Put a int property value in %d spots in %.1f ms.", size,
+				( ( double ) e1 - s1 ) / N_RUNS ) );
 
 		System.out.println();
 		final long s2 = System.currentTimeMillis();
 		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> readGraphValue( model, storage ) );
 		final long e2 = System.currentTimeMillis();
-		System.out.println( String.format( "Read a int graph value in %d spots in %.1f ms.", size, ( ( double ) e2 - s2 ) / N_RUNS ) );
+		System.out.println( String.format( "Read a int graph value in %d spots in %.1f ms.", size,
+				( ( double ) e2 - s2 ) / N_RUNS ) );
 
 		System.out.println();
 		final long s3 = System.currentTimeMillis();
 		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> readPropertyValue( model, storage, POSITIVE_NUMBER ) );
 		final long e3 = System.currentTimeMillis();
-		System.out.println( String.format( "Read a int property value in %d spots in %.1f ms.", size, ( ( double ) e3 - s3 ) / N_RUNS ) );
+		System.out.println( String.format( "Read a int property value in %d spots in %.1f ms.", size,
+				( ( double ) e3 - s3 ) / N_RUNS ) );
 
 	}
 
-	private static void readPropertyValue( final Model model, final int[] storage, final IntPropertyMap< Spot > feature )
+	private static void readPropertyValue( final Model model, final int[] storage,
+			final IntPropertyMap< Spot > feature )
 	{
 		int index = 0;
 		for ( final Spot spot : model.getGraph().vertices() )

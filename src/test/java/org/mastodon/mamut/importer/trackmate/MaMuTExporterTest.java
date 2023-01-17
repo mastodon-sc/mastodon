@@ -192,9 +192,10 @@ public class MaMuTExporterTest
 					assertEquals( "Spot frame does not match exported value.",
 							spot.getTimepoint(), tmSpot.getFeature( fiji.plugin.trackmate.Spot.FRAME ).intValue() );
 
-					final List< FeatureSpec< ?, ? > > spotFeatures = sourceModel.getFeatureModel().getFeatureSpecs().stream()
-							.filter( f -> f.getTargetClass().isAssignableFrom( Spot.class ) )
-							.collect( Collectors.toList() );
+					final List< FeatureSpec< ?, ? > > spotFeatures =
+							sourceModel.getFeatureModel().getFeatureSpecs().stream()
+									.filter( f -> f.getTargetClass().isAssignableFrom( Spot.class ) )
+									.collect( Collectors.toList() );
 					for ( final FeatureSpec< ?, ? > featureSpec : spotFeatures )
 					{
 						final Feature< ? > feature = sourceModel.getFeatureModel().getFeature( featureSpec );
@@ -224,14 +225,17 @@ public class MaMuTExporterTest
 			for ( final DefaultWeightedEdge tmLink : exportedModel.getTrackModel().edgeSet() )
 			{
 				// Inefficient but hey.
-				if ( exportedModel.getTrackModel().getEdgeSource( tmLink ).getName().equals( link.getSource().getLabel() )
-						&& exportedModel.getTrackModel().getEdgeTarget( tmLink ).getName().equals( link.getTarget().getLabel() ) )
+				if ( exportedModel.getTrackModel().getEdgeSource( tmLink ).getName()
+						.equals( link.getSource().getLabel() )
+						&& exportedModel.getTrackModel().getEdgeTarget( tmLink ).getName()
+								.equals( link.getTarget().getLabel() ) )
 				{
 					ntested++;
 
-					final List< FeatureSpec< ?, ? > > linkFeatures = sourceModel.getFeatureModel().getFeatureSpecs().stream()
-							.filter( f -> f.getTargetClass().isAssignableFrom( Link.class ) )
-							.collect( Collectors.toList() );
+					final List< FeatureSpec< ?, ? > > linkFeatures =
+							sourceModel.getFeatureModel().getFeatureSpecs().stream()
+									.filter( f -> f.getTargetClass().isAssignableFrom( Link.class ) )
+									.collect( Collectors.toList() );
 					for ( final FeatureSpec< ?, ? > featureSpec : linkFeatures )
 					{
 						final Feature< ? > feature = sourceModel.getFeatureModel().getFeature( featureSpec );
@@ -244,7 +248,8 @@ public class MaMuTExporterTest
 							final FeatureProjection< Link > fp = ( FeatureProjection< Link > ) projection;
 							final String name = getSanitizedFeatureKey( feature, projection );
 							assertEquals( "Unexpected feature value for " + link + " for feature " + name,
-									fp.value( link ), exportedModel.getFeatureModel().getEdgeFeature( tmLink, name ), 1e-9 );
+									fp.value( link ), exportedModel.getFeatureModel().getEdgeFeature( tmLink, name ),
+									1e-9 );
 
 						}
 					}
@@ -304,9 +309,10 @@ public class MaMuTExporterTest
 		reader.readBookmarks( new Bookmarks() );
 	}
 
-	private static void loadProject( final Context context, final MamutProject project, final Model model ) throws IOException
+	private static void loadProject( final Context context, final MamutProject project, final Model model )
+			throws IOException
 	{
-		try ( final MamutProject.ProjectReader reader = project.openForReading() )
+		try (final MamutProject.ProjectReader reader = project.openForReading())
 		{
 			final RawGraphIO.FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
 			MamutRawFeatureModelIO.deserialize( context, model, idmap, reader );
@@ -316,7 +322,6 @@ public class MaMuTExporterTest
 			throw new RuntimeException( e );
 		}
 	}
-
 
 	private Model export() throws IOException, SpimDataException
 	{
@@ -328,7 +333,8 @@ public class MaMuTExporterTest
 		final MamutProject project = new MamutProjectIO().load( MASTODON_FILE );
 
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
-		final SharedBigDataViewerData sharedBdvData = SharedBigDataViewerData.fromSpimDataXmlFile( spimDataXmlFilename, new ViewerOptions(), () -> {} );
+		final SharedBigDataViewerData sharedBdvData =
+				SharedBigDataViewerData.fromSpimDataXmlFile( spimDataXmlFilename, new ViewerOptions(), () -> {} );
 
 		final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
 		loadProject( context, project, model );
@@ -337,7 +343,8 @@ public class MaMuTExporterTest
 		 * 1.1a. Recompute all features.
 		 */
 
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService =
+				context.getService( MamutFeatureComputerService.class );
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( sharedBdvData );
@@ -402,7 +409,8 @@ public class MaMuTExporterTest
 					exportedFeatures.contains( featureKey ) );
 	}
 
-	private static final String getSanitizedFeatureKey( final Feature< ? > feature, final FeatureProjection< ? > projection )
+	private static final String getSanitizedFeatureKey( final Feature< ? > feature,
+			final FeatureProjection< ? > projection )
 	{
 		final String pname = projection.getKey().getSpec().projectionName;
 		final String fname = feature.getSpec().getKey();

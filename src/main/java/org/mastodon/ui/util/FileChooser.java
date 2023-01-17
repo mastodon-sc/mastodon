@@ -83,7 +83,8 @@ public class FileChooser
 			final DialogType dialogType,
 			final Image image )
 	{
-		return chooseFile( useJFileChooser, parent, selectedFile, fileFilter, dialogTitle, dialogType, SelectionMode.FILES_ONLY, image );
+		return chooseFile( useJFileChooser, parent, selectedFile, fileFilter, dialogTitle, dialogType,
+				SelectionMode.FILES_ONLY, image );
 	}
 
 	public static File chooseFile(
@@ -94,7 +95,8 @@ public class FileChooser
 			final DialogType dialogType,
 			final SelectionMode selectionMode )
 	{
-		return chooseFile( useJFileChooser, parent, selectedFile, fileFilter, dialogTitle, dialogType, selectionMode, null );
+		return chooseFile( useJFileChooser, parent, selectedFile, fileFilter, dialogTitle, dialogType, selectionMode,
+				null );
 	}
 
 	public static File chooseFile(
@@ -106,7 +108,8 @@ public class FileChooser
 			final DialogType dialogType,
 			final SelectionMode selectionMode )
 	{
-		return chooseFile( useJFileChooser, parent, selectedFile, fileFilter, dialogTitle, dialogType, selectionMode, null );
+		return chooseFile( useJFileChooser, parent, selectedFile, fileFilter, dialogTitle, dialogType, selectionMode,
+				null );
 	}
 
 	public static File chooseFile(

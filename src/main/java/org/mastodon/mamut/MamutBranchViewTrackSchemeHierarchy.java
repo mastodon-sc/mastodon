@@ -66,7 +66,8 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 
 	public MamutBranchViewTrackSchemeHierarchy( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		super( appModel, guiState, new BranchHierarchyTrackSchemeFactory(), new HierarchyTrackSchemeOverlayFactory(), LineageTreeLayoutImp::new, new DefaultTimepointModel() );
+		super( appModel, guiState, new BranchHierarchyTrackSchemeFactory(), new HierarchyTrackSchemeOverlayFactory(),
+				LineageTreeLayoutImp::new, new DefaultTimepointModel() );
 
 		// Window title.
 		final TrackSchemeFrame frame = getFrame();
@@ -158,7 +159,8 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 				final TrackSchemeOptions options )
 		{
-			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(), new PaintHierarchicalGraph(), options );
+			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(),
+					new PaintHierarchicalGraph(), options );
 		}
 	}
 

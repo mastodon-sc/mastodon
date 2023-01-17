@@ -188,7 +188,8 @@ public class TrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListene
 
 		graph.releaseRef( ref );
 
-		paintDecorations.paintBackground( g2, width, height, headerWidth, headerHeight, entities, currentTimepoint, style );
+		paintDecorations.paintBackground( g2, width, height, headerWidth, headerHeight, entities, currentTimepoint,
+				style );
 
 		// Paint extra overlay if any.
 		for ( final OverlayRenderer or : overlayRenderers )
@@ -201,7 +202,8 @@ public class TrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListene
 		if ( antialiasOffForGraph )
 			g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
-		paintDecorations.paintHeaders( g2, width, height, headerWidth, headerHeight, entities, currentTimepoint, style );
+		paintDecorations.paintHeaders( g2, width, height, headerWidth, headerHeight, entities, currentTimepoint,
+				style );
 	}
 
 	/**
@@ -347,7 +349,7 @@ public class TrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListene
 	 */
 	public void setCurrentTimepoint( final int timepoint )
 	{
-		this.currentTimepoint  = timepoint;
+		this.currentTimepoint = timepoint;
 	}
 
 	/**

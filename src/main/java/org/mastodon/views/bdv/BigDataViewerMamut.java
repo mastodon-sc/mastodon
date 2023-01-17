@@ -182,7 +182,7 @@ public class BigDataViewerMamut
 
 	protected void loadSettings()
 	{
-		fileChooser.setSelectedFile( shared.getProposedSettingsFile()  );
+		fileChooser.setSelectedFile( shared.getProposedSettingsFile() );
 		final int returnVal = fileChooser.showOpenDialog( null );
 		if ( returnVal == JFileChooser.APPROVE_OPTION )
 		{

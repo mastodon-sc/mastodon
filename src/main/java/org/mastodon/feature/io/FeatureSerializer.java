@@ -95,7 +95,8 @@ public interface FeatureSerializer< F extends Feature< O >, O > extends SciJavaP
 	 *             if the class of the feature or the class of its target cannot
 	 *             be found.
 	 */
-	public default F deserialize( final FileIdToObjectMap< O > idmap, final RefCollection< O > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	public default F deserialize( final FileIdToObjectMap< O > idmap, final RefCollection< O > pool,
+			final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		return null;
 	}

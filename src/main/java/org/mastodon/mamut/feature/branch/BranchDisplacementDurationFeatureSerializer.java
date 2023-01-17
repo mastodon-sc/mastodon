@@ -45,7 +45,8 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )
-public class BranchDisplacementDurationFeatureSerializer implements BranchFeatureSerializer< BranchDisplacementDurationFeature, BranchSpot, Spot>
+public class BranchDisplacementDurationFeatureSerializer
+		implements BranchFeatureSerializer< BranchDisplacementDurationFeature, BranchSpot, Spot >
 {
 
 	@Override
@@ -85,8 +86,10 @@ public class BranchDisplacementDurationFeatureSerializer implements BranchFeatur
 			final ModelBranchGraph branchGraph,
 			final ModelGraph graph ) throws IOException
 	{
-		final DoublePropertyMap< Spot > dispLMap = BranchFeatureSerializer.branchSpotMapToMap( feature.dispMap, branchGraph, graph );
-		final DoublePropertyMap< Spot > durLMap = BranchFeatureSerializer.branchSpotMapToMap( feature.durMap, branchGraph, graph );
+		final DoublePropertyMap< Spot > dispLMap =
+				BranchFeatureSerializer.branchSpotMapToMap( feature.dispMap, branchGraph, graph );
+		final DoublePropertyMap< Spot > durLMap =
+				BranchFeatureSerializer.branchSpotMapToMap( feature.durMap, branchGraph, graph );
 		final DoublePropertyMapSerializer< Spot > dispPms = new DoublePropertyMapSerializer<>( dispLMap );
 		final DoublePropertyMapSerializer< Spot > durPms = new DoublePropertyMapSerializer<>( durLMap );
 		oos.writeUTF( feature.lengthUnits );

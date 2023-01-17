@@ -61,7 +61,8 @@ public class FeatureColorModeConfigPageDemo
 					context.getService( FeatureSpecsService.class ),
 					featureColorModeManager );
 
-			final PreferencesDialog settings = new PreferencesDialog( null, new Keymap(), new String[] { KeyConfigContexts.MASTODON } );
+			final PreferencesDialog settings =
+					new PreferencesDialog( null, new Keymap(), new String[] { KeyConfigContexts.MASTODON } );
 			settings.addPage( new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
 					featureColorModeManager,
 					featureProjectionsManager,

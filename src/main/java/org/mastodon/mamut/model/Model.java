@@ -127,7 +127,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		super( new ModelGraph( initialCapacity ) );
 		this.spaceUnits = spaceUnits;
 		this.timeUnits = timeUnits;
-		final SpatioTemporalIndexImp< Spot, Link > theIndex = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
+		final SpatioTemporalIndexImp< Spot, Link > theIndex =
+				new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
 		/*
 		 * Every 1 second, rebuild spatial indices with more than 100
 		 * modifications
@@ -178,7 +179,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 				vertexUndoableProperties,
 				edgeUndoableProperties );
 
-		final Recorder< DefaultTagSetModel.SetTagSetStructureUndoableEdit > recorder = undoRecorder.createGenericUndoableEditRecorder();
+		final Recorder< DefaultTagSetModel.SetTagSetStructureUndoableEdit > recorder =
+				undoRecorder.createGenericUndoableEditRecorder();
 		tagSetModel.setUndoRecorder( recorder );
 	}
 
@@ -193,8 +195,10 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		featureModel.declareFeature( new SpotFrameFeature() );
 		featureModel.declareFeature( new SpotNLinksFeature() );
 		featureModel.declareFeature( new LinkTargetIdFeature( modelGraph ) );
-		featureModel.declareFeature( new LinkDisplacementFeature( modelGraph, Dimension.LENGTH.getUnits( spaceUnits, timeUnits ) ) );
-		featureModel.declareFeature( new LinkVelocityFeature( modelGraph, Dimension.VELOCITY.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature(
+				new LinkDisplacementFeature( modelGraph, Dimension.LENGTH.getUnits( spaceUnits, timeUnits ) ) );
+		featureModel.declareFeature(
+				new LinkVelocityFeature( modelGraph, Dimension.VELOCITY.getUnits( spaceUnits, timeUnits ) ) );
 		featureModel.declareFeature( new BranchNDivisionsFeature() );
 	}
 
@@ -210,7 +214,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public FileIdToGraphMap< Spot, Link > loadRaw( final MamutProject.ProjectReader reader ) throws IOException
 	{
-		final FileIdToGraphMap< Spot, Link > idmap = modelGraph.loadRaw( reader.getRawModelInputStream(), ModelSerializer.getInstance() );
+		final FileIdToGraphMap< Spot, Link > idmap =
+				modelGraph.loadRaw( reader.getRawModelInputStream(), ModelSerializer.getInstance() );
 
 		tagSetModel.pauseListeners();
 		tagSetModel.clear();
@@ -239,7 +244,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public GraphToFileIdMap< Spot, Link > saveRaw( final MamutProject.ProjectWriter writer ) throws IOException
 	{
-		final GraphToFileIdMap< Spot, Link > idmap = modelGraph.saveRaw( writer.getRawModelOutputStream(), ModelSerializer.getInstance() );
+		final GraphToFileIdMap< Spot, Link > idmap =
+				modelGraph.saveRaw( writer.getRawModelOutputStream(), ModelSerializer.getInstance() );
 
 		try (
 				final OutputStream fos = writer.getRawTagsOutputStream();

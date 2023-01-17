@@ -27,6 +27,7 @@
  * #L%
  */
 package org.mastodon.mamut.model.branch;
+
 import org.mastodon.RefPool;
 import org.mastodon.graph.ref.AbstractListenableVertex;
 import org.mastodon.mamut.model.Spot;

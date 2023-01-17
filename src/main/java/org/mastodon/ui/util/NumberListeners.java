@@ -78,17 +78,20 @@ public class NumberListeners
 		new NumberListener( actionMap, inputMap, notify, true, true );
 	}
 
-	public static void positiveDoubleListener( final ActionMap actionMap, final InputMap inputMap, final DoubleConsumer notify )
+	public static void positiveDoubleListener( final ActionMap actionMap, final InputMap inputMap,
+			final DoubleConsumer notify )
 	{
 		new NumberListener( actionMap, inputMap, notify, true, false );
 	}
 
-	public static void integerListener( final ActionMap actionMap, final InputMap inputMap, final DoubleConsumer notify )
+	public static void integerListener( final ActionMap actionMap, final InputMap inputMap,
+			final DoubleConsumer notify )
 	{
 		new NumberListener( actionMap, inputMap, notify, false, true );
 	}
 
-	public static void positiveIntegerListener( final ActionMap actionMap, final InputMap inputMap, final DoubleConsumer notify )
+	public static void positiveIntegerListener( final ActionMap actionMap, final InputMap inputMap,
+			final DoubleConsumer notify )
 	{
 		new NumberListener( actionMap, inputMap, notify, false, false );
 	}

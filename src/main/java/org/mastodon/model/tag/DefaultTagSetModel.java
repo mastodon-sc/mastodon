@@ -85,7 +85,8 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 		this( graph, RefCollections.tryGetRefPool( graph.vertices() ), RefCollections.tryGetRefPool( graph.edges() ) );
 	}
 
-	public DefaultTagSetModel( final ReadOnlyGraph< V, E > graph, final RefPool< V > vertexPool, final RefPool< E > edgePool )
+	public DefaultTagSetModel( final ReadOnlyGraph< V, E > graph, final RefPool< V > vertexPool,
+			final RefPool< E > edgePool )
 	{
 		this.graph = graph;
 		this.tagSetStructure = new TagSetStructure();
@@ -107,8 +108,10 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 	public void setTagSetStructure( final TagSetStructure tss )
 	{
 		// find tags that have been removed from TagSetStructure
-		final Set< Integer > removedIds = tagSetStructure.getTagSets().stream().flatMap( ts -> ts.getTags().stream() ).map( Tag::id ).collect( Collectors.toSet() );
-		final Set< Integer > newIds = tss.getTagSets().stream().flatMap( ts -> ts.getTags().stream() ).map( Tag::id ).collect( Collectors.toSet() );
+		final Set< Integer > removedIds = tagSetStructure.getTagSets().stream().flatMap( ts -> ts.getTags().stream() )
+				.map( Tag::id ).collect( Collectors.toSet() );
+		final Set< Integer > newIds = tss.getTagSets().stream().flatMap( ts -> ts.getTags().stream() ).map( Tag::id )
+				.collect( Collectors.toSet() );
 		removedIds.removeAll( newIds );
 
 		// remove those tags from all vertices ...
@@ -231,7 +234,8 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 
 		private final TagSetStructure newTss;
 
-		SetTagSetStructureUndoableEdit( final DefaultTagSetModel< ?, ? > tagSetModel, final TagSetStructure oldTss, final TagSetStructure newTss )
+		SetTagSetStructureUndoableEdit( final DefaultTagSetModel< ?, ? > tagSetModel, final TagSetStructure oldTss,
+				final TagSetStructure newTss )
 		{
 			this.tagSetModel = tagSetModel;
 			this.oldTss = new TagSetStructure();

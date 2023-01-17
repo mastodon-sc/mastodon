@@ -45,11 +45,17 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 	public static class ScreenEdgeLayout extends PoolObjectLayout
 	{
 		final IndexField origEdge = indexField();
+
 		final IndexField sourceScreenVertex = indexField();
+
 		final IndexField targetScreenVertex = indexField();
+
 		final BooleanField selected = booleanField();
+
 		final ByteField transition = byteField();
+
 		final DoubleField ipRatio = doubleField();
+
 		final IntField color = intField();
 	}
 

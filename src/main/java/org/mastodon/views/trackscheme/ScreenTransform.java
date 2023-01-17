@@ -68,7 +68,8 @@ import net.imglib2.realtransform.InvertibleRealTransform;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ScreenTransform implements InvertibleRealTransform, Concatenable< ScreenTransform >, PreConcatenable< ScreenTransform >
+public class ScreenTransform
+		implements InvertibleRealTransform, Concatenable< ScreenTransform >, PreConcatenable< ScreenTransform >
 {
 	private double minX;
 
@@ -91,7 +92,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 */
 	public ScreenTransform()
 	{
-		this ( 0, 1, 0, 1, 2, 2 );
+		this( 0, 1, 0, 1, 2, 2 );
 	}
 
 	/**
@@ -110,7 +111,8 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * @param screenHeight
 	 *            the screen height.
 	 */
-	public ScreenTransform( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
+	public ScreenTransform( final double minX, final double maxX, final double minY, final double maxY,
+			final int screenWidth, final int screenHeight )
 	{
 		this.minX = minX;
 		this.maxX = maxX;
@@ -167,7 +169,8 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 		this.scaleY = t.scaleY;
 	}
 
-	public void set( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
+	public void set( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth,
+			final int screenHeight )
 	{
 		this.minX = minX;
 		this.maxX = maxX;
@@ -477,19 +480,20 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 */
 	public void interpolate( final ScreenTransform start, final ScreenTransform end, final double ratio )
 	{
-		this.minX = (1 - ratio) * start.minX + ratio * end.minX;
-		this.maxX = (1 - ratio) * start.maxX + ratio * end.maxX;
-		this.minY = (1 - ratio) * start.minY + ratio * end.minY;
-		this.maxY = (1 - ratio) * start.maxY + ratio * end.maxY;
-		this.screenWidth = ( int ) ( (1 - ratio) * start.screenWidth + ratio * end.screenWidth );
-		this.screenHeight = ( int ) ( (1 - ratio) * start.screenHeight + ratio * end.screenHeight );
+		this.minX = ( 1 - ratio ) * start.minX + ratio * end.minX;
+		this.maxX = ( 1 - ratio ) * start.maxX + ratio * end.maxX;
+		this.minY = ( 1 - ratio ) * start.minY + ratio * end.minY;
+		this.maxY = ( 1 - ratio ) * start.maxY + ratio * end.maxY;
+		this.screenWidth = ( int ) ( ( 1 - ratio ) * start.screenWidth + ratio * end.screenWidth );
+		this.screenHeight = ( int ) ( ( 1 - ratio ) * start.screenHeight + ratio * end.screenHeight );
 		update();
 	}
 
 	@Override
 	public String toString()
 	{
-		return "X: " + minX + " -> " + maxX + ", Y: " + minY + " -> " + maxY + ", width = " + screenWidth + ", height = " + screenHeight;
+		return "X: " + minX + " -> " + maxX + ", Y: " + minY + " -> " + maxY + ", width = " + screenWidth
+				+ ", height = " + screenHeight;
 	}
 
 	@Override

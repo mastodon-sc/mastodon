@@ -127,7 +127,8 @@ public class TgmmImportDialog
 			c.gridy = 0;
 			c.gridx = 0;
 			content.add( new JLabel( "import from" ), c );
-			pathTextField = new JTextField( "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/" );
+			pathTextField = new JTextField(
+					"/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/" );
 			c.gridx = 1;
 			content.add( pathTextField, c );
 			pathTextField.setColumns( 20 );
@@ -258,10 +259,12 @@ public class TgmmImportDialog
 				if ( covCheckBox.isSelected() )
 				{
 					final double[][] cov = parseCov( covTextField.getText() );
-					TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ), viewRegistrations, setupID, nSigmas, cov, model );
+					TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ),
+							viewRegistrations, setupID, nSigmas, cov, model );
 				}
 				else
-					TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ), viewRegistrations, setupID, nSigmas, model );
+					TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ),
+							viewRegistrations, setupID, nSigmas, model );
 			}
 			catch ( final ParseException | JDOMException | IOException e )
 			{

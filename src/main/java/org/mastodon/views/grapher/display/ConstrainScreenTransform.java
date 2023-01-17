@@ -159,7 +159,6 @@ public class ConstrainScreenTransform
 		transform.set( minX, maxX, minY, maxY, screenWidth, screenHeight );
 	}
 
-
 	/**
 	 * Zoom out in X to the maximally allowed width.
 	 *
@@ -254,7 +253,6 @@ public class ConstrainScreenTransform
 				transform.getScreenHeight() == reference.getScreenHeight() )
 			transform.set( reference );
 	}
-
 
 	/**
 	 * Checks whether the given {@link ScreenTransform} covers an area having

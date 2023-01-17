@@ -103,7 +103,8 @@ public class ColumnGroup
 	 */
 	public void add( final Object obj )
 	{
-		if ( obj == null ) { return; }
+		if ( obj == null )
+		{ return; }
 		v.addElement( obj );
 	}
 

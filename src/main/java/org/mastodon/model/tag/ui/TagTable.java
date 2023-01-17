@@ -50,7 +50,8 @@ public class TagTable< C, T > extends AbstractTagTable< C, T, AbstractTagTable< 
 	@Override
 	protected Elements wrap( final C wrapped )
 	{
-		return new Elements( wrapped ) {
+		return new Elements( wrapped )
+		{
 			@Override
 			protected Element wrap( final T wrapped )
 			{

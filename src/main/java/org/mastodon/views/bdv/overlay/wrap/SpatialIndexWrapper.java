@@ -42,7 +42,7 @@ import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
 
 public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
-	implements SpatialIndex< OverlayVertexWrapper< V, E > >
+		implements SpatialIndex< OverlayVertexWrapper< V, E > >
 {
 	private final OverlayGraphWrapper< V, E > graphWrapper;
 
@@ -90,7 +90,7 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return wrappedIndex.isEmpty();
 	}
 
-	class NNS implements NearestNeighborSearch< OverlayVertexWrapper< V, E > >,	Sampler< OverlayVertexWrapper< V, E > >
+	class NNS implements NearestNeighborSearch< OverlayVertexWrapper< V, E > >, Sampler< OverlayVertexWrapper< V, E > >
 	{
 		private final NearestNeighborSearch< V > wrappedNNS;
 
@@ -321,7 +321,8 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 				@Override
 				public Iterator< OverlayVertexWrapper< V, E > > iterator()
 				{
-					return new OverlayVertexIteratorWrapper<>( graphWrapper, graphWrapper.vertexRef(), iterable.iterator() );
+					return new OverlayVertexIteratorWrapper<>( graphWrapper, graphWrapper.vertexRef(),
+							iterable.iterator() );
 				}
 			};
 		}
@@ -335,7 +336,8 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 				@Override
 				public Iterator< OverlayVertexWrapper< V, E > > iterator()
 				{
-					return new OverlayVertexIteratorWrapper<>( graphWrapper, graphWrapper.vertexRef(), iterable.iterator() );
+					return new OverlayVertexIteratorWrapper<>( graphWrapper, graphWrapper.vertexRef(),
+							iterable.iterator() );
 				}
 			};
 		}

@@ -55,7 +55,8 @@ public class SpotCenterIntensityFeatureSerializer implements FeatureSerializer< 
 	}
 
 	@Override
-	public void serialize( final SpotCenterIntensityFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final SpotCenterIntensityFeature feature, final ObjectToFileIdMap< Spot > idmap,
+			final ObjectOutputStream oos ) throws IOException
 	{
 		final int nSources = feature.maps.size();
 		oos.writeInt( nSources );
@@ -64,7 +65,8 @@ public class SpotCenterIntensityFeatureSerializer implements FeatureSerializer< 
 	}
 
 	@Override
-	public SpotCenterIntensityFeature deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	public SpotCenterIntensityFeature deserialize( final FileIdToObjectMap< Spot > idmap,
+			final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		final int nSources = ois.readInt();
 		final List< DoublePropertyMap< Spot > > maps = new ArrayList<>( nSources );

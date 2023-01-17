@@ -71,11 +71,13 @@ public class MamutRawFeatureModelIO
 			throws IOException
 	{
 		final FeatureModel featureModel = model.getFeatureModel();
-		final FeatureSerializationService featureSerializationService = context.getService( FeatureSerializationService.class );
+		final FeatureSerializationService featureSerializationService =
+				context.getService( FeatureSerializationService.class );
 		for ( final FeatureSpec< ?, ? > spec : featureModel.getFeatureSpecs() )
 		{
 			final Feature< ? > rawFeature = featureModel.getFeature( spec );
-			final FeatureSerializer< ?, ? > rawSerializer = featureSerializationService.getFeatureSerializerFor( rawFeature.getSpec() );
+			final FeatureSerializer< ?, ? > rawSerializer =
+					featureSerializationService.getFeatureSerializerFor( rawFeature.getSpec() );
 			if ( null == rawSerializer )
 				continue;
 
@@ -88,8 +90,10 @@ public class MamutRawFeatureModelIO
 			{
 				if ( !BranchFeatureSerializer.class.isInstance( rawSerializer ) )
 				{
-					System.err.println( "The branch feature: " + spec.getKey() + " requires a serializer that can work on the branch graph.\n"
-							+ "The serializer discovered for this feature was of class: " + rawSerializer.getClass().getName() );
+					System.err.println( "The branch feature: " + spec.getKey()
+							+ " requires a serializer that can work on the branch graph.\n"
+							+ "The serializer discovered for this feature was of class: "
+							+ rawSerializer.getClass().getName() );
 					continue;
 				}
 				@SuppressWarnings( "rawtypes" )
@@ -106,8 +110,10 @@ public class MamutRawFeatureModelIO
 			{
 				if ( !BranchFeatureSerializer.class.isInstance( rawSerializer ) )
 				{
-					System.err.println( "The branch feature: " + spec.getKey() + " requires a serializer that can work on the branch graph.\n"
-							+ "The serializer discovered for this feature was of class: " + rawSerializer.getClass().getName() );
+					System.err.println( "The branch feature: " + spec.getKey()
+							+ " requires a serializer that can work on the branch graph.\n"
+							+ "The serializer discovered for this feature was of class: "
+							+ rawSerializer.getClass().getName() );
 					continue;
 				}
 				@SuppressWarnings( "rawtypes" )
@@ -131,7 +137,8 @@ public class MamutRawFeatureModelIO
 			final FileIdToGraphMap< Spot, Link > idmap,
 			final ProjectReader reader ) throws ClassNotFoundException, IOException
 	{
-		final FeatureSerializationService featureSerializationService = context.getService( FeatureSerializationService.class );
+		final FeatureSerializationService featureSerializationService =
+				context.getService( FeatureSerializationService.class );
 		final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
 		final Collection< String > featureKeys = reader.getFeatureKeys();
 		final FeatureModel featureModel = model.getFeatureModel();
@@ -144,7 +151,7 @@ public class MamutRawFeatureModelIO
 		for ( final String featureKey : featureKeys )
 		{
 			final FeatureSpec< ?, ? > spec = featureSpecsService.getSpec( featureKey );
-			if (null == spec)
+			if ( null == spec )
 			{
 				System.err.println( "Unknown feature: " + featureKey );
 				continue;
@@ -175,8 +182,10 @@ public class MamutRawFeatureModelIO
 			{
 				if ( !BranchFeatureSerializer.class.isInstance( serializer ) )
 				{
-					System.err.println( "The branch feature: " + spec.getKey() + " requires a serializer that can work on the branch graph.\n"
-							+ "The serializer discovered for this feature was of class: " + serializer.getClass().getName() );
+					System.err.println( "The branch feature: " + spec.getKey()
+							+ " requires a serializer that can work on the branch graph.\n"
+							+ "The serializer discovered for this feature was of class: "
+							+ serializer.getClass().getName() );
 					continue;
 				}
 				@SuppressWarnings( "rawtypes" )
@@ -192,8 +201,10 @@ public class MamutRawFeatureModelIO
 			{
 				if ( !BranchFeatureSerializer.class.isInstance( serializer ) )
 				{
-					System.err.println( "The branch feature: " + spec.getKey() + " requires a serializer that can work on the branch graph.\n"
-							+ "The serializer discovered for this feature was of class: " + serializer.getClass().getName() );
+					System.err.println( "The branch feature: " + spec.getKey()
+							+ " requires a serializer that can work on the branch graph.\n"
+							+ "The serializer discovered for this feature was of class: "
+							+ serializer.getClass().getName() );
 					continue;
 				}
 				@SuppressWarnings( "rawtypes" )

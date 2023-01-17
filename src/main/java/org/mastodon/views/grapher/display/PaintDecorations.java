@@ -129,7 +129,7 @@ public class PaintDecorations
 		final double maxX = screenTransform.getMaxX();
 		final double minY = screenTransform.getMinY();
 		final double maxY = screenTransform.getMaxY();
-		
+
 		double xScale = screenTransform.getScaleX();
 		double yScale = screenTransform.getScaleY();
 		xScale = Double.isNaN( xScale ) ? 1. : xScale;
@@ -255,7 +255,8 @@ public class PaintDecorations
 		}
 	}
 
-	private static void drawStringRotated( final Graphics2D g2d, final int x, final int y, final double angle, final String text )
+	private static void drawStringRotated( final Graphics2D g2d, final int x, final int y, final double angle,
+			final String text )
 	{
 		g2d.translate( x, y );
 		g2d.rotate( Math.toRadians( angle ) );

@@ -99,7 +99,7 @@ public class DummySpimData
 	public static SpimDataMinimal tryCreate( final String name )
 	{
 		if ( !isDummyString( name ) )
-			throw new IllegalArgumentException("Couldn't parse dummy dataset description: '" + name + "'");
+			throw new IllegalArgumentException( "Couldn't parse dummy dataset description: '" + name + "'" );
 
 		try
 		{
@@ -116,11 +116,12 @@ public class DummySpimData
 		}
 		catch ( final NumberFormatException e )
 		{
-			throw new IllegalArgumentException("Couldn't parse dummy dataset description: '" + name + "'");
+			throw new IllegalArgumentException( "Couldn't parse dummy dataset description: '" + name + "'" );
 		}
 	}
 
-	public static SpimDataMinimal tryCreate( final int x, final int y, final int z, final double sx, final double sy, final double sz, final int t )
+	public static SpimDataMinimal tryCreate( final int x, final int y, final int z, final double sx, final double sy,
+			final double sz, final int t )
 	{
 		final Dimensions imageSize = new FinalDimensions( x, y, z );
 		final AffineTransform3D calib = new AffineTransform3D();
@@ -134,9 +135,11 @@ public class DummySpimData
 		final Map< Integer, BasicViewSetup > setups = new HashMap<>();
 		setups.put( 0, new BasicViewSetup( 0, "dummy", imageSize, null ) );
 		final BasicImgLoader imgLoader = new DummyImgLoader( imageSize );
-		final SequenceDescriptionMinimal sequenceDescription = new SequenceDescriptionMinimal( timepoints, setups, imgLoader, null );
+		final SequenceDescriptionMinimal sequenceDescription =
+				new SequenceDescriptionMinimal( timepoints, setups, imgLoader, null );
 		final ViewRegistrations viewRegistrations = new ViewRegistrations(
-				IntStream.range( 0, t ).mapToObj( tp -> new ViewRegistration( tp, 0, calib ) ).collect( Collectors.toList() ) );
+				IntStream.range( 0, t ).mapToObj( tp -> new ViewRegistration( tp, 0, calib ) )
+						.collect( Collectors.toList() ) );
 		return new SpimDataMinimal( basePath, sequenceDescription, viewRegistrations );
 
 	}
@@ -161,11 +164,11 @@ public class DummySpimData
 	 * BigDataViewer XML. The actual image data is not loaded, all pixels
 	 * are black. {@link DummyImgLoader} is used to provide the dummy image data.
 	 */
-	public static AbstractSpimData<?> fromSpimDataXml( String spimDataXmlFilename )
+	public static AbstractSpimData< ? > fromSpimDataXml( String spimDataXmlFilename )
 			throws SpimDataException
 	{
 		File modifiedXml = getBdvXmlWithoutImageLoader( new File( spimDataXmlFilename ) );
-		AbstractSpimData<?> spimData = new XmlIoSpimDataMinimal().load( modifiedXml.getAbsolutePath() );
+		AbstractSpimData< ? > spimData = new XmlIoSpimDataMinimal().load( modifiedXml.getAbsolutePath() );
 		setDummyImageLoader( spimData );
 		return spimData;
 	}
@@ -179,10 +182,11 @@ public class DummySpimData
 		return writeXmlToTmpFile( document );
 	}
 
-	private static void setDummyImageLoader( AbstractSpimData<?> spimData )
+	private static void setDummyImageLoader( AbstractSpimData< ? > spimData )
 	{
-		final AbstractSequenceDescription<?, ?, BasicImgLoader> seq = Cast.unchecked( spimData.getSequenceDescription() );
-		List<Dimensions> dimensionsList = new ArrayList<>();
+		final AbstractSequenceDescription< ?, ?, BasicImgLoader > seq =
+				Cast.unchecked( spimData.getSequenceDescription() );
+		List< Dimensions > dimensionsList = new ArrayList<>();
 		for ( BasicViewSetup basicViewSetup : seq.getViewSetupsOrdered() )
 			dimensionsList.add( basicViewSetup.getSize() );
 		seq.setImgLoader( new DummyImgLoader( new UnsignedShortType(), dimensionsList ) );
@@ -206,8 +210,9 @@ public class DummySpimData
 		{
 			File file = File.createTempFile( "dataset-dummy-img-loader", ".xml" );
 			file.deleteOnExit();
-			try (OutputStream outputStream = new FileOutputStream( file )) {
-				new XMLOutputter( Format.getPrettyFormat() ).output( document, outputStream);
+			try (OutputStream outputStream = new FileOutputStream( file ))
+			{
+				new XMLOutputter( Format.getPrettyFormat() ).output( document, outputStream );
 			}
 			return file;
 		}

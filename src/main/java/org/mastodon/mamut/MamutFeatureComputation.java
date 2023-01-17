@@ -62,11 +62,14 @@ public class MamutFeatureComputation
 		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
 		computerService.setModel( appModel.getModel() );
 		computerService.setSharedBdvData( appModel.getSharedBdvData() );
-		final MyFeatureComputerService myComputerService = new MyFeatureComputerService( computerService, appModel.getModel().getFeatureModel() );
+		final MyFeatureComputerService myComputerService =
+				new MyFeatureComputerService( computerService, appModel.getModel().getFeatureModel() );
 
 		// Controller.
-		final Collection< Class< ? > > targets = Arrays.asList( Spot.class, Link.class, BranchSpot.class, BranchLink.class );
-		final MamutFeatureComputationController controller = new MamutFeatureComputationController( myComputerService, targets, appModel.getBranchGraphSync() );
+		final Collection< Class< ? > > targets =
+				Arrays.asList( Spot.class, Link.class, BranchSpot.class, BranchLink.class );
+		final MamutFeatureComputationController controller =
+				new MamutFeatureComputationController( myComputerService, targets, appModel.getBranchGraphSync() );
 		computerService.computationStatusListeners().add( controller.getComputationStatusListener() );
 
 		// Listen to model changes and echo in the GUI
@@ -167,7 +170,8 @@ public class MamutFeatureComputation
 		}
 
 		@Override
-		public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll, final Collection< FeatureSpec< ?, ? > > featureKeys )
+		public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll,
+				final Collection< FeatureSpec< ?, ? > > featureKeys )
 		{
 			final Map< FeatureSpec< ?, ? >, Feature< ? > > map = wrapped.compute( forceComputeAll, featureKeys );
 			if ( wrapped.isCanceled() )

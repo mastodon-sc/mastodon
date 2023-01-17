@@ -161,19 +161,22 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	}
 
 	@Override
-	public BranchSpot initVertex( final BranchSpot v, final int timepoint, final double[] position, final double radius )
+	public BranchSpot initVertex( final BranchSpot v, final int timepoint, final double[] position,
+			final double radius )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
 
 	@Override
-	public BranchSpot initVertex( final BranchSpot v, final int timepoint, final double[] position, final double[][] covariance )
+	public BranchSpot initVertex( final BranchSpot v, final int timepoint, final double[] position,
+			final double[][] covariance )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}
 
 	@Override
-	public BranchLink insertEdge( final BranchSpot source, final int sourceOutIndex, final BranchSpot target, final int targetInIndex, final BranchLink ref )
+	public BranchLink insertEdge( final BranchSpot source, final int sourceOutIndex, final BranchSpot target,
+			final int targetInIndex, final BranchLink ref )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
 	}

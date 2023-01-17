@@ -198,7 +198,8 @@ class ImportSimiBioCellPanel extends JPanel
 		 * Wire listeners.
 		 */
 
-		btnHelp.addActionListener( l -> LauncherUtil.showHelp( HELP_URL, "Help for the Simie-BioCell importer", this ) );
+		btnHelp.addActionListener(
+				l -> LauncherUtil.showHelp( HELP_URL, "Help for the Simie-BioCell importer", this ) );
 		btnBrowseBDV.addActionListener( l -> LauncherUtil.browseToBDVFile(
 				suggestedFile,
 				textAreaBDVFile,
@@ -210,7 +211,8 @@ class ImportSimiBioCellPanel extends JPanel
 
 	private void browseToSimiFile()
 	{
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( this, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( this, new Class[] { JLabel.class } );
 		disabler.disable();
 		final File file = FileChooser.chooseFile(
 				this,

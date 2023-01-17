@@ -50,7 +50,8 @@ public class SpotIntensityBenchmark
 		 * 1. Load a regular Mastodon project.
 		 */
 
-		final MamutProject project = new MamutProjectIO().load( "/Users/tinevez/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo.mastodon" );
+		final MamutProject project = new MamutProjectIO()
+				.load( "/Users/tinevez/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo.mastodon" );
 		final WindowManager windowManager = new WindowManager( new Context() );
 		windowManager.getProjectManager().open( project );
 		final Model model = windowManager.getAppModel().getModel();
@@ -67,13 +68,13 @@ public class SpotIntensityBenchmark
 		}
 		System.out.println( "Done." );
 
-
 		/*
 		 * 1.1a. Compute spot intensity feature for all.
 		 */
 
 		final Context context = windowManager.getContext();
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService =
+				context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "Computing spot intensity..." );

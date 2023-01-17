@@ -111,7 +111,8 @@ public class GrapherSidePanel extends JPanel
 		gridBagLayout.columnWidths = new int[] { 150, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 30, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights =
+				new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		setLayout( gridBagLayout );
 
 		final JLabel lblTitle = new JLabel( "Feature selection" );
@@ -185,7 +186,8 @@ public class GrapherSidePanel extends JPanel
 		gbcRdbtnTrackOfSelection.gridx = 0;
 		gbcRdbtnTrackOfSelection.gridy = 7;
 		add( rdbtnTrackOfSelection, gbcRdbtnTrackOfSelection );
-		rdbtnTrackOfSelection.setFont( rdbtnTrackOfSelection.getFont().deriveFont( rdbtnTrackOfSelection.getFont().getSize() - 2f ) );
+		rdbtnTrackOfSelection.setFont(
+				rdbtnTrackOfSelection.getFont().deriveFont( rdbtnTrackOfSelection.getFont().getSize() - 2f ) );
 		btngrp.add( rdbtnTrackOfSelection );
 		rdbtnTrackOfSelection.setSelected( true );
 
@@ -246,7 +248,8 @@ public class GrapherSidePanel extends JPanel
 				rdbtnKeepCurrent.setSelected( true );
 		} );
 		// show context box only if the right button is selected.
-		final EverythingDisablerAndReenabler contextEnabler = new EverythingDisablerAndReenabler( chooserPanel, new Class[] { Label.class } );
+		final EverythingDisablerAndReenabler contextEnabler =
+				new EverythingDisablerAndReenabler( chooserPanel, new Class[] { Label.class } );
 		contextEnabler.setEnabled( rdbtnContext.isSelected() );
 		rdbtnContext.addChangeListener( e -> contextEnabler.setEnabled( rdbtnContext.isSelected() ) );
 	}
@@ -283,7 +286,7 @@ public class GrapherSidePanel extends JPanel
 				case SINGLE:
 					for ( final FeatureProjectionSpec ps : fs.getProjectionSpecs() )
 					{
-						specs.add(  new FeatureSpecPair( fs, ps, false, false ) );
+						specs.add( new FeatureSpecPair( fs, ps, false, false ) );
 					}
 					break;
 				default:
@@ -345,9 +348,9 @@ public class GrapherSidePanel extends JPanel
 				? GraphDataItemsSource.CONTEXT
 				: rdbtnKeepCurrent.isSelected()
 						? GraphDataItemsSource.KEEP_CURRENT
-						: rdbtnSelection.isSelected()
-								? GraphDataItemsSource.SELECTION
-								: GraphDataItemsSource.TRACK_OF_SELECTION;
+				: rdbtnSelection.isSelected()
+						? GraphDataItemsSource.SELECTION
+				: GraphDataItemsSource.TRACK_OF_SELECTION;
 		return new FeatureGraphConfig(
 				xFeature,
 				yFeature,
@@ -415,13 +418,16 @@ public class GrapherSidePanel extends JPanel
 		return model.getFeatureModel();
 	}
 
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
+	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException
 	{
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
 		final FeatureModel fm = demoFM();
-		final Map< FeatureSpec< ?, Spot >, Feature< Spot > > spotFeatures = FeatureUtils.collectFeatureMap( fm, Spot.class );
-		final Map< FeatureSpec< ?, Link >, Feature< Link > > linkFeatures = FeatureUtils.collectFeatureMap( fm, Link.class );
+		final Map< FeatureSpec< ?, Spot >, Feature< Spot > > spotFeatures =
+				FeatureUtils.collectFeatureMap( fm, Spot.class );
+		final Map< FeatureSpec< ?, Link >, Feature< Link > > linkFeatures =
+				FeatureUtils.collectFeatureMap( fm, Link.class );
 		final GrapherSidePanel gsp = new GrapherSidePanel( 2, new ContextChooser<>( null ) );
 		gsp.setFeatures( spotFeatures, linkFeatures );
 

@@ -55,7 +55,8 @@ public class InertialScreenTransformAnimator extends AbstractTransformAnimator< 
 	 * @param duration
 	 *            duration of inertial animation (same units as {@code dt}).
 	 */
-	public InertialScreenTransformAnimator( final ScreenTransform t0, final ScreenTransform t1, final long dt, final long duration )
+	public InertialScreenTransformAnimator( final ScreenTransform t0, final ScreenTransform t1, final long dt,
+			final long duration )
 	{
 		super( duration );
 		this.t0 = t0.copy();
