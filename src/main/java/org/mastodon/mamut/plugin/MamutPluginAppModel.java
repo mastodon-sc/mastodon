@@ -32,7 +32,7 @@ import org.mastodon.app.plugin.MastodonAppPluginModel;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.WindowManager;
 
-public class MamutPluginAppModel  implements MastodonAppPluginModel
+public class MamutPluginAppModel implements MastodonAppPluginModel
 {
 	private final WindowManager windowManager;
 

@@ -55,10 +55,10 @@ import net.imglib2.util.Cast;
  * @author Jean-Yves Tinevez
  */
 public class ColoringModelMain<
-	V extends Vertex<E>,
-	E extends Edge<V>,
-	BV extends Vertex<BE>,
-	BE extends Edge< BV > >
+		V extends Vertex< E >,
+		E extends Edge< V >,
+		BV extends Vertex< BE >,
+		BE extends Edge< BV > >
 		extends ColoringModel
 		implements TagSetModel.TagSetModelListener, FeatureColorModeManager.FeatureColorModesListener
 {
@@ -97,21 +97,24 @@ public class ColoringModelMain<
 			return new DefaultGraphColorGenerator<>();
 
 		// Vertex.
-		final FeatureProjection< ? > vertexProjection = projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
-		final ColorGenerator<V> vertexColorGenerator = (vertexProjection == null)
+		final FeatureProjection< ? > vertexProjection =
+				projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
+		final ColorGenerator< V > vertexColorGenerator = ( vertexProjection == null )
 				? new DefaultColorGenerator<>()
 				: createVertexColorGenerator( fcm, vertexProjection );
 
 		// Edge.
-		final FeatureProjection< ? > edgeProjection = projections.getFeatureProjection( fcm.getEdgeFeatureProjection() );
-		final EdgeColorGenerator< V, E > edgeColorGenerator = (null == edgeProjection )
+		final FeatureProjection< ? > edgeProjection =
+				projections.getFeatureProjection( fcm.getEdgeFeatureProjection() );
+		final EdgeColorGenerator< V, E > edgeColorGenerator = ( null == edgeProjection )
 				? new DefaultEdgeColorGenerator<>()
 				: createEdgeColorGenerator( fcm, edgeProjection );
 
 		return new CompositeGraphColorGenerator<>( vertexColorGenerator, edgeColorGenerator );
 	}
 
-	private ColorGenerator<V> createVertexColorGenerator( final FeatureColorMode fcm, final FeatureProjection<?> vertexProjection )
+	private ColorGenerator< V > createVertexColorGenerator( final FeatureColorMode fcm,
+			final FeatureProjection< ? > vertexProjection )
 	{
 		final String vertexColorMap = fcm.getVertexColorMap();
 		final double vertexRangeMin = fcm.getVertexRangeMin();
@@ -158,7 +161,8 @@ public class ColoringModelMain<
 		}
 	}
 
-	private EdgeColorGenerator<V, E> createEdgeColorGenerator( final FeatureColorMode fcm, final FeatureProjection<?> edgeProjection )
+	private EdgeColorGenerator< V, E > createEdgeColorGenerator( final FeatureColorMode fcm,
+			final FeatureProjection< ? > edgeProjection )
 	{
 		final String edgeColorMap = fcm.getEdgeColorMap();
 		final double edgeRangeMin = fcm.getEdgeRangeMin();

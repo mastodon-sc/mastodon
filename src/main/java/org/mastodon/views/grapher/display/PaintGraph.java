@@ -90,10 +90,15 @@ public class PaintGraph
 	 */
 
 	private static final double simplifiedVertexRadius = 2.5;
+
 	private static final double simplifiedVertexSelectTolerance = 3.5;
+
 	private static final double minDisplayVertexDist = 17.0;
+
 	private static final double maxDisplayVertexSize = 20.0;
+
 	private static final double minDisplaySimplifiedVertexDist = 0.0;
+
 	private static final double avgLabelLetterWidth = 5.0;
 
 	/*
@@ -362,8 +367,8 @@ public class PaintGraph
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
-		final double ox =  x -  spotradius;
-		final double oy =  y -  spotradius;
+		final double ox = x - spotradius;
+		final double oy = y - spotradius;
 		final double sd = 2 * spotradius;
 		final Shape shape = style.getVertexDrawShape().shape( ox, oy, sd );
 		g2.setColor( fillColor );
@@ -405,7 +410,8 @@ public class PaintGraph
 		}
 	}
 
-	protected double getVertexDiameter( final double vertexDist, final boolean highlighted, final boolean disappear, final double ratio )
+	protected double getVertexDiameter( final double vertexDist, final boolean highlighted, final boolean disappear,
+			final double ratio )
 	{
 		double spotdiameter = Math.min( vertexDist - 10.0, maxDisplayVertexSize );
 		if ( highlighted )

@@ -136,7 +136,7 @@ public class RenderSettingsIO
 		{
 			try
 			{
-				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
+				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
 				final float width = ( ( Double ) mapping.get( "width" ) ).floatValue();
 				final int cap = ( Integer ) mapping.get( "cap" );
 				final int join = ( Integer ) mapping.get( "join" );
@@ -154,7 +154,7 @@ public class RenderSettingsIO
 				final float dash_phase = ( ( Double ) mapping.get( "dash_phase" ) ).floatValue();
 				return new BasicStroke( width, cap, join, miterlimit, dash, dash_phase );
 			}
-			catch( final Exception e )
+			catch ( final Exception e )
 			{
 				e.printStackTrace();
 			}
@@ -175,7 +175,7 @@ public class RenderSettingsIO
 		public Node representData( final Object data )
 		{
 			final RenderSettings s = ( RenderSettings ) data;
-			final Map< String, Object > mapping = new LinkedHashMap< >();
+			final Map< String, Object > mapping = new LinkedHashMap<>();
 
 			mapping.put( "name", s.getName() );
 
@@ -201,7 +201,6 @@ public class RenderSettingsIO
 			mapping.put( "colorSpot", s.getColorSpot() );
 			mapping.put( "colorPast", s.getColorPast() );
 			mapping.put( "colorFuture", s.getColorFuture() );
-			
 
 			final Node node = representMapping( getTag(), mapping, getDefaultFlowStyle() );
 			return node;
@@ -226,26 +225,43 @@ public class RenderSettingsIO
 
 				s.setName( ( String ) mapping.getOrDefault( "name", "CouldNotFindName" ) );
 
-				s.setUseAntialiasing( ( boolean ) mapping.getOrDefault( "antialiasing", RenderSettings.DEFAULT_USE_ANTI_ALIASING ) );
+				s.setUseAntialiasing(
+						( boolean ) mapping.getOrDefault( "antialiasing", RenderSettings.DEFAULT_USE_ANTI_ALIASING ) );
 				s.setDrawLinks( ( boolean ) mapping.getOrDefault( "drawLinks", RenderSettings.DEFAULT_DRAW_LINKS ) );
-				s.setDrawLinksAheadInTime( ( boolean ) mapping.getOrDefault( "drawLinksAheadInTime", RenderSettings.DEFAULT_DRAW_LINKS_AHEAD_IN_TIME ) );
-				s.setDrawArrowHeads( ( boolean ) mapping.getOrDefault( "drawArrowHeads", RenderSettings.DEFAULT_DRAW_ARROW_HEADS ) );
-				s.setTimeLimit( ( int ) mapping.getOrDefault( "timeRangeForLinks", RenderSettings.DEFAULT_LIMIT_TIME_RANGE ) );
-				s.setUseGradient( ( boolean ) mapping.getOrDefault( "gradientForLinks", RenderSettings.DEFAULT_USE_GRADIENT ) );
+				s.setDrawLinksAheadInTime( ( boolean ) mapping.getOrDefault( "drawLinksAheadInTime",
+						RenderSettings.DEFAULT_DRAW_LINKS_AHEAD_IN_TIME ) );
+				s.setDrawArrowHeads(
+						( boolean ) mapping.getOrDefault( "drawArrowHeads", RenderSettings.DEFAULT_DRAW_ARROW_HEADS ) );
+				s.setTimeLimit(
+						( int ) mapping.getOrDefault( "timeRangeForLinks", RenderSettings.DEFAULT_LIMIT_TIME_RANGE ) );
+				s.setUseGradient(
+						( boolean ) mapping.getOrDefault( "gradientForLinks", RenderSettings.DEFAULT_USE_GRADIENT ) );
 				s.setDrawSpots( ( boolean ) mapping.getOrDefault( "drawSpots", RenderSettings.DEFAULT_DRAW_SPOTS ) );
-				s.setDrawEllipsoidSliceIntersection( ( boolean ) mapping.getOrDefault( "drawEllipsoidIntersection", RenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION ) );
-				s.setDrawEllipsoidSliceProjection( ( boolean ) mapping.getOrDefault( "drawEllipsoidProjection", RenderSettings.DEFAULT_DRAW_SLICE_PROJECTION ) );
-				s.setDrawSpotCenters( ( boolean ) mapping.getOrDefault( "drawSpotCenters", RenderSettings.DEFAULT_DRAW_POINTS ) );
-				s.setDrawSpotCentersForEllipses( ( boolean ) mapping.getOrDefault( "drawSpotCentersForEllipses", RenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE ) );
-				s.setDrawSpotLabels( ( boolean ) mapping.getOrDefault( "drawSpotLabels", RenderSettings.DEFAULT_DRAW_SPOT_LABELS ) );
+				s.setDrawEllipsoidSliceIntersection( ( boolean ) mapping.getOrDefault( "drawEllipsoidIntersection",
+						RenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION ) );
+				s.setDrawEllipsoidSliceProjection( ( boolean ) mapping.getOrDefault( "drawEllipsoidProjection",
+						RenderSettings.DEFAULT_DRAW_SLICE_PROJECTION ) );
+				s.setDrawSpotCenters(
+						( boolean ) mapping.getOrDefault( "drawSpotCenters", RenderSettings.DEFAULT_DRAW_POINTS ) );
+				s.setDrawSpotCentersForEllipses( ( boolean ) mapping.getOrDefault( "drawSpotCentersForEllipses",
+						RenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE ) );
+				s.setDrawSpotLabels(
+						( boolean ) mapping.getOrDefault( "drawSpotLabels", RenderSettings.DEFAULT_DRAW_SPOT_LABELS ) );
 				s.setFillSpots( ( boolean ) mapping.getOrDefault( "fillSpots", RenderSettings.DEFAULT_FILL_SPOTS ) );
-				s.setFocusLimit( ( double ) mapping.getOrDefault( "focusLimit", RenderSettings.DEFAULT_LIMIT_FOCUS_RANGE ) );
-				s.setFocusLimitViewRelative( ( boolean ) mapping.getOrDefault( "focusLimitViewRelative", RenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE ) );
-				s.setEllipsoidFadeDepth( ( double ) mapping.getOrDefault( "ellipsoidFadeDepth", RenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH ) );
-				s.setPointFadeDepth( ( double ) mapping.getOrDefault( "pointFadeDepth", RenderSettings.DEFAULT_POINT_FADE_DEPTH ) );
-				s.setSpotStrokeWidth( ( double ) mapping.getOrDefault( "spotStrokeWidth", RenderSettings.DEFAULT_SPOT_STROKE_WIDTH ) );
-				s.setLinkStrokeWidth( ( double ) mapping.getOrDefault( "linkStrokeWidth", RenderSettings.DEFAULT_LINK_STROKE_WIDTH ) );
-				s.setColorSpot( ( int ) mapping.getOrDefault( "colorSpot", RenderSettings.DEFAULT_COLOR_SPOT_AND_PRESENT ) );
+				s.setFocusLimit(
+						( double ) mapping.getOrDefault( "focusLimit", RenderSettings.DEFAULT_LIMIT_FOCUS_RANGE ) );
+				s.setFocusLimitViewRelative( ( boolean ) mapping.getOrDefault( "focusLimitViewRelative",
+						RenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE ) );
+				s.setEllipsoidFadeDepth( ( double ) mapping.getOrDefault( "ellipsoidFadeDepth",
+						RenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH ) );
+				s.setPointFadeDepth(
+						( double ) mapping.getOrDefault( "pointFadeDepth", RenderSettings.DEFAULT_POINT_FADE_DEPTH ) );
+				s.setSpotStrokeWidth( ( double ) mapping.getOrDefault( "spotStrokeWidth",
+						RenderSettings.DEFAULT_SPOT_STROKE_WIDTH ) );
+				s.setLinkStrokeWidth( ( double ) mapping.getOrDefault( "linkStrokeWidth",
+						RenderSettings.DEFAULT_LINK_STROKE_WIDTH ) );
+				s.setColorSpot(
+						( int ) mapping.getOrDefault( "colorSpot", RenderSettings.DEFAULT_COLOR_SPOT_AND_PRESENT ) );
 				s.setColorPast( ( int ) mapping.getOrDefault( "colorPast", RenderSettings.DEFAULT_COLOR_PAST ) );
 				s.setColorFuture( ( int ) mapping.getOrDefault( "colorFuture", RenderSettings.DEFAULT_COLOR_FUTURE ) );
 

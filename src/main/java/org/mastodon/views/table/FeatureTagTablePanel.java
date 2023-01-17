@@ -239,7 +239,8 @@ public class FeatureTagTablePanel< O > extends JPanel
 		final TableRowSorter< MyTableModel > sorter = new TableRowSorter<>( tableModel );
 		table.setRowSorter( sorter );
 
-		this.scrollPane = new JScrollPane( table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+		this.scrollPane = new JScrollPane( table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 		table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
 		setLayout( new BorderLayout() );
@@ -692,7 +693,8 @@ public class FeatureTagTablePanel< O > extends JPanel
 
 		private final boolean bold;
 
-		public MyTopHeaderRenderer( final TableCellRenderer defaultRenderer, final boolean bottomLine, final boolean bold )
+		public MyTopHeaderRenderer( final TableCellRenderer defaultRenderer, final boolean bottomLine,
+				final boolean bold )
 		{
 			this.defaultRenderer = defaultRenderer;
 			this.bold = bold;
@@ -702,9 +704,11 @@ public class FeatureTagTablePanel< O > extends JPanel
 		}
 
 		@Override
-		public Component getTableCellRendererComponent( final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row, final int column )
+		public Component getTableCellRendererComponent( final JTable table, final Object value,
+				final boolean isSelected, final boolean hasFocus, final int row, final int column )
 		{
-			final JLabel renderer = ( JLabel ) defaultRenderer.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
+			final JLabel renderer = ( JLabel ) defaultRenderer.getTableCellRendererComponent( table, value, isSelected,
+					hasFocus, row, column );
 			renderer.setFont( bold ? boldFont : normalFont );
 			renderer.setBorder( border );
 			renderer.setBackground( HEADER_BG_COLOR );
@@ -735,7 +739,8 @@ public class FeatureTagTablePanel< O > extends JPanel
 
 		public MyTableCellRenderer()
 		{
-			this.normalBorder = ( ( JLabel ) super.getTableCellRendererComponent( table, "", false, false, 0, 0 ) ).getBorder();
+			this.normalBorder =
+					( ( JLabel ) super.getTableCellRendererComponent( table, "", false, false, 0, 0 ) ).getBorder();
 			this.highlightBorderCenter = BorderFactory.createMatteBorder( 2, 0, 2, 0, HIGHLIGHT_BORDER_COLOR );
 			this.highlightBorderLeft = BorderFactory.createMatteBorder( 2, 2, 2, 0, HIGHLIGHT_BORDER_COLOR );
 			this.highlightBorderRight = BorderFactory.createMatteBorder( 2, 0, 2, 2, HIGHLIGHT_BORDER_COLOR );
@@ -750,7 +755,8 @@ public class FeatureTagTablePanel< O > extends JPanel
 		}
 
 		@Override
-		public Component getTableCellRendererComponent( final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row, final int column )
+		public Component getTableCellRendererComponent( final JTable table, final Object value,
+				final boolean isSelected, final boolean hasFocus, final int row, final int column )
 		{
 			final JComponent c;
 			if ( value instanceof Boolean )
@@ -762,7 +768,8 @@ public class FeatureTagTablePanel< O > extends JPanel
 			}
 			else
 			{
-				c = ( JComponent ) super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
+				c = ( JComponent ) super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row,
+						column );
 			}
 
 			c.setBorder( normalBorder );
@@ -876,7 +883,8 @@ public class FeatureTagTablePanel< O > extends JPanel
 		{
 			if ( c instanceof JComponent )
 			{
-				final InputMap inputMap = ( ( JComponent ) c ).getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+				final InputMap inputMap =
+						( ( JComponent ) c ).getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
 				final KeyStroke[] tableKeys = inputMap.allKeys();
 				if ( tableKeys != null )
 					allTableKeys.addAll( Arrays.asList( tableKeys ) );

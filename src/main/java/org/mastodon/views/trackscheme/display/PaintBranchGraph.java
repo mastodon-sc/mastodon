@@ -58,7 +58,8 @@ public class PaintBranchGraph extends PaintGraph
 	}
 
 	@Override
-	public double distanceToPaintedEdge( final double x0, final double y0, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
+	public double distanceToPaintedEdge( final double x0, final double y0, final ScreenEdge edge,
+			final ScreenVertex source, final ScreenVertex target )
 	{
 		final double xs = source.getX();
 		final double xt = target.getX();
@@ -75,7 +76,7 @@ public class PaintBranchGraph extends PaintGraph
 	@Override
 	public boolean isInsidePaintedVertex( double x, double y, ScreenVertex vertex )
 	{
-		if( y >= vertex.getYStart() && y <= vertex.getY() && Math.abs( x - vertex.getX() ) <= 2 )
+		if ( y >= vertex.getYStart() && y <= vertex.getY() && Math.abs( x - vertex.getX() ) <= 2 )
 			return true;
 		return super.isInsidePaintedVertex( x, y, vertex );
 	}
@@ -84,7 +85,7 @@ public class PaintBranchGraph extends PaintGraph
 	protected void drawVertex( ScreenVertex vertex )
 	{
 		boolean resetStroke = setStroke( vertex );
-		g2.drawLine( (int) vertex.getX(), (int) vertex.getYStart(), (int) vertex.getX(), (int) vertex.getY());
+		g2.drawLine( ( int ) vertex.getX(), ( int ) vertex.getYStart(), ( int ) vertex.getX(), ( int ) vertex.getY() );
 		resetStroke( resetStroke );
 
 		super.drawVertex( vertex );
@@ -95,7 +96,8 @@ public class PaintBranchGraph extends PaintGraph
 		final ScreenVertex.Transition transition = vertex.getTransition();
 		final double ratio = vertex.getInterpolationCompletionRatio();
 
-		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean highlighted =
+				( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
 		final boolean ghost = vertex.isGhost();

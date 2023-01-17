@@ -69,7 +69,8 @@ public class EllpsoidIteratorExample
 		sourceTransform.set( 1, 1, 1 );
 		sourceTransform.set( 2, 2, 2 );
 
-		final BdvStackSource< UnsignedByteType > bdv = BdvFunctions.show( img, "img", Bdv.options().sourceTransform( sourceTransform ) );
+		final BdvStackSource< UnsignedByteType > bdv =
+				BdvFunctions.show( img, "img", Bdv.options().sourceTransform( sourceTransform ) );
 
 		final ModelGraph graph = new ModelGraph();
 		final Spot spot = graph.addVertex().init( 0,
@@ -126,7 +127,6 @@ public class EllpsoidIteratorExample
 
 		BdvFunctions.showOverlay( overlay, "spot", Bdv.options().addTo( bdv ) );
 	}
-
 
 	// copy of ScreenVertexMath from BDV view using Spot instead of ScreenVertex
 	static class ScreenVertexMath
@@ -458,7 +458,8 @@ public class EllpsoidIteratorExample
 		 * @return {@code true} if the ellipsoid projection intersects with the
 		 *         rectangle.
 		 */
-		public boolean projectionIntersectsViewInterval( final double minX, final double maxX, final double minY, final double maxY )
+		public boolean projectionIntersectsViewInterval( final double minX, final double maxX, final double minY,
+				final double maxY )
 		{
 			computeProjection();
 			computeProjectedPrecision();
@@ -507,7 +508,8 @@ public class EllpsoidIteratorExample
 		 * @return {@code true} if the ellipsoid plane-intersection intersects with
 		 *         the rectangle.
 		 */
-		public boolean intersectionIntersectsViewInterval( final double minX, final double maxX, final double minY, final double maxY )
+		public boolean intersectionIntersectsViewInterval( final double minX, final double maxX, final double minY,
+				final double maxY )
 		{
 			computeIntersection();
 

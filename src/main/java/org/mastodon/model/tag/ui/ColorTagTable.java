@@ -98,7 +98,8 @@ public class ColorTagTable< C, T > extends AbstractTagTable< C, T, ColorTagTable
 	@Override
 	protected Elements wrap( final C wrapped )
 	{
-		return new Elements( wrapped ) {
+		return new Elements( wrapped )
+		{
 			@Override
 			protected Element wrap( final T wrapped )
 			{

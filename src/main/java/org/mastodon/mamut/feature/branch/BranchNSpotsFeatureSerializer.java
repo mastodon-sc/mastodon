@@ -45,7 +45,7 @@ import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )
-public class BranchNSpotsFeatureSerializer implements BranchFeatureSerializer< BranchNSpotsFeature, BranchSpot, Spot>
+public class BranchNSpotsFeatureSerializer implements BranchFeatureSerializer< BranchNSpotsFeature, BranchSpot, Spot >
 {
 
 	@Override
@@ -78,7 +78,8 @@ public class BranchNSpotsFeatureSerializer implements BranchFeatureSerializer< B
 			final ModelBranchGraph branchGraph,
 			final ModelGraph graph ) throws IOException
 	{
-		final IntPropertyMap< Spot > lmap = BranchFeatureSerializer.branchSpotMapToMap( feature.map, branchGraph, graph );
+		final IntPropertyMap< Spot > lmap =
+				BranchFeatureSerializer.branchSpotMapToMap( feature.map, branchGraph, graph );
 		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( lmap );
 		propertyMapSerializer.writePropertyMap( idmap, oos );
 	}

@@ -114,23 +114,39 @@ import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 public class ProjectManager
 {
 	public static final String CREATE_PROJECT = "create new project";
+
 	public static final String CREATE_PROJECT_FROM_URL = "create new project from url";
+
 	public static final String LOAD_PROJECT = "load project";
+
 	public static final String SAVE_PROJECT = "save project";
+
 	public static final String SAVE_PROJECT_AS = "save project as";
+
 	public static final String IMPORT_TGMM = "import tgmm";
+
 	public static final String IMPORT_SIMI = "import simi";
+
 	public static final String IMPORT_MAMUT = "import mamut";
+
 	public static final String EXPORT_MAMUT = "export mamut";
 
 	static final String[] CREATE_PROJECT_KEYS = new String[] { "not mapped" };
+
 	static final String[] CREATE_PROJECT_FROM_URL_KEYS = new String[] { "not mapped" };
+
 	static final String[] LOAD_PROJECT_KEYS = new String[] { "not mapped" };
+
 	static final String[] SAVE_PROJECT_KEYS = new String[] { "not mapped" };
+
 	static final String[] SAVE_PROJECT_AS_KEYS = new String[] { "not mapped" };
+
 	static final String[] IMPORT_TGMM_KEYS = new String[] { "not mapped" };
+
 	static final String[] IMPORT_SIMI_KEYS = new String[] { "not mapped" };
+
 	static final String[] IMPORT_MAMUT_KEYS = new String[] { "not mapped" };
+
 	static final String[] EXPORT_MAMUT_KEYS = new String[] { "not mapped" };
 
 	private static final String GUI_TAG = "MamutGui";
@@ -156,8 +172,10 @@ public class ProjectManager
 			descriptions.add( LOAD_PROJECT, LOAD_PROJECT_KEYS, "Load a project." );
 			descriptions.add( SAVE_PROJECT, SAVE_PROJECT_KEYS, "Save the current project." );
 			descriptions.add( SAVE_PROJECT_AS, SAVE_PROJECT_AS_KEYS, "Save the current project in a new file." );
-			descriptions.add( IMPORT_TGMM, IMPORT_TGMM_KEYS, "Import tracks from TGMM xml files into the current project." );
-			descriptions.add( IMPORT_SIMI, IMPORT_SIMI_KEYS, "Import tracks from a Simi Biocell .sbd into the current project." );
+			descriptions.add( IMPORT_TGMM, IMPORT_TGMM_KEYS,
+					"Import tracks from TGMM xml files into the current project." );
+			descriptions.add( IMPORT_SIMI, IMPORT_SIMI_KEYS,
+					"Import tracks from a Simi Biocell .sbd into the current project." );
 			descriptions.add( IMPORT_MAMUT, IMPORT_MAMUT_KEYS, "Import a MaMuT project." );
 			descriptions.add( EXPORT_MAMUT, EXPORT_MAMUT_KEYS, "Export current project as a MaMuT project." );
 		}
@@ -283,7 +301,8 @@ public class ProjectManager
 			final JLabel lblPassword = new JLabel( "Password" );
 			final JPasswordField passwordField = new JPasswordField();
 			final Object[] ob = { lblUsername, textFieldUsername, lblPassword, passwordField };
-			final int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
+			final int result =
+					JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
 
 			if ( result == JOptionPane.OK_OPTION )
 			{
@@ -435,7 +454,7 @@ public class ProjectManager
 							np.setSpaceUnits( project.getSpaceUnits() );
 							np.setTimeUnits( project.getTimeUnits() );
 							project = np;
-							
+
 							// Export the settings file with what we can put in.
 							final Element root = new Element( "Settings" );
 							final SharedBigDataViewerData sbdv = appModel.getSharedBdvData();
@@ -445,11 +464,13 @@ public class ProjectManager
 							final Document doc = new Document( root );
 							final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
 							final String xmlFilename = bdvFile.getAbsolutePath();
-							final String settings = xmlFilename.substring( 0, xmlFilename.length() - ".xml".length() ) + ".settings" + ".xml";
+							final String settings = xmlFilename.substring( 0, xmlFilename.length() - ".xml".length() )
+									+ ".settings" + ".xml";
 							xout.output( doc, new FileWriter( settings ) );
 
 							// Reopen the image data from the new BDV file.
-							final SharedBigDataViewerData sharedBdvData = openImageData( project, windowManager, false );
+							final SharedBigDataViewerData sharedBdvData =
+									openImageData( project, windowManager, false );
 
 							// Recreate app model.
 							final MamutAppModel nAppModel = new MamutAppModel(
@@ -646,7 +667,7 @@ public class ProjectManager
 
 		// Check whether the project points to a BDV file.
 		final String canonicalPath = project.getDatasetXmlFile().getAbsolutePath();
-		if ( !canonicalPath.endsWith( ".xml" )  && !canonicalPath.endsWith( DummySpimData.DUMMY ) )
+		if ( !canonicalPath.endsWith( ".xml" ) && !canonicalPath.endsWith( DummySpimData.DUMMY ) )
 		{
 			final ImagePlus imp;
 
@@ -688,7 +709,8 @@ public class ProjectManager
 		updateEnabledActions();
 	}
 
-	private static void loadModel( final WindowManager windowManager, final SharedBigDataViewerData sharedBdvData, final MamutProject project, final boolean restoreGUIState ) throws IOException
+	private static void loadModel( final WindowManager windowManager, final SharedBigDataViewerData sharedBdvData,
+			final MamutProject project, final boolean restoreGUIState ) throws IOException
 	{
 		/*
 		 * Try to read units from spimData is they are not present
@@ -974,32 +996,34 @@ public class ProjectManager
 
 		// Open dummy data string?
 		String spimDataXmlFilename = project.getDatasetXmlFile().getPath();
-		if( DummySpimData.isDummyString( spimDataXmlFilename ) )
+		if ( DummySpimData.isDummyString( spimDataXmlFilename ) )
 			return SharedBigDataViewerData.fromDummyFilename( spimDataXmlFilename, options, requestRepaint );
 
 		// Open dummy data flag?
-		if( dummyData )
-			return openDummyImageData(project, options, requestRepaint);
+		if ( dummyData )
+			return openDummyImageData( project, options, requestRepaint );
 
 		return SharedBigDataViewerData.fromSpimDataXmlFile( project.getDatasetXmlFile().getAbsolutePath(),
 				options,
 				requestRepaint );
 	}
 
-	private static SharedBigDataViewerData openDummyImageData( MamutProject project, ViewerOptions options, RequestRepaint requestRepaint )
+	private static SharedBigDataViewerData openDummyImageData( MamutProject project, ViewerOptions options,
+			RequestRepaint requestRepaint )
 	{
 		try
 		{
 			String backupDatasetXml = originalOrBackupDatasetXml( project ).getAbsolutePath();
 			return SharedBigDataViewerData.createDummyDataFromSpimDataXml( backupDatasetXml, options, requestRepaint );
 		}
-		catch( Throwable e )
+		catch ( Throwable e )
 		{
 			return simpleDummyData( project, options, requestRepaint );
 		}
 	}
 
-	private static SharedBigDataViewerData simpleDummyData( MamutProject project, ViewerOptions options, RequestRepaint requestRepaint )
+	private static SharedBigDataViewerData simpleDummyData( MamutProject project, ViewerOptions options,
+			RequestRepaint requestRepaint )
 	{
 		try (final MamutProject.ProjectReader reader = project.openForReading())
 		{
@@ -1020,7 +1044,8 @@ public class ProjectManager
 		double x = 0;
 		double y = 0;
 		double z = 0;
-		for(Spot spot : model.getGraph().vertices()) {
+		for ( Spot spot : model.getGraph().vertices() )
+		{
 			time = Math.max( time, spot.getTimepoint() );
 			double radius = Math.sqrt( spot.getBoundingSphereRadiusSquared() );
 			x = Math.max( x, spot.getDoublePosition( 0 ) + radius );
@@ -1028,15 +1053,15 @@ public class ProjectManager
 			z = Math.max( z, spot.getDoublePosition( 2 ) + radius );
 		}
 		return String.format( "x=%s y=%s z=%s t=%s.dummy",
-				roundUp(x) + 1,
-				roundUp(y) + 1,
-				roundUp(z) + 1,
-				time + 1);
+				roundUp( x ) + 1,
+				roundUp( y ) + 1,
+				roundUp( z ) + 1,
+				time + 1 );
 	}
 
 	private static long roundUp( double x )
 	{
-		return (long) Math.ceil( x );
+		return ( long ) Math.ceil( x );
 	}
 
 	private static File originalOrBackupDatasetXml( MamutProject project )
@@ -1057,8 +1082,8 @@ public class ProjectManager
 
 	private static File copyBackupDatasetXmlToTmpFile( MamutProject project ) throws IOException
 	{
-		try ( final MamutProject.ProjectReader reader = project.openForReading();
-				final InputStream is = reader.getBackupDatasetXmlInputStream() )
+		try (final MamutProject.ProjectReader reader = project.openForReading();
+				final InputStream is = reader.getBackupDatasetXmlInputStream())
 		{
 			File tmp = File.createTempFile( "mastodon-dataset-xml-backup", ".xml" );
 			tmp.deleteOnExit();
@@ -1072,10 +1097,10 @@ public class ProjectManager
 	 */
 	private void saveBackupDatasetXml( final File tmpDatasetXml, final ProjectWriter projectWriter )
 	{
-		if( tmpDatasetXml == null )
+		if ( tmpDatasetXml == null )
 			return;
 
-		try ( OutputStream out = projectWriter.getBackupDatasetXmlOutputStream() )
+		try (OutputStream out = projectWriter.getBackupDatasetXmlOutputStream())
 		{
 			Files.copy( tmpDatasetXml.toPath(), out );
 		}
@@ -1108,14 +1133,15 @@ public class ProjectManager
 		message += "\n";
 		message += "How would you like to continue?";
 		String[] options = { "Open With Dummy Images", "Cancel" };
-		int dialogResult = JOptionPane.showOptionDialog( null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, null );
+		int dialogResult = JOptionPane.showOptionDialog( null, message, title, JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE, null, options, null );
 		return dialogResult == JOptionPane.YES_OPTION;
 	}
 
 	private static String getProblemDescription( MamutProject project, Exception e )
 	{
 		File datasetXml = project.getDatasetXmlFile();
-		if( !datasetXml.exists() )
+		if ( !datasetXml.exists() )
 			return "The image data XML was not found:\n" + datasetXml;
 		final Throwable cause = e.getCause();
 		if ( cause instanceof UnknownHostException )

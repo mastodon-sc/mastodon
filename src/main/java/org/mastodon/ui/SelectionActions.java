@@ -66,19 +66,31 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 {
 
 	public static final String DELETE_SELECTION = "delete selection";
+
 	public static final String SELECT_WHOLE_TRACK = "select whole track";
+
 	public static final String SELECT_TRACK_DOWNWARD = "select track downward";
+
 	public static final String SELECT_TRACK_UPWARD = "select track upward";
+
 	public static final String SELECT_ALL = "select all";
+
 	public static final String SELECT_ALL_EDGES = "select all links";
+
 	public static final String SELECT_ALL_VERTICES = "select all spots";
 
 	public static final String[] DELETE_SELECTION_KEYS = new String[] { "shift DELETE" };
+
 	public static final String[] SELECT_WHOLE_TRACK_KEYS = new String[] { "shift SPACE" };
+
 	public static final String[] SELECT_TRACK_DOWNWARD_KEYS = new String[] { "shift PAGE_DOWN" };
+
 	public static final String[] SELECT_TRACK_UPWARD_KEYS = new String[] { "shift PAGE_UP" };
+
 	public static final String[] SELECT_ALL_KEYS = new String[] { "ctrl A", "meta A" };
+
 	public static final String[] SELECT_ALL_EDGES_KEYS = new String[] { "ctrl shift A", "meta shift A" };
+
 	public static final String[] SELECT_ALL_VERTICES_KEYS = new String[] { "ctrl alt  A", "meta alt A" };
 
 	/*
@@ -96,9 +108,12 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
 			descriptions.add( DELETE_SELECTION, DELETE_SELECTION_KEYS, "Delete current selection." );
-			descriptions.add( SELECT_WHOLE_TRACK, SELECT_WHOLE_TRACK_KEYS, "Select the whole track of the current spot." );
-			descriptions.add( SELECT_TRACK_DOWNWARD, SELECT_TRACK_DOWNWARD_KEYS, "Select the track downward from the current spot." );
-			descriptions.add( SELECT_TRACK_UPWARD, SELECT_TRACK_UPWARD_KEYS, "Select the track upward form the current spot." );
+			descriptions.add( SELECT_WHOLE_TRACK, SELECT_WHOLE_TRACK_KEYS,
+					"Select the whole track of the current spot." );
+			descriptions.add( SELECT_TRACK_DOWNWARD, SELECT_TRACK_DOWNWARD_KEYS,
+					"Select the track downward from the current spot." );
+			descriptions.add( SELECT_TRACK_UPWARD, SELECT_TRACK_UPWARD_KEYS,
+					"Select the track upward form the current spot." );
 			descriptions.add( SELECT_ALL, SELECT_ALL_KEYS, "Select all spots and links." );
 			descriptions.add( SELECT_ALL_VERTICES, SELECT_ALL_VERTICES_KEYS, "Select all spots." );
 			descriptions.add( SELECT_ALL_EDGES, SELECT_ALL_EDGES_KEYS, "Select all links." );
@@ -186,12 +201,12 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		selectWholeTrackAction = new TrackSelectionAction( SELECT_WHOLE_TRACK, SearchDirection.UNDIRECTED );
 		selectTrackDownwardAction = new TrackSelectionAction( SELECT_TRACK_DOWNWARD, SearchDirection.DIRECTED );
 		selectTrackUpwardAction = new TrackSelectionAction( SELECT_TRACK_UPWARD, SearchDirection.REVERSED );
-		selectAllAction = new SelectAllAction( SELECT_ALL, true, true);
-		selectAllVerticesAction = new SelectAllAction( SELECT_ALL_VERTICES, true, false);
-		selectAllEdgesAction = new SelectAllAction( SELECT_ALL_EDGES, false, true);
+		selectAllAction = new SelectAllAction( SELECT_ALL, true, true );
+		selectAllVerticesAction = new SelectAllAction( SELECT_ALL_VERTICES, true, false );
+		selectAllEdgesAction = new SelectAllAction( SELECT_ALL_EDGES, false, true );
 	}
 
-	class DeleteSelectionAction	extends AbstractNamedAction
+	class DeleteSelectionAction extends AbstractNamedAction
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -287,7 +302,8 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 					}
 
 					@Override
-					public void processEdge( final E edge, final V from, final V to, final DepthFirstSearch< V, E > search )
+					public void processEdge( final E edge, final V from, final V to,
+							final DepthFirstSearch< V, E > search )
 					{
 						selection.setSelected( edge, true );
 					}
@@ -335,9 +351,9 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			{
 				selection.pauseListeners();
 				selection.clearSelection();
-				if (selectVertices)
+				if ( selectVertices )
 					selection.setVerticesSelected( graph.vertices(), true );
-				if (selectEdges)
+				if ( selectEdges )
 					selection.setEdgesSelected( graph.edges(), true );
 
 			}

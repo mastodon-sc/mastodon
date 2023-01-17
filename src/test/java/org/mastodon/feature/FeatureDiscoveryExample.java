@@ -40,9 +40,11 @@ import org.scijava.plugin.PluginService;
 
 public class FeatureDiscoveryExample
 {
-	public static class ExampleSpot {};
+	public static class ExampleSpot
+	{};
 
-	public static class ExampleLink {};
+	public static class ExampleLink
+	{};
 
 	public static class F1 implements Feature< ExampleSpot >
 	{

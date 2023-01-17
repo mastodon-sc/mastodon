@@ -132,7 +132,8 @@ public class MastodonLauncher extends JFrame
 		if ( !gui.importSimiBioCellPanel.checkBDVFile() )
 			return;
 
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 		disabler.disable();
 
 		new Thread( () -> {
@@ -153,7 +154,8 @@ public class MastodonLauncher extends JFrame
 				final int maxtp = timePointsOrdered.size() - 1;
 				final int setupID = seq.getViewSetupsOrdered().get( setupIndex ).getId();
 
-				final int frameOffset = ( ( Number ) gui.importSimiBioCellPanel.spinnerTimeOffset.getValue() ).intValue();
+				final int frameOffset =
+						( ( Number ) gui.importSimiBioCellPanel.spinnerTimeOffset.getValue() ).intValue();
 
 				// maps frame to timepoint index
 				final IntUnaryOperator frameToTimepointFunction = frame -> {
@@ -194,7 +196,8 @@ public class MastodonLauncher extends JFrame
 				};
 				final int radius = Integer.parseInt( gui.importSimiBioCellPanel.spotRadiusTextField.getText() );
 				final boolean interpolateMissingSpots = gui.importSimiBioCellPanel.interpolateCheckBox.isSelected();
-				SimiImporter.read( sbdFilename, frameToTimepointFunction, labelFunction, positionFunction, radius, interpolateMissingSpots, model );
+				SimiImporter.read( sbdFilename, frameToTimepointFunction, labelFunction, positionFunction, radius,
+						interpolateMissingSpots, model );
 				new MainWindow( windowManager ).setVisible( true );
 				dispose();
 			}
@@ -227,7 +230,8 @@ public class MastodonLauncher extends JFrame
 		if ( !gui.importTGMMPanel.checkBDVFile( false ) || !gui.importTGMMPanel.checkTGMMFolder() )
 			return;
 
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 		disabler.disable();
 
 		new Thread( () -> {
@@ -252,7 +256,8 @@ public class MastodonLauncher extends JFrame
 				final int setupID = seq.getViewSetupsOrdered().get( setupIndex ).getId();
 
 				// Run import.
-				final TimePoints timepoints = new TimePointsPattern( gui.importTGMMPanel.timepointPatternTextField.getText() );
+				final TimePoints timepoints =
+						new TimePointsPattern( gui.importTGMMPanel.timepointPatternTextField.getText() );
 				final double nSigmas = Double.parseDouble( gui.importTGMMPanel.nSigmasTextField.getText() );
 				if ( gui.importTGMMPanel.covCheckBox.isSelected() )
 				{
@@ -262,10 +267,12 @@ public class MastodonLauncher extends JFrame
 						gui.importTGMMPanel.labelInfo.setText( "<html>Cannot parse the covariance pattern.</html>" );
 						return;
 					}
-					TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ), viewRegistrations, setupID, nSigmas, cov, model );
+					TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ),
+							viewRegistrations, setupID, nSigmas, cov, model );
 				}
 				else
-					TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ), viewRegistrations, setupID, nSigmas, model );
+					TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ),
+							viewRegistrations, setupID, nSigmas, model );
 
 				// Success? We move on.
 				new MainWindow( windowManager ).setVisible( true );
@@ -336,7 +343,8 @@ public class MastodonLauncher extends JFrame
 				return;
 
 			final File file = new File( gui.newMastodonProjectPanel.textAreaFile.getText() );
-			final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+			final EverythingDisablerAndReenabler disabler =
+					new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 			disabler.disable();
 			new Thread( () -> {
 				try
@@ -370,14 +378,15 @@ public class MastodonLauncher extends JFrame
 				gui.newMastodonProjectPanel.labelInfo.setText( "Invalid image." );
 				return;
 			}
-			final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+			final EverythingDisablerAndReenabler disabler =
+					new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 			disabler.disable();
 			new Thread( () -> {
 				try
 				{
 					final WindowManager windowManager = createWindowManager();
 					final MainWindow mainWindow = new MainWindow( windowManager );
-					
+
 					/*
 					 * Action when user closes source image plus.
 					 */
@@ -407,20 +416,23 @@ public class MastodonLauncher extends JFrame
 										MastodonIcons.MASTODON_ICON_MEDIUM );
 								if ( val == JOptionPane.YES_OPTION )
 								{
-									final ActionMap actionMap = windowManager.getAppModel().getAppActions().getActionMap();
-									final boolean hasBeenClosed = mainWindow.close( windowManager, actionMap.get( ProjectManager.SAVE_PROJECT ), e );
+									final ActionMap actionMap =
+											windowManager.getAppModel().getAppActions().getActionMap();
+									final boolean hasBeenClosed = mainWindow.close( windowManager,
+											actionMap.get( ProjectManager.SAVE_PROJECT ), e );
 									if ( hasBeenClosed )
 										window.close();
 								}
 							}
 						} );
 					}
-					
+
 					// Check whether the imp can be found on disk.
 					if ( imp.getOriginalFileInfo() == null ||
 							imp.getOriginalFileInfo().directory == null ||
 							imp.getOriginalFileInfo().fileName == null ||
-							!new File( imp.getOriginalFileInfo().directory, imp.getOriginalFileInfo().fileName ).exists() )
+							!new File( imp.getOriginalFileInfo().directory, imp.getOriginalFileInfo().fileName )
+									.exists() )
 					{
 						JOptionPane.showMessageDialog( gui,
 								"Warning.\n"
@@ -510,7 +522,8 @@ public class MastodonLauncher extends JFrame
 			return;
 		}
 
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 		disabler.disable();
 		new Thread( () -> {
 			try
@@ -562,7 +575,8 @@ public class MastodonLauncher extends JFrame
 
 	private void importMaMuT()
 	{
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 		disabler.disable();
 		final File file = FileChooser.chooseFile(
 				this,
@@ -601,7 +615,8 @@ public class MastodonLauncher extends JFrame
 
 	private void loadMastodonProject( final String projectPath )
 	{
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 		disabler.disable();
 		gui.showPanel( LauncherGUI.LOGGER_KEY );
 		new Thread( () -> {

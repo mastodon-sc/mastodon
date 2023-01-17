@@ -46,7 +46,8 @@ import org.scijava.listeners.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public class ForwardingNavigationHandler< V, E > implements NavigationHandler< V, E >, NavigationListener< V, E >, ForwardingModel< NavigationHandler< V, E > >
+public class ForwardingNavigationHandler< V, E >
+		implements NavigationHandler< V, E >, NavigationListener< V, E >, ForwardingModel< NavigationHandler< V, E > >
 {
 	private NavigationHandler< V, E > handler;
 
@@ -91,7 +92,7 @@ public class ForwardingNavigationHandler< V, E > implements NavigationHandler< V
 		handler = newHandler;
 	}
 
-	public static class Factory< V, E> implements GroupableModelFactory< NavigationHandler< V, E > >
+	public static class Factory< V, E > implements GroupableModelFactory< NavigationHandler< V, E > >
 	{
 		@Override
 		public NavigationHandler< V, E > createBackingModel()

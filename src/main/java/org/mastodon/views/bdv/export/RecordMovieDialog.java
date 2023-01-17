@@ -156,7 +156,8 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		{
 			final InputActionBindings keybindings = new InputActionBindings();
 			SwingUtilities.replaceUIActionMap( dialog.rootPane, keybindings.getConcatenatedActionMap() );
-			SwingUtilities.replaceUIInputMap( dialog.rootPane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+			SwingUtilities.replaceUIInputMap( dialog.rootPane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+					keybindings.getConcatenatedInputMap() );
 
 			final Actions dialogActions = new Actions( keymap.getConfig(), KeyConfigContexts.BIGDATAVIEWER );
 			dialogActions.install( keybindings, "view" );
@@ -169,10 +170,11 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 				dialog.dispose();
 			};
 
-			dialogActions.namedAction( new MyToggleDialogAction( RECORD_MOVIE_DIALOG, dialog ), RECORD_MOVIE_DIALOG_KEYS );
+			dialogActions.namedAction( new MyToggleDialogAction( RECORD_MOVIE_DIALOG, dialog ),
+					RECORD_MOVIE_DIALOG_KEYS );
 			return onClose;
 		}
-		
+
 		return () -> {
 			dialog.setVisible( false );
 			dialog.dispose();
@@ -182,8 +184,11 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 	private static final long serialVersionUID = 1L;
 
 	private static final String EXPORT_TO_MOVIE_KEY = "ExportToMovie";
+
 	private static final String PNG_EXPORT_PATH_KEY = "PNGExportPath";
+
 	private static final String MOVIE_EXPORT_PATH_KEY = "MovieExportPath";
+
 	private static final String FPS_KEY = "FPS";
 
 	private final int maxTimepoint;
@@ -449,7 +454,6 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 			}
 		} );
 
-
 		btnBrowsePNGs.addActionListener( e -> {
 			final File file = FileChooser.chooseFile(
 					FileChooser.useJFileChooser,
@@ -508,12 +512,15 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 		 */
 
 		rdbtnToMovie.setSelected( prefService.getBoolean( RecordMovieDialog.class, EXPORT_TO_MOVIE_KEY, true ) );
-		tfPathPNGs.setText( prefService.get( RecordMovieDialog.class, PNG_EXPORT_PATH_KEY, System.getProperty( "user.home" ) ) );
-		tfPathMovie.setText( prefService.get( RecordMovieDialog.class, MOVIE_EXPORT_PATH_KEY, new File( System.getProperty( "user.home" ), "BDVCapture.mp4" ).getAbsolutePath() ) );
+		tfPathPNGs.setText(
+				prefService.get( RecordMovieDialog.class, PNG_EXPORT_PATH_KEY, System.getProperty( "user.home" ) ) );
+		tfPathMovie.setText( prefService.get( RecordMovieDialog.class, MOVIE_EXPORT_PATH_KEY,
+				new File( System.getProperty( "user.home" ), "BDVCapture.mp4" ).getAbsolutePath() ) );
 		int fps = prefService.getInt( RecordMovieDialog.class, FPS_KEY, 10 );
 		fps = Math.min( 200, Math.max( 1, fps ) );
 		spinnerFPS.setValue( fps );
-		spinnerFPS.addChangeListener( e -> prefService.put( RecordMovieDialog.class, FPS_KEY, ( ( Number ) spinnerFPS.getValue() ).intValue() ) );
+		spinnerFPS.addChangeListener( e -> prefService.put( RecordMovieDialog.class, FPS_KEY,
+				( ( Number ) spinnerFPS.getValue() ).intValue() ) );
 		setCanvasSize( viewer.getWidth(), viewer.getHeight() );
 
 		/*
@@ -545,7 +552,8 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 				{
 					final String filename = tfPathMovie.getText();
 					final int fps = ( ( Number ) spinnerFPS.getValue() ).intValue();
-					recorder = new MovieFileBDVRecorder( viewer, tracksOverlay, colorBarOverlay, progressWriter, filename, fps );
+					recorder = new MovieFileBDVRecorder( viewer, tracksOverlay, colorBarOverlay, progressWriter,
+							filename, fps );
 				}
 
 				final int minTimepointIndex = ( Integer ) spinnerMinTimepoint.getValue();

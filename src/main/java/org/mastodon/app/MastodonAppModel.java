@@ -70,7 +70,8 @@ public class MastodonAppModel<
 		V extends AbstractSpot< V, E, ?, ?, ? >,
 		E extends AbstractListenableEdge< E, V, ?, ? > >
 {
-	public final GroupableModelFactory< NavigationHandler< V, E > > NAVIGATION = new ForwardingNavigationHandler.Factory<>();
+	public final GroupableModelFactory< NavigationHandler< V, E > > NAVIGATION =
+			new ForwardingNavigationHandler.Factory<>();
 
 	public final GroupableModelFactory< TimepointModel > TIMEPOINT = ForwardingTimepointModel.factory;
 

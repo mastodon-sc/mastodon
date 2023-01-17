@@ -47,7 +47,8 @@ public class Link extends AbstractListenableEdge< Link, Spot, LinkPool, ByteMapp
 	@Override
 	public String toString()
 	{
-		return String.format( "Link( %d -> %d )", getSource().getInternalPoolIndex(), getTarget().getInternalPoolIndex() );
+		return String.format( "Link( %d -> %d )", getSource().getInternalPoolIndex(),
+				getTarget().getInternalPoolIndex() );
 	}
 
 	Link( final LinkPool pool )

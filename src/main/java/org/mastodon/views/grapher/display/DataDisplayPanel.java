@@ -79,7 +79,8 @@ import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TransformListener;
 import bdv.viewer.render.PainterThread;
 
-public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends JPanel implements
+public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends JPanel
+		implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
 		HighlightListener,
@@ -267,7 +268,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 
 		navigationActions = new DataDisplayNavigationActions( graph, autoFocus, selection );
 
-		navigationBehaviours = new DataDisplayNavigationBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
+		navigationBehaviours = new DataDisplayNavigationBehaviours( display, graph, layout, graphOverlay, focus,
+				navigation, selection );
 		screenTransform.listeners().add( navigationBehaviours );
 
 		offsetAxes = new OffsetAxes();
@@ -517,7 +519,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 	{
 		public void navigateToVertex( final DataVertex v, final ScreenTransform currentTransform );
 
-		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target, final ScreenTransform currentTransform );
+		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target,
+				final ScreenTransform currentTransform );
 	}
 
 	private static class CenteringNavigationBehaviour implements NavigationBehaviour
@@ -538,7 +541,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		}
 
 		@Override
-		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target, final ScreenTransform currentTransform )
+		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target,
+				final ScreenTransform currentTransform )
 		{
 			System.err.println( "not implemented: CenteringNavigationBehaviour.navigateToEdge()" );
 			new Throwable().printStackTrace( System.out );
@@ -570,7 +574,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		}
 
 		@Override
-		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target, final ScreenTransform currentTransform )
+		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target,
+				final ScreenTransform currentTransform )
 		{
 			System.err.println( "not implemented: CenterIfInvisibleNavigationBehaviour.navigateToEdge()" );
 			new Throwable().printStackTrace( System.out );
@@ -585,7 +590,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 
 		private final int screenBorderY;
 
-		public MinimalNavigationBehaviour( final InertialScreenTransformEventHandler transformEventHandler, final int screenBorderX, final int screenBorderY )
+		public MinimalNavigationBehaviour( final InertialScreenTransformEventHandler transformEventHandler,
+				final int screenBorderX, final int screenBorderY )
 		{
 			this.transformEventHandler = transformEventHandler;
 			this.screenBorderX = screenBorderX;
@@ -625,7 +631,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		}
 
 		@Override
-		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target, final ScreenTransform currentTransform )
+		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target,
+				final ScreenTransform currentTransform )
 		{
 			final double minX = currentTransform.getMinX();
 			final double maxX = currentTransform.getMaxX();
@@ -784,7 +791,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			if ( duration > 0 )
 			{
 				copyIpStart();
-				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(), colorGenerator );
+				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(),
+						colorGenerator );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator( screenEntitiesIpStart, screenEntitiesIpEnd );
 			}
@@ -792,7 +800,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			{
 				interpolator = null;
 				swapPools();
-				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(), colorGenerator );
+				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(),
+						colorGenerator );
 				lastComputedScreenEntities = screenEntities;
 			}
 		}
@@ -801,7 +810,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		{
 			if ( interpolator != null )
 			{
-				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(), colorGenerator );
+				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(),
+						colorGenerator );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator(
 						screenEntitiesIpStart,
@@ -968,27 +978,33 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 
 		// Prepare the iterator.
 		final RefSet< DataVertex > set = RefCollections.createRefSet( graph.vertices() );
-		final DepthFirstSearch< DataVertex, DataEdge > search = new DepthFirstSearch<>( graph, SearchDirection.UNDIRECTED );
-		search.setTraversalListener( new SearchListener< DataVertex, DataEdge, DepthFirstSearch< DataVertex, DataEdge > >()
-		{
-			@Override
-			public void processVertexLate( final DataVertex vertex, final DepthFirstSearch< DataVertex, DataEdge > search )
-			{}
+		final DepthFirstSearch< DataVertex, DataEdge > search =
+				new DepthFirstSearch<>( graph, SearchDirection.UNDIRECTED );
+		search.setTraversalListener(
+				new SearchListener< DataVertex, DataEdge, DepthFirstSearch< DataVertex, DataEdge > >()
+				{
+					@Override
+					public void processVertexLate( final DataVertex vertex,
+							final DepthFirstSearch< DataVertex, DataEdge > search )
+					{}
 
-			@Override
-			public void processVertexEarly( final DataVertex vertex, final DepthFirstSearch< DataVertex, DataEdge > search )
-			{
-				set.add( vertex );
-			}
+					@Override
+					public void processVertexEarly( final DataVertex vertex,
+							final DepthFirstSearch< DataVertex, DataEdge > search )
+					{
+						set.add( vertex );
+					}
 
-			@Override
-			public void processEdge( final DataEdge edge, final DataVertex from, final DataVertex to, final DepthFirstSearch< DataVertex, DataEdge > search )
-			{}
+					@Override
+					public void processEdge( final DataEdge edge, final DataVertex from, final DataVertex to,
+							final DepthFirstSearch< DataVertex, DataEdge > search )
+					{}
 
-			@Override
-			public void crossComponent( final DataVertex from, final DataVertex to, final DepthFirstSearch< DataVertex, DataEdge > search )
-			{}
-		} );
+					@Override
+					public void crossComponent( final DataVertex from, final DataVertex to,
+							final DepthFirstSearch< DataVertex, DataEdge > search )
+					{}
+				} );
 
 		for ( final DataVertex v : toSearch )
 			if ( !set.contains( v ) )

@@ -81,22 +81,19 @@ public class MamutActions
 
 	private final LinkSpotsInSelection linkSpotsInSelection;
 
-
 	public MamutActions( final MamutAppModel appModel )
 	{
 		this.appModel = appModel;
 		this.linkSpotsInSelection = new LinkSpotsInSelection( LINK_SELECTED_SPOTS );
 	}
 
-
 	public static void install(
 			final Actions actions,
-			final MamutAppModel appModel)
+			final MamutAppModel appModel )
 	{
-		final MamutActions mamutActions = new MamutActions(appModel);
+		final MamutActions mamutActions = new MamutActions( appModel );
 		actions.namedAction( mamutActions.linkSpotsInSelection, LINK_SELECTED_SPOTS_KEYS );
 	}
-
 
 	private class LinkSpotsInSelection extends AbstractNamedAction
 	{

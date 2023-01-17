@@ -96,7 +96,7 @@ class LauncherUtil
 		}
 		catch (
 
-		final IOException e )
+			final IOException e )
 		{
 			editorPane.setText( "Attempted to read a bad URL: " + helpURL );
 		}
@@ -118,9 +118,11 @@ class LauncherUtil
 		f.setVisible( true );
 	}
 
-	static final void browseToBDVFile( final String suggestedFile, final JTextArea target, final Runnable onSucess, final JComponent parent )
+	static final void browseToBDVFile( final String suggestedFile, final JTextArea target, final Runnable onSucess,
+			final JComponent parent )
 	{
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( parent, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( parent, new Class[] { JLabel.class } );
 		disabler.disable();
 		try
 		{

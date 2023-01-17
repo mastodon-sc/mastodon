@@ -34,7 +34,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 
 public class OverlayVertexWrapperBimap< V extends Vertex< E >, E extends Edge< V > >
-	implements RefBimap< V, OverlayVertexWrapper< V, E > >
+		implements RefBimap< V, OverlayVertexWrapper< V, E > >
 {
 	private final RefCollection< OverlayVertexWrapper< V, E > > vertices;
 

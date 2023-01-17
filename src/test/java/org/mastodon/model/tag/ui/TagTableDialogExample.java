@@ -85,8 +85,8 @@ public class TagTableDialogExample
 					elements,
 					MyElements::addElement,
 					MyElements::size,
-					(c, e ) -> c.remove( e ),
-					(c, i) -> c.get( i ),
+					( c, e ) -> c.remove( e ),
+					( c, i ) -> c.get( i ),
 					MyElement::setName,
 					MyElement::getName );
 
@@ -99,7 +99,8 @@ public class TagTableDialogExample
 		}
 	}
 
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException
+	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException
 	{
 		final MyElements elements = new MyElements();
 		elements.add( new MyElement( "element 1" ) );

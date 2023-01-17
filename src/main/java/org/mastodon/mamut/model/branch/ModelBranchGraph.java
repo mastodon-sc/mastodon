@@ -45,7 +45,8 @@ import net.imglib2.RealLocalizable;
  * @author Jean-Yves Tinevez.
  *
  */
-public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchSpot, BranchLink, BranchSpotPool, BranchLinkPool, ByteMappedElement >
+public class ModelBranchGraph
+		extends BranchGraphImp< Spot, Link, BranchSpot, BranchLink, BranchSpotPool, BranchLinkPool, ByteMappedElement >
 {
 
 	public ModelBranchGraph( final ModelGraph graph )
@@ -55,7 +56,8 @@ public class ModelBranchGraph extends BranchGraphImp< Spot, Link, BranchSpot, Br
 
 	public ModelBranchGraph( final ModelGraph graph, final int initialCapacity )
 	{
-		super( graph, new BranchLinkPool( initialCapacity, new BranchSpotPool( initialCapacity, graph.vertices().getRefPool() ) ) );
+		super( graph, new BranchLinkPool( initialCapacity,
+				new BranchSpotPool( initialCapacity, graph.vertices().getRefPool() ) ) );
 	}
 
 	@Override

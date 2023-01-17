@@ -43,7 +43,7 @@ import org.mastodon.graph.branch.BranchGraph;
  * @param <BE>
  *            the type of vertices in the branch graph.
  */
-public class BranchGraphEdgeBimap< E extends Edge< ? >, BE extends Edge< ? > > implements RefBimap<E, BE>
+public class BranchGraphEdgeBimap< E extends Edge< ? >, BE extends Edge< ? > > implements RefBimap< E, BE >
 {
 
 	private final BranchGraph< ?, BE, ?, E > branchGraph;

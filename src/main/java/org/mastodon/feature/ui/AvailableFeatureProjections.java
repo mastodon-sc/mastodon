@@ -72,7 +72,6 @@ public interface AvailableFeatureProjections
 	 */
 	public Collection< String > projectionKeys( final TargetType targetType, final String featureKey );
 
-
 	/**
 	 * Get the multiplicity of the feature with the specified {@code targetType}
 	 * and {@code String} key.

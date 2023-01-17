@@ -37,7 +37,8 @@ import org.mastodon.model.HighlightModel;
 
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > implements MouseMotionListener, MouseListener, TransformListener< AffineTransform3D >
+public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+		implements MouseMotionListener, MouseListener, TransformListener< AffineTransform3D >
 {
 	private final OverlayGraph< V, E > overlayGraph;
 
@@ -93,7 +94,8 @@ public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends Ove
 			if ( renderer.getEdgeAt( x, y, BdvSelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
 				highlight.highlightEdge( edge );
 			// See if we can find a vertex.
-			else if ( renderer.getVertexAt( x, y, BdvSelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+			else if ( renderer.getVertexAt( x, y, BdvSelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE, vertex )
+					!= null )
 				highlight.highlightVertex( vertex );
 			else
 				highlight.clearHighlight();

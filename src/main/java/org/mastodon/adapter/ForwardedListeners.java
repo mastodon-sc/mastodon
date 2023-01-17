@@ -33,7 +33,6 @@ import java.util.function.Consumer;
 
 import org.scijava.listeners.Listeners;
 
-
 /**
  * A subset of listeners of type {@code T} forwarding to a wrapped
  * {@link Listeners} instance. It extends the {@code Listeners} interface by a
@@ -140,7 +139,7 @@ public interface ForwardedListeners< T > extends Listeners< T >
 		}
 
 		@Override
-		public synchronized  void removeAll()
+		public synchronized void removeAll()
 		{
 			super.removeAll();
 		}

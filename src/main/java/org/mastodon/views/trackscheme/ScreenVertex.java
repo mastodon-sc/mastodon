@@ -55,15 +55,25 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	public static class ScreenVertexLayout extends PoolObjectLayout
 	{
 		final IndexField origVertex = indexField();
+
 		final DoubleField xOffset = doubleField();
+
 		final DoubleField yOffset = doubleField();
+
 		final DoubleField yStart = doubleField();
+
 		final DoubleField vertexDist = doubleField();
+
 		final BooleanField selected = booleanField();
+
 		final BooleanField ghost = booleanField();
+
 		final ByteField transition = byteField();
+
 		final IndexField ipScreenVertex = indexField();
+
 		final DoubleField ipRatio = doubleField();
+
 		final IntField color = intField();
 	}
 
@@ -74,21 +84,33 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final RefPool< TrackSchemeVertex > trackSchemeVertexPool;
 
 		final IndexAttribute< ScreenVertex > origVertex = new IndexAttribute<>( layout.origVertex, this );
+
 		final DoubleAttribute< ScreenVertex > xOffset = new DoubleAttribute<>( layout.xOffset, this );
+
 		final DoubleAttribute< ScreenVertex > yOffset = new DoubleAttribute<>( layout.yOffset, this );
+
 		final DoubleAttribute< ScreenVertex > yStart = new DoubleAttribute<>( layout.yStart, this );
+
 		final DoubleAttribute< ScreenVertex > vertexDist = new DoubleAttribute<>( layout.vertexDist, this );
+
 		final BooleanAttribute< ScreenVertex > selected = new BooleanAttribute<>( layout.selected, this );
+
 		final BooleanAttribute< ScreenVertex > ghost = new BooleanAttribute<>( layout.ghost, this );
+
 		final ByteAttribute< ScreenVertex > transition = new ByteAttribute<>( layout.transition, this );
+
 		final IndexAttribute< ScreenVertex > ipScreenVertex = new IndexAttribute<>( layout.ipScreenVertex, this );
+
 		final DoubleAttribute< ScreenVertex > ipRatio = new DoubleAttribute<>( layout.ipRatio, this );
+
 		final ObjPropertyMap< ScreenVertex, String > label = new ObjPropertyMap<>( this );
+
 		final IntAttribute< ScreenVertex > color = new IntAttribute<>( layout.color, this );
 
 		public ScreenVertexPool( final int initialCapacity, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
 		{
-			super( initialCapacity, layout, ScreenVertex.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+			super( initialCapacity, layout, ScreenVertex.class,
+					SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
 			this.trackSchemeVertexPool = trackSchemeVertexPool;
 		}
 
@@ -117,7 +139,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		APPEAR( 1 ),
 		DISAPPEAR( 2 ),
 		SELECTING( 3 ),
-		DESELECTING( 4 ), ;
+		DESELECTING( 4 ),;
 
 		private final byte index;
 
@@ -390,19 +412,19 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		return this;
 	}
 
-// TODO REMOVE? should be covered by base class.
-//	@Override
-//	public boolean equals( final Object obj )
-//	{
-//		return obj instanceof ScreenVertex &&
-//				access.equals( ( ( ScreenVertex ) obj ).access );
-//	}
-//
-//	@Override
-//	public int hashCode()
-//	{
-//		return access.hashCode();
-//	}
+	// TODO REMOVE? should be covered by base class.
+	//	@Override
+	//	public boolean equals( final Object obj )
+	//	{
+	//		return obj instanceof ScreenVertex &&
+	//				access.equals( ( ( ScreenVertex ) obj ).access );
+	//	}
+	//
+	//	@Override
+	//	public int hashCode()
+	//	{
+	//		return access.hashCode();
+	//	}
 
 	@Override
 	public String toString()

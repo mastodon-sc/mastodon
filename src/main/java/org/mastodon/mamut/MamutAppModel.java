@@ -102,7 +102,8 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		this.featureColorModeManager = featureColorModeManager;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
-		this.branchGraphSync = new BranchGraphSynchronizer( model.getBranchGraph(), model.getGraph().getLock().readLock() );
+		this.branchGraphSync =
+				new BranchGraphSynchronizer( model.getBranchGraph(), model.getGraph().getLock().readLock() );
 		model.getGraph().addGraphChangeListener( branchGraphSync );
 		/*
 		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead

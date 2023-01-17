@@ -50,7 +50,8 @@ import org.mastodon.graph.Vertex;
  *
  * @author Tobias Pietzsch
  */
-public class GraphColorGeneratorAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
+public class GraphColorGeneratorAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
+		WE extends Edge< WV > >
 		implements GraphColorGenerator< WV, WE >
 {
 	private GraphColorGenerator< V, E > colorGenerator;
@@ -97,6 +98,7 @@ public class GraphColorGeneratorAdapter< V extends Vertex< E >, E extends Edge< 
 		if ( colorGenerator == null )
 			return 0;
 		else
-			return colorGenerator.color( edgeMap.getLeft( edge ), vertexMap.getLeft( source ), vertexMap.getLeft( target ) );
+			return colorGenerator.color( edgeMap.getLeft( edge ), vertexMap.getLeft( source ),
+					vertexMap.getLeft( target ) );
 	}
 }

@@ -181,7 +181,7 @@ public class SpotIntensityFeatureComputer implements MamutFeatureComputer, Cance
 						output.sums.get( iSource ).set( spot, array[ 0 ] );
 						continue;
 					}
-					
+
 					double sum = 0.;
 					for ( int i = 0; i < size; i++ )
 						sum += array[ i ];

@@ -57,7 +57,8 @@ public class SpotTestUtils
 	 *            the transform of the source.
 	 * @return a new predicate.
 	 */
-	public static final Predicate< Localizable > isInsideTest( final Spot spot, final AffineTransform3D sourceTransform )
+	public static final Predicate< Localizable > isInsideTest( final Spot spot,
+			final AffineTransform3D sourceTransform )
 	{
 		/** Spot position in global coordinate system. */
 		final double[] pos = new double[ 3 ];

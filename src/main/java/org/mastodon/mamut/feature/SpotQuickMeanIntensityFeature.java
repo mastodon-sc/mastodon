@@ -57,7 +57,8 @@ public class SpotQuickMeanIntensityFeature implements Feature< Spot >
 			"Computes the mean intensity of spots using the highest resolution level to speedup calculation."
 					+ "It is recommended to use the 'Spot intensity' feature when the best accuracy is required.";
 
-	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( "Mean", Dimension.INTENSITY );
+	public static final FeatureProjectionSpec PROJECTION_SPEC =
+			new FeatureProjectionSpec( "Mean", Dimension.INTENSITY );
 
 	public static final Spec SPEC = new Spec();
 
@@ -87,7 +88,8 @@ public class SpotQuickMeanIntensityFeature implements Feature< Spot >
 		for ( int iSource = 0; iSource < means.size(); iSource++ )
 		{
 			final FeatureProjectionKey meankey = key( PROJECTION_SPEC, iSource );
-			projectionMap.put( meankey, FeatureProjections.project( meankey, means.get( iSource ), Dimension.COUNTS_UNITS ) );
+			projectionMap.put( meankey,
+					FeatureProjections.project( meankey, means.get( iSource ), Dimension.COUNTS_UNITS ) );
 		}
 	}
 

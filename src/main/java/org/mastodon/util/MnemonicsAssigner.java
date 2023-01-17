@@ -59,7 +59,7 @@ public class MnemonicsAssigner
 
 	public MnemonicsAssigner()
 	{
-		this.buttons = new HashMap< >();
+		this.buttons = new HashMap<>();
 	}
 
 	public void add( final AbstractButton button )

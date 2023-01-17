@@ -34,7 +34,8 @@ import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.views.trackscheme.TrackSchemeGraph.TrackSchemeEdgePool;
 
-public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeVertex, TrackSchemeEdgePool, ByteMappedElement >
+public class TrackSchemeEdge
+		extends AbstractEdge< TrackSchemeEdge, TrackSchemeVertex, TrackSchemeEdgePool, ByteMappedElement >
 {
 	final ModelGraphWrapper< ?, ? >.ModelEdgeWrapper modelEdge;
 

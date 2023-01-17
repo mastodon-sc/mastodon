@@ -71,7 +71,8 @@ public class SpotIntensityUpdateExample
 		 */
 
 		final Context context = windowManager.getContext();
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService =
+				context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "Computing spot intensity..." );
@@ -90,7 +91,8 @@ public class SpotIntensityUpdateExample
 
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj1 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SpotCenterIntensityFeature.SPEC ).project( key( SpotCenterIntensityFeature.PROJECTION_SPEC, 0 ) );
+				.getFeature( SpotCenterIntensityFeature.SPEC )
+				.project( key( SpotCenterIntensityFeature.PROJECTION_SPEC, 0 ) );
 
 		System.out.println();
 		System.out.println( "Spot " + spot.getLabel() + " center intensity was " + proj1.value( spot ) );
@@ -129,7 +131,8 @@ public class SpotIntensityUpdateExample
 		featureModel.clear();
 		features3.values().forEach( featureModel::declareFeature );
 
-		System.out.println( "Spot " + spot.getLabel() + " center intensity is to be compared with " + proj1.value( spot ) );
+		System.out.println(
+				"Spot " + spot.getLabel() + " center intensity is to be compared with " + proj1.value( spot ) );
 		System.out.println();
 
 		/*

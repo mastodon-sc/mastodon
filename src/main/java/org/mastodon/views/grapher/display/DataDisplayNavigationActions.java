@@ -54,25 +54,41 @@ import org.scijava.ui.behaviour.util.Actions;
  */
 public class DataDisplayNavigationActions
 {
-	
+
 	public static final String NAVIGATE_CHILD = "grapher navigate to child";
+
 	public static final String NAVIGATE_PARENT = "grapher navigate to parent";
+
 	public static final String NAVIGATE_LEFT = "grapher navigate left";
+
 	public static final String NAVIGATE_RIGHT = "grapher navigate right";
+
 	public static final String SELECT_NAVIGATE_CHILD = "grapher select navigate to child";
+
 	public static final String SELECT_NAVIGATE_PARENT = "grapher select navigate to parent";
+
 	public static final String SELECT_NAVIGATE_LEFT = "grapher select navigate left";
+
 	public static final String SELECT_NAVIGATE_RIGHT = "grapher select navigate right";
+
 	public static final String TOGGLE_FOCUS_SELECTION = "grapher toggle focus selection";
 
 	private static final String[] NAVIGATE_CHILD_KEYS = new String[] { "DOWN" };
+
 	private static final String[] NAVIGATE_PARENT_KEYS = new String[] { "UP" };
+
 	private static final String[] NAVIGATE_LEFT_KEYS = new String[] { "LEFT" };
+
 	private static final String[] NAVIGATE_RIGHT_KEYS = new String[] { "RIGHT" };
+
 	private static final String[] SELECT_NAVIGATE_CHILD_KEYS = new String[] { "shift DOWN" };
+
 	private static final String[] SELECT_NAVIGATE_PARENT_KEYS = new String[] { "shift UP" };
+
 	private static final String[] SELECT_NAVIGATE_LEFT_KEYS = new String[] { "shift LEFT" };
+
 	private static final String[] SELECT_NAVIGATE_RIGHT_KEYS = new String[] { "shift RIGHT" };
+
 	private static final String[] TOGGLE_FOCUS_SELECTION_KEYS = new String[] { "SPACE" };
 
 	/*
@@ -93,11 +109,16 @@ public class DataDisplayNavigationActions
 			descriptions.add( NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot." );
 			descriptions.add( NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS, "Go to the spot on the left." );
 			descriptions.add( NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS, "Go to the spot on the right." );
-			descriptions.add( SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot, and select it." );
-			descriptions.add( SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot, and select it." );
-			descriptions.add( SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS, "Go to the spot on the left, and select it." );
-			descriptions.add( SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS, "Go to the spot on the right, and select it." );
-			descriptions.add( TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS, "Toggle selection of the current spot." );
+			descriptions.add( SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS,
+					"Go to the first child of the current spot, and select it." );
+			descriptions.add( SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS,
+					"Go to the parent of the current spot, and select it." );
+			descriptions.add( SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS,
+					"Go to the spot on the left, and select it." );
+			descriptions.add( SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS,
+					"Go to the spot on the right, and select it." );
+			descriptions.add( TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS,
+					"Toggle selection of the current spot." );
 		}
 	}
 
@@ -138,26 +159,43 @@ public class DataDisplayNavigationActions
 		switch ( etiquette )
 		{
 		case MIDNIGHT_COMMANDER_LIKE:
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD,
+					NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT,
+					NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT,
+					NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT,
+					NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD,
+					SELECT_NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT,
+					SELECT_NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT,
+					SELECT_NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ),
+					SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION,
+					TOGGLE_FOCUS_SELECTION_KEYS );
 			break;
 		case FINDER_LIKE:
 		default:
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD,
+					NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT,
+					NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT,
+					NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT,
+					NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD,
+					SELECT_NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT,
+					SELECT_NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ),
+					SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ),
+					SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
 			break;
 		}
 	}
@@ -250,7 +288,8 @@ public class DataDisplayNavigationActions
 		{
 			// regen siblings
 			siblings.clear();
-			final UndirectedDepthFirstIterator< DataVertex, DataEdge > it = new UndirectedDepthFirstIterator<>( vertex, graph );
+			final UndirectedDepthFirstIterator< DataVertex, DataEdge > it =
+					new UndirectedDepthFirstIterator<>( vertex, graph );
 			final int timepoint = vertex.getTimepoint();
 			while ( it.hasNext() )
 			{
@@ -319,7 +358,8 @@ public class DataDisplayNavigationActions
 		graph.releaseRef( ref );
 	}
 
-	private DataVertex selectAndFocusNeighborFL( final Direction direction, final boolean clearSelection, final DataVertex ref )
+	private DataVertex selectAndFocusNeighborFL( final Direction direction, final boolean clearSelection,
+			final DataVertex ref )
 	{
 		lock.readLock().lock();
 		try

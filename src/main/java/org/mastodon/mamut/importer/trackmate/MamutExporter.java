@@ -182,8 +182,10 @@ public class MamutExporter
 		this.eig = new JamaEigenvalueDecomposition( 3 );
 		this.cov = new double[ 3 ][ 3 ];
 
-		spotFeatureProjections = getExportFeatureProjections( model.getFeatureModel(), Spot.class, TrackMateImportedSpotFeatures.class );
-		linkFeatureProjections = getExportFeatureProjections( model.getFeatureModel(), Link.class, TrackMateImportedLinkFeatures.class );
+		spotFeatureProjections =
+				getExportFeatureProjections( model.getFeatureModel(), Spot.class, TrackMateImportedSpotFeatures.class );
+		linkFeatureProjections =
+				getExportFeatureProjections( model.getFeatureModel(), Link.class, TrackMateImportedLinkFeatures.class );
 	}
 
 	private void write( final File file ) throws IOException
@@ -329,7 +331,8 @@ public class MamutExporter
 		for ( final Element vsEl : viewSetupsElements )
 		{
 			final Element vs, uel;
-			if ( null != ( vs = vsEl.getChild( XmlKeys.VIEWSETUP_VOXELSIZE_TAG ) ) && null != ( uel = vs.getChild( XmlKeys.VOXELDIMENSIONS_SIZE_TAG ) ) )
+			if ( null != ( vs = vsEl.getChild( XmlKeys.VIEWSETUP_VOXELSIZE_TAG ) )
+					&& null != ( uel = vs.getChild( XmlKeys.VOXELDIMENSIONS_SIZE_TAG ) ) )
 			{
 				final String val = uel.getContent( 0 ).getValue();
 				final double[] calibration = Arrays.stream( val.split( " " ) )
@@ -400,7 +403,8 @@ public class MamutExporter
 		 * We will iterate the graph, cross component by cross component, to
 		 * serialize the tracks.
 		 */
-		final DepthFirstSearch< Spot, Link > search = new DepthFirstSearch<>( model.getGraph(), SearchDirection.UNDIRECTED );
+		final DepthFirstSearch< Spot, Link > search =
+				new DepthFirstSearch<>( model.getGraph(), SearchDirection.UNDIRECTED );
 		final RefSet< Spot > toSkip = RefCollections.createRefSet( model.getGraph().vertices() );
 		final RefList< Spot > iteratedRoots = RefCollections.createRefList( model.getGraph().vertices() );
 
@@ -412,37 +416,41 @@ public class MamutExporter
 
 			// Create the track element.
 			final Element trackElement = trackToXml( root );
-			final SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > > searchListener = new SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > >()
-			{
+			final SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > > searchListener =
+					new SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > >()
+					{
 
-				@Override
-				public void processVertexLate( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
-				{
-					/*
-					 * 1 root = 1 track, unless a track has several roots. Add
-					 * the iterated vertex to the list of root to skip if
-					 * needed.
-					 */
-					if ( vertex.incomingEdges().isEmpty() )
-						toSkip.add( vertex );
-				}
+						@Override
+						public void processVertexLate( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
+						{
+							/*
+							 * 1 root = 1 track, unless a track has several roots. Add
+							 * the iterated vertex to the list of root to skip if
+							 * needed.
+							 */
+							if ( vertex.incomingEdges().isEmpty() )
+								toSkip.add( vertex );
+						}
 
-				@Override
-				public void processVertexEarly( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
-				{}
+						@Override
+						public void processVertexEarly( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
+						{}
 
-				@Override
-				public void processEdge( final Link edge, final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
-				{
-					// Add iterated edge to the track element.
-					final Element edgeElement = edgeToXml( edge, from.getInternalPoolIndex(), to.getInternalPoolIndex() );
-					trackElement.addContent( edgeElement );
-				}
+						@Override
+						public void processEdge( final Link edge, final Spot from, final Spot to,
+								final DepthFirstSearch< Spot, Link > search )
+						{
+							// Add iterated edge to the track element.
+							final Element edgeElement =
+									edgeToXml( edge, from.getInternalPoolIndex(), to.getInternalPoolIndex() );
+							trackElement.addContent( edgeElement );
+						}
 
-				@Override
-				public void crossComponent( final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
-				{}
-			};
+						@Override
+						public void crossComponent( final Spot from, final Spot to,
+								final DepthFirstSearch< Spot, Link > search )
+						{}
+					};
 			search.setTraversalListener( searchListener );
 			search.start( root );
 
@@ -472,7 +480,8 @@ public class MamutExporter
 	private Element spotCollectionToXml()
 	{
 		final Element spotCollectionElement = new Element( SPOT_COLLECTION_TAG );
-		spotCollectionElement.setAttribute( SPOT_COLLECTION_NSPOTS_ATTRIBUTE, Integer.toString( model.getGraph().vertices().size() ) );
+		spotCollectionElement.setAttribute( SPOT_COLLECTION_NSPOTS_ATTRIBUTE,
+				Integer.toString( model.getGraph().vertices().size() ) );
 
 		// Read time points from dataset xml.
 		List< TimePoint > tps = null;
@@ -595,7 +604,8 @@ public class MamutExporter
 	}
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
-	private < T > void appendFeaturesDeclarationOfClass( final Class< T > clazz, final Element featuresElement, final String classFeatureDeclarationTag )
+	private < T > void appendFeaturesDeclarationOfClass( final Class< T > clazz, final Element featuresElement,
+			final String classFeatureDeclarationTag )
 	{
 		final List< ExportFeatureProjection< T > > projections;
 		if ( clazz.equals( Spot.class ) )
@@ -618,7 +628,8 @@ public class MamutExporter
 			fel.setAttribute( FEATURE_NAME_ATTRIBUTE, p.featureName );
 			fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, p.featureShortName );
 			final String units = p.projection.units();
-			fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, model.getSpaceUnits(), model.getTimeUnits() ) );
+			fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE,
+					unitsToDimension( units, model.getSpaceUnits(), model.getTimeUnits() ) );
 			fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
 			classFeaturesElement.addContent( fel );
 		}
@@ -782,7 +793,8 @@ public class MamutExporter
 					if ( reExport && featureModelProjections.contains( sanitize( croppedName ) ) )
 						continue;
 
-					list.add( new ExportFeatureProjection<>( projection, sanitize( croppedName ), croppedName, croppedName ) );
+					list.add( new ExportFeatureProjection<>( projection, sanitize( croppedName ), croppedName,
+							croppedName ) );
 				}
 			}
 		}
@@ -799,7 +811,8 @@ public class MamutExporter
 
 		public final String featureShortName;
 
-		ExportFeatureProjection( final FeatureProjection< T > projection, final String attributeName, final String featureName, final String featureShortName )
+		ExportFeatureProjection( final FeatureProjection< T > projection, final String attributeName,
+				final String featureName, final String featureShortName )
 		{
 			this.projection = projection;
 			this.attributeName = attributeName;
@@ -824,10 +837,11 @@ public class MamutExporter
 	 *            projections.
 	 * @return a new set of attribute names to be used as feature keys.
 	 */
-	public static < T > Set< String > getLikelyExportedFeatureProjections( final FeatureSpecsService specsService, final int numSources, final Class< T > target )
+	public static < T > Set< String > getLikelyExportedFeatureProjections( final FeatureSpecsService specsService,
+			final int numSources, final Class< T > target )
 	{
 		final HashSet< String > names = new HashSet<>();
-		if (null == specsService)
+		if ( null == specsService )
 			return names;
 
 		final List< FeatureSpec< ?, T > > fspecs = specsService.getSpecs( target );
@@ -842,7 +856,7 @@ public class MamutExporter
 			for ( final FeatureProjectionSpec pspec : fspec.getProjectionSpecs() )
 			{
 				final String pname = pspec.getKey();
-				switch( fspec.getMultiplicity() )
+				switch ( fspec.getMultiplicity() )
 				{
 				case SINGLE:
 					names.add( sanitize( getProjectionExportName( fname, pname ) ) );
@@ -891,7 +905,8 @@ public class MamutExporter
 		return sb.toString();
 	}
 
-	public static final void export( final File target, final Model model, final MamutProject project ) throws IOException
+	public static final void export( final File target, final Model model, final MamutProject project )
+			throws IOException
 	{
 		final MamutExporter exporter = new MamutExporter( model, project );
 		exporter.appendModel();

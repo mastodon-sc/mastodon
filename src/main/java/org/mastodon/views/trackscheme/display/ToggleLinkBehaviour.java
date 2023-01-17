@@ -125,7 +125,8 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 			final GraphChangeNotifier notify,
 			final UndoPointMarker undo )
 	{
-		final ToggleLinkBehaviour< V, E > toggleLinkBehaviour = new ToggleLinkBehaviour<>( panel, graph, lock, notify, undo );
+		final ToggleLinkBehaviour< V, E > toggleLinkBehaviour =
+				new ToggleLinkBehaviour<>( panel, graph, lock, notify, undo );
 		behaviours.namedBehaviour( toggleLinkBehaviour, TOGGLE_LINK_KEYS );
 	}
 
@@ -178,7 +179,8 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 	{
 		if ( editing )
 		{
-			if ( renderer.getVertexAt( x, y, endVertex ) != null && startVertex.getTimepoint() != endVertex.getTimepoint() )
+			if ( renderer.getVertexAt( x, y, endVertex ) != null
+					&& startVertex.getTimepoint() != endVertex.getTimepoint() )
 			{
 				overlay.to[ 0 ] = endVertex.getLayoutX();
 				overlay.to[ 1 ] = endVertex.getTimepoint();

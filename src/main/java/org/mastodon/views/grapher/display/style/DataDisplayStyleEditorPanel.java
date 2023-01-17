@@ -128,9 +128,12 @@ public class DataDisplayStyleEditorPanel extends JPanel
 		final DataGraph< DummyVertex, DummyEdge > graph = new DataGraph<>( example, idmap );
 		final RefBimap< DummyVertex, DataVertex > vertexMap = new DataVertexBimap<>( graph );
 		final RefBimap< DummyEdge, DataEdge > edgeMap = new DataEdgeBimap<>( graph );
-		final HighlightModel< DataVertex, DataEdge > highlight = new HighlightModelAdapter<>( new DefaultHighlightModel<>( idmap ), vertexMap, edgeMap );
-		final FocusModel< DataVertex, DataEdge > focus = new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
-		final SelectionModel< DataVertex, DataEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
+		final HighlightModel< DataVertex, DataEdge > highlight =
+				new HighlightModelAdapter<>( new DefaultHighlightModel<>( idmap ), vertexMap, edgeMap );
+		final FocusModel< DataVertex, DataEdge > focus =
+				new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
+		final SelectionModel< DataVertex, DataEdge > selection =
+				new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
 		final NavigationHandler< DataVertex, DataEdge > navigation = new DefaultNavigationHandler<>();
 		final DataDisplayOptions options = DataDisplayOptions.options().style( style );
 
@@ -346,7 +349,8 @@ public class DataDisplayStyleEditorPanel extends JPanel
 	{
 		return Arrays.asList(
 
-				enumElement( "vertex shape", VertexDrawShape.values(), style::getVertexDrawShape, style::vertexDrawShape ),
+				enumElement( "vertex shape", VertexDrawShape.values(), style::getVertexDrawShape,
+						style::vertexDrawShape ),
 
 				separator(),
 
@@ -360,11 +364,15 @@ public class DataDisplayStyleEditorPanel extends JPanel
 				separator(),
 
 				colorElement( "vertex fill", style::getVertexFillColor, style::vertexFillColor ),
-				colorElement( "selected vertex fill", style::getSelectedVertexFillColor, style::selectedVertexFillColor ),
+				colorElement( "selected vertex fill", style::getSelectedVertexFillColor,
+						style::selectedVertexFillColor ),
 				colorElement( "vertex contour", style::getVertexDrawColor, style::vertexDrawColor ),
-				colorElement( "selected vertex contour", style::getSelectedVertexDrawColor, style::selectedVertexDrawColor ),
-				colorElement( "simplified vertex fill", style::getSimplifiedVertexFillColor, style::simplifiedVertexFillColor ),
-				colorElement( "selected simplified vertex fill", style::getSelectedSimplifiedVertexFillColor, style::selectedSimplifiedVertexFillColor ),
+				colorElement( "selected vertex contour", style::getSelectedVertexDrawColor,
+						style::selectedVertexDrawColor ),
+				colorElement( "simplified vertex fill", style::getSimplifiedVertexFillColor,
+						style::simplifiedVertexFillColor ),
+				colorElement( "selected simplified vertex fill", style::getSelectedSimplifiedVertexFillColor,
+						style::selectedSimplifiedVertexFillColor ),
 				colorElement( "edge", style::getEdgeColor, style::edgeColor ),
 				colorElement( "selected edge", style::getSelectedEdgeColor, style::selectedEdgeColor ),
 

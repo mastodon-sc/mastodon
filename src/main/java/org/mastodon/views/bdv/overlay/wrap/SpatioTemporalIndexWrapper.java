@@ -37,13 +37,14 @@ import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
 public class SpatioTemporalIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
-	implements SpatioTemporalIndex< OverlayVertexWrapper< V, E > >
+		implements SpatioTemporalIndex< OverlayVertexWrapper< V, E > >
 {
 	private final OverlayGraphWrapper< V, E > graphWrapper;
 
 	private final SpatioTemporalIndex< V > wrappedIndex;
 
-	public SpatioTemporalIndexWrapper( final OverlayGraphWrapper< V, E > graphWrapper, final SpatioTemporalIndex< V > index )
+	public SpatioTemporalIndexWrapper( final OverlayGraphWrapper< V, E > graphWrapper,
+			final SpatioTemporalIndex< V > index )
 	{
 		this.graphWrapper = graphWrapper;
 		this.wrappedIndex = index;
@@ -52,7 +53,8 @@ public class SpatioTemporalIndexWrapper< V extends Vertex< E >, E extends Edge< 
 	@Override
 	public Iterator< OverlayVertexWrapper< V, E > > iterator()
 	{
-		return new OverlayVertexIteratorWrapper< V, E >( graphWrapper, graphWrapper.vertexRef(), wrappedIndex.iterator() );
+		return new OverlayVertexIteratorWrapper< V, E >( graphWrapper, graphWrapper.vertexRef(),
+				wrappedIndex.iterator() );
 	}
 
 	@Override
@@ -72,7 +74,8 @@ public class SpatioTemporalIndexWrapper< V extends Vertex< E >, E extends Edge< 
 	}
 
 	@Override
-	public SpatialIndex< OverlayVertexWrapper< V, E > > getSpatialIndex( final int fromTimepoint, final int toTimepoint )
+	public SpatialIndex< OverlayVertexWrapper< V, E > > getSpatialIndex( final int fromTimepoint,
+			final int toTimepoint )
 	{
 		final SpatialIndex< V > index = wrappedIndex.getSpatialIndex( fromTimepoint, toTimepoint );
 		if ( index == null )

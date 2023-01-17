@@ -48,37 +48,65 @@ public class TransformEventHandler3DDescriptions extends CommandDescriptionProvi
 	@Override
 	public void getCommandDescriptions( final CommandDescriptions descriptions )
 	{
-		descriptions.add( TransformEventHandler3D.DRAG_TRANSLATE, TransformEventHandler3D.DRAG_TRANSLATE_KEYS, "Pan the view by mouse-dragging." );
-		descriptions.add( TransformEventHandler3D.ZOOM_NORMAL, TransformEventHandler3D.ZOOM_NORMAL_KEYS, "Zoom in by scrolling." );
-		descriptions.add( TransformEventHandler3D.SELECT_AXIS_X, TransformEventHandler3D.SELECT_AXIS_X_KEYS, "Select X as the rotation axis for keyboard rotation." );
-		descriptions.add( TransformEventHandler3D.SELECT_AXIS_Y, TransformEventHandler3D.SELECT_AXIS_Y_KEYS, "Select Y as the rotation axis for keyboard rotation." );
-		descriptions.add( TransformEventHandler3D.SELECT_AXIS_Z, TransformEventHandler3D.SELECT_AXIS_Z_KEYS, "Select Z as the rotation axis for keyboard rotation." );
+		descriptions.add( TransformEventHandler3D.DRAG_TRANSLATE, TransformEventHandler3D.DRAG_TRANSLATE_KEYS,
+				"Pan the view by mouse-dragging." );
+		descriptions.add( TransformEventHandler3D.ZOOM_NORMAL, TransformEventHandler3D.ZOOM_NORMAL_KEYS,
+				"Zoom in by scrolling." );
+		descriptions.add( TransformEventHandler3D.SELECT_AXIS_X, TransformEventHandler3D.SELECT_AXIS_X_KEYS,
+				"Select X as the rotation axis for keyboard rotation." );
+		descriptions.add( TransformEventHandler3D.SELECT_AXIS_Y, TransformEventHandler3D.SELECT_AXIS_Y_KEYS,
+				"Select Y as the rotation axis for keyboard rotation." );
+		descriptions.add( TransformEventHandler3D.SELECT_AXIS_Z, TransformEventHandler3D.SELECT_AXIS_Z_KEYS,
+				"Select Z as the rotation axis for keyboard rotation." );
 
-		descriptions.add( TransformEventHandler3D.DRAG_ROTATE, TransformEventHandler3D.DRAG_ROTATE_KEYS, "Rotate the view by mouse-dragging." );
-		descriptions.add( TransformEventHandler3D.SCROLL_Z, TransformEventHandler3D.SCROLL_Z_KEYS, "Translate in Z by scrolling." );
-		descriptions.add( TransformEventHandler3D.ROTATE_LEFT, TransformEventHandler3D.ROTATE_LEFT_KEYS, "Rotate left (counter-clockwise) by 1 degree." );
-		descriptions.add( TransformEventHandler3D.ROTATE_RIGHT, TransformEventHandler3D.ROTATE_RIGHT_KEYS, "Rotate right (clockwise) by 1 degree." );
+		descriptions.add( TransformEventHandler3D.DRAG_ROTATE, TransformEventHandler3D.DRAG_ROTATE_KEYS,
+				"Rotate the view by mouse-dragging." );
+		descriptions.add( TransformEventHandler3D.SCROLL_Z, TransformEventHandler3D.SCROLL_Z_KEYS,
+				"Translate in Z by scrolling." );
+		descriptions.add( TransformEventHandler3D.ROTATE_LEFT, TransformEventHandler3D.ROTATE_LEFT_KEYS,
+				"Rotate left (counter-clockwise) by 1 degree." );
+		descriptions.add( TransformEventHandler3D.ROTATE_RIGHT, TransformEventHandler3D.ROTATE_RIGHT_KEYS,
+				"Rotate right (clockwise) by 1 degree." );
 		descriptions.add( TransformEventHandler3D.KEY_ZOOM_IN, TransformEventHandler3D.KEY_ZOOM_IN_KEYS, "Zoom in." );
-		descriptions.add( TransformEventHandler3D.KEY_ZOOM_OUT, TransformEventHandler3D.KEY_ZOOM_OUT_KEYS, "Zoom out." );
-		descriptions.add( TransformEventHandler3D.KEY_FORWARD_Z, TransformEventHandler3D.KEY_FORWARD_Z_KEYS, "Translate forward in Z." );
-		descriptions.add( TransformEventHandler3D.KEY_BACKWARD_Z, TransformEventHandler3D.KEY_BACKWARD_Z_KEYS, "Translate backward in Z." );
+		descriptions.add( TransformEventHandler3D.KEY_ZOOM_OUT, TransformEventHandler3D.KEY_ZOOM_OUT_KEYS,
+				"Zoom out." );
+		descriptions.add( TransformEventHandler3D.KEY_FORWARD_Z, TransformEventHandler3D.KEY_FORWARD_Z_KEYS,
+				"Translate forward in Z." );
+		descriptions.add( TransformEventHandler3D.KEY_BACKWARD_Z, TransformEventHandler3D.KEY_BACKWARD_Z_KEYS,
+				"Translate backward in Z." );
 
-		descriptions.add( TransformEventHandler3D.DRAG_ROTATE_FAST, TransformEventHandler3D.DRAG_ROTATE_FAST_KEYS, "Rotate the view by mouse-dragging (fast)." );
-		descriptions.add( TransformEventHandler3D.SCROLL_Z_FAST, TransformEventHandler3D.SCROLL_Z_FAST_KEYS, "Translate in Z by scrolling (fast)." );
-		descriptions.add( TransformEventHandler3D.ROTATE_LEFT_FAST, TransformEventHandler3D.ROTATE_LEFT_FAST_KEYS, "Rotate left (counter-clockwise) by 10 degrees." );
-		descriptions.add( TransformEventHandler3D.ROTATE_RIGHT_FAST, TransformEventHandler3D.ROTATE_RIGHT_FAST_KEYS, "Rotate right (clockwise) by 10 degrees." );
-		descriptions.add( TransformEventHandler3D.KEY_ZOOM_IN_FAST, TransformEventHandler3D.KEY_ZOOM_IN_FAST_KEYS, "Zoom in (fast)." );
-		descriptions.add( TransformEventHandler3D.KEY_ZOOM_OUT_FAST, TransformEventHandler3D.KEY_ZOOM_OUT_FAST_KEYS, "Zoom out (fast)." );
-		descriptions.add( TransformEventHandler3D.KEY_FORWARD_Z_FAST, TransformEventHandler3D.KEY_FORWARD_Z_FAST_KEYS, "Translate forward in Z (fast)." );
-		descriptions.add( TransformEventHandler3D.KEY_BACKWARD_Z_FAST, TransformEventHandler3D.KEY_BACKWARD_Z_FAST_KEYS, "Translate backward in Z (fast)." );
+		descriptions.add( TransformEventHandler3D.DRAG_ROTATE_FAST, TransformEventHandler3D.DRAG_ROTATE_FAST_KEYS,
+				"Rotate the view by mouse-dragging (fast)." );
+		descriptions.add( TransformEventHandler3D.SCROLL_Z_FAST, TransformEventHandler3D.SCROLL_Z_FAST_KEYS,
+				"Translate in Z by scrolling (fast)." );
+		descriptions.add( TransformEventHandler3D.ROTATE_LEFT_FAST, TransformEventHandler3D.ROTATE_LEFT_FAST_KEYS,
+				"Rotate left (counter-clockwise) by 10 degrees." );
+		descriptions.add( TransformEventHandler3D.ROTATE_RIGHT_FAST, TransformEventHandler3D.ROTATE_RIGHT_FAST_KEYS,
+				"Rotate right (clockwise) by 10 degrees." );
+		descriptions.add( TransformEventHandler3D.KEY_ZOOM_IN_FAST, TransformEventHandler3D.KEY_ZOOM_IN_FAST_KEYS,
+				"Zoom in (fast)." );
+		descriptions.add( TransformEventHandler3D.KEY_ZOOM_OUT_FAST, TransformEventHandler3D.KEY_ZOOM_OUT_FAST_KEYS,
+				"Zoom out (fast)." );
+		descriptions.add( TransformEventHandler3D.KEY_FORWARD_Z_FAST, TransformEventHandler3D.KEY_FORWARD_Z_FAST_KEYS,
+				"Translate forward in Z (fast)." );
+		descriptions.add( TransformEventHandler3D.KEY_BACKWARD_Z_FAST, TransformEventHandler3D.KEY_BACKWARD_Z_FAST_KEYS,
+				"Translate backward in Z (fast)." );
 
-		descriptions.add( TransformEventHandler3D.DRAG_ROTATE_SLOW, TransformEventHandler3D.DRAG_ROTATE_SLOW_KEYS, "Rotate the view by mouse-dragging (slow)." );
-		descriptions.add( TransformEventHandler3D.SCROLL_Z_SLOW, TransformEventHandler3D.SCROLL_Z_SLOW_KEYS, "Translate in Z by scrolling (slow)." );
-		descriptions.add( TransformEventHandler3D.ROTATE_LEFT_SLOW, TransformEventHandler3D.ROTATE_LEFT_SLOW_KEYS, "Rotate left (counter-clockwise) by 0.1 degree." );
-		descriptions.add( TransformEventHandler3D.ROTATE_RIGHT_SLOW, TransformEventHandler3D.ROTATE_RIGHT_SLOW_KEYS, "Rotate right (clockwise) by 0.1 degree." );
-		descriptions.add( TransformEventHandler3D.KEY_ZOOM_IN_SLOW, TransformEventHandler3D.KEY_ZOOM_IN_SLOW_KEYS, "Zoom in (slow)." );
-		descriptions.add( TransformEventHandler3D.KEY_ZOOM_OUT_SLOW, TransformEventHandler3D.KEY_ZOOM_OUT_SLOW_KEYS, "Zoom out (slow)." );
-		descriptions.add( TransformEventHandler3D.KEY_FORWARD_Z_SLOW, TransformEventHandler3D.KEY_FORWARD_Z_SLOW_KEYS, "Translate forward in Z (slow)." );
-		descriptions.add( TransformEventHandler3D.KEY_BACKWARD_Z_SLOW, TransformEventHandler3D.KEY_BACKWARD_Z_SLOW_KEYS, "Translate backward in Z (slow)." );
+		descriptions.add( TransformEventHandler3D.DRAG_ROTATE_SLOW, TransformEventHandler3D.DRAG_ROTATE_SLOW_KEYS,
+				"Rotate the view by mouse-dragging (slow)." );
+		descriptions.add( TransformEventHandler3D.SCROLL_Z_SLOW, TransformEventHandler3D.SCROLL_Z_SLOW_KEYS,
+				"Translate in Z by scrolling (slow)." );
+		descriptions.add( TransformEventHandler3D.ROTATE_LEFT_SLOW, TransformEventHandler3D.ROTATE_LEFT_SLOW_KEYS,
+				"Rotate left (counter-clockwise) by 0.1 degree." );
+		descriptions.add( TransformEventHandler3D.ROTATE_RIGHT_SLOW, TransformEventHandler3D.ROTATE_RIGHT_SLOW_KEYS,
+				"Rotate right (clockwise) by 0.1 degree." );
+		descriptions.add( TransformEventHandler3D.KEY_ZOOM_IN_SLOW, TransformEventHandler3D.KEY_ZOOM_IN_SLOW_KEYS,
+				"Zoom in (slow)." );
+		descriptions.add( TransformEventHandler3D.KEY_ZOOM_OUT_SLOW, TransformEventHandler3D.KEY_ZOOM_OUT_SLOW_KEYS,
+				"Zoom out (slow)." );
+		descriptions.add( TransformEventHandler3D.KEY_FORWARD_Z_SLOW, TransformEventHandler3D.KEY_FORWARD_Z_SLOW_KEYS,
+				"Translate forward in Z (slow)." );
+		descriptions.add( TransformEventHandler3D.KEY_BACKWARD_Z_SLOW, TransformEventHandler3D.KEY_BACKWARD_Z_SLOW_KEYS,
+				"Translate backward in Z (slow)." );
 	}
 }

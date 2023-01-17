@@ -43,11 +43,13 @@ import org.mastodon.io.properties.IntPropertyMapSerializer;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 
-public abstract class TrackMateImportedFeaturesSerializer< F extends TrackMateImportedFeatures< O >, O > implements FeatureSerializer< F, O >
+public abstract class TrackMateImportedFeaturesSerializer< F extends TrackMateImportedFeatures< O >, O >
+		implements FeatureSerializer< F, O >
 {
 
 	@Override
-	public void serialize( final F feature, final ObjectToFileIdMap< O > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final F feature, final ObjectToFileIdMap< O > idmap, final ObjectOutputStream oos )
+			throws IOException
 	{
 		// WRITE N DOUBLE MAPS.
 		oos.writeInt( feature.doublePropertyMapMap.keySet().size() );
@@ -80,7 +82,8 @@ public abstract class TrackMateImportedFeaturesSerializer< F extends TrackMateIm
 		}
 	}
 
-	protected void deserializeInto( final F feature, final FileIdToObjectMap< O > idmap, final RefCollection< O > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	protected void deserializeInto( final F feature, final FileIdToObjectMap< O > idmap, final RefCollection< O > pool,
+			final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		// READ N DOUBLE MAPS.
 		final int nDoubleMaps = ois.readInt();

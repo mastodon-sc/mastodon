@@ -49,7 +49,8 @@ import org.mastodon.model.HighlightModel;
  *
  * @author Tobias Pietzsch
  */
-public class HighlightModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
+public class HighlightModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
+		WE extends Edge< WV > >
 		implements HighlightModel< WV, WE >
 {
 	private final HighlightModel< V, E > highlight;

@@ -109,7 +109,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
 		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel = new ColoringModelMain<>( tagSetModel, featureColorModeManager, featureModel, branchGraph );
+		final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel =
+				new ColoringModelMain<>( tagSetModel, featureColorModeManager, featureModel, branchGraph );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
 
 		tagSetModel.listeners().add( coloringModel );
@@ -129,7 +130,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 			if ( coloringModel.noColoring() )
 				colorGeneratorAdapter.setColorGenerator( null );
 			else if ( coloringModel.getTagSet() != null )
-				colorGeneratorAdapter.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
+				colorGeneratorAdapter
+						.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
 			else if ( coloringModel.getFeatureColorMode() != null )
 				colorGeneratorAdapter.setColorGenerator( coloringModel.getFeatureGraphColorGenerator() );
 			refresh.run();
@@ -145,7 +147,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 			final Runnable refresh )
 	{
 		menuHandle.getMenu().add( new JSeparator() );
-		final JCheckBoxMenuItem toggleOverlay = new JCheckBoxMenuItem( "Show colorbar", ColorBarOverlay.DEFAULT_VISIBLE );
+		final JCheckBoxMenuItem toggleOverlay =
+				new JCheckBoxMenuItem( "Show colorbar", ColorBarOverlay.DEFAULT_VISIBLE );
 		toggleOverlay.addActionListener( ( l ) -> {
 			colorBarOverlay.setVisible( toggleOverlay.isSelected() );
 			refresh.run();
@@ -181,7 +184,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
 		final Model model = appModel.getModel();
 		final TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
-		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu< >( menuHandle.getMenu(), tagSetModel, selectionModel, model.getGraph().getLock(), model );
+		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu<>( menuHandle.getMenu(), tagSetModel, selectionModel,
+				model.getGraph().getLock(), model );
 		tagSetModel.listeners().add( tagSetMenu );
 		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 	}
@@ -228,10 +232,12 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		}
 	}
 
-	protected static void restoreColorbarState( final ColorBarOverlay colorBarOverlay, final Map< String, Object > guiState )
+	protected static void restoreColorbarState( final ColorBarOverlay colorBarOverlay,
+			final Map< String, Object > guiState )
 	{
 		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
-		final Position colorbarPosition = ( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
+		final Position colorbarPosition =
+				( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
 		colorBarOverlay.setVisible( colorbarVisible );
 		colorBarOverlay.setPosition( colorbarPosition );
 	}

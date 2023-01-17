@@ -83,7 +83,8 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 		}
 	}
 
-	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void install( final Behaviours behaviours, final TrackSchemePanel panel )
+	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void
+			install( final Behaviours behaviours, final TrackSchemePanel panel )
 	{
 		final TrackSchemeZoom< V, E > zoom = new TrackSchemeZoom<>( panel );
 

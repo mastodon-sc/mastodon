@@ -86,7 +86,6 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 		return Collections.unmodifiableList( new ArrayList<>( TrackSchemeStyle.defaults ) );
 	}
 
-
 	@Override
 	public synchronized void setSelectedStyle( final TrackSchemeStyle style )
 	{
@@ -115,7 +114,8 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 	public void loadStyles( final String filename )
 	{
 		userStyles.clear();
-		final Set< String > names = builtinStyles.stream().map( TrackSchemeStyle::getName ).collect( Collectors.toSet() );
+		final Set< String > names =
+				builtinStyles.stream().map( TrackSchemeStyle::getName ).collect( Collectors.toSet() );
 		try
 		{
 			final FileReader input = new FileReader( filename );
@@ -127,8 +127,8 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 				if ( obj instanceof String )
 				{
 					defaultStyleName = ( String ) obj;
-//					System.out.println( "TrackSchemeStyleManager.loadStyles" );
-//					System.out.println( defaultStyleName );
+					//					System.out.println( "TrackSchemeStyleManager.loadStyles" );
+					//					System.out.println( defaultStyleName );
 				}
 				else if ( obj instanceof TrackSchemeStyle )
 				{
@@ -140,7 +140,7 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 							userStyles.add( ts );
 						else
 						{
-//							System.out.println( "Discarded style with duplicate name \"" + ts.getName() + "\"." );
+							//							System.out.println( "Discarded style with duplicate name \"" + ts.getName() + "\"." );
 						}
 					}
 				}
@@ -149,7 +149,7 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 		}
 		catch ( final FileNotFoundException e )
 		{
-//			System.out.println( "TrackScheme style file " + filename + " not found. Using builtin styles." );
+			//			System.out.println( "TrackScheme style file " + filename + " not found. Using builtin styles." );
 		}
 	}
 

@@ -214,7 +214,8 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 			for ( final Keymap keymap : userStyles )
 			{
 				filename = KEYMAPS_PATH + "/" + keymapsList.keymapNameToFileName.get( keymap.getName() );
-				final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( keymap.getConfig() ).getDescriptions();
+				final List< InputTriggerDescription > descriptions =
+						new InputTriggerDescriptionsBuilder( keymap.getConfig() ).getDescriptions();
 				YamlConfigIO.write( descriptions, filename );
 			}
 		}

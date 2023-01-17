@@ -68,14 +68,17 @@ public class DumpInputConfig
 	public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException
 	{
 		mkdirs( fileName );
-		final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( wm.getAppModel().getKeymap().getConfig() ).getDescriptions();
+		final List< InputTriggerDescription > descriptions =
+				new InputTriggerDescriptionsBuilder( wm.getAppModel().getKeymap().getConfig() ).getDescriptions();
 		YamlConfigIO.write( descriptions, fileName );
 	}
 
 	public static void writeDefaultConfigToYaml( final String fileName, final Context context ) throws IOException
 	{
 		mkdirs( fileName );
-		final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( buildCommandDescriptions( context ).createDefaultKeyconfig() ).getDescriptions();
+		final List< InputTriggerDescription > descriptions =
+				new InputTriggerDescriptionsBuilder( buildCommandDescriptions( context ).createDefaultKeyconfig() )
+						.getDescriptions();
 		YamlConfigIO.write( descriptions, fileName );
 	}
 
@@ -84,11 +87,11 @@ public class DumpInputConfig
 		final CommandDescriptionsBuilder builder = new CommandDescriptionsBuilder();
 		context.inject( builder );
 
-		builder.addManually( new CloseWindowActions.Descriptions(), KeyConfigContexts.MASTODON);
-		builder.addManually( new ProjectManager.Descriptions(), KeyConfigContexts.MASTODON);
-		builder.addManually( new UndoActions.Descriptions(), KeyConfigContexts.MASTODON);
-		builder.addManually( new SelectionActions.Descriptions(), KeyConfigContexts.MASTODON);
-		builder.addManually( new WindowManager.Descriptions(), KeyConfigContexts.MASTODON);
+		builder.addManually( new CloseWindowActions.Descriptions(), KeyConfigContexts.MASTODON );
+		builder.addManually( new ProjectManager.Descriptions(), KeyConfigContexts.MASTODON );
+		builder.addManually( new UndoActions.Descriptions(), KeyConfigContexts.MASTODON );
+		builder.addManually( new SelectionActions.Descriptions(), KeyConfigContexts.MASTODON );
+		builder.addManually( new WindowManager.Descriptions(), KeyConfigContexts.MASTODON );
 
 		builder.addManually( new MastodonFrameViewActions.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new TransformEventHandler3DDescriptions(), KeyConfigContexts.BIGDATAVIEWER );

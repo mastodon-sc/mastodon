@@ -50,7 +50,8 @@ import org.mastodon.model.SelectionModel;
  * @param <WE>
  *            edge type this wrapped {@link SelectionModel}.
  */
-public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
+public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
+		WE extends Edge< WV > >
 		implements SelectionModel< WV, WE >
 {
 	private final SelectionModel< V, E > selection;

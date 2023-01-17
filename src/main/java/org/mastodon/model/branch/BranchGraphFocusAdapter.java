@@ -38,10 +38,10 @@ import org.mastodon.model.FocusModel;
 import org.scijava.listeners.Listeners;
 
 public class BranchGraphFocusAdapter<
-	V extends Vertex< E >,
-	E extends Edge< V >,
-	BV extends Vertex< BE >,
-	BE extends Edge< BV > >
+		V extends Vertex< E >,
+		E extends Edge< V >,
+		BV extends Vertex< BE >,
+		BE extends Edge< BV > >
 		extends AbstractBranchGraphAdapter< V, E, BV, BE >
 		implements FocusModel< BV, BE >
 {

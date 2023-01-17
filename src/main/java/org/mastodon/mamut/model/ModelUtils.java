@@ -122,7 +122,8 @@ public class ModelUtils
 		str.append( unitLineSpots.toString() );
 
 		str.append( '\n' );
-		final char[] sline = new char[ h1a.length() + Arrays.stream( spotColumnHeaderWidth ).sum() + 2 * spotColumnHeaderWidth.length ];
+		final char[] sline = new char[ h1a.length() + Arrays.stream( spotColumnHeaderWidth ).sum()
+				+ 2 * spotColumnHeaderWidth.length ];
 		Arrays.fill( sline, '-' );
 		str.append( sline );
 		str.append( '\n' );
@@ -131,13 +132,15 @@ public class ModelUtils
 		 * Sort spots.
 		 */
 
-		final RefArrayList< Spot > spots = new RefArrayList<Spot>( graph.vertices().getRefPool(), graph.vertices().size() );
+		final RefArrayList< Spot > spots =
+				new RefArrayList< Spot >( graph.vertices().getRefPool(), graph.vertices().size() );
 		spots.addAll( graph.vertices() );
 
 		// Do we have track id?
-		if (featureSpecs.contains( SpotTrackIDFeature.SPEC ))
+		if ( featureSpecs.contains( SpotTrackIDFeature.SPEC ) )
 		{
-			final SpotTrackIDFeature trackID = ( SpotTrackIDFeature ) featureModel.getFeature( SpotTrackIDFeature.SPEC );
+			final SpotTrackIDFeature trackID =
+					( SpotTrackIDFeature ) featureModel.getFeature( SpotTrackIDFeature.SPEC );
 			spots.sort( new Comparator< Spot >()
 			{
 
@@ -146,7 +149,7 @@ public class ModelUtils
 				{
 					final int track1 = trackID.get( o1 );
 					final int track2 = trackID.get( o2 );
-					if (track1 == track2)
+					if ( track1 == track2 )
 						return o1.getTimepoint() - o2.getTimepoint();
 
 					return track1 - track2;
@@ -157,7 +160,6 @@ public class ModelUtils
 		{
 			spots.sort( Comparator.comparingInt( Spot::getTimepoint ) );
 		}
-
 
 		long n = 0;
 		for ( final Spot spot : spots )
@@ -175,9 +177,11 @@ public class ModelUtils
 			{
 				if ( sfs.get( pk ).isSet( spot ) )
 					if ( sfs.get( pk ) instanceof IntFeatureProjection )
-						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "d", ( int ) sfs.get( pk ).value( spot ) ) );
+						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "d",
+								( int ) sfs.get( pk ).value( spot ) ) );
 					else
-						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f", sfs.get( pk ).value( spot ) ) );
+						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f",
+								sfs.get( pk ).value( spot ) ) );
 				else
 					str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", "unset" ) );
 				i++;
@@ -230,7 +234,8 @@ public class ModelUtils
 		str.append( unitLineLinks.toString() );
 
 		str.append( '\n' );
-		final char[] lline = new char[ h2a.length() + Arrays.stream( linkColumnHeaderWidth ).sum() + 2 * linkColumnHeaderWidth.length ];
+		final char[] lline = new char[ h2a.length() + Arrays.stream( linkColumnHeaderWidth ).sum()
+				+ 2 * linkColumnHeaderWidth.length ];
 		Arrays.fill( lline, '-' );
 		str.append( lline );
 		str.append( '\n' );
@@ -250,9 +255,11 @@ public class ModelUtils
 			{
 				if ( lfs.get( pk ).isSet( link ) )
 					if ( sfs.get( pk ) instanceof IntFeatureProjection )
-						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "d", ( int ) lfs.get( pk ).value( link ) ) );
+						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "d",
+								( int ) lfs.get( pk ).value( link ) ) );
 					else
-						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + ".1f", lfs.get( pk ).value( link ) ) );
+						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + ".1f",
+								lfs.get( pk ).value( link ) ) );
 				else
 					str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", "unset" ) );
 				i++;

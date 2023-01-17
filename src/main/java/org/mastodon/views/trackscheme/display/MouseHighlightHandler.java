@@ -40,7 +40,8 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 
-public class MouseHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetHeadersListener
+public class MouseHighlightHandler
+		implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetHeadersListener
 {
 	private final TrackSchemeOverlay graphOverlay;
 
@@ -115,7 +116,8 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 			if ( graphOverlay.getVertexAt( x, y, vertex ) != null )
 				highlight.highlightVertex( vertex );
 			// See if we can find an edge.
-			else if ( graphOverlay.getEdgeAt( x, y, TrackSchemeNavigationBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+			else if ( graphOverlay.getEdgeAt( x, y, TrackSchemeNavigationBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE,
+					edge ) != null )
 				highlight.highlightEdge( edge );
 			else
 				highlight.clearHighlight();

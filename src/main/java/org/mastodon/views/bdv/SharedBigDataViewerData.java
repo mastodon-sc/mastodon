@@ -156,7 +156,8 @@ public class SharedBigDataViewerData
 						: TransformEventHandler3D::new );
 
 		if ( WrapBasicImgLoader.wrapImgLoaderIfNecessary( spimData ) )
-			System.err.println( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
+			System.err.println(
+					"WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
 
 		WrapBasicImgLoader.removeWrapperIfPresent( spimData );
 	}
@@ -184,7 +185,8 @@ public class SharedBigDataViewerData
 		}
 		else if ( xmlFilename.endsWith( ".xml" ) )
 		{
-			final String settings = xmlFilename.substring( 0, xmlFilename.length() - ".xml".length() ) + ".settings" + ".xml";
+			final String settings =
+					xmlFilename.substring( 0, xmlFilename.length() - ".xml".length() ) + ".settings" + ".xml";
 			proposedSettingsFile = new File( settings );
 			if ( proposedSettingsFile.isFile() )
 			{
@@ -429,7 +431,8 @@ public class SharedBigDataViewerData
 		case ImagePlus.COLOR_RGB:
 			break;
 		default:
-			IJ.showMessage( imp.getShortTitle() + ": Only 8, 16, 32-bit images and RGB images are supported currently!" );
+			IJ.showMessage(
+					imp.getShortTitle() + ": Only 8, 16, 32-bit images and RGB images are supported currently!" );
 			return null;
 		}
 
@@ -495,7 +498,8 @@ public class SharedBigDataViewerData
 		final HashMap< Integer, BasicViewSetup > setups = new HashMap<>( numSetups );
 		for ( int s = 0; s < numSetups; ++s )
 		{
-			final BasicViewSetup setup = new BasicViewSetup( setupIdOffset + s, String.format( imp.getTitle() + " channel %d", s + 1 ), size, voxelSize );
+			final BasicViewSetup setup = new BasicViewSetup( setupIdOffset + s,
+					String.format( imp.getTitle() + " channel %d", s + 1 ), size, voxelSize );
 			setup.setAttribute( new Channel( s + 1 ) );
 			setups.put( setupIdOffset + s, setup );
 		}
@@ -504,7 +508,8 @@ public class SharedBigDataViewerData
 		final ArrayList< TimePoint > timepoints = new ArrayList<>( numTimepoints );
 		for ( int t = 0; t < numTimepoints; ++t )
 			timepoints.add( new TimePoint( t ) );
-		final SequenceDescriptionMinimal seq = new SequenceDescriptionMinimal( new TimePoints( timepoints ), setups, imgLoader, null );
+		final SequenceDescriptionMinimal seq =
+				new SequenceDescriptionMinimal( new TimePoints( timepoints ), setups, imgLoader, null );
 
 		// create ViewRegistrations from the images calibration
 		final AffineTransform3D sourceTransform = new AffineTransform3D();
@@ -518,12 +523,14 @@ public class SharedBigDataViewerData
 		final ArrayList< SourceAndConverter< ? > > sources = new ArrayList<>();
 
 		final File basePath = new File( "." );
-		final AbstractSpimData< ? > spimData = new SpimDataMinimal( basePath, seq, new ViewRegistrations( registrations ) );
+		final AbstractSpimData< ? > spimData =
+				new SpimDataMinimal( basePath, seq, new ViewRegistrations( registrations ) );
 		WrapBasicImgLoader.wrapImgLoaderIfNecessary( spimData );
 		BigDataViewer.initSetups( spimData, converterSetups, sources );
 
 		final CacheControl.CacheControls cache = new CacheControl.CacheControls();
-		cache.addCacheControl( ( ( ViewerImgLoader ) spimData.getSequenceDescription().getImgLoader() ).getCacheControl() );
+		cache.addCacheControl(
+				( ( ViewerImgLoader ) spimData.getSequenceDescription().getImgLoader() ).getCacheControl() );
 		setupIdOffset += imp.getNChannels();
 
 		final BasicViewerState state = new BasicViewerState();
@@ -614,7 +621,8 @@ public class SharedBigDataViewerData
 		}
 	}
 
-	private static void transferChannelSettings( final int channelOffset, final ImagePlus imp, final ViewerState state, final ConverterSetups converterSetups )
+	private static void transferChannelSettings( final int channelOffset, final ImagePlus imp, final ViewerState state,
+			final ConverterSetups converterSetups )
 	{
 		final int nChannels = imp.getNChannels();
 		final CompositeImage ci = imp.isComposite() ? ( CompositeImage ) imp : null;

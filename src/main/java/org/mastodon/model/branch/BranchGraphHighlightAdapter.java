@@ -38,10 +38,10 @@ import org.mastodon.model.HighlightModel;
 import org.scijava.listeners.Listeners;
 
 public class BranchGraphHighlightAdapter<
-	V extends Vertex< E >,
-	E extends Edge< V >,
-	BV extends Vertex< BE >,
-	BE extends Edge< BV > >
+		V extends Vertex< E >,
+		E extends Edge< V >,
+		BV extends Vertex< BE >,
+		BE extends Edge< BV > >
 		extends AbstractBranchGraphAdapter< V, E, BV, BE >
 		implements HighlightModel< BV, BE >
 {
@@ -104,25 +104,27 @@ public class BranchGraphHighlightAdapter<
 			return null;
 
 		}
-		finally {
+		finally
+		{
 			graph.releaseRef( vRef );
 			graph.releaseRef( eRef );
 		}
 	}
 
-
 	@Override
 	public BE getHighlightedEdge( final BE ref )
 	{
 		final E eRef = graph.edgeRef();
-		try {
+		try
+		{
 			final E highlightedEdge = highlight.getHighlightedEdge( eRef );
 			if ( highlightedEdge == null )
 				return null;
 
 			return branchGraph.getBranchEdge( highlightedEdge, ref );
 		}
-		finally {
+		finally
+		{
 			graph.releaseRef( eRef );
 		}
 	}

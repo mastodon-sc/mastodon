@@ -61,7 +61,8 @@ public class ViewMenuBuilder
 		void accept( MenuItemVisitor visitor );
 	}
 
-	public static void build( final ViewMenu viewMenu, final ActionMap actionMap, final Map< String, String > menuTexts, final MenuItem... items )
+	public static void build( final ViewMenu viewMenu, final ActionMap actionMap, final Map< String, String > menuTexts,
+			final MenuItem... items )
 	{
 		final MenuItemVisitor visitor = new MenuItemVisitor( viewMenu, actionMap, menuTexts, null );
 		Arrays.asList( items ).forEach( item -> item.accept( visitor ) );
@@ -77,7 +78,8 @@ public class ViewMenuBuilder
 
 		private final String path;
 
-		public MenuItemVisitor( final ViewMenu viewMenu, final ActionMap actionMap, final Map< String, String > menuTexts, final String path )
+		public MenuItemVisitor( final ViewMenu viewMenu, final ActionMap actionMap,
+				final Map< String, String > menuTexts, final String path )
 		{
 			this.viewMenu = viewMenu;
 			this.menuTexts = menuTexts;

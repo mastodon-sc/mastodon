@@ -44,10 +44,15 @@ import mpicbg.spim.data.XmlHelpers;
 public class MamutProjectIO
 {
 	public static final String MAMUTPROJECT_TAG = "MamutProject";
+
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_NAME = "version";
+
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.3";
+
 	public static final String SPIMDATAFILE_TAG = "SpimDataFile";
+
 	private static final String SPACE_UNITS_TAG = "SpaceUnits";
+
 	private static final String TIME_UNITS_TAG = "TimeUnits";
 
 	public void save( final MamutProject project, final MamutProject.ProjectWriter writer ) throws IOException
@@ -66,7 +71,7 @@ public class MamutProjectIO
 
 		final SAXBuilder sax = new SAXBuilder();
 		Document doc;
-		try ( final MamutProject.ProjectReader reader = project.openForReading() )
+		try (final MamutProject.ProjectReader reader = project.openForReading())
 		{
 			doc = sax.build( reader.getProjectXmlInputStream() );
 		}

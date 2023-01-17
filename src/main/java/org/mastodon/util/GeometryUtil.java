@@ -51,7 +51,8 @@ public class GeometryUtil
 	 *            y coordinate of segment extremity A2.
 	 * @return the distance from the point to the line segment.
 	 */
-	public static final double segmentDist( final double x0, final double y0, final double x1, final double y1, final double x2, final double y2 )
+	public static final double segmentDist( final double x0, final double y0, final double x1, final double y1,
+			final double x2, final double y2 )
 	{
 		return Math.sqrt( squSegmentDist( x0, y0, x1, y1, x2, y2 ) );
 	}
@@ -77,13 +78,16 @@ public class GeometryUtil
 	 *            y coordinate of segment extremity A2.
 	 * @return the squared distance from the point to the line segment.
 	 */
-	public static final double squSegmentDist( final double x0, final double y0, final double x1, final double y1, final double x2, final double y2 )
+	public static final double squSegmentDist( final double x0, final double y0, final double x1, final double y1,
+			final double x2, final double y2 )
 	{
 		final double l12sq = ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 );
 
 		final double x = ( ( x0 - x1 ) * ( x2 - x1 ) + ( y0 - y1 ) * ( y2 - y1 ) ) / l12sq;
-		if ( x < 0 ) { return ( x0 - x1 ) * ( x0 - x1 ) + ( y0 - y1 ) * ( y0 - y1 ); }
-		if ( x > 1 ) { return ( x0 - x2 ) * ( x0 - x2 ) + ( y0 - y2 ) * ( y0 - y2 ); }
+		if ( x < 0 )
+		{ return ( x0 - x1 ) * ( x0 - x1 ) + ( y0 - y1 ) * ( y0 - y1 ); }
+		if ( x > 1 )
+		{ return ( x0 - x2 ) * ( x0 - x2 ) + ( y0 - y2 ) * ( y0 - y2 ); }
 
 		final double c = ( y2 - y1 ) * x0 - ( x2 - x1 ) * y0 + x2 * y1 - y2 * x1;
 		return ( c * c ) / l12sq;

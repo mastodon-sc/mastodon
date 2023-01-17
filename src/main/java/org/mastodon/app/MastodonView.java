@@ -74,7 +74,7 @@ public class MastodonView<
 		ME extends AbstractListenableEdge< ME, MV, ?, ? >,
 		V extends Vertex< E >,
 		E extends Edge< V > >
-	implements IMastodonView
+		implements IMastodonView
 {
 	protected final M appModel;
 
@@ -106,11 +106,16 @@ public class MastodonView<
 
 		groupHandle = appModel.getGroupManager().createGroupHandle();
 
-		final TimepointModelAdapter timepointModelAdapter = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
-		final HighlightModelAdapter< MV, ME, V, E > highlightModelAdapter = new HighlightModelAdapter<>( appModel.getHighlightModel(), vertexMap, edgeMap );
-		final FocusModelAdapter< MV, ME, V, E > focusModelAdapter = new FocusModelAdapter<>( appModel.getFocusModel(), vertexMap, edgeMap );
-		final SelectionModelAdapter< MV, ME, V, E > selectionModelAdapter = new SelectionModelAdapter<>( appModel.getSelectionModel(), vertexMap, edgeMap );
-		final NavigationHandlerAdapter< MV, ME, V, E > navigationHandlerAdapter = new NavigationHandlerAdapter<>( groupHandle.getModel( appModel.NAVIGATION ), vertexMap, edgeMap );
+		final TimepointModelAdapter timepointModelAdapter =
+				new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
+		final HighlightModelAdapter< MV, ME, V, E > highlightModelAdapter =
+				new HighlightModelAdapter<>( appModel.getHighlightModel(), vertexMap, edgeMap );
+		final FocusModelAdapter< MV, ME, V, E > focusModelAdapter =
+				new FocusModelAdapter<>( appModel.getFocusModel(), vertexMap, edgeMap );
+		final SelectionModelAdapter< MV, ME, V, E > selectionModelAdapter =
+				new SelectionModelAdapter<>( appModel.getSelectionModel(), vertexMap, edgeMap );
+		final NavigationHandlerAdapter< MV, ME, V, E > navigationHandlerAdapter =
+				new NavigationHandlerAdapter<>( groupHandle.getModel( appModel.NAVIGATION ), vertexMap, edgeMap );
 
 		timepointModel = timepointModelAdapter;
 		highlightModel = highlightModelAdapter;
@@ -125,7 +130,7 @@ public class MastodonView<
 			focusModelAdapter.listeners().removeAll();
 			selectionModelAdapter.listeners().removeAll();
 			navigationHandlerAdapter.listeners().removeAll();
-		});
+		} );
 	}
 
 	/**

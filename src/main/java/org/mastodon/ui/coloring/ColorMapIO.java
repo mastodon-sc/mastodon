@@ -183,7 +183,8 @@ public class ColorMapIO
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
 				final String name = ( String ) mapping.get( "name" );
 				@SuppressWarnings( "unchecked" )
-				final Map< String, Double > notApplicableColor = ( Map< String, Double > ) mapping.get( "notApplicableColor" );
+				final Map< String, Double > notApplicableColor =
+						( Map< String, Double > ) mapping.get( "notApplicableColor" );
 				final float rna = notApplicableColor.get( R_KEY ).floatValue();
 				final float gna = notApplicableColor.get( G_KEY ).floatValue();
 				final float bna = notApplicableColor.get( B_KEY ).floatValue();

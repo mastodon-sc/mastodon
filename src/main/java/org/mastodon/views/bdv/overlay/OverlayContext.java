@@ -67,10 +67,10 @@ public class OverlayContext< V extends OverlayVertex< V, ? > > implements
 	@Override
 	public Iterable< V > getInsideVertices( final int timepoint )
 	{
-//		final ConvexPolytope visiblePolytope = renderer.getVisiblePolytopeGlobal( transform, timepoint );
-//		final ClipConvexPolytope< V > ccp = index.getSpatialIndex( timepoint ).getClipConvexPolytope();
-//		ccp.clip( visiblePolytope );
-//		return ccp.getInsideValues();
+		//		final ConvexPolytope visiblePolytope = renderer.getVisiblePolytopeGlobal( transform, timepoint );
+		//		final ClipConvexPolytope< V > ccp = index.getSpatialIndex( timepoint ).getClipConvexPolytope();
+		//		ccp.clip( visiblePolytope );
+		//		return ccp.getInsideValues();
 		return renderer.getVisibleVertices( transform, timepoint );
 	}
 

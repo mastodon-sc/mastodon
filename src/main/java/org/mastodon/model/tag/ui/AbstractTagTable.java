@@ -212,14 +212,15 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 		table.getColumnModel().getColumn( buttonColumn ).setMaxWidth( 32 );
 		table.addMouseListener( new MyTableButtonMouseListener() );
 		table.setShowGrid( false );
-		table.setIntercellSpacing( new Dimension( 0,0 ) );
+		table.setIntercellSpacing( new Dimension( 0, 0 ) );
 		table.setSurrendersFocusOnKeystroke( true );
 		table.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
 		table.setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 
 		ToolTipManager.sharedInstance().unregisterComponent( table );
 
-		final Actions actions = new Actions( table.getInputMap( WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ), table.getActionMap(), new InputTriggerConfig() );
+		final Actions actions = new Actions( table.getInputMap( WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ),
+				table.getActionMap(), new InputTriggerConfig() );
 		actions.runnableAction( this::editSelectedRow, "edit selected row", "ENTER" );
 		actions.runnableAction( this::removeSelectedRow, "remove selected row", "DELETE", "BACK_SPACE" );
 
@@ -365,7 +366,8 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public Component getTableCellRendererComponent( final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row, final int column )
+		public Component getTableCellRendererComponent( final JTable table, final Object value,
+				final boolean isSelected, final boolean hasFocus, final int row, final int column )
 		{
 			super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
 			@SuppressWarnings( "unchecked" )
@@ -444,9 +446,11 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 		@SuppressWarnings( "unchecked" )
 		@Override
-		public Component getTableCellEditorComponent( final JTable table, final Object value, final boolean isSelected, final int row, final int column )
+		public Component getTableCellEditorComponent( final JTable table, final Object value, final boolean isSelected,
+				final int row, final int column )
 		{
-			final JTextField editor = ( JTextField ) super.getTableCellEditorComponent( table, value, isSelected, row, column );
+			final JTextField editor =
+					( JTextField ) super.getTableCellEditorComponent( table, value, isSelected, row, column );
 			edited = ( Element ) value;
 			editor.setText( edited.getName() );
 			return editor;

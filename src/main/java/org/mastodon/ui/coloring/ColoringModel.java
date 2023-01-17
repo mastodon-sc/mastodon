@@ -132,7 +132,8 @@ public abstract class ColoringModel
 		{
 			final int id = tagSet.id();
 			final TagSetStructure tss = tagSetModel.getTagSetStructure();
-			final Optional< TagSetStructure.TagSet > ts = tss.getTagSets().stream().filter( t -> t.id() == id ).findFirst();
+			final Optional< TagSetStructure.TagSet > ts =
+					tss.getTagSets().stream().filter( t -> t.id() == id ).findFirst();
 			if ( ts.isPresent() )
 				colorByTagSet( ts.get() );
 			else

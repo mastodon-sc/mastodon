@@ -53,14 +53,16 @@ public class SpotTrackIDFeatureSerializer implements FeatureSerializer< SpotTrac
 	}
 
 	@Override
-	public void serialize( final SpotTrackIDFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final SpotTrackIDFeature feature, final ObjectToFileIdMap< Spot > idmap,
+			final ObjectOutputStream oos ) throws IOException
 	{
 		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( feature.map );
 		propertyMapSerializer.writePropertyMap( idmap, oos );
 	}
 
 	@Override
-	public SpotTrackIDFeature deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	public SpotTrackIDFeature deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool,
+			final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		final IntPropertyMap< Spot > map = new IntPropertyMap<>( pool, -1 );
 		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( map );

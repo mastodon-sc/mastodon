@@ -36,15 +36,16 @@ import org.mastodon.pool.ByteMappedElementArray;
 import org.mastodon.pool.SingleArrayMemPool;
 import org.mastodon.pool.attributes.IntAttribute;
 
-public class BranchSpotPool extends AbstractListenableVertexPool< 
-		BranchSpot, 
-		BranchLink, 
+public class BranchSpotPool extends AbstractListenableVertexPool<
+		BranchSpot,
+		BranchLink,
 		ByteMappedElement >
 {
 
 	public static class BranchVertexLayout extends AbstractVertexLayout
 	{
 		final IntField firstLinkedVertexId = intField();
+
 		final IntField lastLinkedVertexId = intField();
 	}
 
@@ -58,7 +59,8 @@ public class BranchSpotPool extends AbstractListenableVertexPool<
 
 	BranchSpotPool( final int initialCapacity, final RefPool< Spot > vertexPool )
 	{
-		super( initialCapacity, layout, BranchSpot.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+		super( initialCapacity, layout, BranchSpot.class,
+				SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
 		this.vertexPool = vertexPool;
 		this.firstSpotId = new IntAttribute<>( layout.firstLinkedVertexId, this );
 		this.lastSpotId = new IntAttribute<>( layout.lastLinkedVertexId, this );

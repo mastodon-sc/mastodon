@@ -255,7 +255,8 @@ public class GroupStrings
 		public String suffix( final String string )
 		{
 			if ( !strings.contains( string ) )
-				throw new IllegalArgumentException( "Specified string '" + string + "' does not belong in this group." );
+				throw new IllegalArgumentException(
+						"Specified string '" + string + "' does not belong in this group." );
 
 			// Deal with singleton groups.
 			if ( strings.size() == 1 )

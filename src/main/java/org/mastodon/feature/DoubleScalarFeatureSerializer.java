@@ -39,11 +39,13 @@ import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.properties.DoublePropertyMap;
 
-public abstract class DoubleScalarFeatureSerializer< F extends DoubleScalarFeature< O >, O > implements FeatureSerializer< F, O >
+public abstract class DoubleScalarFeatureSerializer< F extends DoubleScalarFeature< O >, O >
+		implements FeatureSerializer< F, O >
 {
 
 	@Override
-	public void serialize( final F feature, final ObjectToFileIdMap< O > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final F feature, final ObjectToFileIdMap< O > idmap, final ObjectOutputStream oos )
+			throws IOException
 	{
 		final FeatureSpec< ? extends Feature< O >, O > spec = feature.getSpec();
 		final FeatureProjectionSpec projectionSpec = spec.getProjectionSpecs().iterator().next();
@@ -63,7 +65,8 @@ public abstract class DoubleScalarFeatureSerializer< F extends DoubleScalarFeatu
 		mapSerializer.writePropertyMap( idmap, oos );
 	}
 
-	protected DeserializedStruct read( final FileIdToObjectMap< O > idmap, final RefCollection< O > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	protected DeserializedStruct read( final FileIdToObjectMap< O > idmap, final RefCollection< O > pool,
+			final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		final String key = ois.readUTF();
 		final String info = ois.readUTF();
@@ -90,7 +93,8 @@ public abstract class DoubleScalarFeatureSerializer< F extends DoubleScalarFeatu
 
 		public final DoublePropertyMap< O > map;
 
-		private DeserializedStruct( final String key, final String info, final Dimension dimension, final String units, final DoublePropertyMap< O > map )
+		private DeserializedStruct( final String key, final String info, final Dimension dimension, final String units,
+				final DoublePropertyMap< O > map )
 		{
 			this.key = key;
 			this.info = info;

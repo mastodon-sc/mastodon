@@ -76,7 +76,8 @@ public class EllipsoidIterableTest
 		final Img< UnsignedByteType > img = ArrayImgs.unsignedBytes( 100, 100, 50 );
 		for ( final UnsignedByteType p : img )
 			p.setZero();
-		final Source< UnsignedByteType > source = new RandomAccessibleIntervalSource<>( img, new UnsignedByteType(), transform, "Test source" );
+		final Source< UnsignedByteType > source =
+				new RandomAccessibleIntervalSource<>( img, new UnsignedByteType(), transform, "Test source" );
 
 		/*
 		 * Now create a model graph with a few test spots (non overlapping).
@@ -129,7 +130,8 @@ public class EllipsoidIterableTest
 			ellipsoidIter.localize( pos );
 			transform.inverse().apply( spotRealpos, spotRealpos );
 			for ( int d = 0; d < 3; d++ )
-				assertEquals( "Spot center and iterable integer position differ", Math.round( spotRealpos[ d ] ), pos[ d ] );
+				assertEquals( "Spot center and iterable integer position differ", Math.round( spotRealpos[ d ] ),
+						pos[ d ] );
 		} );
 	}
 
@@ -155,7 +157,8 @@ public class EllipsoidIterableTest
 		final Img< UnsignedByteType > img = ArrayImgs.unsignedBytes( 100, 100, 50 );
 		for ( final UnsignedByteType p : img )
 			p.setZero();
-		final Source< UnsignedByteType > source = new RandomAccessibleIntervalSource<>( img, new UnsignedByteType(), transform, "Test source" );
+		final Source< UnsignedByteType > source =
+				new RandomAccessibleIntervalSource<>( img, new UnsignedByteType(), transform, "Test source" );
 
 		/*
 		 * Now create a model graph with a few test spots (non overlapping).
@@ -210,7 +213,8 @@ public class EllipsoidIterableTest
 			cursor.fwd();
 			final int val = cursor.get().get();
 			if ( val > 1 )
-				fail( "Expected values to be 0 or 1, but found " + val + " at location " + Util.printCoordinates( cursor ) );
+				fail( "Expected values to be 0 or 1, but found " + val + " at location "
+						+ Util.printCoordinates( cursor ) );
 
 			/*
 			 * This part of the test if a bit circular, since we test whether a
@@ -222,7 +226,9 @@ public class EllipsoidIterableTest
 			{
 				// Test that we are outside any spot.
 				for ( final Predicate< Localizable > tester : testers )
-					assertFalse( "Found position " + Util.printCoordinates( cursor ) + ", to be inside a spot, expected it to be outside",
+					assertFalse(
+							"Found position " + Util.printCoordinates( cursor )
+									+ ", to be inside a spot, expected it to be outside",
 							tester.test( cursor ) );
 			}
 			else if ( val == 1 )
@@ -232,7 +238,9 @@ public class EllipsoidIterableTest
 				for ( final Predicate< Localizable > tester : testers )
 					inside = inside || tester.test( cursor );
 
-				assertTrue( "Found position " + Util.printCoordinates( cursor ) + ", to be outside a spot, expected it to be inside",
+				assertTrue(
+						"Found position " + Util.printCoordinates( cursor )
+								+ ", to be outside a spot, expected it to be inside",
 						inside );
 			}
 		}

@@ -67,7 +67,8 @@ public abstract class DoubleScalarFeature< O > implements Feature< O >
 	 * @param pool
 	 *            the pool of objects on which to define the feature.
 	 */
-	public DoubleScalarFeature( final String key, final Dimension dimension, final String units, final RefPool< O > pool )
+	public DoubleScalarFeature( final String key, final Dimension dimension, final String units,
+			final RefPool< O > pool )
 	{
 		this( key, dimension, units, new DoublePropertyMap<>( pool, Double.NaN ) );
 	}
@@ -85,7 +86,8 @@ public abstract class DoubleScalarFeature< O > implements Feature< O >
 	 * @param map
 	 *            the values to store in this feature.
 	 */
-	protected DoubleScalarFeature( final String key, final Dimension dimension, final String units, final DoublePropertyMap< O > map )
+	protected DoubleScalarFeature( final String key, final Dimension dimension, final String units,
+			final DoublePropertyMap< O > map )
 	{
 		final FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
 		this.values = map;

@@ -63,7 +63,8 @@ import bdv.viewer.TransformListener;
  *
  * @author Jean-Yves Tinevez
  */
-public class EditFocusVertexLabelAction extends AbstractNamedAction implements TransformListener< ScreenTransform >, OffsetHeadersListener
+public class EditFocusVertexLabelAction extends AbstractNamedAction
+		implements TransformListener< ScreenTransform >, OffsetHeadersListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -119,7 +120,8 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final UndoPointMarker undoPointMarker )
 	{
-		final EditFocusVertexLabelAction editFocusVertexLabelAction = new EditFocusVertexLabelAction( focus, undoPointMarker, panel );
+		final EditFocusVertexLabelAction editFocusVertexLabelAction =
+				new EditFocusVertexLabelAction( focus, undoPointMarker, panel );
 		panel.getScreenTransform().listeners().add( editFocusVertexLabelAction );
 		panel.getOffsetHeaders().listeners().add( editFocusVertexLabelAction );
 		actions.namedAction( editFocusVertexLabelAction, EDIT_FOCUS_LABEL_KEYS );

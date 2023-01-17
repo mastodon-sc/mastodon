@@ -41,7 +41,9 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph.TrackSchemeVertexPool;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackSchemeEdge, TrackSchemeVertexPool, ByteMappedElement > implements HasLabel, HasTimepoint
+public class TrackSchemeVertex
+		extends AbstractVertex< TrackSchemeVertex, TrackSchemeEdge, TrackSchemeVertexPool, ByteMappedElement >
+		implements HasLabel, HasTimepoint
 {
 	final ModelGraphWrapper< ?, ? >.ModelVertexWrapper modelVertex;
 
@@ -146,7 +148,6 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	{
 		pool.firstTimepoint.setQuiet( this, timepoint );
 	}
-
 
 	/**
 	 * Internal pool index of last {@link ScreenVertex} that was created for

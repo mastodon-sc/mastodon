@@ -52,7 +52,8 @@ public class MastodonPlugins< PL extends MastodonPlugin< M >, M extends Mastodon
 
 	public MastodonPlugins( final Keymap keymap )
 	{
-		pluginActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.TABLE );
+		pluginActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON, KeyConfigContexts.BIGDATAVIEWER,
+				KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.TABLE );
 		keymap.updateListeners().add( () -> pluginActions.updateKeyConfig( keymap.getConfig() ) );
 		menuItems = new ArrayList<>();
 		menuTexts = new HashMap<>();

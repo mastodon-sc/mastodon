@@ -31,7 +31,8 @@ package org.mastodon.ui.coloring;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 
-public class DefaultGraphColorGenerator< V extends Vertex< E >, E extends Edge< V > > implements GraphColorGenerator< V, E >
+public class DefaultGraphColorGenerator< V extends Vertex< E >, E extends Edge< V > >
+		implements GraphColorGenerator< V, E >
 {
 	public DefaultGraphColorGenerator()
 	{}

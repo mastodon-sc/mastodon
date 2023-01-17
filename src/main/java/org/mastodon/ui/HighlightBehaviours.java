@@ -58,9 +58,11 @@ import org.scijava.ui.behaviour.util.Behaviours;
 public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 {
 	private static final String REMOVE_HIGHLIGHTED_VERTEX = "remove highlighted vertex";
+
 	private static final String REMOVE_HIGHLIGHTED_EDGE = "remove highlighted edge";
 
 	private static final String[] REMOVE_HIGHLIGHTED_VERTEX_KEYS = new String[] { "D" };
+
 	private static final String[] REMOVE_HIGHLIGHTED_EDGE_KEYS = new String[] { "D" };
 
 	/*
@@ -77,8 +79,10 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( REMOVE_HIGHLIGHTED_VERTEX, REMOVE_HIGHLIGHTED_VERTEX_KEYS, "Remove highlighted spot (spot under the mouse)." );
-			descriptions.add( REMOVE_HIGHLIGHTED_EDGE, REMOVE_HIGHLIGHTED_EDGE_KEYS, "Remove highlighted edge (edge under the mouse)." );
+			descriptions.add( REMOVE_HIGHLIGHTED_VERTEX, REMOVE_HIGHLIGHTED_VERTEX_KEYS,
+					"Remove highlighted spot (spot under the mouse)." );
+			descriptions.add( REMOVE_HIGHLIGHTED_EDGE, REMOVE_HIGHLIGHTED_EDGE_KEYS,
+					"Remove highlighted edge (edge under the mouse)." );
 		}
 	}
 

@@ -50,21 +50,29 @@ import org.scijava.ui.behaviour.util.Behaviours;
 import bdv.TransformEventHandler;
 
 public class InertialScreenTransformEventHandler
-	implements
+		implements
 		TransformEventHandler,
 		LayoutListener,
 		OffsetHeadersListener
 {
 	public static final String DRAG_TRANSLATE = "drag translate";
+
 	public static final String SCROLL_TRANSLATE = "scroll translate";
+
 	public static final String ZOOM_X = "zoom horizontal";
+
 	public static final String ZOOM_Y = "zoom vertical";
+
 	public static final String ZOOM_XY = "zoom";
 
 	private static final String[] DRAG_TRANSLATE_KEYS = new String[] { "button2", "button3" };
+
 	private static final String[] SCROLL_TRANSLATE_KEYS = new String[] { "scroll" };
+
 	private static final String[] ZOOM_X_KEYS = new String[] { "shift scroll" };
+
 	private static final String[] ZOOM_Y_KEYS = new String[] { "ctrl scroll", "alt scroll" };
+
 	private static final String[] ZOOM_XY_KEYS = new String[] { "meta scroll", "ctrl shift scroll" };
 
 	/*
@@ -90,9 +98,13 @@ public class InertialScreenTransformEventHandler
 	}
 
 	private final TranslateDragBehaviour translateDragBehaviour;
+
 	private final TranslateScrollBehaviour translateScrollBehaviour;
+
 	private final ZoomScrollBehaviour zoomScrollBehaviourX;
+
 	private final ZoomScrollBehaviour zoomScrollBehaviourY;
+
 	private final ZoomScrollBehaviour zoomScrollBehaviourXY;
 
 	/*
@@ -123,30 +135,37 @@ public class InertialScreenTransformEventHandler
 	private static final double EPSILON = 0.0000000001;
 
 	// ...JY settings...
-//	private static final double borderRatioX = 0.5;
-//	private static final double borderRatioY = 0.5;
-//	private static final double maxSizeFactorX = 8;
-//	private static final double maxSizeFactorY = 8;
-//	private static final double boundXLayoutBorder = 0;
-//	private static final double boundYLayoutBorder = 0;
+	//	private static final double borderRatioX = 0.5;
+	//	private static final double borderRatioY = 0.5;
+	//	private static final double maxSizeFactorX = 8;
+	//	private static final double maxSizeFactorY = 8;
+	//	private static final double boundXLayoutBorder = 0;
+	//	private static final double boundYLayoutBorder = 0;
 
 	// ...TP settings...
 	private static final double borderRatioX = 0;
+
 	private static final double borderRatioY = 0;
+
 	private static final double borderAbsX = 10;
+
 	private static final double borderAbsY = 10;
+
 	private static final double maxSizeFactorX = 1;
+
 	private static final double maxSizeFactorY = 1;
+
 	static final double boundXLayoutBorder = 0.5;
+
 	static final double boundYLayoutBorder = 0.5;
 
 	// ...still something else...
-//	private static final double borderRatioX = 0.1;
-//	private static final double borderRatioY = 0.1;
-//	private static final double maxSizeFactorX = 1 / 0.8;
-//	private static final double maxSizeFactorY = 1 / 0.8;
-//	private static final double boundXLayoutBorder = 0;
-//	private static final double boundYLayoutBorder = 0;
+	//	private static final double borderRatioX = 0.1;
+	//	private static final double borderRatioY = 0.1;
+	//	private static final double maxSizeFactorX = 1 / 0.8;
+	//	private static final double maxSizeFactorY = 1 / 0.8;
+	//	private static final double boundXLayoutBorder = 0;
+	//	private static final double boundYLayoutBorder = 0;
 
 	/**
 	 * A zoom command to a window smaller than this value (in layout
@@ -306,7 +325,7 @@ public class InertialScreenTransformEventHandler
 
 		if ( boundYMax - boundYMin < MIN_TIMEPOINTS_ON_CANVAS )
 		{
-			final double c = (boundYMax + boundYMin) / 2;
+			final double c = ( boundYMax + boundYMin ) / 2;
 			boundYMin = c - MIN_TIMEPOINTS_ON_CANVAS / 2;
 			boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
 		}
@@ -460,7 +479,6 @@ public class InertialScreenTransformEventHandler
 			if ( zoomIn )
 				dScale = 1.0 / dScale;
 
-
 			final ScreenTransform transform = transformState.get();
 			final ScreenTransform previousTransform = transform.copy();
 
@@ -605,7 +623,8 @@ public class InertialScreenTransformEventHandler
 		}
 	}
 
-	public void zoomOutFully() {
+	public void zoomOutFully()
+	{
 		transformState.get( tstart );
 		tend.set( tstart );
 		zoomOutFullyX( tend );

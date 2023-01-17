@@ -54,7 +54,8 @@ public class DummyImgLoaderTest
 	{
 		Dimensions dimensions = new FinalDimensions( 660, 596, 120 );
 		DummyImgLoader dummyImgLoader = new DummyImgLoader( dimensions );
-		assertThat( dummyImgLoader.getSetupImgLoader( 0 ).getVolatileImageType(), instanceOf( VolatileRealType.class ) );
+		assertThat( dummyImgLoader.getSetupImgLoader( 0 ).getVolatileImageType(),
+				instanceOf( VolatileRealType.class ) );
 		assertNotNull( dummyImgLoader.getCacheControl() );
 		BasicSetupImgLoader< ? > setupImgLoader = dummyImgLoader.getSetupImgLoader( 0 );
 		RandomAccessibleInterval< ? > image = setupImgLoader.getImage( 0 );

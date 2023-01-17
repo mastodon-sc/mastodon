@@ -203,7 +203,7 @@ public class ColorBarOverlay implements OverlayRenderer
 
 		y += VINSET;
 		x += HINSET;
-		
+
 		y += ascent;
 		g.setColor( Color.BLACK );
 		g.drawString( tagSet.getName(), x, y );
@@ -258,12 +258,14 @@ public class ColorBarOverlay implements OverlayRenderer
 		}
 		else
 		{
-			final int xShift = draw( x, y, vertexColorMap, VERTEX_HEADER, vertexProjectionKey, vertexRangeMin, vertexRangeMax, g );
+			final int xShift =
+					draw( x, y, vertexColorMap, VERTEX_HEADER, vertexProjectionKey, vertexRangeMin, vertexRangeMax, g );
 			final String edgeColorMap = featureColorMode.getEdgeColorMap();
 			final String edgeProjectionKey = toString( featureColorMode.getEdgeFeatureProjection() );
 			final double edgeRangeMin = featureColorMode.getEdgeRangeMin();
 			final double edgeRangeMax = featureColorMode.getEdgeRangeMax();
-			draw( x + xShift + COLORBARS_SPACING, y, edgeColorMap, EDGE_HEADER, edgeProjectionKey, edgeRangeMin, edgeRangeMax, g );
+			draw( x + xShift + COLORBARS_SPACING, y, edgeColorMap, EDGE_HEADER, edgeProjectionKey, edgeRangeMin,
+					edgeRangeMax, g );
 		}
 	}
 
@@ -271,7 +273,8 @@ public class ColorBarOverlay implements OverlayRenderer
 	{
 		if ( !featureColorMode.getVertexColorMap().equals( featureColorMode.getEdgeColorMap() ) )
 			return false;
-		if ( !Objects.equals(featureColorMode.getVertexFeatureProjection(), featureColorMode.getEdgeFeatureProjection()) )
+		if ( !Objects.equals( featureColorMode.getVertexFeatureProjection(),
+				featureColorMode.getEdgeFeatureProjection() ) )
 			return false;
 		if ( featureColorMode.getVertexRangeMin() != featureColorMode.getEdgeRangeMin() )
 			return false;
@@ -283,7 +286,7 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private static String toString( final FeatureProjectionId featureProjectionId )
 	{
-		if(featureProjectionId == null)
+		if ( featureProjectionId == null )
 			return "null";
 		final StringBuilder sb = new StringBuilder( featureProjectionId.getProjectionKey() );
 		final int[] sourceIndices;
@@ -387,16 +390,19 @@ public class ColorBarOverlay implements OverlayRenderer
 		if ( areVandEequal( featureColorMode ) )
 		{
 			int stringWidth = fm.stringWidth( BOTH_HEADER ) + 2;
-			stringWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
+			stringWidth +=
+					Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
 			return 2 * HINSET + stringWidth;
 		}
 		else
 		{
 			int stringWidth = fm.stringWidth( VERTEX_HEADER ) + 2;
-			stringWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
+			stringWidth +=
+					Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getVertexFeatureProjection() ) ) );
 			stringWidth += COLORBARS_SPACING;
 			stringWidth += fm.stringWidth( EDGE_HEADER ) + 2;
-			stringWidth += Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getEdgeFeatureProjection() ) ) );
+			stringWidth +=
+					Math.max( minWidth, fm.stringWidth( toString( featureColorMode.getEdgeFeatureProjection() ) ) );
 			return 2 * HINSET + stringWidth;
 		}
 	}

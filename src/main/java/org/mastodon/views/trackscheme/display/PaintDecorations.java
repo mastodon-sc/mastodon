@@ -284,7 +284,7 @@ public class PaintDecorations
 				final int boundedMin = Math.max( headerWidth, column.xLeft );
 				final int boundedMax = Math.min( column.xLeft + column.width, width );
 				final int boundedWidth = boundedMax - boundedMin;
-				if ( boundedWidth >= stringWidth + 5  )
+				if ( boundedWidth >= stringWidth + 5 )
 				{
 					final int xtext = ( boundedMin + boundedMax - stringWidth ) / 2;
 					g2.drawString( str, xtext, headerHeight / 2 );

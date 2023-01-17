@@ -232,7 +232,7 @@ public class TrackSchemeVertexList extends RefArrayList< TrackSchemeVertex >
 	 */
 	protected double getMinLayoutXDistance()
 	{
-		if ( ! cachedMinLayoutXDistanceValid )
+		if ( !cachedMinLayoutXDistanceValid )
 		{
 			cachedMinLayoutXDistance = getMinLayoutXDistance( 0, size() );
 			cachedMinLayoutXDistanceValid = true;

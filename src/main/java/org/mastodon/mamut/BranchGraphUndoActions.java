@@ -39,9 +39,11 @@ import org.scijava.ui.behaviour.util.Actions;
 public class BranchGraphUndoActions
 {
 	public static final String UNDO = "undo";
+
 	public static final String REDO = "redo";
 
 	static final String[] UNDO_KEYS = new String[] { "meta Z", "ctrl Z" };
+
 	static final String[] REDO_KEYS = new String[] { "meta shift Z", "ctrl shift Z" };
 
 	/*

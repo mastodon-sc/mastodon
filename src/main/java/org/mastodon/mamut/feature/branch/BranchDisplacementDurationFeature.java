@@ -158,9 +158,11 @@ public class BranchDisplacementDurationFeature implements Feature< BranchSpot >
 
 	private static final String INFO_STRING = "The displacement and duration of a branch.";
 
-	public static final FeatureProjectionSpec DISPLACEMENT_PROJECTION_SPEC = new FeatureProjectionSpec( "Displacement", Dimension.LENGTH );
+	public static final FeatureProjectionSpec DISPLACEMENT_PROJECTION_SPEC =
+			new FeatureProjectionSpec( "Displacement", Dimension.LENGTH );
 
-	public static final FeatureProjectionSpec DURATION_PROJECTION_SPEC = new FeatureProjectionSpec( "Duration", Dimension.NONE );
+	public static final FeatureProjectionSpec DURATION_PROJECTION_SPEC =
+			new FeatureProjectionSpec( "Duration", Dimension.NONE );
 
 	public static final Spec SPEC = new Spec();
 
@@ -188,14 +190,17 @@ public class BranchDisplacementDurationFeature implements Feature< BranchSpot >
 
 	final String lengthUnits;
 
-	BranchDisplacementDurationFeature( final DoublePropertyMap< BranchSpot > dispMap, final DoublePropertyMap< BranchSpot > durMap, final String lengthUnits )
+	BranchDisplacementDurationFeature( final DoublePropertyMap< BranchSpot > dispMap,
+			final DoublePropertyMap< BranchSpot > durMap, final String lengthUnits )
 	{
 		this.dispMap = dispMap;
 		this.durMap = durMap;
 		this.lengthUnits = lengthUnits;
 		this.projectionMap = new LinkedHashMap<>( 2 );
-		projectionMap.put( key( DISPLACEMENT_PROJECTION_SPEC ), FeatureProjections.project( key( DISPLACEMENT_PROJECTION_SPEC ), dispMap, lengthUnits ) );
-		projectionMap.put( key( DURATION_PROJECTION_SPEC ), FeatureProjections.project( key( DURATION_PROJECTION_SPEC ), durMap, Dimension.NONE_UNITS ) );
+		projectionMap.put( key( DISPLACEMENT_PROJECTION_SPEC ),
+				FeatureProjections.project( key( DISPLACEMENT_PROJECTION_SPEC ), dispMap, lengthUnits ) );
+		projectionMap.put( key( DURATION_PROJECTION_SPEC ),
+				FeatureProjections.project( key( DURATION_PROJECTION_SPEC ), durMap, Dimension.NONE_UNITS ) );
 	}
 
 	public double getDuration( final BranchSpot branch )

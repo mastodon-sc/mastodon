@@ -61,7 +61,8 @@ public class DefaultModelGraphProperties< V extends Vertex< E > & HasTimepoint &
 	}
 
 	@Override
-	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex, final E ref )
+	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex,
+			final E ref )
 	{
 		throw new UnsupportedOperationException();
 	}

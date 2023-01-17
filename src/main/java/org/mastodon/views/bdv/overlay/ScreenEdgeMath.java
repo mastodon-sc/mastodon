@@ -124,6 +124,7 @@ public class ScreenEdgeMath< V extends OverlayVertex< V, E >, E extends OverlayE
 	{
 		return max;
 	}
+
 	/**
 	 * Get edge position in viewer coordinate system.
 	 *
