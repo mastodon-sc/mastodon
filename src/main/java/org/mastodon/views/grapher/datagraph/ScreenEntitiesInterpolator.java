@@ -78,7 +78,8 @@ public class ScreenEntitiesInterpolator
 	 * @param incrementalStartTransform
 	 *            optional incremental transform of start entities.
 	 */
-	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end, final ScreenTransform incrementalStartTransform )
+	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end,
+			final ScreenTransform incrementalStartTransform )
 	{
 		this.start = start;
 		this.end = end;
@@ -105,7 +106,7 @@ public class ScreenEntitiesInterpolator
 	public static ScreenTransform getIncrementalY( final ScreenEntities start, final ScreenEntities end )
 	{
 		final ScreenTransform t = end.screenTransform().concatenate( start.screenTransform().inverse() );
-		t.set( 0, t.getScreenWidth() -1, t.getMinY(), t.getMaxY(), t.getScreenWidth(), t.getScreenHeight() );
+		t.set( 0, t.getScreenWidth() - 1, t.getMinY(), t.getMaxY(), t.getScreenWidth(), t.getScreenHeight() );
 		return t;
 	}
 
@@ -154,8 +155,10 @@ public class ScreenEntitiesInterpolator
 		final ScreenEdge eEnd = end.getEdgePool().createRef();
 		for ( final ScreenEdge e : end.getEdges() )
 		{
-			final int sourceIndex = end.getVertices().get( e.getSourceScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
-			final int targetIndex = end.getVertices().get( e.getTargetScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
+			final int sourceIndex =
+					end.getVertices().get( e.getSourceScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
+			final int targetIndex =
+					end.getVertices().get( e.getTargetScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
 			final boolean endSelected = e.isSelected();
 			current.getEdges().add( current.getEdgePool().create( eCurrent ).init(
 					e.getDataEdgeId(),
@@ -183,12 +186,14 @@ public class ScreenEntitiesInterpolator
 		{
 			if ( idToEndEdge.get( e.getDataEdgeId(), eEnd ) == null )
 			{
-				final int sourceIndex = start.getVertices().get( e.getSourceScreenVertexIndex(), vStart ).getInterpolatedScreenVertexIndex();
+				final int sourceIndex = start.getVertices().get( e.getSourceScreenVertexIndex(), vStart )
+						.getInterpolatedScreenVertexIndex();
 				if ( sourceIndex >= current.getVertices().size() )
 					continue;
 				// No matching current vertex. Don't paint.
 
-				final int targetIndex = start.getVertices().get( e.getTargetScreenVertexIndex(), vStart ).getInterpolatedScreenVertexIndex();
+				final int targetIndex = start.getVertices().get( e.getTargetScreenVertexIndex(), vStart )
+						.getInterpolatedScreenVertexIndex();
 				if ( targetIndex >= current.getVertices().size() )
 					continue;
 
@@ -220,7 +225,8 @@ public class ScreenEntitiesInterpolator
 		end.getEdgePool().releaseRef( eEnd );
 	}
 
-	private void interpolate( final ScreenVertex vStart, final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )
+	private void interpolate( final ScreenVertex vStart, final ScreenVertex vEnd, final double ratio,
+			final ScreenVertex vCurrent )
 	{
 		vCurrent.setDataVertexId( vEnd.getDataVertexId() );
 		vCurrent.setLabel( vEnd.getLabel() );

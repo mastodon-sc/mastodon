@@ -108,7 +108,8 @@ public class TrackSchemeFrame extends ViewFrame
 		} );
 
 		SwingUtilities.replaceUIActionMap( trackschemePanel, keybindings.getConcatenatedActionMap() );
-		SwingUtilities.replaceUIInputMap( trackschemePanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+		SwingUtilities.replaceUIInputMap( trackschemePanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+				keybindings.getConcatenatedInputMap() );
 
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );

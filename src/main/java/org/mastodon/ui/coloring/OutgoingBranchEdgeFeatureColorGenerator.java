@@ -33,7 +33,8 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 
-public class OutgoingBranchEdgeFeatureColorGenerator< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+public class OutgoingBranchEdgeFeatureColorGenerator< V extends Vertex< E >, E extends Edge< V >,
+		BV extends Vertex< BE >, BE extends Edge< BV > >
 		extends AbstractBranchEdgeColorGenerator< V, E, BV, BE >
 		implements EdgeColorGenerator< V, E >
 {
@@ -56,13 +57,14 @@ public class OutgoingBranchEdgeFeatureColorGenerator< V extends Vertex< E >, E e
 		try
 		{
 			BE be = branchGraph.getBranchEdge( edge, beRef );
-			if(be == null) {
+			if ( be == null )
+			{
 				final BV bv = branchGraph.getBranchVertex( edge, bvRef );
-				if(bv == null)
+				if ( bv == null )
 					return 0;
-				if(bv.outgoingEdges().size() != 1)
+				if ( bv.outgoingEdges().size() != 1 )
 					return 0;
-				be = bv.outgoingEdges().get(0, beRef);
+				be = bv.outgoingEdges().get( 0, beRef );
 			}
 			return colorGenerator.color( be, null, null );
 		}

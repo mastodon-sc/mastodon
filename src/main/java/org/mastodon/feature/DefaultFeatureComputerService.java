@@ -151,7 +151,8 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 					v = dependencies.addVertex( featureSpec );
 				if ( v.getFeatureComputer() != null )
 					throw new IllegalArgumentException( "Ignoring FeatureComputer " + info.getClassName()
-							+ " because it computes " + featureSpec + " which is already computed by " + v.getFeatureComputer() );
+							+ " because it computes " + featureSpec + " which is already computed by "
+							+ v.getFeatureComputer() );
 				v.setFeatureComputer( fc, info );
 
 				for ( final ModuleItem< ? > item : info.inputs() )
@@ -201,10 +202,10 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	public Collection< FeatureSpec< ?, ? > > getDependencies( final FeatureSpec< ?, ? > spec )
 	{
 		final Vertex vertex = dependencies.get( spec );
-		if (null == vertex)
+		if ( null == vertex )
 			return Collections.emptyList();
 
-		final List<FeatureSpec< ?, ? >> deps = new ArrayList<>();
+		final List< FeatureSpec< ?, ? > > deps = new ArrayList<>();
 		for ( final Edge edge : vertex.outgoingEdges() )
 		{
 			final Vertex target = edge.getTarget();
@@ -215,7 +216,8 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	}
 
 	@Override
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll, final Collection< FeatureSpec< ?, ? > > featureKeys )
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll,
+			final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
 		cancelReason = null;
 		final List< FeatureSpec< ?, ? > > specs = new ArrayList<>();
@@ -281,7 +283,8 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	 *                           the map of already computed features to potentially
 	 *                           serve as parameter.
 	 */
-	protected void provideParameters( final ModuleItem< ? > item, final CommandModule module, final Class< ? > parameterClass, final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel )
+	protected void provideParameters( final ModuleItem< ? > item, final CommandModule module,
+			final Class< ? > parameterClass, final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel )
 	{
 		// Feature dependencies.
 		if ( Feature.class.isAssignableFrom( parameterClass ) )
@@ -295,7 +298,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 		}
 
 		// FeatureComputationStatus.
-		if (FeatureComputationStatus.class.isAssignableFrom( parameterClass ))
+		if ( FeatureComputationStatus.class.isAssignableFrom( parameterClass ) )
 		{
 			@SuppressWarnings( "unchecked" )
 			final ModuleItem< FeatureComputationStatus > statusModule = ( ModuleItem< FeatureComputationStatus > ) item;

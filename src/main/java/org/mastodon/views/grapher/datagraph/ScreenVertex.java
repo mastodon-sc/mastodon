@@ -42,18 +42,27 @@ import net.imglib2.RealLocalizable;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, ByteMappedElement > implements RealLocalizable
+public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, ByteMappedElement >
+		implements RealLocalizable
 {
 	public static class ScreenVertexLayout extends PoolObjectLayout
 	{
 		final IndexField origVertex = indexField();
+
 		final DoubleField xOffset = doubleField();
+
 		final DoubleField yOffset = doubleField();
+
 		final DoubleField vertexDist = doubleField();
+
 		final BooleanField selected = booleanField();
+
 		final ByteField transition = byteField();
+
 		final IndexField ipScreenVertex = indexField();
+
 		final DoubleField ipRatio = doubleField();
+
 		final IntField color = intField();
 	}
 

@@ -78,7 +78,7 @@ public class ProjectManagerTest
 		openAndSaveMastodonProject( tinyExampleProject, projectA );
 		assertProjectContainsBackupDatasetXml( projectA );
 		// 2. Move mastodon project to new location, relative path to dataset.xml gets lost
-		Path newLocation = Files.createTempDirectory("mastodon-test");
+		Path newLocation = Files.createTempDirectory( "mastodon-test" );
 		Path projectB = newLocation.resolve( "moved-project.mastodon" );
 		Files.move( projectA, projectB );
 		assertProjectContainsBackupDatasetXml( projectB );
@@ -103,7 +103,7 @@ public class ProjectManagerTest
 	private void assertProjectContainsBackupDatasetXml( Path project )
 			throws IOException
 	{
-		try ( ZipFile zipFile = new ZipFile( project.toFile() ) )
+		try (ZipFile zipFile = new ZipFile( project.toFile() ))
 		{
 			boolean containsBackupXml = zipFile.stream()
 					.anyMatch( entry -> "dataset.xml.backup".equals( entry.getName() ) );
@@ -113,10 +113,12 @@ public class ProjectManagerTest
 
 	private Path resourceAsFile( String resourceName )
 	{
-		try {
+		try
+		{
 			return Paths.get( ProjectManagerTest.class.getResource( resourceName ).toURI() );
 		}
-		catch ( URISyntaxException e ) {
+		catch ( URISyntaxException e )
+		{
 			throw new RuntimeException( e );
 		}
 	}

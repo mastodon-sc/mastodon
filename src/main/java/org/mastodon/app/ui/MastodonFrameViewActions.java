@@ -45,9 +45,11 @@ import org.scijava.ui.behaviour.util.Actions;
 public class MastodonFrameViewActions
 {
 	public static final String TOGGLE_SETTINGS_PANEL = "toggle settings panel";
+
 	public static final String CLOSE_WINDOW = "close window";
 
 	static final String[] TOGGLE_SETTINGS_PANEL_KEYS = new String[] { "T" };
+
 	static final String[] CLOSE_WINDOW_KEYS = new String[] { "ctrl W", "meta W" };
 
 	/*
@@ -64,7 +66,8 @@ public class MastodonFrameViewActions
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS, "Toggle the view settings toolbar of the active window." );
+			descriptions.add( TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS,
+					"Toggle the view settings toolbar of the active window." );
 			descriptions.add( CLOSE_WINDOW, CLOSE_WINDOW_KEYS, "Close the active window." );
 		}
 	}

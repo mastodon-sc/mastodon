@@ -64,7 +64,8 @@ public class TagSetMenu< V extends Vertex< E >, E extends Edge< V > > implements
 
 	private final ReentrantReadWriteLock lock;
 
-	public TagSetMenu( final JMenu menu, final TagSetModel< V, E > tagSetModel, final SelectionModel< V, E > selectionModel, final ReentrantReadWriteLock lock, final UndoPointMarker undo )
+	public TagSetMenu( final JMenu menu, final TagSetModel< V, E > tagSetModel,
+			final SelectionModel< V, E > selectionModel, final ReentrantReadWriteLock lock, final UndoPointMarker undo )
 	{
 		this.menu = menu;
 		this.tagSetModel = tagSetModel;
@@ -89,14 +90,16 @@ public class TagSetMenu< V extends Vertex< E >, E extends Edge< V > > implements
 			final MnemonicsAssigner subMenuMnemo = new MnemonicsAssigner();
 			for ( final Tag tag : ts.getTags() )
 			{
-				final JMenuItem menuItem = new JMenuItem( new SetTagAction<>( tagSetModel, ts, tag, selectionModel, lock, undo ) );
+				final JMenuItem menuItem =
+						new JMenuItem( new SetTagAction<>( tagSetModel, ts, tag, selectionModel, lock, undo ) );
 				subMenuMnemo.add( menuItem );
 				tsMenu.add( menuItem );
 			}
 
 			tsMenu.add( new JSeparator() );
 
-			final JMenuItem clearTagMenuItem = new JMenuItem( new ClearTagAction<>( tagSetModel, ts, selectionModel, lock, undo ) );
+			final JMenuItem clearTagMenuItem =
+					new JMenuItem( new ClearTagAction<>( tagSetModel, ts, selectionModel, lock, undo ) );
 			subMenuMnemo.add( clearTagMenuItem );
 			tsMenu.add( clearTagMenuItem );
 			menu.add( tsMenu );
@@ -128,7 +131,9 @@ public class TagSetMenu< V extends Vertex< E >, E extends Edge< V > > implements
 
 		private final ReentrantReadWriteLock lock;
 
-		public SetTagAction( final TagSetModel< V, E > tagSetModel, final TagSet tagSet, final Tag tag, final SelectionModel< V, E > selectionModel, final ReentrantReadWriteLock lock, final UndoPointMarker undo )
+		public SetTagAction( final TagSetModel< V, E > tagSetModel, final TagSet tagSet, final Tag tag,
+				final SelectionModel< V, E > selectionModel, final ReentrantReadWriteLock lock,
+				final UndoPointMarker undo )
 		{
 			super( tag.label(), new ColorIcon( new Color( tag.color(), true ) ) );
 			this.tagSetModel = tagSetModel;
@@ -173,7 +178,9 @@ public class TagSetMenu< V extends Vertex< E >, E extends Edge< V > > implements
 
 		private final ReentrantReadWriteLock lock;
 
-		public ClearTagAction( final TagSetModel< V, E > tagSetModel, final TagSet tagSet, final SelectionModel< V, E > selectionModel, final ReentrantReadWriteLock lock, final UndoPointMarker undo )
+		public ClearTagAction( final TagSetModel< V, E > tagSetModel, final TagSet tagSet,
+				final SelectionModel< V, E > selectionModel, final ReentrantReadWriteLock lock,
+				final UndoPointMarker undo )
 		{
 			super( "Clear tags for " + tagSet.getName() );
 			this.tagSetModel = tagSetModel;

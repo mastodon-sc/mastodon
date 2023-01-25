@@ -101,7 +101,8 @@ public class ColoringModelBranchGraph< V extends Vertex< E >, E extends Edge< V 
 
 		// Vertex.
 		final ColorGenerator< V > vertexColorGenerator;
-		final FeatureProjection< ? > vertexProjection = projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
+		final FeatureProjection< ? > vertexProjection =
+				projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
 
 		if ( null == vertexProjection )
 			vertexColorGenerator = new DefaultColorGenerator<>();
@@ -143,7 +144,8 @@ public class ColoringModelBranchGraph< V extends Vertex< E >, E extends Edge< V 
 
 		// Edge.
 		final EdgeColorGenerator< V, E > edgeColorGenerator;
-		final FeatureProjection< ? > edgeProjection = projections.getFeatureProjection( fcm.getEdgeFeatureProjection() );
+		final FeatureProjection< ? > edgeProjection =
+				projections.getFeatureProjection( fcm.getEdgeFeatureProjection() );
 		if ( null == edgeProjection )
 			edgeColorGenerator = new DefaultEdgeColorGenerator<>();
 		else

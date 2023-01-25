@@ -197,7 +197,8 @@ public class OpenRemoteURLPanel extends JPanel
 			return;
 		}
 
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( this, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( this, new Class[] { JLabel.class } );
 		disabler.disable();
 		new Thread()
 		{
@@ -223,7 +224,8 @@ public class OpenRemoteURLPanel extends JPanel
 					final JLabel lblPassword = new JLabel( "Password" );
 					final JPasswordField passwordField = new JPasswordField();
 					final Object[] ob = { lblUsername, textFieldUsername, lblPassword, passwordField };
-					final int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
+					final int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials",
+							JOptionPane.OK_CANCEL_OPTION );
 
 					if ( result == JOptionPane.OK_OPTION )
 					{
@@ -270,9 +272,11 @@ public class OpenRemoteURLPanel extends JPanel
 		}.start();
 	}
 
-	private static final void browseSaveToBDVFile( final String suggestedFile, final JTextArea target, final Runnable onSucess, final JComponent parent )
+	private static final void browseSaveToBDVFile( final String suggestedFile, final JTextArea target,
+			final Runnable onSucess, final JComponent parent )
 	{
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( parent, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( parent, new Class[] { JLabel.class } );
 		disabler.disable();
 		try
 		{

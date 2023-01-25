@@ -105,7 +105,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		 */
 		INCOMING_BRANCH_EDGE( "Branch-edge up", TargetType.BRANCH_EDGE,
 				"Edges have a color determined by a numerical feature of the branch-edge they are linked to."
-						+ "Or the color of the incoming edge of the branch-vertex they are linked to. "),
+						+ "Or the color of the incoming edge of the branch-vertex they are linked to. " ),
 		/**
 		 * Edges have a color determined by a numerical feature of the
 		 * branch-link they are linked to. Or the color of the outgoing edge of
@@ -113,7 +113,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		 */
 		OUTGOING_BRANCH_EDGE( "Branch-edge down", TargetType.BRANCH_EDGE,
 				"Edges have a color determined by a numerical feature of the branch-edge they are linked to."
-						+ "Or the color of the outgoing edge of the branch-vertex they are linked to. ");
+						+ "Or the color of the outgoing edge of the branch-vertex they are linked to. " );
 
 		private final String label;
 
@@ -426,7 +426,6 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		}
 	}
 
-
 	public synchronized void setEdgeColorMap( final String edgeColorMap )
 	{
 		if ( this.edgeColorMap != edgeColorMap )
@@ -523,12 +522,14 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		N_LINKS.name = "Number of links";
 		N_LINKS.vertexColorMode = VertexColorMode.VERTEX;
 		N_LINKS.vertexColorMap = ColorMap.PARULA.getName();
-		N_LINKS.vertexFeatureProjection = new FeatureProjectionId( DEFAULT_KEY, DEFAULT_KEY, N_LINKS.vertexColorMode.targetType() );
+		N_LINKS.vertexFeatureProjection =
+				new FeatureProjectionId( DEFAULT_KEY, DEFAULT_KEY, N_LINKS.vertexColorMode.targetType() );
 		N_LINKS.vertexRangeMin = 0;
 		N_LINKS.vertexRangeMax = 3;
 		N_LINKS.edgeColorMode = EdgeColorMode.SOURCE_VERTEX;
 		N_LINKS.edgeColorMap = N_LINKS.vertexColorMap;
-		N_LINKS.edgeFeatureProjection = new FeatureProjectionId( DEFAULT_KEY, DEFAULT_KEY, N_LINKS.edgeColorMode.targetType() );
+		N_LINKS.edgeFeatureProjection =
+				new FeatureProjectionId( DEFAULT_KEY, DEFAULT_KEY, N_LINKS.edgeColorMode.targetType() );
 		N_LINKS.edgeRangeMin = N_LINKS.vertexRangeMin;
 		N_LINKS.edgeRangeMax = N_LINKS.vertexRangeMax;
 	}

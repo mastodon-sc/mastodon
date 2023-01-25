@@ -72,7 +72,8 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 	}
 
 	@Override
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll, final Collection< FeatureSpec< ?, ? > > featureKeys )
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll,
+			final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
 		// Set the force flag.
 		shouldRecomputeAll.set( forceComputeAll );
@@ -191,7 +192,8 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 
 		// Create listener.
 		final FeatureModel featureModel = model.getFeatureModel();
-		this.vertexPropertyListener = GraphFeatureUpdateListeners.vertexPropertyListener( featureModel, Spot.class, Link.class );
+		this.vertexPropertyListener =
+				GraphFeatureUpdateListeners.vertexPropertyListener( featureModel, Spot.class, Link.class );
 
 		// Listen to changes in spot properties.
 		final ModelGraph graph = model.getGraph();

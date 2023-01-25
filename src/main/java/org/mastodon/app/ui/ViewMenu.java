@@ -87,9 +87,10 @@ public class ViewMenu
 	public void addSeparator( final String path )
 	{
 		final JMenu menu = menu( path );
-		if ( menu.getItemCount() != 0 ) {
+		if ( menu.getItemCount() != 0 )
+		{
 			final JPopupMenu popup = menu.getPopupMenu();
-			if ( ! ( popup.getComponent( popup.getComponentCount() - 1 ) instanceof JSeparator ) )
+			if ( !( popup.getComponent( popup.getComponentCount() - 1 ) instanceof JSeparator ) )
 				menu.addSeparator();
 		}
 	}
@@ -161,7 +162,8 @@ public class ViewMenu
 						{
 							final AbstractNamedAction namedAction = ( AbstractNamedAction ) action;
 							final Set< InputTrigger > inputs = keyconf.getInputs( namedAction.name(), contexts );
-							final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
+							final Optional< InputTrigger > input =
+									inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
 							if ( input.isPresent() )
 								mi.setAccelerator( input.get().getKeyStroke() );
 							else
@@ -182,7 +184,7 @@ public class ViewMenu
 			final String text = part.trim();
 
 			JMenuItem next = null;
-A:			for ( final MenuElement me : root.getSubElements() )
+			A: for ( final MenuElement me : root.getSubElements() )
 			{
 				if ( me instanceof JPopupMenu )
 				{

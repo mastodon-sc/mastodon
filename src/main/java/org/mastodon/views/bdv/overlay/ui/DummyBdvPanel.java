@@ -182,7 +182,8 @@ public class DummyBdvPanel extends JPanel
 			}
 
 			@Override
-			public void processEdge( final Link edge, final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
+			public void processEdge( final Link edge, final Spot from, final Spot to,
+					final DepthFirstSearch< Spot, Link > search )
 			{
 				selection.setSelected( edge, true );
 			}
@@ -234,14 +235,18 @@ public class DummyBdvPanel extends JPanel
 		final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap = viewGraph.getVertexMap();
 		final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap = viewGraph.getEdgeMap();
 
-		final SelectionModelAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > viewSelection =
-				new SelectionModelAdapter<>( selection, vertexMap, edgeMap );
-		final FocusModelAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > viewFocus =
-				new FocusModelAdapter<>( focus, vertexMap, edgeMap );
-		final HighlightModelAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > viewHighlight =
-				new HighlightModelAdapter<>( highlight, vertexMap, edgeMap );
-		final GraphColorGeneratorAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > viewColoring =
-				new GraphColorGeneratorAdapter<>( vertexMap, edgeMap );
+		final SelectionModelAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >,
+				OverlayEdgeWrapper< Spot, Link > > viewSelection =
+						new SelectionModelAdapter<>( selection, vertexMap, edgeMap );
+		final FocusModelAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >,
+				OverlayEdgeWrapper< Spot, Link > > viewFocus =
+						new FocusModelAdapter<>( focus, vertexMap, edgeMap );
+		final HighlightModelAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >,
+				OverlayEdgeWrapper< Spot, Link > > viewHighlight =
+						new HighlightModelAdapter<>( highlight, vertexMap, edgeMap );
+		final GraphColorGeneratorAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >,
+				OverlayEdgeWrapper< Spot, Link > > viewColoring =
+						new GraphColorGeneratorAdapter<>( vertexMap, edgeMap );
 		viewColoring.setColorGenerator( coloring );
 
 		/*
@@ -428,10 +433,14 @@ public class DummyBdvPanel extends JPanel
 		@Override
 		public void drawOverlays( final Graphics g )
 		{
-			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
-			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED );
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_INTERPOLATION,
+					RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION,
+					RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_OFF );
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_COLOR_RENDERING,
+					RenderingHints.VALUE_COLOR_RENDER_SPEED );
 			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
 
 			final double s1 = ( double ) width / image.getWidth();

@@ -125,7 +125,8 @@ public class AlphanumCompare
 					for ( int i = 0; i < thisChunkLength; i++ )
 					{
 						result = thisChunk.charAt( i ) - thatChunk.charAt( i );
-						if ( result != 0 ) { return result; }
+						if ( result != 0 )
+						{ return result; }
 					}
 				}
 			}

@@ -140,7 +140,8 @@ public class MovieFileBDVRecorder extends AbstractBDVRecorder
 	{
 		// Convert BI type to something Humble can harness.
 		// Also crop in case we had non-even dimensions.
-		final BufferedImage convertedImg = new BufferedImage( picture.getWidth(), picture.getHeight(), BufferedImage.TYPE_3BYTE_BGR );
+		final BufferedImage convertedImg =
+				new BufferedImage( picture.getWidth(), picture.getHeight(), BufferedImage.TYPE_3BYTE_BGR );
 		convertedImg.getGraphics().drawImage( frame, 0, 0, null );
 
 		if ( converter == null )

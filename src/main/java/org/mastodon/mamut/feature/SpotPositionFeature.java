@@ -59,7 +59,7 @@ public class SpotPositionFeature implements Feature< Spot >
 	static
 	{
 		for ( int d = 0; d < 3; d++ )
-			PROJECTION_SPECS.add( new FeatureProjectionSpec(  "" + ( char ) ( 'X' + d ), Dimension.POSITION ) );
+			PROJECTION_SPECS.add( new FeatureProjectionSpec( "" + ( char ) ( 'X' + d ), Dimension.POSITION ) );
 	}
 
 	public static final Spec SPEC = new Spec();

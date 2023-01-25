@@ -92,10 +92,10 @@ import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class MamutBranchViewBdv extends MamutBranchView< 
-	OverlayGraphWrapper< BranchSpot, BranchLink >,
-	OverlayVertexWrapper< BranchSpot, BranchLink >, 
-	OverlayEdgeWrapper< BranchSpot, BranchLink > >
+public class MamutBranchViewBdv extends MamutBranchView<
+		OverlayGraphWrapper< BranchSpot, BranchLink >,
+		OverlayVertexWrapper< BranchSpot, BranchLink >,
+		OverlayEdgeWrapper< BranchSpot, BranchLink > >
 {
 
 	private static int bdvName = 1;
@@ -114,7 +114,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 	public MamutBranchViewBdv( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel, createViewBranchGraph( appModel ), new String[] { KeyConfigContexts.BIGDATAVIEWER } );
-		
+
 		// Image data.
 		final SharedBigDataViewerData sharedBdvData = appModel.getSharedBdvData();
 
@@ -166,8 +166,9 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		// Register coloring and tag-sets.
 
 		// Coloring.
-		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, OverlayVertexWrapper< BranchSpot, BranchLink >, OverlayEdgeWrapper< BranchSpot, BranchLink > > coloring =
-				new GraphColorGeneratorAdapter<>( vertexMap, edgeMap );
+		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, OverlayVertexWrapper< BranchSpot, BranchLink >,
+				OverlayEdgeWrapper< BranchSpot, BranchLink > > coloring =
+						new GraphColorGeneratorAdapter<>( vertexMap, edgeMap );
 
 		coloringModel = registerBranchColoring( coloring, coloringMenuHandle,
 				() -> viewer.getDisplay().repaint() );
@@ -197,13 +198,14 @@ public class MamutBranchViewBdv extends MamutBranchView<
 			viewer.state().setViewerTransform( tLoaded );
 
 		// Renderer.
-		final OverlayGraphRenderer< OverlayVertexWrapper< BranchSpot, BranchLink >, OverlayEdgeWrapper< BranchSpot, BranchLink > > tracksOverlay =
-				new OverlayBranchGraphRenderer<>(
-						viewGraph,
-						highlightModel,
-						focusModel,
-						selectionModel,
-						coloring );
+		final OverlayGraphRenderer< OverlayVertexWrapper< BranchSpot, BranchLink >,
+				OverlayEdgeWrapper< BranchSpot, BranchLink > > tracksOverlay =
+						new OverlayBranchGraphRenderer<>(
+								viewGraph,
+								highlightModel,
+								focusModel,
+								selectionModel,
+								coloring );
 
 		viewer.getDisplay().overlays().add( tracksOverlay );
 		viewer.renderTransformListeners().add( tracksOverlay );
@@ -221,11 +223,13 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		graph.addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
 
 		// Forward navigation to view.
-		final OverlayNavigation< OverlayVertexWrapper< BranchSpot, BranchLink >, OverlayEdgeWrapper< BranchSpot, BranchLink > > overlayNavigation =
-				new OverlayNavigation<>( viewer, viewGraph );
+		final OverlayNavigation< OverlayVertexWrapper< BranchSpot, BranchLink >,
+				OverlayEdgeWrapper< BranchSpot, BranchLink > > overlayNavigation =
+						new OverlayNavigation<>( viewer, viewGraph );
 		navigationHandler.listeners().add( overlayNavigation );
 
-		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( viewGraph, tracksOverlay, highlightModel );
+		final BdvHighlightHandler< ?, ? > highlightHandler =
+				new BdvHighlightHandler<>( viewGraph, tracksOverlay, highlightModel );
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.renderTransformListeners().add( highlightHandler );
 
@@ -236,7 +240,8 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		viewer.getTransformEventHandler().install( viewBehaviours );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, graph.getLock(), graph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, graph.getLock(), focusModel, selectionModel );
-		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel, navigationHandler );
+		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel,
+				navigationHandler );
 		OverlayActions.install( viewActions, viewer, tracksOverlay );
 
 		/*
@@ -290,7 +295,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		return viewer;
 	}
 
-	private static OverlayGraphWrapper<BranchSpot, BranchLink> createViewBranchGraph( final MamutAppModel appModel )
+	private static OverlayGraphWrapper< BranchSpot, BranchLink > createViewBranchGraph( final MamutAppModel appModel )
 	{
 		// Model.
 		final Model model = appModel.getModel();

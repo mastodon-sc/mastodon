@@ -102,10 +102,14 @@ public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 		{
 			final FeatureModel featureModel = model.getFeatureModel();
 			final Projections projections = new ProjectionsFromFeatureModel( featureModel );
-			featureRangeCalculator.vertexCalculator = new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), projections );
-			featureRangeCalculator.edgeCalculator = new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
-			featureRangeCalculator.branchVertexCalculator = new DefaultFeatureRangeCalculator<>( model.getBranchGraph().vertices(), projections );
-			featureRangeCalculator.branchEdgeCalculator = new DefaultFeatureRangeCalculator<>( model.getBranchGraph().edges(), projections );
+			featureRangeCalculator.vertexCalculator =
+					new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), projections );
+			featureRangeCalculator.edgeCalculator =
+					new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
+			featureRangeCalculator.branchVertexCalculator =
+					new DefaultFeatureRangeCalculator<>( model.getBranchGraph().vertices(), projections );
+			featureRangeCalculator.branchEdgeCalculator =
+					new DefaultFeatureRangeCalculator<>( model.getBranchGraph().edges(), projections );
 			featureModel.listeners().add( this::notifyAvailableFeatureProjectionsChanged );
 		}
 		else
@@ -184,7 +188,8 @@ public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 						? null
 						: branchEdgeCalculator.computeMinMax( projection );
 			default:
-				throw new IllegalArgumentException( "Unknown target type: " + projection.getTargetType() + " of projection " + projection );
+				throw new IllegalArgumentException(
+						"Unknown target type: " + projection.getTargetType() + " of projection " + projection );
 			}
 		}
 	};

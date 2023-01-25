@@ -145,6 +145,7 @@ public class TrackSchemeOptions
 		values.keyPressedManager = manager;
 		return this;
 	}
+
 	/**
 	 * Sets the navigation etiquette.
 	 *
@@ -192,7 +193,8 @@ public class TrackSchemeOptions
 	 *            the color generator.
 	 * @return this instance.
 	 */
-	public TrackSchemeOptions graphColorGenerator( final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > generator )
+	public TrackSchemeOptions
+			graphColorGenerator( final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > generator )
 	{
 		values.graphColorGenerator = generator;
 		return this;
@@ -203,7 +205,6 @@ public class TrackSchemeOptions
 		values.lineageTreeLayoutFactory = lineageTreeLayoutFactory;
 		return this;
 	}
-
 
 	/**
 	 * Read-only {@link TrackSchemeOptions} values.
@@ -228,23 +229,17 @@ public class TrackSchemeOptions
 
 		private TrackSchemeOverlayFactory trackSchemeOverlayFactory = new TrackSchemeOverlayFactory();
 
-		private GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > graphColorGenerator = new DefaultGraphColorGenerator<>();
+		private GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > graphColorGenerator =
+				new DefaultGraphColorGenerator<>();
 
 		private LineageTreeLayoutFactory lineageTreeLayoutFactory = LineageTreeLayoutImp::new;
 
 		public TrackSchemeOptions optionsFromValues()
 		{
-			return new TrackSchemeOptions().
-				x( x ).
-				y( y ).
-				width( width ).
-				height( height ).
-				animationDurationMillis( animationDurationMillis ).
-				navigationEtiquette( navigationEtiquette ).
-				style( style ).
-				trackSchemeOverlayFactory( trackSchemeOverlayFactory ).
-				graphColorGenerator( graphColorGenerator ).
-				lineageTreeLayoutFactory( lineageTreeLayoutFactory );
+			return new TrackSchemeOptions().x( x ).y( y ).width( width ).height( height )
+					.animationDurationMillis( animationDurationMillis ).navigationEtiquette( navigationEtiquette )
+					.style( style ).trackSchemeOverlayFactory( trackSchemeOverlayFactory )
+					.graphColorGenerator( graphColorGenerator ).lineageTreeLayoutFactory( lineageTreeLayoutFactory );
 		}
 
 		public int getX()

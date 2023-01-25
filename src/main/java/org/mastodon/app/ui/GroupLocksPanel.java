@@ -56,7 +56,8 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 
 	private static final ImageIcon LOCK_ICON = new ImageIcon( GroupLocksPanel.class.getResource( "lock.png" ) );
 
-	private static final ImageIcon UNLOCK_ICON = new ImageIcon( GroupLocksPanel.class.getResource( "lock_open_grey.png" ) );
+	private static final ImageIcon UNLOCK_ICON =
+			new ImageIcon( GroupLocksPanel.class.getResource( "lock_open_grey.png" ) );
 
 	private static final Font FONT = new Font( "Arial", Font.PLAIN, 10 );
 
@@ -74,7 +75,8 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 		{
 			final int lockId = i;
 			final boolean isActive = groupHandle.getGroupId() == lockId;
-			final JToggleButton button = new JToggleButton( "" + ( i + 1 ), isActive ? LOCK_ICON : UNLOCK_ICON, isActive );
+			final JToggleButton button =
+					new JToggleButton( "" + ( i + 1 ), isActive ? LOCK_ICON : UNLOCK_ICON, isActive );
 			button.setFont( FONT );
 			button.setPreferredSize( new Dimension( 60, 20 ) );
 			button.setHorizontalAlignment( SwingConstants.LEFT );

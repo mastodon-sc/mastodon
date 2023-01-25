@@ -63,7 +63,8 @@ public class TrackMateImportedSpotFeatures extends TrackMateImportedFeatures< Sp
 	}
 
 	@Override
-	void store( final String key, final Dimension dimension, final String units, final DoublePropertyMap< Spot > values )
+	void store( final String key, final Dimension dimension, final String units,
+			final DoublePropertyMap< Spot > values )
 	{
 		super.store( key, dimension, units, values );
 		spec.getProjectionSpecs().add( new FeatureProjectionSpec( key, dimension ) );

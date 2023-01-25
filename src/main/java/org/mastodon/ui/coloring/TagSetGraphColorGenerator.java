@@ -34,7 +34,8 @@ import org.mastodon.model.tag.ObjTagMap;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
 
-public class TagSetGraphColorGenerator< V extends Vertex< E >, E extends Edge< V > > implements GraphColorGenerator< V, E >
+public class TagSetGraphColorGenerator< V extends Vertex< E >, E extends Edge< V > >
+		implements GraphColorGenerator< V, E >
 {
 	private final ObjTagMap< V, TagSetStructure.Tag > vertexTags;
 

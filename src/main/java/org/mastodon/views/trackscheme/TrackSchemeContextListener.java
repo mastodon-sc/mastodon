@@ -46,7 +46,7 @@ import org.mastodon.views.context.ContextListener;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class TrackSchemeContextListener< V extends Vertex< ? > >  implements ContextListener< V >
+public class TrackSchemeContextListener< V extends Vertex< ? > > implements ContextListener< V >
 {
 	private final GraphIdBimap< V, ? > idmap;
 
@@ -75,7 +75,7 @@ public class TrackSchemeContextListener< V extends Vertex< ? > >  implements Con
 			previousContext = context;
 			trackSchemeContext = ( context == null )
 					? null
-					: new TrackSchemeContext< >( idmap, graph, context );
+					: new TrackSchemeContext<>( idmap, graph, context );
 		}
 		if ( listener != null )
 			listener.contextChanged( trackSchemeContext );

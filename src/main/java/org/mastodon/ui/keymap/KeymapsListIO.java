@@ -87,7 +87,5 @@ class KeymapsListIO
 	}
 
 	public KeymapsListIO() // default constructor needed for snakeyaml
-	{
-	}
+	{}
 }
-

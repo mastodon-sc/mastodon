@@ -305,7 +305,8 @@ class ImportTGMMPanel extends JPanel
 
 	private void browseToTGMMFolder()
 	{
-		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( this, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( this, new Class[] { JLabel.class } );
 		disabler.disable();
 		final File file = FileChooser.chooseFile(
 				this,
@@ -350,7 +351,8 @@ class ImportTGMMPanel extends JPanel
 					nFiles++;
 			}
 			str.append( "</ul><p>" );
-			str.append( "Found " + nFiles + " files matching the TGMM filename and timepoint patterns in folder.</html>" );
+			str.append(
+					"Found " + nFiles + " files matching the TGMM filename and timepoint patterns in folder.</html>" );
 			labelInfo.setText( str.toString() );
 			return true;
 		}

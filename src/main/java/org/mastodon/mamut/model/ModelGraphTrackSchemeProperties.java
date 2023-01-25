@@ -46,7 +46,8 @@ public class ModelGraphTrackSchemeProperties extends DefaultModelGraphProperties
 	}
 
 	@Override
-	public Link insertEdge( final Spot source, final int sourceOutIndex, final Spot target, final int targetInIndex, final Link ref )
+	public Link insertEdge( final Spot source, final int sourceOutIndex, final Spot target, final int targetInIndex,
+			final Link ref )
 	{
 		return modelGraph.insertEdge( source, sourceOutIndex, target, targetInIndex, ref );
 	}

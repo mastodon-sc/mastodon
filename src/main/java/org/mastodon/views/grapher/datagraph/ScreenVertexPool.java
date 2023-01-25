@@ -45,19 +45,30 @@ public class ScreenVertexPool extends Pool< ScreenVertex, ByteMappedElement >
 	final RefPool< DataVertex > dataVertexPool;
 
 	final IndexAttribute< ScreenVertex > origVertex = new IndexAttribute<>( ScreenVertex.layout.origVertex, this );
+
 	final DoubleAttribute< ScreenVertex > xOffset = new DoubleAttribute<>( ScreenVertex.layout.xOffset, this );
+
 	final DoubleAttribute< ScreenVertex > yOffset = new DoubleAttribute<>( ScreenVertex.layout.yOffset, this );
+
 	final DoubleAttribute< ScreenVertex > vertexDist = new DoubleAttribute<>( ScreenVertex.layout.vertexDist, this );
+
 	final BooleanAttribute< ScreenVertex > selected = new BooleanAttribute<>( ScreenVertex.layout.selected, this );
+
 	final ByteAttribute< ScreenVertex > transition = new ByteAttribute<>( ScreenVertex.layout.transition, this );
-	final IndexAttribute< ScreenVertex > ipScreenVertex = new IndexAttribute<>( ScreenVertex.layout.ipScreenVertex, this );
+
+	final IndexAttribute< ScreenVertex > ipScreenVertex =
+			new IndexAttribute<>( ScreenVertex.layout.ipScreenVertex, this );
+
 	final DoubleAttribute< ScreenVertex > ipRatio = new DoubleAttribute<>( ScreenVertex.layout.ipRatio, this );
+
 	final ObjPropertyMap< ScreenVertex, String > label = new ObjPropertyMap<>( this );
+
 	final IntAttribute< ScreenVertex > color = new IntAttribute<>( ScreenVertex.layout.color, this );
 
 	public ScreenVertexPool( final int initialCapacity, final RefPool< DataVertex > dataVertexPool )
 	{
-		super( initialCapacity, ScreenVertex.layout, ScreenVertex.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+		super( initialCapacity, ScreenVertex.layout, ScreenVertex.class,
+				SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
 		this.dataVertexPool = dataVertexPool;
 	}
 

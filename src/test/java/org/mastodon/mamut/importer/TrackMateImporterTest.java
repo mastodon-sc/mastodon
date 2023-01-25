@@ -222,7 +222,7 @@ public class TrackMateImporterTest
 		try (final Context context = new Context())
 		{
 			final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
-//			final WindowManager windowManager = new WindowManager( context );
+			//			final WindowManager windowManager = new WindowManager( context );
 			final TrackMateImporter importer = new TrackMateImporter( new File( TRACKMATE_FILE ) );
 			final MamutProject project = importer.createProject();
 			final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
@@ -242,19 +242,22 @@ public class TrackMateImporterTest
 			final Spec specSpots = new TrackMateImportedSpotFeatures.Spec();
 			assertTrue( "The feature model should contain the specs for TrackMateImportedSpotFeatures.",
 					specs.contains( specSpots ) );
-			final org.mastodon.mamut.importer.trackmate.TrackMateImportedLinkFeatures.Spec specLinks = new TrackMateImportedLinkFeatures.Spec();
+			final org.mastodon.mamut.importer.trackmate.TrackMateImportedLinkFeatures.Spec specLinks =
+					new TrackMateImportedLinkFeatures.Spec();
 			assertTrue( "The feature model should contain the specs for TrackMateImportedLinkFeatures.",
 					specs.contains( specLinks ) );
 
 			// Inspect spot feature projections.
 			@SuppressWarnings( "unchecked" )
 			final Feature< Spot > spotFeature = ( Feature< Spot > ) featureModel.getFeature( specSpots );
-			inspectFeatureProjections( spotFeature, EXPECTED_SPOT_FEATURE_PROJECTIONS, EXPECTED_SPOT_PROJECTION_DIMENSIONS, EXPECTED_SPOT_ISINT );
+			inspectFeatureProjections( spotFeature, EXPECTED_SPOT_FEATURE_PROJECTIONS,
+					EXPECTED_SPOT_PROJECTION_DIMENSIONS, EXPECTED_SPOT_ISINT );
 
 			// Inspect link feature projections.
 			@SuppressWarnings( "unchecked" )
 			final Feature< Link > linkFeature = ( Feature< Link > ) featureModel.getFeature( specLinks );
-			inspectFeatureProjections( linkFeature, EXPECTED_LINK_FEATURE_PROJECTIONS, EXPECTED_LINK_PROJECTION_DIMENSIONS, EXPECTED_LINK_ISINT );
+			inspectFeatureProjections( linkFeature, EXPECTED_LINK_FEATURE_PROJECTIONS,
+					EXPECTED_LINK_PROJECTION_DIMENSIONS, EXPECTED_LINK_ISINT );
 
 			// Check some spot values.
 			boolean tested = false;
@@ -266,7 +269,8 @@ public class TrackMateImporterTest
 					tested = true;
 				}
 			}
-			assertTrue( "Did not test spot feature values: could not find spot with label " + TARGET_SPOT_LABEL, tested );
+			assertTrue( "Did not test spot feature values: could not find spot with label " + TARGET_SPOT_LABEL,
+					tested );
 
 			// Check some link values.
 			final FeatureProjectionSpec specSourceID = linkFeature.getSpec().getProjectionSpecs().stream()
@@ -277,18 +281,21 @@ public class TrackMateImporterTest
 			tested = false;
 			for ( final Link link : graph.edges() )
 			{
-				if ( linkFeature.project( FeatureProjectionKey.key( specSourceID ) ).value( link ) == TARGET_LINK_SOURCE_ID )
+				if ( linkFeature.project( FeatureProjectionKey.key( specSourceID ) ).value( link )
+						== TARGET_LINK_SOURCE_ID )
 				{
 					testSpotValues( linkFeature, link, EXPECTED_LINK_FEATURE_VALUES );
 					tested = true;
 				}
 			}
-			assertTrue( "Did not test link feature values: could not find link with source ID" + TARGET_LINK_SOURCE_ID, tested );
+			assertTrue( "Did not test link feature values: could not find link with source ID" + TARGET_LINK_SOURCE_ID,
+					tested );
 
 		}
 	}
 
-	private < O > void testSpotValues( final Feature< O > feature, final O obj, final Map< String, Double > expectedSpotFeatureValues )
+	private < O > void testSpotValues( final Feature< O > feature, final O obj,
+			final Map< String, Double > expectedSpotFeatureValues )
 	{
 		for ( final FeatureProjection< O > projection : feature.projections() )
 		{
@@ -299,7 +306,8 @@ public class TrackMateImporterTest
 			final Double expectedValue = expectedSpotFeatureValues.get( projectionName ).doubleValue();
 			assertNotNull( "Unexpected projection: " + projectionName, expectedValue );
 
-			assertEquals( "Unexpected value for projection " + projectionName, expectedValue.doubleValue(), projection.value( obj ), 1e-9 );
+			assertEquals( "Unexpected value for projection " + projectionName, expectedValue.doubleValue(),
+					projection.value( obj ), 1e-9 );
 		}
 	}
 
@@ -312,11 +320,11 @@ public class TrackMateImporterTest
 		final Set< ? > sp = feature.projections();
 		@SuppressWarnings( "unchecked" )
 		final Set< FeatureProjection< ? > > projections = ( Set< FeatureProjection< ? > > ) sp;
-		assertEquals( "Unexpected number of spot feature projections.", expectedProjectionKeys.size(), projections.size() );
+		assertEquals( "Unexpected number of spot feature projections.", expectedProjectionKeys.size(),
+				projections.size() );
 		for ( final FeatureProjection< ? > projection : projections )
 			assertTrue( "Unexpected projection spec: " + projection.getKey(),
 					expectedProjectionKeys.contains( projection.getKey().toString() ) );
-
 
 		// Inspect feature projection units and multiplicity.
 		for ( final FeatureProjectionSpec projSpec : feature.getSpec().getProjectionSpecs() )

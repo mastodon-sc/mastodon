@@ -63,28 +63,32 @@ public class NavigationHandlerAdapter< V, E, WV, WE >
 		navigationHandler.notifyNavigateToEdge( edgeMap.getLeft( edge ) );
 	}
 
-	private final ForwardedListeners< NavigationListener< WV, WE > > listeners = new ForwardedListeners.SynchronizedList<>(
-			new Listeners< NavigationListener< WV, WE > >()
-			{
-				@Override
-				public boolean add( final NavigationListener< WV, WE > listener )
-				{
-					return navigationHandler.listeners().add( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
-				}
+	private final ForwardedListeners< NavigationListener< WV, WE > > listeners =
+			new ForwardedListeners.SynchronizedList<>(
+					new Listeners< NavigationListener< WV, WE > >()
+					{
+						@Override
+						public boolean add( final NavigationListener< WV, WE > listener )
+						{
+							return navigationHandler.listeners()
+									.add( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+						}
 
-				@Override
-				public boolean add( final int index, final NavigationListener< WV, WE > listener )
-				{
-					return navigationHandler.listeners().add( index, new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
-				}
+						@Override
+						public boolean add( final int index, final NavigationListener< WV, WE > listener )
+						{
+							return navigationHandler.listeners().add( index,
+									new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+						}
 
-				@Override
-				public boolean remove( final NavigationListener< WV, WE > listener )
-				{
-					return navigationHandler.listeners().remove( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
-				}
-			}
-	);
+						@Override
+						public boolean remove( final NavigationListener< WV, WE > listener )
+						{
+							return navigationHandler.listeners()
+									.remove( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+						}
+					}
+			);
 
 	@Override
 	public ForwardedListeners< NavigationListener< WV, WE > > listeners()

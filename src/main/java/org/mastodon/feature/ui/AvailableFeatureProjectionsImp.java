@@ -110,7 +110,8 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 
 	private final Class< ? > branchEdgeClass;
 
-	public AvailableFeatureProjectionsImp( final Class< ? > vertexClass, final Class< ? > edgeClass, final Class< ? > branchVertexClass, final Class< ? > branchEdgeClass )
+	public AvailableFeatureProjectionsImp( final Class< ? > vertexClass, final Class< ? > edgeClass,
+			final Class< ? > branchVertexClass, final Class< ? > branchEdgeClass )
 	{
 		this.vertexClass = vertexClass;
 		this.edgeClass = edgeClass;
@@ -339,7 +340,8 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 			final Class< ? > branchVertexClass,
 			final Class< ? > branchEdgeClass )
 	{
-		final AvailableFeatureProjectionsImp projections = new AvailableFeatureProjectionsImp( vertexClass, edgeClass, branchVertexClass, branchEdgeClass );
+		final AvailableFeatureProjectionsImp projections =
+				new AvailableFeatureProjectionsImp( vertexClass, edgeClass, branchVertexClass, branchEdgeClass );
 
 		/*
 		 * Available source indices from SharedBigDataViewerData.

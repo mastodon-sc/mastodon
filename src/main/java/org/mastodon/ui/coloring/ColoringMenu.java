@@ -48,7 +48,8 @@ import org.mastodon.util.HasSelectedState;
 import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
-public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureModelListener, FeatureColorModeManager.FeatureColorModesListener
+public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureModelListener,
+		FeatureColorModeManager.FeatureColorModesListener
 {
 	private final JMenu menu;
 
@@ -87,12 +88,11 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 		final FeatureColorModeManager featureColorModeManager = coloringModel.getFeatureColorModeManager();
 		final List< FeatureColorMode > l1 = featureColorModeManager.getBuiltinStyles();
 		final List< FeatureColorMode > l2 = featureColorModeManager.getUserStyles();
-		Stream.concat( l1.stream(), l2.stream() ).forEach( mode ->
-				addColorAction( new ColorAction(
-						mode.getName(),
-						() -> coloringModel.getFeatureColorMode() == mode,
-						() -> coloringModel.isValid( mode ),
-						() -> coloringModel.colorByFeature( mode ) ) ) );
+		Stream.concat( l1.stream(), l2.stream() ).forEach( mode -> addColorAction( new ColorAction(
+				mode.getName(),
+				() -> coloringModel.getFeatureColorMode() == mode,
+				() -> coloringModel.isValid( mode ),
+				() -> coloringModel.colorByFeature( mode ) ) ) );
 
 		if ( !( l1.isEmpty() && l2.isEmpty() ) )
 			menu.add( new JSeparator() );
@@ -134,7 +134,8 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 		rebuild();
 	}
 
-	public static class ColorAction extends AbstractNamedAction implements HasSelectedState, ColoringModel.ColoringChangedListener
+	public static class ColorAction extends AbstractNamedAction
+			implements HasSelectedState, ColoringModel.ColoringChangedListener
 	{
 
 		private static final long serialVersionUID = 1L;

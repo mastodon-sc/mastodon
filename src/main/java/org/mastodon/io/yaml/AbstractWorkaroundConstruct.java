@@ -42,7 +42,7 @@ public abstract class AbstractWorkaroundConstruct extends AbstractConstruct
 
 	private final Tag tag;
 
-	public AbstractWorkaroundConstruct( final WorkaroundConstructor c, final Tag tag  )
+	public AbstractWorkaroundConstruct( final WorkaroundConstructor c, final Tag tag )
 	{
 		this.c = c;
 		this.tag = tag;

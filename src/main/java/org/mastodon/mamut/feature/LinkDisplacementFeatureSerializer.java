@@ -49,7 +49,8 @@ public class LinkDisplacementFeatureSerializer implements FeatureSerializer< Lin
 	}
 
 	@Override
-	public void serialize( final LinkDisplacementFeature feature, final ObjectToFileIdMap< Link > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final LinkDisplacementFeature feature, final ObjectToFileIdMap< Link > idmap,
+			final ObjectOutputStream oos ) throws IOException
 	{
 		LazyFeatureSerializer.serialize( feature, feature.graph.edges(), idmap, oos );
 	}

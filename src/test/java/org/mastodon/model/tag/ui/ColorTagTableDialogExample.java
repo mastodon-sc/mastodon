@@ -92,7 +92,8 @@ public class ColorTagTableDialogExample
 	{
 		private static final long serialVersionUID = 1L;
 
-		public TagSetDialog( final Frame owner, final MyElements elements1, final MyElements elements2, final MyElements elements3 )
+		public TagSetDialog( final Frame owner, final MyElements elements1, final MyElements elements2,
+				final MyElements elements3 )
 		{
 			super( owner, "tag sets configuration", false );
 
@@ -100,8 +101,8 @@ public class ColorTagTableDialogExample
 					null,
 					MyElements::addElement,
 					MyElements::size,
-					(c, e ) -> c.remove( e ),
-					(c, i) -> c.get( i ),
+					( c, e ) -> c.remove( e ),
+					( c, i ) -> c.get( i ),
 					MyElement::setName,
 					MyElement::getName,
 					MyElement::setColor,
@@ -131,7 +132,8 @@ public class ColorTagTableDialogExample
 		}
 	}
 
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException
+	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException
 	{
 		final MyElements elements = new MyElements();
 		elements.add( new MyElement( "element 1", Color.BLACK ) );

@@ -49,7 +49,8 @@ import org.mastodon.model.FocusModel;
  *
  * @author Tobias Pietzsch
  */
-public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
+public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
+		WE extends Edge< WV > >
 		implements FocusModel< WV, WE >
 {
 	private final FocusModel< V, E > focus;

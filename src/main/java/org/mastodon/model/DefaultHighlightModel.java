@@ -83,7 +83,7 @@ public class DefaultHighlightModel< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public synchronized void highlightVertex( final V vertex )
 	{
-		final int id = ( vertex == null ) ? - 1 : idmap.getVertexId( vertex );
+		final int id = ( vertex == null ) ? -1 : idmap.getVertexId( vertex );
 		if ( id < 0 )
 			clearHighlight();
 		else if ( highlightedVertexId != id )
@@ -103,7 +103,7 @@ public class DefaultHighlightModel< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public synchronized void highlightEdge( final E edge )
 	{
-		final int id = ( edge == null ) ? - 1 : idmap.getEdgeId( edge );
+		final int id = ( edge == null ) ? -1 : idmap.getEdgeId( edge );
 		if ( id < 0 )
 			clearHighlight();
 		else if ( highlightedEdgeId != id )
@@ -146,8 +146,7 @@ public class DefaultHighlightModel< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public synchronized V getHighlightedVertex( final V ref )
 	{
-		return ( highlightedVertexId < 0 ) ?
-				null : idmap.getVertex( highlightedVertexId, ref );
+		return ( highlightedVertexId < 0 ) ? null : idmap.getVertex( highlightedVertexId, ref );
 	}
 
 	/**
@@ -161,8 +160,7 @@ public class DefaultHighlightModel< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public synchronized E getHighlightedEdge( final E ref )
 	{
-		return ( highlightedEdgeId < 0 ) ?
-				null : idmap.getEdge( highlightedEdgeId, ref );
+		return ( highlightedEdgeId < 0 ) ? null : idmap.getEdge( highlightedEdgeId, ref );
 	}
 
 	@Override

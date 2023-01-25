@@ -28,7 +28,6 @@
  */
 package org.mastodon.views.trackscheme.display.animate;
 
-
 /**
  * Mother abstract class for animators that animate the current view by
  * modifying the viewer transform. The time unit for animation duration, start

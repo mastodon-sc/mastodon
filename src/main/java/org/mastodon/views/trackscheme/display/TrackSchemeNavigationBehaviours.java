@@ -63,18 +63,29 @@ import org.scijava.ui.behaviour.util.Behaviours;
 public class TrackSchemeNavigationBehaviours implements TransformListener< ScreenTransform >, OffsetHeadersListener
 {
 	public static final String FOCUS_VERTEX = "ts click focus vertex";
+
 	public static final String NAVIGATE_TO_VERTEX = "ts click navigate to vertex";
+
 	public static final String SELECT = "ts click select";
+
 	public static final String ADD_SELECT = "ts click add to selection";
+
 	public static final String BOX_SELECT = "ts box selection";
+
 	public static final String BOX_ADD_SELECT = "ts box add to selection";
 
 	private static final String[] FOCUS_VERTEX_KEYS = new String[] { "button1", "shift button1" };
-	private static final String[] NAVIGATE_TO_VERTEX_KEYS = new String[] { "double-click button1", "shift double-click button1" };
-	private static final String[] SELECT_KEYS = new String[] { "button1"};
-	private static final String[] ADD_SELECT_KEYS = new String[] { "shift button1"};
-	private static final String[] BOX_SELECT_KEYS = new String[] { "button1"};
-	private static final String[] BOX_ADD_SELECT_KEYS = new String[] { "shift button1"};
+
+	private static final String[] NAVIGATE_TO_VERTEX_KEYS =
+			new String[] { "double-click button1", "shift double-click button1" };
+
+	private static final String[] SELECT_KEYS = new String[] { "button1" };
+
+	private static final String[] ADD_SELECT_KEYS = new String[] { "shift button1" };
+
+	private static final String[] BOX_SELECT_KEYS = new String[] { "button1" };
+
+	private static final String[] BOX_ADD_SELECT_KEYS = new String[] { "shift button1" };
 
 	/*
 	 * Command descriptions for all provided commands

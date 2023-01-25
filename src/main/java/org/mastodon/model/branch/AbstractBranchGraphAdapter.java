@@ -40,11 +40,11 @@ import org.mastodon.graph.branch.BranchGraph;
  * 
  * @author Jean-Yves Tinevez
  */
-public abstract class AbstractBranchGraphAdapter< 
-	V extends Vertex< E >, 
-	E extends Edge< V >, 
-	BV extends Vertex< BE >, 
-	BE extends Edge< BV > >
+public abstract class AbstractBranchGraphAdapter<
+		V extends Vertex< E >,
+		E extends Edge< V >,
+		BV extends Vertex< BE >,
+		BE extends Edge< BV > >
 {
 
 	protected final BranchGraph< BV, BE, V, E > branchGraph;
@@ -57,7 +57,7 @@ public abstract class AbstractBranchGraphAdapter<
 
 	private final V vref;
 
-	protected AbstractBranchGraphAdapter( 
+	protected AbstractBranchGraphAdapter(
 			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap )
@@ -68,7 +68,6 @@ public abstract class AbstractBranchGraphAdapter<
 		this.eref = graph.edgeRef();
 		this.vref = graph.vertexRef();
 	}
-	
 
 	protected final boolean isValid( final E e )
 	{

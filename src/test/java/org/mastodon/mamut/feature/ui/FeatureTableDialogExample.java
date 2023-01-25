@@ -90,10 +90,10 @@ public class FeatureTableDialogExample
 			return uptodate;
 		}
 
-//		public void setUptodate( final boolean uptodate )
-//		{
-//			this.uptodate = uptodate;
-//		}
+		//		public void setUptodate( final boolean uptodate )
+		//		{
+		//			this.uptodate = uptodate;
+		//		}
 
 		@Override
 		public String toString()
@@ -119,7 +119,8 @@ public class FeatureTableDialogExample
 	{
 		private static final long serialVersionUID = 1L;
 
-		public FeatureTableDialog( final Frame owner, final List< MyElement > elements1, final List< MyElement > elements2 )
+		public FeatureTableDialog( final Frame owner, final List< MyElement > elements1,
+				final List< MyElement > elements2 )
 		{
 			super( owner, "Feature computation", false );
 
@@ -136,8 +137,7 @@ public class FeatureTableDialogExample
 			tablePanel.setLayout( new BoxLayout( tablePanel, BoxLayout.PAGE_AXIS ) );
 			tablePanel.setBorder( BorderFactory.createEmptyBorder( 10, 10, 10, 10 ) );
 
-			final FeatureTable.SelectionListener< MyElement > sl = t ->
-			{
+			final FeatureTable.SelectionListener< MyElement > sl = t -> {
 				if ( t == null )
 					System.out.println();
 				System.out.println( "Element " + t + " changed." );
@@ -153,7 +153,8 @@ public class FeatureTableDialogExample
 				aggregator.add( featureTable );
 
 				final JLabel lbl = new JLabel( targets.get( i ).getSimpleName() );
-				lbl.setFont( tablePanel.getFont().deriveFont( Font.BOLD ).deriveFont( tablePanel.getFont().getSize2D() + 2f ) );
+				lbl.setFont( tablePanel.getFont().deriveFont( Font.BOLD )
+						.deriveFont( tablePanel.getFont().getSize2D() + 2f ) );
 				lbl.setHorizontalTextPosition( SwingConstants.LEADING );
 				lbl.setHorizontalAlignment( SwingConstants.LEADING );
 				lbl.setAlignmentX( Component.LEFT_ALIGNMENT );
@@ -179,7 +180,8 @@ public class FeatureTableDialogExample
 		}
 	}
 
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException
+	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException
 	{
 
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );

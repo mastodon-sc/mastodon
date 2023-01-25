@@ -146,7 +146,8 @@ public class DummyImgLoader implements ViewerImgLoader
 		}
 
 		@Override
-		public RandomAccessibleInterval< Volatile< T > > getVolatileImage( int timepointId, int level, ImgLoaderHint... hints )
+		public RandomAccessibleInterval< Volatile< T > > getVolatileImage( int timepointId, int level,
+				ImgLoaderHint... hints )
 		{
 			return volatileImg;
 		}

@@ -134,8 +134,8 @@ public class GroupStringsTest
 			gs.add( string );
 
 		final Collection< Group > groups = gs.group();
-//		for ( final Group group : groups )
-//			System.out.println( group ); // DEBUG
+		//		for ( final Group group : groups )
+		//			System.out.println( group ); // DEBUG
 
 		assertEquals( "Did not group into the right numbers of groups.", 18, groups.size() );
 	}

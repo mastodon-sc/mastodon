@@ -44,26 +44,31 @@ import org.scijava.log.LogService;
 import java.io.IOException;
 import java.util.ArrayList;
 
-@Plugin(type = IOPlugin.class)
-public class MastodonDndLauncher extends AbstractIOPlugin<Object> {
+@Plugin( type = IOPlugin.class )
+public class MastodonDndLauncher extends AbstractIOPlugin< Object >
+{
 
 	@Parameter
 	private LogService logService;
 
 	@Override
-	public boolean supportsOpen(Location source) {
+	public boolean supportsOpen( Location source )
+	{
 		final String sourcePath = source.getURI().getPath();
-		logService.debug("MastodonDndLauncher was questioned: "+sourcePath);
+		logService.debug( "MastodonDndLauncher was questioned: " + sourcePath );
 
-		if (!(source instanceof FileLocation)) return false;
-		return sourcePath.endsWith(".mastodon");
+		if ( !( source instanceof FileLocation ) )
+			return false;
+		return sourcePath.endsWith( ".mastodon" );
 	}
 
 	@Override
-	public Object open(Location source) throws IOException {
-		logService.debug("MastodonDndLauncher was asked to open: "+source.getURI().getPath());
-		final FileLocation fsource = source instanceof FileLocation ? (FileLocation)source : null;
-		if (fsource == null) return null; //NB: shouldn't happen... (in theory)
+	public Object open( Location source ) throws IOException
+	{
+		logService.debug( "MastodonDndLauncher was asked to open: " + source.getURI().getPath() );
+		final FileLocation fsource = source instanceof FileLocation ? ( FileLocation ) source : null;
+		if ( fsource == null )
+			return null; //NB: shouldn't happen... (in theory)
 
 		final String projectPath = fsource.getFile().getAbsolutePath();
 
@@ -74,14 +79,17 @@ public class MastodonDndLauncher extends AbstractIOPlugin<Object> {
 		//start up "the main object behind the scenes" -- the WindowManager,
 		final WindowManager windowManager = new WindowManager( getContext() );
 
-		try {
+		try
+		{
 			final MamutProject project = new MamutProjectIO().load( projectPath );
 			windowManager.getProjectManager().openWithDialog( project );
 
 			//start up the main/central Mastodon window
 			final MainWindow mainWindow = new MainWindow( windowManager );
 			mainWindow.setVisible( true );
-		} catch (Exception e) {
+		}
+		catch ( Exception e )
+		{
 			logService.error( "Error reading Mastodon project file: " + projectPath );
 			logService.error( "Error was: " + e.getMessage() );
 		}
@@ -90,10 +98,11 @@ public class MastodonDndLauncher extends AbstractIOPlugin<Object> {
 	}
 
 	//the "innocent" product of the (hypothetical) file reading...
-	private static final Object FAKE_INPUT = new ArrayList<>(0);
+	private static final Object FAKE_INPUT = new ArrayList<>( 0 );
 
 	@Override
-	public Class<Object> getDataType() {
+	public Class< Object > getDataType()
+	{
 		return Object.class;
 	}
 }

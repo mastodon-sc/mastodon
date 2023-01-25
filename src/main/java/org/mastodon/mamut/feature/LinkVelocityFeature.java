@@ -113,7 +113,6 @@ public class LinkVelocityFeature implements Feature< Link >
 
 		private final Spot ref2;
 
-
 		public MyProjection( final ModelGraph graph, final String units )
 		{
 			this.units = units;

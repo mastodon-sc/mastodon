@@ -89,11 +89,10 @@ public class LinkTargetIdFeature implements Feature< Link >
 	{
 		if ( key( SOURCE_PROJECTION_SPEC ).equals( key ) )
 			return new SourceIdProjection( graph.vertexRef() );
-		if ( key(TARGET_PROJECTION_SPEC ).equals( key ) )
+		if ( key( TARGET_PROJECTION_SPEC ).equals( key ) )
 			return new TargetIdProjection( graph.vertexRef() );
 		return null;
 	}
-
 
 	@Override
 	public FeatureSpec< ? extends Feature< Link >, Link > getSpec()

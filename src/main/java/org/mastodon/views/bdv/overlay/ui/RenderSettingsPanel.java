@@ -188,27 +188,34 @@ public class RenderSettingsPanel extends JPanel
 				intElement( "time range for links", 0, 100, style::getTimeLimit, style::setTimeLimit ),
 				booleanElement( "gradients for links", style::getUseGradient, style::setUseGradient ),
 				booleanElement( "arrow heads", style::getDrawArrowHeads, style::setDrawArrowHeads ),
-				booleanElement( "draw links ahead in time", style::getDrawLinksAheadInTime, style::setDrawLinksAheadInTime ),
+				booleanElement( "draw links ahead in time", style::getDrawLinksAheadInTime,
+						style::setDrawLinksAheadInTime ),
 				doubleElement( "link stroke width", 1, 100, style::getLinkStrokeWidth, style::setLinkStrokeWidth ),
 
 				separator(),
 
 				booleanElement( "draw spots", style::getDrawSpots, style::setDrawSpots ),
-				booleanElement( "ellipsoid intersection", style::getDrawEllipsoidSliceIntersection, style::setDrawEllipsoidSliceIntersection ),
-				booleanElement( "ellipsoid projection", style::getDrawEllipsoidSliceProjection, style::setDrawEllipsoidSliceProjection ),
+				booleanElement( "ellipsoid intersection", style::getDrawEllipsoidSliceIntersection,
+						style::setDrawEllipsoidSliceIntersection ),
+				booleanElement( "ellipsoid projection", style::getDrawEllipsoidSliceProjection,
+						style::setDrawEllipsoidSliceProjection ),
 				booleanElement( "draw spot centers", style::getDrawSpotCenters, style::setDrawSpotCenters ),
-				booleanElement( "draw spot centers for ellipses", style::getDrawSpotCentersForEllipses, style::setDrawSpotCentersForEllipses ),
+				booleanElement( "draw spot centers for ellipses", style::getDrawSpotCentersForEllipses,
+						style::setDrawSpotCentersForEllipses ),
 				booleanElement( "draw spot labels", style::getDrawSpotLabels, style::setDrawSpotLabels ),
 				doubleElement( "spot stroke width", 1, 100, style::getSpotStrokeWidth, style::setSpotStrokeWidth ),
 				booleanElement( "fill spots", style::getFillSpots, style::setFillSpots ),
 
 				separator(),
 
-				doubleElement( "focus limit (max dist to view plane)", 0, 2000, style::getFocusLimit, style::setFocusLimit ),
-				booleanElement( "view relative focus limit", style::getFocusLimitViewRelative, style::setFocusLimitViewRelative ),
+				doubleElement( "focus limit (max dist to view plane)", 0, 2000, style::getFocusLimit,
+						style::setFocusLimit ),
+				booleanElement( "view relative focus limit", style::getFocusLimitViewRelative,
+						style::setFocusLimitViewRelative ),
 
 				separator(),
-				doubleElement( "ellipsoid fade depth", 0, 1, style::getEllipsoidFadeDepth, style::setEllipsoidFadeDepth ),
+				doubleElement( "ellipsoid fade depth", 0, 1, style::getEllipsoidFadeDepth,
+						style::setEllipsoidFadeDepth ),
 				doubleElement( "center point fade depth", 0, 1, style::getPointFadeDepth, style::setPointFadeDepth )
 		);
 	}

@@ -76,7 +76,8 @@ public class ScreenEntitiesInterpolator
 	 * @param incrementalStartTransform
 	 *            optional incremental transform of start entities.
 	 */
-	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end, final ScreenTransform incrementalStartTransform )
+	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end,
+			final ScreenTransform incrementalStartTransform )
 	{
 		this.start = start;
 		this.end = end;
@@ -99,7 +100,7 @@ public class ScreenEntitiesInterpolator
 	public static ScreenTransform getIncrementalY( final ScreenEntities start, final ScreenEntities end )
 	{
 		final ScreenTransform t = end.screenTransform().concatenate( start.screenTransform().inverse() );
-		t.set( 0, t.getScreenWidth() -1, t.getMinY(), t.getMaxY(), t.getScreenWidth(), t.getScreenHeight() );
+		t.set( 0, t.getScreenWidth() - 1, t.getMinY(), t.getMaxY(), t.getScreenWidth(), t.getScreenHeight() );
 		return t;
 	}
 
@@ -147,8 +148,10 @@ public class ScreenEntitiesInterpolator
 		final ScreenEdge eStart = start.getEdgePool().createRef();
 		for ( final ScreenEdge e : end.getEdges() )
 		{
-			final int sourceIndex = end.getVertices().get( e.getSourceScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
-			final int targetIndex = end.getVertices().get( e.getTargetScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
+			final int sourceIndex =
+					end.getVertices().get( e.getSourceScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
+			final int targetIndex =
+					end.getVertices().get( e.getTargetScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
 			final boolean endSelected = e.isSelected();
 			current.getEdges().add( current.getEdgePool().create( eCurrent ).init(
 					e.getTrackSchemeEdgeId(),
@@ -195,7 +198,8 @@ public class ScreenEntitiesInterpolator
 		current.getEdgePool().releaseRef( eStart );
 	}
 
-	private void interpolate( final ScreenVertex vStart, final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )
+	private void interpolate( final ScreenVertex vStart, final ScreenVertex vEnd, final double ratio,
+			final ScreenVertex vCurrent )
 	{
 		vCurrent.setTrackSchemeVertexId( vEnd.getTrackSchemeVertexId() );
 		vCurrent.setLabel( vEnd.getLabel() );

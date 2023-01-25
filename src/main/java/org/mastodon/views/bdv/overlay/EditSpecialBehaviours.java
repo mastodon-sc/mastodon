@@ -60,13 +60,19 @@ import net.imglib2.util.LinAlgHelpers;
 public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 {
 	private static final String ADD_SPOT_AND_LINK_IT_FORWARD = "add linked spot";
+
 	private static final String ADD_SPOT_AND_LINK_IT_BACKWARD = "add linked spot backward";
+
 	private static final String TOGGLE_LINK_FORWARD = "toggle link";
+
 	private static final String TOGGLE_LINK_BACKWARD = "toggle link backward";
 
 	private static final String[] ADD_SPOT_AND_LINK_IT_FORWARD_KEYS = new String[] { "A" };
+
 	private static final String[] ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS = new String[] { "C" };
+
 	private static final String[] TOGGLE_LINK_FORWARD_KEYS = new String[] { "L" };
+
 	private static final String[] TOGGLE_LINK_BACKWARD_KEYS = new String[] { "shift L" };
 
 	/*
@@ -83,15 +89,21 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( ADD_SPOT_AND_LINK_IT_FORWARD, ADD_SPOT_AND_LINK_IT_FORWARD_KEYS, "Add a spot new spot in the next timepoint, linked to the spot under the mouse." );
-			descriptions.add( ADD_SPOT_AND_LINK_IT_BACKWARD, ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS, "Add a spot new spot in the previous timepoint, linked to the spot under the mouse." );
-			descriptions.add( TOGGLE_LINK_FORWARD, TOGGLE_LINK_FORWARD_KEYS, "Toggle link from the spot under the mouse, by dragging to a spot in the next timepoint." );
-			descriptions.add( TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS, "Toggle link from the spot under the mouse, by dragging to a spot in the previous timepoint." );
+			descriptions.add( ADD_SPOT_AND_LINK_IT_FORWARD, ADD_SPOT_AND_LINK_IT_FORWARD_KEYS,
+					"Add a spot new spot in the next timepoint, linked to the spot under the mouse." );
+			descriptions.add( ADD_SPOT_AND_LINK_IT_BACKWARD, ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS,
+					"Add a spot new spot in the previous timepoint, linked to the spot under the mouse." );
+			descriptions.add( TOGGLE_LINK_FORWARD, TOGGLE_LINK_FORWARD_KEYS,
+					"Toggle link from the spot under the mouse, by dragging to a spot in the next timepoint." );
+			descriptions.add( TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS,
+					"Toggle link from the spot under the mouse, by dragging to a spot in the previous timepoint." );
 		}
 	}
 
 	public static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.WHITE;
+
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
+
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
 			1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
 			1.0f, new float[] { 4f, 10f }, 0f );
@@ -113,7 +125,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final FocusModel< V, E > focus,
 			final UndoPointMarker undo )
 	{
-		final EditSpecialBehaviours< V, E > eb = new EditSpecialBehaviours<>( viewer, overlayGraph, renderer, selection, focus, undo );
+		final EditSpecialBehaviours< V, E > eb =
+				new EditSpecialBehaviours<>( viewer, overlayGraph, renderer, selection, focus, undo );
 
 		behaviours.namedBehaviour( eb.addSpotAndLinkItForwardBehaviour, ADD_SPOT_AND_LINK_IT_FORWARD_KEYS );
 		behaviours.namedBehaviour( eb.addSpotAndLinkItBackwardBehaviour, ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS );
@@ -192,7 +205,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		public boolean paintGhostVertex;
 
 		public boolean paintGhostLink;
-
 
 		public EditSpecialBehavioursOverlay()
 		{

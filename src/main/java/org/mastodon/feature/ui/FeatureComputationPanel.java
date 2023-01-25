@@ -64,9 +64,11 @@ public class FeatureComputationPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final ImageIcon GO_ICON = new ImageIcon( FeatureComputationPanel.class.getResource( "bullet_green.png" ) );
+	private static final ImageIcon GO_ICON =
+			new ImageIcon( FeatureComputationPanel.class.getResource( "bullet_green.png" ) );
 
-	private static final ImageIcon CANCEL_ICON = new ImageIcon( FeatureComputationPanel.class.getResource( "cancel.png" ) );
+	private static final ImageIcon CANCEL_ICON =
+			new ImageIcon( FeatureComputationPanel.class.getResource( "cancel.png" ) );
 
 	final JButton btnCompute;
 
@@ -165,7 +167,8 @@ public class FeatureComputationPanel extends JPanel
 
 		// Feed the feature panel.
 
-		final FeatureTable.SelectionListener< FeatureSpec< ?, ? > > sl = fs -> displayConfigPanel( fs, model.getDependencies( fs ) );
+		final FeatureTable.SelectionListener< FeatureSpec< ?, ? > > sl =
+				fs -> displayConfigPanel( fs, model.getDependencies( fs ) );
 		final FeatureTable.Tables aggregator = new FeatureTable.Tables();
 
 		for ( final Class< ? > target : targets )
@@ -228,7 +231,8 @@ public class FeatureComputationPanel extends JPanel
 		scrollPaneFeatures.setPreferredSize( new Dimension( 300, 300 ) );
 	}
 
-	private void displayConfigPanel( final FeatureSpec< ?, ? > spec, final Collection< FeatureSpec< ?, ? > > dependencies )
+	private void displayConfigPanel( final FeatureSpec< ?, ? > spec,
+			final Collection< FeatureSpec< ?, ? > > dependencies )
 	{
 		panelConfig.removeAll();
 		if ( null == spec )

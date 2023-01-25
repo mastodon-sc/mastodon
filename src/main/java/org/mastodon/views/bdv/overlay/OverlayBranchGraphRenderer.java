@@ -48,7 +48,8 @@ import org.mastodon.views.bdv.overlay.Visibilities.Visibility;
 
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE extends OverlayEdge< BE, BV >, V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE extends OverlayEdge< BE, BV >,
+		V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		extends OverlayGraphRenderer< BV, BE >
 {
 
@@ -68,7 +69,8 @@ public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE 
 		final Graphics2D graphics = ( Graphics2D ) g;
 		final BasicStroke defaultVertexStroke = new BasicStroke( ( float ) settings.getSpotStrokeWidth() );
 		final BasicStroke highlightedVertexStroke = new BasicStroke( 4f );
-		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
+		final BasicStroke focusedVertexStroke =
+				new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 		final BasicStroke defaultEdgeStroke = new BasicStroke( ( float ) settings.getLinkStrokeWidth() );
 		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
 
@@ -166,7 +168,7 @@ public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE 
 
 					if ( isHighlighted )
 						graphics.setStroke( defaultEdgeStroke );
-				});
+				} );
 			}
 
 			if ( settings.getDrawSpots() )
@@ -178,7 +180,7 @@ public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE 
 				final double pointFadeDepth = settings.getPointFadeDepth();
 				final boolean fillSpots = settings.getFillSpots();
 				final Visibility< BV, BE > visibility = visibilities.getVisibility();
-				
+
 				final BV highlighted = highlight.getHighlightedVertex( ref1 );
 				final BV focused = focus.getFocusedVertex( ref2 );
 
@@ -319,7 +321,8 @@ public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE 
 			boolean found = false;
 
 			@Override
-			public void apply( final BE edge, final double td0, final double td1, final double sd0, final double sd1, final int x0, final int y0, final int x1, final int y1 )
+			public void apply( final BE edge, final double td0, final double td1, final double sd0, final double sd1,
+					final int x0, final int y0, final int x1, final int y1 )
 			{
 				final double squDist = GeometryUtil.squSegmentDist( x, y, x0, y0, x1, y1 );
 				if ( squDist <= squTolerance && squDist < bestSquDist )

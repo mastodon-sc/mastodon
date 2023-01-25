@@ -59,12 +59,14 @@ public class GraphFeatureUpdateListeners
 	 *
 	 * @return a new {@link PropertyChangeListener}.
 	 */
-	public static < V extends Vertex< E >, E extends Edge< V > > PropertyChangeListener< V > vertexPropertyListener( final FeatureModel featureModel, final Class< V > vertexClass, final Class< E > edgeClass )
+	public static < V extends Vertex< E >, E extends Edge< V > > PropertyChangeListener< V > vertexPropertyListener(
+			final FeatureModel featureModel, final Class< V > vertexClass, final Class< E > edgeClass )
 	{
 		return new MyVertexPropertyChangeListener<>( featureModel, vertexClass, edgeClass );
 	}
 
-	private static final class MyVertexPropertyChangeListener< V extends Vertex< E >, E extends Edge< V > > implements PropertyChangeListener< V >, FeatureModelListener
+	private static final class MyVertexPropertyChangeListener< V extends Vertex< E >, E extends Edge< V > >
+			implements PropertyChangeListener< V >, FeatureModelListener
 	{
 
 		private final FeatureModel featureModel;
@@ -77,7 +79,8 @@ public class GraphFeatureUpdateListeners
 
 		private final List< Feature< V > > vertexFeatures;
 
-		public MyVertexPropertyChangeListener( final FeatureModel featureModel, final Class< V > vertexClass, final Class< E > edgeClass )
+		public MyVertexPropertyChangeListener( final FeatureModel featureModel, final Class< V > vertexClass,
+				final Class< E > edgeClass )
 		{
 			this.featureModel = featureModel;
 			this.vertexClass = vertexClass;

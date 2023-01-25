@@ -38,7 +38,8 @@ import org.mastodon.views.grapher.datagraph.DataGraph.DataVertexPool;
 
 import net.imglib2.RealLocalizable;
 
-public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement > implements HasLabel, HasTimepoint, RealLocalizable
+public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement >
+		implements HasLabel, HasTimepoint, RealLocalizable
 {
 	final ModelGraphWrapper< ?, ? >.ModelVertexWrapper modelVertex;
 

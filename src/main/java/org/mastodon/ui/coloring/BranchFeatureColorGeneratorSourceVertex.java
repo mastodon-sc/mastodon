@@ -33,7 +33,8 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 
-public class BranchFeatureColorGeneratorSourceVertex< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+public class BranchFeatureColorGeneratorSourceVertex< V extends Vertex< E >, E extends Edge< V >,
+		BV extends Vertex< BE >, BE extends Edge< BV > >
 		extends AbstractBranchVertexColorGenerator< V, E, BV, BE >
 		implements EdgeColorGenerator< V, E >
 {

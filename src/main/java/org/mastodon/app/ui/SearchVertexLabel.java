@@ -82,15 +82,20 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 
 	private static final String UNFOCUSED_TEXT = "Search...";
 
-	private static final ImageIcon FOCUSED_ICON = new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24-orange.png" ) );
+	private static final ImageIcon FOCUSED_ICON =
+			new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24-orange.png" ) );
 
-	private static final ImageIcon UNFOCUSED_ICON = new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24.png" ) );
+	private static final ImageIcon UNFOCUSED_ICON =
+			new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24.png" ) );
 
-	private static final ImageIcon FOUND_ICON = new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24-green.png" ) );
+	private static final ImageIcon FOUND_ICON =
+			new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24-green.png" ) );
 
-	private static final ImageIcon NOT_FOUND_ICON = new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24-red.png" ) );
+	private static final ImageIcon NOT_FOUND_ICON =
+			new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24-red.png" ) );
 
-	private static final ImageIcon LOOP_ICON = new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24-loop.png" ) );
+	private static final ImageIcon LOOP_ICON =
+			new ImageIcon( SearchVertexLabel.class.getResource( "find-24x24-loop.png" ) );
 
 	public static final String SEARCH = "search label";
 
@@ -133,7 +138,8 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 					final FocusModel< V, E > focus,
 					final JComponent cancelEntryFocusTarget )
 	{
-		final SearchVertexLabel< V, E > search = new SearchVertexLabel<>( graph, navigation, selection, focus, cancelEntryFocusTarget );
+		final SearchVertexLabel< V, E > search =
+				new SearchVertexLabel<>( graph, navigation, selection, focus, cancelEntryFocusTarget );
 		actions.runnableAction( () -> search.searchField.requestFocusInWindow(), SEARCH, SEARCH_KEYS );
 		return search.searchPanel;
 	}
@@ -227,7 +233,8 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 					{
 						try
 						{
-							final SearchResult found = sa.search( searchField.getText(), chckbxstartswith.isSelected() );
+							final SearchResult found =
+									sa.search( searchField.getText(), chckbxstartswith.isSelected() );
 							searchField.requestFocusInWindow();
 							setIcon( found.getIcon() );
 						}
@@ -245,7 +252,8 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 			final InputMap im = searchField.getInputMap( JComponent.WHEN_IN_FOCUSED_WINDOW );
 			final ActionMap am = searchField.getActionMap();
 			im.put( KeyStroke.getKeyStroke( "ESCAPE" ), CANCEL_ACTION );
-			am.put( CANCEL_ACTION, new RunnableAction( CANCEL_ACTION, () -> cancelFocusTarget.requestFocusInWindow() ) );
+			am.put( CANCEL_ACTION,
+					new RunnableAction( CANCEL_ACTION, () -> cancelFocusTarget.requestFocusInWindow() ) );
 		}
 	}
 
@@ -445,7 +453,8 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 	 * @param <E>
 	 *            the type of edges in the graph.
 	 */
-	private static class SearchIterator< V extends Vertex< E > & HasLabel, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E > implements Iterator< V >
+	private static class SearchIterator< V extends Vertex< E > & HasLabel, E extends Edge< V > >
+			extends AbstractGraphAlgorithm< V, E > implements Iterator< V >
 	{
 
 		private final Iterator< V > iterator1;

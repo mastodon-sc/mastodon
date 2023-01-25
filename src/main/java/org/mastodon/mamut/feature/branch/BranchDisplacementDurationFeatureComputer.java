@@ -39,6 +39,9 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Computes the {@link BranchDisplacementDurationFeature}
+ */
 @Plugin( type = MamutFeatureComputer.class )
 public class BranchDisplacementDurationFeatureComputer implements MamutFeatureComputer
 {
@@ -85,7 +88,7 @@ public class BranchDisplacementDurationFeatureComputer implements MamutFeatureCo
 
 		// get source spot
 		Spot source = branchGraph.getFirstLinkedVertex( branchSpot, ref1 );
-		if(source.incomingEdges().size() == 1)
+		if ( source.incomingEdges().size() == 1 )
 			source = source.incomingEdges().iterator().next().getSource( ref1 );
 
 		// get target spot

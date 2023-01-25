@@ -136,6 +136,7 @@ public class DataDisplayOptions
 		values.keyPressedManager = manager;
 		return this;
 	}
+
 	/**
 	 * Sets the navigation etiquette.
 	 *
@@ -216,16 +217,10 @@ public class DataDisplayOptions
 
 		public DataDisplayOptions optionsFromValues()
 		{
-			return new DataDisplayOptions().
-				x( x ).
-				y( y ).
-				width( width ).
-				height( height ).
-				animationDurationMillis( animationDurationMillis ).
-				navigationEtiquette( navigationEtiquette ).
-				style( style ).
-				dataDisplayOverlayFactory( dataDisplayOverlayFactory ).
-				graphColorGenerator( graphColorGenerator );
+			return new DataDisplayOptions().x( x ).y( y ).width( width ).height( height )
+					.animationDurationMillis( animationDurationMillis ).navigationEtiquette( navigationEtiquette )
+					.style( style ).dataDisplayOverlayFactory( dataDisplayOverlayFactory )
+					.graphColorGenerator( graphColorGenerator );
 		}
 
 		public int getX()

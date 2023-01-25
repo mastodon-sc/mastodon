@@ -60,7 +60,8 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 	 * @param commandDescriptions
 	 *            the command descriptions.
 	 */
-	public KeymapSettingsPage( final String treePath, final KeymapManager styleManager, final CommandDescriptions commandDescriptions )
+	public KeymapSettingsPage( final String treePath, final KeymapManager styleManager,
+			final CommandDescriptions commandDescriptions )
 	{
 		super(
 				treePath,
@@ -68,7 +69,8 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 				new KeymapProfileEditPanel( styleManager.getSelectedStyle(), commandDescriptions ) );
 	}
 
-	static class KeymapProfileEditPanel implements VisualEditorPanel.ConfigChangeListener, ProfileEditPanel< StyleProfile< Keymap > >
+	static class KeymapProfileEditPanel
+			implements VisualEditorPanel.ConfigChangeListener, ProfileEditPanel< StyleProfile< Keymap > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 
@@ -79,7 +81,8 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		public KeymapProfileEditPanel( final Keymap initialStyle, final CommandDescriptions commandDescriptions )
 		{
 			editedStyle = initialStyle.copy( "Edited" );
-			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig(), commandDescriptions.createCommandDescriptionsMap() );
+			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig(),
+					commandDescriptions.createCommandDescriptionsMap() );
 			styleEditorPanel.setButtonPanelVisible( false );
 			modificationListeners = new Listeners.SynchronizedList<>();
 			styleEditorPanel.modelChangedListeners().add( this );

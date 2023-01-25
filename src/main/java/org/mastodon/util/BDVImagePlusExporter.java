@@ -116,7 +116,8 @@ public class BDVImagePlusExporter
 		final FinalDimensions size = new FinalDimensions( w, h, d );
 
 		// propose reasonable mipmap settings
-		final ExportMipmapInfo autoMipmapSettings = ProposeMipmaps.proposeMipmaps( new BasicViewSetup( 0, "", size, voxelSize ) );
+		final ExportMipmapInfo autoMipmapSettings =
+				ProposeMipmaps.proposeMipmaps( new BasicViewSetup( 0, "", size, voxelSize ) );
 
 		// show dialog to get output paths, resolutions, subdivisions, min-max option
 		final Parameters params = getParameters(
@@ -164,7 +165,8 @@ public class BDVImagePlusExporter
 		final ArrayList< TimePoint > timepoints = new ArrayList<>( numTimepoints );
 		for ( int t = 0; t < numTimepoints; ++t )
 			timepoints.add( new TimePoint( t ) );
-		final SequenceDescriptionMinimal seq = new SequenceDescriptionMinimal( new TimePoints( timepoints ), setups, imgLoader, null );
+		final SequenceDescriptionMinimal seq =
+				new SequenceDescriptionMinimal( new TimePoints( timepoints ), setups, imgLoader, null );
 
 		Map< Integer, ExportMipmapInfo > perSetupExportMipmapInfo;
 		perSetupExportMipmapInfo = new HashMap<>();
@@ -186,12 +188,14 @@ public class BDVImagePlusExporter
 		final LoopbackHeuristic loopbackHeuristic = new LoopbackHeuristic()
 		{
 			@Override
-			public boolean decide( final RandomAccessibleInterval< ? > originalImg, final int[] factorsToOriginalImg, final int previousLevel, final int[] factorsToPreviousLevel, final int[] chunkSize )
+			public boolean decide( final RandomAccessibleInterval< ? > originalImg, final int[] factorsToOriginalImg,
+					final int previousLevel, final int[] factorsToPreviousLevel, final int[] chunkSize )
 			{
 				if ( previousLevel < 0 )
 					return false;
 
-				if ( Intervals.numElements( factorsToOriginalImg ) / Intervals.numElements( factorsToPreviousLevel ) >= 8 )
+				if ( Intervals.numElements( factorsToOriginalImg ) / Intervals.numElements( factorsToPreviousLevel )
+						>= 8 )
 					return true;
 
 				if ( isVirtual )
@@ -228,21 +232,27 @@ public class BDVImagePlusExporter
 		if ( params.split )
 		{
 			final String xmlFilename = params.seqFile.getAbsolutePath();
-			final String basename = xmlFilename.endsWith( ".xml" ) ? xmlFilename.substring( 0, xmlFilename.length() - 4 ) : xmlFilename;
-			partitions = Partition.split( timepoints, seq.getViewSetupsOrdered(), params.timepointsPerPartition, params.setupsPerPartition, basename );
+			final String basename =
+					xmlFilename.endsWith( ".xml" ) ? xmlFilename.substring( 0, xmlFilename.length() - 4 ) : xmlFilename;
+			partitions = Partition.split( timepoints, seq.getViewSetupsOrdered(), params.timepointsPerPartition,
+					params.setupsPerPartition, basename );
 
 			for ( int i = 0; i < partitions.size(); ++i )
 			{
 				final Partition partition = partitions.get( i );
 				final ProgressWriter p = new SubTaskProgressWriter( progressWriter, 0, 0.95 * i / partitions.size() );
-				WriteSequenceToHdf5.writeHdf5PartitionFile( seq, perSetupExportMipmapInfo, params.deflate, partition, loopbackHeuristic, afterEachPlane, numCellCreatorThreads, p );
+				WriteSequenceToHdf5.writeHdf5PartitionFile( seq, perSetupExportMipmapInfo, params.deflate, partition,
+						loopbackHeuristic, afterEachPlane, numCellCreatorThreads, p );
 			}
-			WriteSequenceToHdf5.writeHdf5PartitionLinkFile( seq, perSetupExportMipmapInfo, partitions, params.hdf5File );
+			WriteSequenceToHdf5.writeHdf5PartitionLinkFile( seq, perSetupExportMipmapInfo, partitions,
+					params.hdf5File );
 		}
 		else
 		{
 			partitions = null;
-			WriteSequenceToHdf5.writeHdf5File( seq, perSetupExportMipmapInfo, params.deflate, params.hdf5File, loopbackHeuristic, afterEachPlane, numCellCreatorThreads, new SubTaskProgressWriter( progressWriter, 0, 0.95 ) );
+			WriteSequenceToHdf5.writeHdf5File( seq, perSetupExportMipmapInfo, params.deflate, params.hdf5File,
+					loopbackHeuristic, afterEachPlane, numCellCreatorThreads,
+					new SubTaskProgressWriter( progressWriter, 0, 0.95 ) );
 		}
 
 		// write xml sequence description
@@ -366,11 +376,11 @@ public class BDVImagePlusExporter
 					"Compute min/max of the (hyper-)stack",
 					"Use values specified below" };
 			gd.addChoice( "Value_range", minMaxChoices, minMaxChoices[ lastMinMaxChoice ] );
-			final Choice cMinMaxChoices = (Choice) gd.getChoices().lastElement();
+			final Choice cMinMaxChoices = ( Choice ) gd.getChoices().lastElement();
 			gd.addNumericField( "Min", lastMin, 0 );
-			final TextField tfMin = (TextField) gd.getNumericFields().lastElement();
+			final TextField tfMin = ( TextField ) gd.getNumericFields().lastElement();
 			gd.addNumericField( "Max", lastMax, 0 );
-			final TextField tfMax = (TextField) gd.getNumericFields().lastElement();
+			final TextField tfMax = ( TextField ) gd.getNumericFields().lastElement();
 
 			gd.addMessage( "" );
 			gd.addCheckbox( "split_hdf5", lastSplit );
@@ -404,13 +414,15 @@ public class BDVImagePlusExporter
 					gd.getNextNumber();
 					gd.getNextBoolean();
 					gd.getNextString();
-					if ( e instanceof ItemEvent && e.getID() == ItemEvent.ITEM_STATE_CHANGED && e.getSource() == cMinMaxChoices )
+					if ( e instanceof ItemEvent && e.getID() == ItemEvent.ITEM_STATE_CHANGED
+							&& e.getSource() == cMinMaxChoices )
 					{
 						final boolean enable = cMinMaxChoices.getSelectedIndex() == 2;
 						tfMin.setEnabled( enable );
 						tfMax.setEnabled( enable );
 					}
-					else if ( e instanceof ItemEvent && e.getID() == ItemEvent.ITEM_STATE_CHANGED && e.getSource() == cManualMipmap )
+					else if ( e instanceof ItemEvent && e.getID() == ItemEvent.ITEM_STATE_CHANGED
+							&& e.getSource() == cManualMipmap )
 					{
 						final boolean useManual = cManualMipmap.getState();
 						tfSubsampling.setEnabled( useManual );
@@ -421,7 +433,8 @@ public class BDVImagePlusExporter
 							tfChunkSizes.setText( autoChunkSizes );
 						}
 					}
-					else if ( e instanceof ItemEvent && e.getID() == ItemEvent.ITEM_STATE_CHANGED && e.getSource() == cSplit )
+					else if ( e instanceof ItemEvent && e.getID() == ItemEvent.ITEM_STATE_CHANGED
+							&& e.getSource() == cSplit )
 					{
 						final boolean split = cSplit.getState();
 						tfSplitTimepoints.setEnabled( split );
@@ -502,6 +515,8 @@ public class BDVImagePlusExporter
 			final String hdf5Filename = seqFilename.substring( 0, seqFilename.length() - 4 ) + ".h5";
 			final File hdf5File = new File( hdf5Filename );
 
-			return new Parameters( lastSetMipmapManual, resolutions, subdivisions, seqFile, hdf5File, minMaxOption, lastMin, lastMax, lastDeflate, lastSplit, lastTimepointsPerPartition, lastSetupsPerPartition );		}
+			return new Parameters( lastSetMipmapManual, resolutions, subdivisions, seqFile, hdf5File, minMaxOption,
+					lastMin, lastMax, lastDeflate, lastSplit, lastTimepointsPerPartition, lastSetupsPerPartition );
+		}
 	}
 }

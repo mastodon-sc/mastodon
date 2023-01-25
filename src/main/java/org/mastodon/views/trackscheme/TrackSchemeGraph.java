@@ -115,11 +115,12 @@ import org.scijava.listeners.Listeners;
 public class TrackSchemeGraph<
 		V extends Vertex< E >,
 		E extends Edge< V > >
-	extends GraphImp<
+		extends GraphImp<
 				TrackSchemeGraph.TrackSchemeVertexPool,
 				TrackSchemeGraph.TrackSchemeEdgePool,
 				TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
-	implements GraphListener< V, E >, GraphChangeNotifier, GraphChangeListener, ViewGraph< V, E, TrackSchemeVertex, TrackSchemeEdge >
+		implements GraphListener< V, E >, GraphChangeNotifier, GraphChangeListener,
+		ViewGraph< V, E, TrackSchemeVertex, TrackSchemeEdge >
 {
 	private final ListenableReadOnlyGraph< V, E > modelGraph;
 
@@ -220,7 +221,7 @@ public class TrackSchemeGraph<
 		this.modelGraphProperties = modelGraphProperties;
 		this.lock = lock;
 		this.idmap = idmap;
-		idToTrackSchemeVertex =	new IntRefArrayMap<>( vertexPool );
+		idToTrackSchemeVertex = new IntRefArrayMap<>( vertexPool );
 		idToTrackSchemeEdge = new IntRefArrayMap<>( edgePool );
 		roots = new RefSetImp<>( vertexPool );
 		mv = modelGraph.vertexRef();
@@ -371,7 +372,8 @@ public class TrackSchemeGraph<
 	}
 
 	@Override
-	public TrackSchemeEdge addEdge( final TrackSchemeVertex source, final TrackSchemeVertex target, final TrackSchemeEdge ref )
+	public TrackSchemeEdge addEdge( final TrackSchemeVertex source, final TrackSchemeVertex target,
+			final TrackSchemeEdge ref )
 	{
 		final E mref = modelGraph.edgeRef();
 
@@ -385,17 +387,20 @@ public class TrackSchemeGraph<
 	}
 
 	@Override
-	public TrackSchemeEdge insertEdge( final TrackSchemeVertex source, final int sourceOutIndex, final TrackSchemeVertex target, final int targetInIndex )
+	public TrackSchemeEdge insertEdge( final TrackSchemeVertex source, final int sourceOutIndex,
+			final TrackSchemeVertex target, final int targetInIndex )
 	{
 		return insertEdge( source, sourceOutIndex, target, targetInIndex, edgeRef() );
 	}
 
 	@Override
-	public TrackSchemeEdge insertEdge( final TrackSchemeVertex source, final int sourceOutIndex, final TrackSchemeVertex target, final int targetInIndex, final TrackSchemeEdge ref )
+	public TrackSchemeEdge insertEdge( final TrackSchemeVertex source, final int sourceOutIndex,
+			final TrackSchemeVertex target, final int targetInIndex, final TrackSchemeEdge ref )
 	{
 		final E mref = modelGraph.edgeRef();
 
-		final E medge = modelGraphProperties.insertEdge( vertexMap.getLeft( source ), sourceOutIndex, vertexMap.getLeft( target ), targetInIndex, mref );
+		final E medge = modelGraphProperties.insertEdge( vertexMap.getLeft( source ), sourceOutIndex,
+				vertexMap.getLeft( target ), targetInIndex, mref );
 		modelGraphProperties.initEdge( medge );
 		final TrackSchemeEdge edge = edgeMap.getRight( medge, ref );
 
@@ -518,7 +523,7 @@ public class TrackSchemeGraph<
 		}
 	}
 
-//	@Override // TODO: should be implemented for some listener interface, or REMOVE? (vertices never change timepoint?)
+	//	@Override // TODO: should be implemented for some listener interface, or REMOVE? (vertices never change timepoint?)
 	public void vertexTimepointChanged( final V vertex )
 	{
 		idToTrackSchemeVertex.get( idmap.getVertexId( vertex ), tsv ).updateTimepointFromModel();
@@ -553,33 +558,54 @@ public class TrackSchemeGraph<
 	static class TrackSchemeVertexLayout extends AbstractVertexLayout
 	{
 		final IndexField origVertexIndex = indexField();
+
 		final IntField layoutTimeStamp = intField();
+
 		final IndexField layoutInEdgeIndex = indexField();
+
 		final DoubleField layoutX = doubleField();
+
 		final IntField firstTimepoint = intField();
+
 		final IntField timepoint = intField();
+
 		final IndexField screenVertexIndex = indexField();
+
 		final BooleanField ghost = booleanField();
 	}
 
 	static TrackSchemeVertexLayout vertexLayout = new TrackSchemeVertexLayout();
 
-	static class TrackSchemeVertexPool extends AbstractVertexPool< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
+	static class TrackSchemeVertexPool
+			extends AbstractVertexPool< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
 	{
 		final ModelGraphWrapper< ?, ? > modelGraphWrapper;
 
-		final IndexAttribute< TrackSchemeVertex > origVertexIndex = new IndexAttribute<>( vertexLayout.origVertexIndex, this );
-		final IntAttribute< TrackSchemeVertex > layoutTimeStamp = new IntAttribute<>( vertexLayout.layoutTimeStamp, this );
-		final IndexAttribute< TrackSchemeVertex > layoutInEdgeIndex = new IndexAttribute<>( vertexLayout.layoutInEdgeIndex, this );
+		final IndexAttribute< TrackSchemeVertex > origVertexIndex =
+				new IndexAttribute<>( vertexLayout.origVertexIndex, this );
+
+		final IntAttribute< TrackSchemeVertex > layoutTimeStamp =
+				new IntAttribute<>( vertexLayout.layoutTimeStamp, this );
+
+		final IndexAttribute< TrackSchemeVertex > layoutInEdgeIndex =
+				new IndexAttribute<>( vertexLayout.layoutInEdgeIndex, this );
+
 		final DoubleAttribute< TrackSchemeVertex > layoutX = new DoubleAttribute<>( vertexLayout.layoutX, this );
-		final IntAttribute< TrackSchemeVertex > firstTimepoint = new IntAttribute<>( vertexLayout.firstTimepoint, this );
+
+		final IntAttribute< TrackSchemeVertex > firstTimepoint =
+				new IntAttribute<>( vertexLayout.firstTimepoint, this );
+
 		final IntAttribute< TrackSchemeVertex > timepoint = new IntAttribute<>( vertexLayout.timepoint, this );
-		final IndexAttribute< TrackSchemeVertex > screenVertexIndex = new IndexAttribute<>( vertexLayout.screenVertexIndex, this );
+
+		final IndexAttribute< TrackSchemeVertex > screenVertexIndex =
+				new IndexAttribute<>( vertexLayout.screenVertexIndex, this );
+
 		final BooleanAttribute< TrackSchemeVertex > ghost = new BooleanAttribute<>( vertexLayout.ghost, this );
 
 		private TrackSchemeVertexPool( final int initialCapacity, final ModelGraphWrapper< ?, ? > modelGraphWrapper )
 		{
-			super( initialCapacity, vertexLayout, TrackSchemeVertex.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+			super( initialCapacity, vertexLayout, TrackSchemeVertex.class,
+					SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
 			this.modelGraphWrapper = modelGraphWrapper;
 		}
 
@@ -593,6 +619,7 @@ public class TrackSchemeGraph<
 	static class TrackSchemeEdgeLayout extends AbstractEdgeLayout
 	{
 		final IndexField origEdgeIndex = indexField();
+
 		final IndexField screenEdgeIndex = indexField();
 	}
 
@@ -603,11 +630,14 @@ public class TrackSchemeGraph<
 		final ModelGraphWrapper< ?, ? > modelGraphWrapper;
 
 		final IndexAttribute< TrackSchemeEdge > origEdgeIndex = new IndexAttribute<>( edgeLayout.origEdgeIndex, this );
-		final IndexAttribute< TrackSchemeEdge > screenEdgeIndex = new IndexAttribute<>( edgeLayout.screenEdgeIndex, this );
+
+		final IndexAttribute< TrackSchemeEdge > screenEdgeIndex =
+				new IndexAttribute<>( edgeLayout.screenEdgeIndex, this );
 
 		private TrackSchemeEdgePool( final int initialCapacity, final TrackSchemeVertexPool vertexPool )
 		{
-			super( initialCapacity, edgeLayout, TrackSchemeEdge.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ), vertexPool );
+			super( initialCapacity, edgeLayout, TrackSchemeEdge.class,
+					SingleArrayMemPool.factory( ByteMappedElementArray.factory ), vertexPool );
 			modelGraphWrapper = vertexPool.modelGraphWrapper;
 			vertexPool.linkEdgePool( this );
 		}

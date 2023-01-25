@@ -46,7 +46,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 			final String treePath,
 			final FeatureColorModeManager featureColorModeManager,
 			final FeatureProjectionsManager featureProjectionsManager,
-			final String vertexName, 
+			final String vertexName,
 			final String edgeName )
 	{
 		super( treePath,
@@ -58,7 +58,8 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 						edgeName ) );
 	}
 
-	public static class FeatureColorModelEditPanel implements FeatureColorMode.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< FeatureColorMode > >
+	public static class FeatureColorModelEditPanel implements FeatureColorMode.UpdateListener,
+			SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< FeatureColorMode > >
 	{
 
 		private final FeatureColorMode editedMode;
@@ -81,9 +82,11 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 					featureProjectionsManager.getFeatureRangeCalculator(),
 					vertexName,
 					edgeName );
-			featureColorModeEditorPanel.setAvailableFeatureProjections( featureProjectionsManager.getAvailableFeatureProjections() );
+			featureColorModeEditorPanel
+					.setAvailableFeatureProjections( featureProjectionsManager.getAvailableFeatureProjections() );
 			featureProjectionsManager.listeners().add( () -> {
-				featureColorModeEditorPanel.setAvailableFeatureProjections( featureProjectionsManager.getAvailableFeatureProjections() );
+				featureColorModeEditorPanel
+						.setAvailableFeatureProjections( featureProjectionsManager.getAvailableFeatureProjections() );
 			} );
 			this.modificationListeners = new Listeners.SynchronizedList<>();
 			editedMode.updateListeners().add( this );

@@ -51,7 +51,8 @@ public class RawTagSetModelIO
 			void read() throws IOException
 			{
 				tagSetModel.getTagSetStructure().loadRaw( ois );
-				LabelSetsSerializer.readPropertyMap( getVertexIdLabelSets(), intLabelSerializer, idmap.vertices(), ois );
+				LabelSetsSerializer.readPropertyMap( getVertexIdLabelSets(), intLabelSerializer, idmap.vertices(),
+						ois );
 				LabelSetsSerializer.readPropertyMap( getEdgeIdLabelSets(), intLabelSerializer, idmap.edges(), ois );
 				updateObjTags();
 			}
@@ -69,24 +70,26 @@ public class RawTagSetModelIO
 			void write() throws IOException
 			{
 				tagSetModel.getTagSetStructure().saveRaw( oos );
-				LabelSetsSerializer.writePropertyMap( getVertexIdLabelSets(), intLabelSerializer, idmap.vertices(), oos );
+				LabelSetsSerializer.writePropertyMap( getVertexIdLabelSets(), intLabelSerializer, idmap.vertices(),
+						oos );
 				LabelSetsSerializer.writePropertyMap( getEdgeIdLabelSets(), intLabelSerializer, idmap.edges(), oos );
 			}
 		}.write();
 	}
 
-	private static final LabelSetsSerializer.LabelSerializer< Integer > intLabelSerializer = new LabelSetsSerializer.LabelSerializer< Integer >()
-	{
-		@Override
-		public void writeLabel( final Integer label, final ObjectOutputStream oos ) throws IOException
-		{
-			oos.writeInt( label );
-		}
+	private static final LabelSetsSerializer.LabelSerializer< Integer > intLabelSerializer =
+			new LabelSetsSerializer.LabelSerializer< Integer >()
+			{
+				@Override
+				public void writeLabel( final Integer label, final ObjectOutputStream oos ) throws IOException
+				{
+					oos.writeInt( label );
+				}
 
-		@Override
-		public Integer readLabel( final ObjectInputStream ois ) throws IOException
-		{
-			return ois.readInt();
-		}
-	};
+				@Override
+				public Integer readLabel( final ObjectInputStream ois ) throws IOException
+				{
+					return ois.readInt();
+				}
+			};
 }

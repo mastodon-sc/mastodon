@@ -78,7 +78,8 @@ public class TagSetDialog extends JDialog
 			final Keymap keymap,
 			final String[] keyConfigContexts )
 	{
-		this( owner, new TagSetManager() {
+		this( owner, new TagSetManager()
+		{
 			@Override
 			public TagSetStructure getTagSetStructure()
 			{
@@ -155,7 +156,8 @@ public class TagSetDialog extends JDialog
 		pack();
 	}
 
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
+	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException
 	{
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 

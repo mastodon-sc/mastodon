@@ -88,13 +88,11 @@ public class SettingsPanelExample
 
 		@Override
 		public void cancel()
-		{
-		}
+		{}
 
 		@Override
 		public void apply()
-		{
-		}
+		{}
 	}
 
 	static class DefaultSettingsPage implements SettingsPage

@@ -53,7 +53,8 @@ public class EllpsoidIteratorMinimalExample
 			final int s = cursor.getIntPosition( 0 ) + cursor.getIntPosition( 1 ) + cursor.getIntPosition( 2 );
 			cursor.get().set( s % 2 == 0 ? 32 : 64 );
 		}
-		final BdvStackSource< UnsignedByteType > bdv = BdvFunctions.show( img, "img", Bdv.options().sourceTransform( 1, 1, 2 ) );
+		final BdvStackSource< UnsignedByteType > bdv =
+				BdvFunctions.show( img, "img", Bdv.options().sourceTransform( 1, 1, 2 ) );
 
 		// Now create a model graph with a few test spots for EllipsoidIterator
 		final ModelGraph graph = new ModelGraph();
@@ -68,7 +69,7 @@ public class EllpsoidIteratorMinimalExample
 				new double[] { 20, 80, 40 },
 				new double[][] {
 						{ 90, 0, 0 },
-						{ 0, 90,  0 },
+						{ 0, 90, 0 },
 						{ 0, 0, 500 }
 				} );
 		graph.addVertex().init( 0,
@@ -81,9 +82,9 @@ public class EllpsoidIteratorMinimalExample
 
 		// We now create an EllipsoidIterable and re-use it for each spot.
 		// For each spot, we iterate inside pixels and set them to 255.
-		final EllipsoidIterable< UnsignedByteType > ellipsoidIter = new EllipsoidIterable<>( bdv.getSources().get( 0 ).getSpimSource() );
-		graph.vertices().forEach( spot ->
-		{
+		final EllipsoidIterable< UnsignedByteType > ellipsoidIter =
+				new EllipsoidIterable<>( bdv.getSources().get( 0 ).getSpimSource() );
+		graph.vertices().forEach( spot -> {
 			ellipsoidIter.reset( spot );
 			ellipsoidIter.forEach( t -> t.set( 255 ) );
 		} );

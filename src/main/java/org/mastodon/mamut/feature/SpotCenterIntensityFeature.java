@@ -58,7 +58,8 @@ public class SpotCenterIntensityFeature implements Feature< Spot >
 					+ "and have a sigma value equal to the minimal radius of the ellipsoid divided by "
 					+ SpotCenterIntensityFeatureComputer.SIGMA_FACTOR + ".";
 
-	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( "Center", Dimension.INTENSITY );
+	public static final FeatureProjectionSpec PROJECTION_SPEC =
+			new FeatureProjectionSpec( "Center", Dimension.INTENSITY );
 
 	public static final Spec SPEC = new Spec();
 

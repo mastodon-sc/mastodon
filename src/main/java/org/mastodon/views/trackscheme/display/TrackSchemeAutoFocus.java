@@ -43,7 +43,8 @@ import net.imglib2.RealPoint;
  * A {@code FocusModel} for TrackScheme that automatically focuses a vertex near
  * the center of the window if none is focused (on {@code getFocusedVertex()}).
  */
-public class TrackSchemeAutoFocus implements FocusModel< TrackSchemeVertex, TrackSchemeEdge >, TransformListener< ScreenTransform >
+public class TrackSchemeAutoFocus
+		implements FocusModel< TrackSchemeVertex, TrackSchemeEdge >, TransformListener< ScreenTransform >
 {
 	private final LineageTreeLayout layout;
 

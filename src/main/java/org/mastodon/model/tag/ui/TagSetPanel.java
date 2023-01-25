@@ -75,7 +75,7 @@ public class TagSetPanel extends JPanel
 				tss -> tss.createTagSet( makeNewName( "Tag set" ) ),
 				tss -> tss.getTagSets().size(),
 				TagSetStructure::remove,
-				(tss, i) -> tss.getTagSets().get( i ),
+				( tss, i ) -> tss.getTagSets().get( i ),
 				TagSet::setName,
 				TagSet::getName );
 
@@ -83,7 +83,7 @@ public class TagSetPanel extends JPanel
 				ts -> ts.createTag( "Tag", colorGenerator.next() ),
 				ts -> ts.getTags().size(),
 				TagSet::removeTag,
-				(ts, i) -> ts.getTags().get( i ),
+				( ts, i ) -> ts.getTags().get( i ),
 				Tag::setLabel,
 				Tag::label,
 				( t, color ) -> t.setColor( color.getRGB() ),
@@ -93,13 +93,14 @@ public class TagSetPanel extends JPanel
 		tagTable.updateListeners().add( this::notifyListeners );
 		tagSetTable.selectionListeners().add( tagTable::setElements );
 
-		final JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, tagSetTable.getTable(), tagTable.getTable() );
+		final JSplitPane splitPane =
+				new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, tagSetTable.getTable(), tagTable.getTable() );
 		splitPane.setResizeWeight( 0 );
 		splitPane.setContinuousLayout( true );
 		splitPane.setDividerSize( 10 );
 		splitPane.setDividerLocation( 300 );
 		splitPane.setBorder( new MatteBorder( 0, 0, 1, 0, Color.LIGHT_GRAY ) );
-//		splitPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
+		//		splitPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
 		this.add( splitPane, BorderLayout.CENTER );
 	}
@@ -173,7 +174,7 @@ public class TagSetPanel extends JPanel
 		@Override
 		public Integer next()
 		{
-			return ran.nextInt() | 0xFF000000 ;
+			return ran.nextInt() | 0xFF000000;
 		}
 	};
 }

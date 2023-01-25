@@ -33,7 +33,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.views.bdv.overlay.OverlayEdge;
 
 public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
-	implements OverlayEdge< OverlayEdgeWrapper< V, E >, OverlayVertexWrapper< V, E > >
+		implements OverlayEdge< OverlayEdgeWrapper< V, E >, OverlayVertexWrapper< V, E > >
 {
 	private final OverlayGraphWrapper< V, E > wrapper;
 

@@ -205,7 +205,8 @@ public class MainWindow extends JFrame
 	 */
 	public boolean close( final WindowManager windowManager, final Action saveAction, final WindowEvent trigger )
 	{
-		if ( windowManager != null && windowManager.getAppModel() == null || windowManager.getAppModel().getModel().isSavePoint() )
+		if ( windowManager != null && windowManager.getAppModel() == null
+				|| windowManager.getAppModel().getModel().isSavePoint() )
 		{
 			windowManager.closeAllWindows();
 			dispose();
@@ -235,7 +236,8 @@ public class MainWindow extends JFrame
 			return false;
 
 		case JOptionPane.YES_OPTION:
-			saveAction.actionPerformed( new ActionEvent( trigger.getSource(), trigger.getID(), trigger.paramString() ) );
+			saveAction
+					.actionPerformed( new ActionEvent( trigger.getSource(), trigger.getID(), trigger.paramString() ) );
 			// Fall trough to closing.
 
 		case JOptionPane.NO_OPTION:
@@ -260,17 +262,17 @@ public class MainWindow extends JFrame
 	{
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
-//						item( ProjectManager.CREATE_PROJECT ),
-//						item( ProjectManager.CREATE_PROJECT_FROM_URL ),
-//						item( ProjectManager.LOAD_PROJECT ),
+						//						item( ProjectManager.CREATE_PROJECT ),
+						//						item( ProjectManager.CREATE_PROJECT_FROM_URL ),
+						//						item( ProjectManager.LOAD_PROJECT ),
 						item( ProjectManager.SAVE_PROJECT ),
 						item( ProjectManager.SAVE_PROJECT_AS ),
 						separator(),
-//						item( ProjectManager.IMPORT_TGMM ),
-//						item( ProjectManager.IMPORT_SIMI ),
-//						item( ProjectManager.IMPORT_MAMUT ),
-//						item( ProjectManager.EXPORT_MAMUT ),
-//						separator(),
+						//						item( ProjectManager.IMPORT_TGMM ),
+						//						item( ProjectManager.IMPORT_SIMI ),
+						//						item( ProjectManager.IMPORT_MAMUT ),
+						//						item( ProjectManager.EXPORT_MAMUT ),
+						//						separator(),
 						item( WindowManager.PREFERENCES_DIALOG ),
 						separator(),
 						item( WindowManager.OPEN_ONLINE_DOCUMENTATION ) ),

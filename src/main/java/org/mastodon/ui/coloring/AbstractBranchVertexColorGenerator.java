@@ -48,7 +48,8 @@ import org.mastodon.graph.branch.BranchGraph;
  * @param <BE>
  *            the type of vertices in he branch graph.
  */
-public abstract class AbstractBranchVertexColorGenerator< V extends Vertex< E >, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
+public abstract class AbstractBranchVertexColorGenerator< V extends Vertex< E >, E extends Edge< V >,
+		BV extends Vertex< BE >, BE extends Edge< BV > >
 {
 
 	protected final FeatureColorGenerator< BV > colorGenerator;
@@ -69,7 +70,8 @@ public abstract class AbstractBranchVertexColorGenerator< V extends Vertex< E >,
 	protected int branchVertexColor( V v )
 	{
 		BV bvRef = branchGraph.vertexRef();
-		try {
+		try
+		{
 			BV branchVertex = branchGraph.getBranchVertex( v, bvRef );
 			return colorGenerator.color( branchVertex );
 		}

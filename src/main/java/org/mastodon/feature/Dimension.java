@@ -39,11 +39,11 @@ public enum Dimension
 	/**
 	 * Dimensionless quantities, like frame position, number of things, ...
 	 */
-	NONE("None"),
+	NONE( "None" ),
 	/**
 	 * Dimension for detector quality.
 	 */
-	QUALITY("Quality"),
+	QUALITY( "Quality" ),
 	/**
 	 * Dimension for costs return by cost functions.
 	 */
@@ -51,37 +51,37 @@ public enum Dimension
 	/**
 	 * In units of pixel values.
 	 */
-	INTENSITY("Intensity"),
+	INTENSITY( "Intensity" ),
 	/**
 	 * In units of pixel values squared.
 	 */
-	INTENSITY_SQUARED("Intensity²"),
+	INTENSITY_SQUARED( "Intensity²" ),
 	/**
 	 * In units of position. Different from {@link #LENGTH} so that for objects
 	 * with small lengths at large positions, quantitites are plotted
 	 * separately.
 	 */
-	POSITION("Position"),
+	POSITION( "Position" ),
 	/**
 	 * In units of velocity, like speed of objects.
 	 */
-	VELOCITY("Velocity"),
+	VELOCITY( "Velocity" ),
 	/**
 	 * In units of length.
 	 */
-	LENGTH("Length"), // we separate length and position.
+	LENGTH( "Length" ), // we separate length and position.
 	/**
 	 * Units of time.
 	 */
-	TIME("Time"),
+	TIME( "Time" ),
 	/**
 	 * Units of angles. We alway pick radians for units.
 	 */
-	ANGLE("Angle"),
+	ANGLE( "Angle" ),
 	/**
 	 * Count per time units.
 	 */
-	RATE("Rate"), // count per frames.
+	RATE( "Rate" ), // count per frames.
 	/**
 	 * Angle per time units..
 	 */
@@ -89,7 +89,7 @@ public enum Dimension
 	/**
 	 * Non numerical quantities.
 	 */
-	STRING("NA"); // for non-numeric features
+	STRING( "NA" ); // for non-numeric features
 
 	public static final String COUNTS_UNITS = "Counts";
 
@@ -105,7 +105,7 @@ public enum Dimension
 
 	private final String str;
 
-	private Dimension(final String str)
+	private Dimension( final String str )
 	{
 		this.str = str;
 	}

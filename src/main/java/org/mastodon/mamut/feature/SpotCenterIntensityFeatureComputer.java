@@ -258,7 +258,8 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 					double dr2 = 0.;
 					for ( int d = 0; d < 3; d++ )
 					{ // nDims is hardcoded to 3.
-						final double dx = ( cursor.getLongPosition( d ) - iterable.getDoublePosition( d ) ) * calibration[ d ];
+						final double dx =
+								( cursor.getLongPosition( d ) - iterable.getDoublePosition( d ) ) * calibration[ d ];
 						dr2 += dx * dx;
 					}
 					final double weight = A * Math.exp( -dr2 / ( 2 * sigma * sigma ) );
@@ -293,7 +294,8 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 		return calibration;
 	}
 
-	private static final double minRadius( final Spot spot, final double[][] cov, final JamaEigenvalueDecomposition eig )
+	private static final double minRadius( final Spot spot, final double[][] cov,
+			final JamaEigenvalueDecomposition eig )
 	{
 		// Best radius is smallest radius of ellipse.
 		spot.getCovariance( cov );

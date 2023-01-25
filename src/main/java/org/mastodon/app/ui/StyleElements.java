@@ -79,7 +79,8 @@ public class StyleElements
 		return new LabelElement( label );
 	}
 
-	public static BooleanElement booleanElement( final String label, final BooleanSupplier get, final Consumer< Boolean > set )
+	public static BooleanElement booleanElement( final String label, final BooleanSupplier get,
+			final Consumer< Boolean > set )
 	{
 		return new BooleanElement( label )
 		{
@@ -97,7 +98,8 @@ public class StyleElements
 		};
 	}
 
-	public static ColorElement colorElement( final String label, final Supplier< Color > get, final Consumer< Color > set )
+	public static ColorElement colorElement( final String label, final Supplier< Color > get,
+			final Consumer< Color > set )
 	{
 		return new ColorElement( label )
 		{
@@ -115,7 +117,8 @@ public class StyleElements
 		};
 	}
 
-	public static DoubleElement doubleElement( final String label, final double rangeMin, final double rangeMax, final DoubleSupplier get, final Consumer< Double > set )
+	public static DoubleElement doubleElement( final String label, final double rangeMin, final double rangeMax,
+			final DoubleSupplier get, final Consumer< Double > set )
 	{
 		return new DoubleElement( label, rangeMin, rangeMax )
 		{
@@ -133,7 +136,8 @@ public class StyleElements
 		};
 	}
 
-	public static IntElement intElement( final String label, final int rangeMin, final int rangeMax, final IntSupplier get, final Consumer< Integer > set )
+	public static IntElement intElement( final String label, final int rangeMin, final int rangeMax,
+			final IntSupplier get, final Consumer< Integer > set )
 	{
 		return new IntElement( label, rangeMin, rangeMax )
 		{
@@ -151,7 +155,8 @@ public class StyleElements
 		};
 	}
 
-	public static < E > EnumElement< E > enumElement( final String label, final E[] values, final Supplier< E > get, final Consumer< E > set )
+	public static < E > EnumElement< E > enumElement( final String label, final E[] values, final Supplier< E > get,
+			final Consumer< E > set )
 	{
 		return new EnumElement< E >( label, values )
 		{
@@ -217,8 +222,7 @@ public class StyleElements
 	public interface StyleElement
 	{
 		public default void update()
-		{
-		}
+		{}
 
 		public void accept( StyleElementVisitor visitor );
 	}
@@ -498,7 +502,8 @@ public class StyleElements
 		return checkbox;
 	}
 
-	public static JButton linkedColorButton( final ColorElement element, final String label, final JColorChooser colorChooser )
+	public static JButton linkedColorButton( final ColorElement element, final String label,
+			final JColorChooser colorChooser )
 	{
 		final ColorIcon icon = new ColorIcon( element.getColor(), 16, 2 );
 		final JButton button = new JButton( label, icon );
@@ -512,20 +517,21 @@ public class StyleElements
 		button.setFocusable( false );
 		button.addActionListener( e -> {
 			colorChooser.setColor( element.getColor() );
-			final JDialog d = JColorChooser.createDialog( button, "Choose a color", true, colorChooser, new ActionListener()
-			{
-				@Override
-				public void actionPerformed( final ActionEvent arg0 )
-				{
-					final Color c = colorChooser.getColor();
-					if ( c != null )
+			final JDialog d =
+					JColorChooser.createDialog( button, "Choose a color", true, colorChooser, new ActionListener()
 					{
-						icon.setColor( c );
-						button.repaint();
-						element.setColor( c );
-					}
-				}
-			}, null );
+						@Override
+						public void actionPerformed( final ActionEvent arg0 )
+						{
+							final Color c = colorChooser.getColor();
+							if ( c != null )
+							{
+								icon.setColor( c );
+								button.repaint();
+								element.setColor( c );
+							}
+						}
+					}, null );
 			d.setVisible( true );
 		} );
 		element.onSet( icon::setColor );

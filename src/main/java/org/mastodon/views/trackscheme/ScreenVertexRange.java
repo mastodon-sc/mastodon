@@ -47,8 +47,11 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ScreenVert
 	public static class ScreenVertexRangeLayout extends PoolObjectLayout
 	{
 		final DoubleField minX = doubleField();
+
 		final DoubleField maxX = doubleField();
+
 		final DoubleField minY = doubleField();
+
 		final DoubleField maxY = doubleField();
 	}
 
@@ -57,13 +60,17 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ScreenVert
 	public static class ScreenVertexRangePool extends Pool< ScreenVertexRange, ByteMappedElement >
 	{
 		final DoubleAttribute< ScreenVertexRange > minX = new DoubleAttribute<>( layout.minX, this );
+
 		final DoubleAttribute< ScreenVertexRange > maxX = new DoubleAttribute<>( layout.maxX, this );
+
 		final DoubleAttribute< ScreenVertexRange > minY = new DoubleAttribute<>( layout.minY, this );
+
 		final DoubleAttribute< ScreenVertexRange > maxY = new DoubleAttribute<>( layout.maxY, this );
 
 		public ScreenVertexRangePool( final int initialCapacity )
 		{
-			super( initialCapacity, layout, ScreenVertexRange.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+			super( initialCapacity, layout, ScreenVertexRange.class,
+					SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
 		}
 
 		@Override

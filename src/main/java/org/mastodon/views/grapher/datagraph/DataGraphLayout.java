@@ -257,7 +257,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 	 */
 	public DataVertex getClosestActiveVertex( final RealPoint centerPos, final DataVertex ref )
 	{
-		final NearestNeighborSearchOnKDTree< ScreenVertex, DoubleMappedElement > search = new NearestNeighborSearchOnKDTree<>( screenKDtree );
+		final NearestNeighborSearchOnKDTree< ScreenVertex, DoubleMappedElement > search =
+				new NearestNeighborSearchOnKDTree<>( screenKDtree );
 		final ScreenVertex sv = search.get();
 		return ( sv == null ) ? null : dataGraph.getVertexPool().getObject( sv.getDataVertexId(), ref );
 	}
@@ -276,7 +277,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 	 *            y max in screen coordinates.
 	 * @return a new {@link RefSet}.
 	 */
-	public RefSet< DataVertex > getDataVerticesWithin( final double x1, final double y1, final double x2, final double y2 )
+	public RefSet< DataVertex > getDataVerticesWithin( final double x1, final double y1, final double x2,
+			final double y2 )
 	{
 		final RefSet< DataVertex > set = RefCollections.createRefSet( dataGraph.vertices() );
 		if ( screenKDtree == null )
@@ -295,7 +297,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 
 		// Convex polytope from hyperplanes.
 		final ConvexPolytope polytope = new ConvexPolytope( hpMinX, hpMinY, hpMaxX, hpMaxY );
-		final ClipConvexPolytopeKDTree< ScreenVertex, DoubleMappedElement > clip = new ClipConvexPolytopeKDTree<>( screenKDtree );
+		final ClipConvexPolytopeKDTree< ScreenVertex, DoubleMappedElement > clip =
+				new ClipConvexPolytopeKDTree<>( screenKDtree );
 		clip.clip( polytope );
 
 		// To data vertices.
@@ -364,7 +367,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 
 		// Convex polytope from hyperplanes.
 		final ConvexPolytope polytope = new ConvexPolytope( hpMinX, hpMinY, hpMaxX, hpMaxY );
-		final ClipConvexPolytopeKDTree< DataVertex, DoubleMappedElement > clip = new ClipConvexPolytopeKDTree<>( kdtree );
+		final ClipConvexPolytopeKDTree< DataVertex, DoubleMappedElement > clip =
+				new ClipConvexPolytopeKDTree<>( kdtree );
 		clip.clip( polytope );
 
 		// Get only visible data vertices.
@@ -440,7 +444,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 
 						final double sx2 = transform.layoutToScreenX( x2 ) + decorationsOffsetX;
 						final double sy2 = transform.layoutToScreenY( y2 );
-						screenVertexPool.create( sv ).init( id2, label2, sx2, sy2, selected2, colorGenerator.color( v2 ) );
+						screenVertexPool.create( sv ).init( id2, label2, sx2, sy2, selected2,
+								colorGenerator.color( v2 ) );
 						screenVertices.add( sv );
 					}
 
@@ -452,7 +457,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 						final int targetScreenVertexIndex = v2.getScreenVertexIndex();
 						final int eid = e.getInternalPoolIndex();
 						final boolean eselected = selection.isSelected( e );
-						screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( e, v2, v1 ) );
+						screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex,
+								eselected, colorGenerator.color( e, v2, v1 ) );
 						screenEdges.add( se );
 					}
 				}
@@ -466,7 +472,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		 * Let's set min dist from closest vertex.
 		 */
 		final KDTree< ScreenVertex, DoubleMappedElement > svkdtree = KDTree.kdtree( screenVertices, screenVertexPool );
-		final IncrementalNearestNeighborSearchOnKDTree< ScreenVertex, DoubleMappedElement > search = new IncrementalNearestNeighborSearchOnKDTree<>( svkdtree );
+		final IncrementalNearestNeighborSearchOnKDTree< ScreenVertex, DoubleMappedElement > search =
+				new IncrementalNearestNeighborSearchOnKDTree<>( svkdtree );
 		for ( final ScreenVertex svd : screenVertices )
 		{
 			double distance = Double.POSITIVE_INFINITY;

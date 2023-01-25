@@ -36,12 +36,14 @@ import org.mastodon.properties.IntPropertyMap;
  */
 public class FeatureProjections
 {
-	public static final < T > IntFeatureProjection< T > project( final FeatureProjectionKey key, final IntPropertyMap< T > map, final String units )
+	public static final < T > IntFeatureProjection< T > project( final FeatureProjectionKey key,
+			final IntPropertyMap< T > map, final String units )
 	{
 		return new MyIntPropertyProjection<>( key, map, units );
 	}
 
-	public static final < T > FeatureProjection< T > project( final FeatureProjectionKey key, final DoublePropertyMap< T > map, final String units )
+	public static final < T > FeatureProjection< T > project( final FeatureProjectionKey key,
+			final DoublePropertyMap< T > map, final String units )
 	{
 		return new MyDoublePropertyProjection<>( key, map, units );
 	}
@@ -55,7 +57,8 @@ public class FeatureProjections
 
 		private final String units;
 
-		public MyIntPropertyProjection( final FeatureProjectionKey key, final IntPropertyMap< T > map, final String units )
+		public MyIntPropertyProjection( final FeatureProjectionKey key, final IntPropertyMap< T > map,
+				final String units )
 		{
 			this.key = key;
 			this.map = map;
@@ -96,7 +99,8 @@ public class FeatureProjections
 
 		private final String units;
 
-		public MyDoublePropertyProjection( final FeatureProjectionKey key, final DoublePropertyMap< T > map, final String units )
+		public MyDoublePropertyProjection( final FeatureProjectionKey key, final DoublePropertyMap< T > map,
+				final String units )
 		{
 			this.key = key;
 			this.map = map;
