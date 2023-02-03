@@ -49,6 +49,12 @@ public class DefaultModelGraphProperties< V extends Vertex< E > & HasTimepoint &
 	}
 
 	@Override
+	public boolean isAfterTimepoint( final V v, int timepoint )
+	{
+		return timepoint > v.getTimepoint();
+	}
+
+	@Override
 	public String getLabel( final V v )
 	{
 		return v.getLabel();

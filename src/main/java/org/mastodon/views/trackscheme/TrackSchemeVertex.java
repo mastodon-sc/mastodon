@@ -138,6 +138,11 @@ public class TrackSchemeVertex
 		return modelVertex.isBeforeTimepoint( timepoint );
 	}
 
+	public boolean isAfterTimepoint( int timepoint )
+	{
+		return modelVertex.isAfterTimepoint( timepoint );
+	}
+
 	protected void updateTimepointFromModel()
 	{
 		setFirstTimepoint( modelVertex.getFirstTimepoint() );
