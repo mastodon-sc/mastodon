@@ -48,6 +48,7 @@ import javax.swing.SwingUtilities;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
+import org.mastodon.app.ui.TimepointAndNumberOfSpotsLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.mamut.model.Link;
@@ -204,6 +205,13 @@ public class MamutViewTrackScheme
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel,
 				frame.getTrackschemePanel() );
+
+		// Timepoint and number of spots.
+		if ( timepointModel != null )
+		{
+			TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel = new TimepointAndNumberOfSpotsLabel( timepointModel, model );
+			frame.getSettingsPanel().add( timepointAndNumberOfSpotsLabel );
+		}
 
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
 				focusModel, frame.getTrackschemePanel() );
