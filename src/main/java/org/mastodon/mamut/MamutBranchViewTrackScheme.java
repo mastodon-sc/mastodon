@@ -42,13 +42,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.JLabel;
 
 import org.mastodon.app.ui.BranchGraphSyncButton;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
+import org.mastodon.app.ui.TimepointAndNumberOfSpotsLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;
@@ -98,6 +103,9 @@ public class MamutBranchViewTrackScheme
 
 	private final ColoringModel coloringModel;
 
+	@Nullable
+	private JLabel timepointAndNumberOfSpotsLabel;
+
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel )
 	{
 		this( appModel, new HashMap<>() );
@@ -115,7 +123,7 @@ public class MamutBranchViewTrackScheme
 			final BranchTrackSchemeFactory trackSchemeGraphFactory,
 			final TrackSchemeOverlayFactory overlayFactory,
 			final LineageTreeLayout.LineageTreeLayoutFactory lineageTreeLayoutFactory,
-			final TimepointModel timepointModel )
+			final TimepointModel navigationTimepointModel )
 	{
 		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ),
 				new String[] { KeyConfigContexts.TRACKSCHEME } );
@@ -152,7 +160,7 @@ public class MamutBranchViewTrackScheme
 				viewGraph,
 				highlightModel,
 				navigateFocusModel,
-				( timepointModel == null ) ? this.timepointModel : timepointModel,
+				( navigationTimepointModel == null ) ? this.timepointModel : navigationTimepointModel,
 				this.timepointModel,
 				selectionModel,
 				rootsModel,
@@ -178,6 +186,13 @@ public class MamutBranchViewTrackScheme
 		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( TRACKSCHEME_TRANSFORM_KEY );
 		if ( null != tLoaded )
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
+
+		// Timepoint and number of spots.
+		if ( timepointModel != null )
+		{
+			TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel = new TimepointAndNumberOfSpotsLabel( timepointModel, model );
+			frame.getSettingsPanel().add( timepointAndNumberOfSpotsLabel );
+		}
 
 		// Regen branch graph.
 		frame.getSettingsPanel().add( new BranchGraphSyncButton( appModel.getBranchGraphSync() ) );
@@ -384,5 +399,17 @@ public class MamutBranchViewTrackScheme
 	ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
+	}
+
+	private void updateTimepointAndNumberOfSpotsLabel( @Nonnull Model model )
+	{
+		SwingUtilities
+				.invokeLater( () -> {
+					if ( timepointAndNumberOfSpotsLabel == null )
+						return;
+					final int timepoint = timepointModel.getTimepoint();
+					final int nSpots = model.getSpatioTemporalIndex().getSpatialIndex( timepointModel.getTimepoint() ).size();
+					timepointAndNumberOfSpotsLabel.setText( "timepoint: " + timepoint + "   spots: " + nSpots );
+				} );
 	}
 }
