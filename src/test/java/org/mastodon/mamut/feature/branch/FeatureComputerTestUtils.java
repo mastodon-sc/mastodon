@@ -26,7 +26,7 @@ public class FeatureComputerTestUtils
 	}
 
 	@Nonnull
-	public static FeatureProjection< Spot > getSpotFeatureProjection( @Nonnull Context context, @Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< Spot >, Spot > spec, @Nonnull FeatureProjectionSpec featureProjectionSpec, @Nonnull SharedBigDataViewerData sharedBigDataViewerData )
+	public static FeatureProjection< Spot > getSpotFeatureProjection( @Nonnull Context context, @Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< Spot >, Spot > spec, @Nonnull FeatureProjectionSpec featureProjectionSpec )
 	{
 		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
 		featureComputerService.setSharedBdvData( sharedBigDataViewerData );
