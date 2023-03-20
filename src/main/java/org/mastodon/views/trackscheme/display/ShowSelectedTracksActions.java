@@ -192,20 +192,50 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 		viewGraph.releaseRef( targetRef );
 	}
 
+	/**
+	 * @return the root nodes of the selected nodes, i.e. the nodes that are not
+	 * 	   descendants of other selected nodes. The order of the nodes in the returned
+	 * 	   list is from left to right as in the TrackScheme.
+	 */
 	private RefList< TrackSchemeVertex > filterRootNodes( final RefSet< TrackSchemeVertex > selectedVertices )
 	{
+		// Note: This method finds the root nodes of the nodes in the selectedVertices set.
+		// It does so by iterating over the graph in depth-first order and from left to right.
+		// Whenever the iteration hits a node that is in the selectedVertices set, it adds
+		// it to the returned list, and then skips all its child nodes. This guarantees that
+		// the returned list contains only the root nodes of the selected nodes, and that
+		// the nodes in the list are sorted from left to right.
+
+		// Note: The DepthFirstIteration class does not detect of loops in the graph. It
+		// can therefore get stuck in an infinite loop. The code below keeps track of the
+		// nodes that have been visited, skipping them if they are visited again.
+
 		final RefList< TrackSchemeVertex > roots = new RefArrayList<>( viewGraph.getVertexPool() );
+		final RefSet< TrackSchemeVertex > visited = new RefSetImp<>( viewGraph.getVertexPool() );
+
 		for ( final TrackSchemeVertex realRoot : LexicographicalVertexOrder.sort( viewGraph, viewGraph.getRoots() ) )
 			for ( final DepthFirstIteration.Step< TrackSchemeVertex > step : DepthFirstIteration.forRoot( viewGraph,
 					realRoot ) )
 			{
+				if ( step.isSecondVisit() )
+					continue;
+
 				final TrackSchemeVertex node = step.node();
+
+				// loop detection
+				if ( !visited.add( node ) )  // The depth first iteration enters a node for the second time. -> there's a loop.
+				{
+					step.truncate(); // Don't visit the child nodes
+					continue; // and skip this node.
+				}
+
 				if ( selectedVertices.contains( node ) )
 				{
 					roots.add( node );
-					step.truncate();
+					step.truncate(); // don't visit the child nodes
 				}
 			}
+
 		return roots;
 	}
 
