@@ -126,7 +126,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new DefaultNavigationHandler<>();
 		final TrackSchemeOptions options = TrackSchemeOptions.options().style( style );
 		final TrackSchemePanel previewPanel =
-				new TrackSchemePanel( graph, highlight, focus, timepoint, selection, roots, navigation, options );
+				new TrackSchemePanel( graph, highlight, focus, timepoint, timepoint, selection, roots, navigation, options );
 		previewPanel.setTimepointRange( 0, 7 );
 		timepoint.setTimepoint( 2 );
 		previewPanel.graphChanged();
@@ -251,7 +251,8 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 				separator(),
 
 				booleanElement( "hierarchy graph use curved lines", style::isHierarchyGraphCurvedLines,
-						style::hierarchyGraphCurvedLines )
+						style::hierarchyGraphCurvedLines ),
+				booleanElement( "fade future timepoints", style::isFadeFutureTimepoints, style::fadeFutureTimepoints )
 		);
 	}
 
