@@ -309,6 +309,7 @@ public class TrackSchemeStyleIO
 			mapping.put( "hierarchyVertexHighlightStroke", s.getHierarchyVertexHighlightStroke() );
 			// Paint decorations.
 			mapping.put( "hierarchyGraphCurvedLines", s.isHierarchyGraphCurvedLines() );
+			mapping.put( "fadeFutureTimepoints", s.isFadeFutureTimepoints() );
 			mapping.put( "highlightCurrentTimepoint", s.isHighlightCurrentTimepoint() );
 			mapping.put( "paintRows", s.isPaintRows() );
 			mapping.put( "paintColumns", s.isPaintColumns() );

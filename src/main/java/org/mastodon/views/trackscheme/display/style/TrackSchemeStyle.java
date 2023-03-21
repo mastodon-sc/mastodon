@@ -138,6 +138,8 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 
 	private boolean hierarchyCurvedLines;
 
+	private boolean fadeFutureTimepoints;
+
 	public // TODO?
 	static Color mixGhostColor( final Color color, final Color backgroundColor )
 	{
@@ -370,6 +372,11 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 	public boolean isHierarchyGraphCurvedLines()
 	{
 		return hierarchyCurvedLines;
+	}
+
+	public boolean isFadeFutureTimepoints()
+	{
+		return fadeFutureTimepoints;
 	}
 
 	public boolean isPaintColumns()
@@ -741,6 +748,16 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		return this;
 	}
 
+	public TrackSchemeStyle fadeFutureTimepoints( final boolean b )
+	{
+		if ( this.fadeFutureTimepoints != b )
+		{
+			this.fadeFutureTimepoints = b;
+			notifyListeners();
+		}
+		return this;
+	}
+
 	public TrackSchemeStyle highlightCurrentTimepoint( final boolean b )
 	{
 		if ( this.highlightCurrentTimepoint != b )
@@ -842,6 +859,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		this.hierarchyVertexStroke = style.hierarchyVertexStroke;
 		this.hierarchyVertexHighlightStroke = style.hierarchyVertexHighlightStroke;
 		this.hierarchyCurvedLines = style.hierarchyCurvedLines;
+		this.fadeFutureTimepoints = style.fadeFutureTimepoints;
 		this.highlightCurrentTimepoint = style.highlightCurrentTimepoint;
 		this.paintRows = style.paintRows;
 		this.paintColumns = style.paintColumns;
