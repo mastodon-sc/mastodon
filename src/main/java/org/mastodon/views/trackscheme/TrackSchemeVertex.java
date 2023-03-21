@@ -133,6 +133,11 @@ public class TrackSchemeVertex
 		pool.timepoint.setQuiet( this, timepoint );
 	}
 
+	public boolean isBeforeTimepoint( int timepoint )
+	{
+		return modelVertex.isBeforeTimepoint( timepoint );
+	}
+
 	protected void updateTimepointFromModel()
 	{
 		setFirstTimepoint( modelVertex.getFirstTimepoint() );
