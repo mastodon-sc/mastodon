@@ -68,6 +68,8 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 
 		final BooleanField ghost = booleanField();
 
+		final BooleanField faded = booleanField();
+
 		final ByteField transition = byteField();
 
 		final IndexField ipScreenVertex = indexField();
@@ -94,6 +96,8 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final DoubleAttribute< ScreenVertex > vertexDist = new DoubleAttribute<>( layout.vertexDist, this );
 
 		final BooleanAttribute< ScreenVertex > selected = new BooleanAttribute<>( layout.selected, this );
+
+		final BooleanAttribute< ScreenVertex > faded = new BooleanAttribute<>( layout.faded, this );
 
 		final BooleanAttribute< ScreenVertex > ghost = new BooleanAttribute<>( layout.ghost, this );
 
@@ -292,6 +296,21 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	}
 
 	/**
+	 * Get the faded state of the vertex.
+	 *
+	 * @return true, if the vertex is faded.
+	 */
+	public boolean isFaded()
+	{
+		return pool.faded.get( this );
+	}
+
+	protected void setFaded( final boolean faded )
+	{
+		pool.faded.setQuiet( this, faded );
+	}
+
+	/**
 	 * Get the ghost state of the vertex.
 	 *
 	 * @return true, if the vertex is ghosted.
@@ -404,6 +423,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		setYStart( v.getYStart() );
 		setVertexDist( v.getVertexDist() );
 		setSelected( v.isSelected() );
+		setFaded( v.isFaded() );
 		setGhost( v.isGhost() );
 		setTransition( v.getTransition() );
 		setInterpolatedScreenVertexIndex( v.getInterpolatedScreenVertexIndex() );
