@@ -58,7 +58,7 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
-		super( rootsModel, graph, selection );
+		super( rootsModel, graph, selection, null );
 	}
 
 	@Override

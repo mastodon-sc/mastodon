@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
@@ -39,6 +41,7 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edges;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
@@ -86,6 +89,9 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	protected final TrackSchemeGraph< ?, ? > graph;
 
 	protected final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
+
+	@Nullable
+	protected final TimepointModel timepointModel;
 
 	private final Listeners.List< LayoutListener > listeners;
 
@@ -150,10 +156,11 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	public LineageTreeLayoutImp(
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final TrackSchemeGraph< ?, ? > graph,
-			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection, final @Nullable TimepointModel timepointModel )
 	{
 		this.graph = graph;
 		this.selection = selection;
+		this.timepointModel = timepointModel;
 		this.roots = rootsModel;
 		listeners = new Listeners.SynchronizedList<>();
 		rightmost = 0;
@@ -337,10 +344,10 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		final ScreenEdgePool screenEdgePool = screenEntities.getEdgePool();
 		final ScreenVertexRangePool screenRangePool = screenEntities.getRangePool();
 
-		final TrackSchemeVertex v1 = graph.vertexRef();
-		final TrackSchemeVertex v2 = graph.vertexRef();
-		final ScreenVertex sv = screenVertexPool.createRef();
-		final ScreenEdge se = screenEdgePool.createRef();
+		final TrackSchemeVertex targetTrackSchemeVertex = graph.vertexRef();
+		final TrackSchemeVertex sourceTrackSchemeVertex = graph.vertexRef();
+		final ScreenVertex screenVertex = screenVertexPool.createRef();
+		final ScreenEdge screenEdge = screenEdgePool.createRef();
 		final ScreenVertexRange sr = screenRangePool.createRef();
 
 		final double allowedMinD = 2.0 / xScale;
@@ -375,7 +382,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 
 				final double minLayoutX = vertexList.getMinLayoutXDistance();
 				TIntArrayList denseRanges =
-						vertexList.getDenseRanges( minIndex, maxIndex + 1, minLayoutX, allowedMinD, 3, v1 );
+						vertexList.getDenseRanges( minIndex, maxIndex + 1, minLayoutX, allowedMinD, 3, targetTrackSchemeVertex );
 				if ( denseRanges == null )
 					denseRanges = new TIntArrayList();
 				denseRanges.add( maxIndex + 1 );
@@ -389,39 +396,43 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 				{
 					if ( i < nextRangeStart )
 					{
-						vertexList.get( i, v1 );
-						final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-						addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v1, sv, x, y, y );
+						vertexList.get( i, targetTrackSchemeVertex );
+						final double x = ( targetTrackSchemeVertex.getLayoutX() - minX ) * xScale + decorationsOffsetX;
+						addScreenVertex( colorGenerator, screenVertices, screenVertexPool, targetTrackSchemeVertex, screenVertex, x, y, y );
 
 						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
 						prevX = x;
 
-						for ( final TrackSchemeEdge edge : v1.incomingEdges() )
+						for ( final TrackSchemeEdge edge : targetTrackSchemeVertex.incomingEdges() )
 						{
-							edge.getSource( v2 );
+							edge.getSource( sourceTrackSchemeVertex );
 
-							if ( v2.getLayoutTimestamp() != timestamp )
+							if ( sourceTrackSchemeVertex.getLayoutTimestamp() != timestamp )
 								continue;
 
-							int v2si = v2.getScreenVertexIndex();
+							int v2si = sourceTrackSchemeVertex.getScreenVertexIndex();
 							if ( v2si < 0 || v2si >= screenVertices.size()
-									|| screenVertices.get( v2si, sv ).getTrackSchemeVertexId()
-											!= v2.getInternalPoolIndex() )
+									|| screenVertices.get( v2si, screenVertex ).getTrackSchemeVertexId()
+											!= sourceTrackSchemeVertex.getInternalPoolIndex() )
 							{
 								// ScreenVertex for v2 not found. Adding one...
-								final double nx = ( v2.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-								final double ny = ( v2.getTimepoint() - minY ) * yScale + decorationsOffsetY;
-								addScreenVertex( colorGenerator, screenVertices, screenVertexPool, v2, sv, nx, ny, ny );
+								final double nx = ( sourceTrackSchemeVertex.getLayoutX() - minX ) * xScale + decorationsOffsetX;
+								final double ny = ( sourceTrackSchemeVertex.getTimepoint() - minY ) * yScale + decorationsOffsetY;
+								addScreenVertex( colorGenerator, screenVertices, screenVertexPool, sourceTrackSchemeVertex, screenVertex,
+										nx, ny, ny );
 							}
 
 							final int eid = edge.getInternalPoolIndex();
-							final int sourceScreenVertexIndex = v2.getScreenVertexIndex();
-							final int targetScreenVertexIndex = v1.getScreenVertexIndex();
+							final int sourceScreenVertexIndex = sourceTrackSchemeVertex.getScreenVertexIndex();
+							final int targetScreenVertexIndex = targetTrackSchemeVertex.getScreenVertexIndex();
 							final boolean eselected = selection.isSelected( edge );
-							screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex,
-									eselected, colorGenerator.color( edge, v2, v1 ) );
-							screenEdges.add( se );
-							final int sei = se.getInternalPoolIndex();
+
+							screenEdgePool.create( screenEdge ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected,
+									colorGenerator.color( edge, sourceTrackSchemeVertex, targetTrackSchemeVertex ) );
+							if ( timepointModel != null )
+								screenEdge.setFaded( targetTrackSchemeVertex.isBeforeTimepoint( timepointModel.getTimepoint() ) );
+							screenEdges.add( screenEdge );
+							final int sei = screenEdge.getInternalPoolIndex();
 							edge.setScreenEdgeIndex( sei );
 						}
 					}
@@ -431,43 +442,45 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 						final int rangeMaxIndex = riter.next();
 						nextRangeStart = riter.next();
 						i = rangeMaxIndex;
-						final double svMinX = ( vertexList.get( rangeMinIndex, v1 ).getLayoutX() - minX ) * xScale
+						final double svMinX = ( vertexList.get( rangeMinIndex, targetTrackSchemeVertex ).getLayoutX() - minX ) * xScale
 								+ decorationsOffsetX;
-						final double svMaxX = ( vertexList.get( rangeMaxIndex, v1 ).getLayoutX() - minX ) * xScale
-								+ decorationsOffsetX; // TODO: make minimum width (maybe only when painting...)
+						final double svMaxX = ( vertexList.get( rangeMaxIndex, targetTrackSchemeVertex ).getLayoutX() - minX ) * xScale
+								+ decorationsOffsetX; // TODO:
 						vertexRanges.add( screenRangePool.create( sr ).init( svMinX, svMaxX, prevY, y ) );
 						minVertexScreenDist = 0; // TODO: WHY = 0?
 					}
 				}
 				for ( int i = timepointStartScreenVertexIndex; i < screenVertices.size(); ++i )
 				{
-					screenVertices.get( i, sv ).setVertexDist( minVertexScreenDist );
+					screenVertices.get( i, screenVertex ).setVertexDist( minVertexScreenDist );
 				}
 			}
 		}
 
-		screenEdgePool.releaseRef( se );
-		screenVertexPool.releaseRef( sv );
-		graph.releaseRef( v1 );
-		graph.releaseRef( v2 );
+		screenEdgePool.releaseRef( screenEdge );
+		screenVertexPool.releaseRef( screenVertex );
+		graph.releaseRef( targetTrackSchemeVertex );
+		graph.releaseRef( sourceTrackSchemeVertex );
 
 		buildScreenColumns( screenEntities, decorationsOffsetX, minX, maxX, xScale );
 	}
 
 	protected void addScreenVertex( GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
-			RefList< ScreenVertex > screenVertices, ScreenVertexPool screenVertexPool, TrackSchemeVertex v1,
-			ScreenVertex sv, double x, double y, double firstY )
+			RefList< ScreenVertex > screenVertices, ScreenVertexPool screenVertexPool, TrackSchemeVertex trackSchemeVertex,
+			ScreenVertex screenVertex, double x, double y, double firstY )
 	{
 		final int v1si = screenVertices.size();
-		v1.setScreenVertexIndex( v1si );
-		final int id = v1.getInternalPoolIndex();
-		final String label = v1.getLabel();
-		final boolean selected = selection.isSelected( v1 );
-		final boolean ghost = v1.isGhost();
+		trackSchemeVertex.setScreenVertexIndex( v1si );
+		final int id = trackSchemeVertex.getInternalPoolIndex();
+		final String label = trackSchemeVertex.getLabel();
+		final boolean selected = selection.isSelected( trackSchemeVertex );
+		final boolean ghost = trackSchemeVertex.isGhost();
 		// TODO move setYStart into init
-		screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, colorGenerator.color( v1 ) )
+		screenVertexPool.create( screenVertex ).init( id, label, x, y, selected, ghost, colorGenerator.color( trackSchemeVertex ) )
 				.setYStart( firstY );
-		screenVertices.add( sv );
+		if ( timepointModel != null )
+			screenVertex.setFaded( trackSchemeVertex.isBeforeTimepoint( timepointModel.getTimepoint() ) );
+		screenVertices.add( screenVertex );
 	}
 
 	protected void buildScreenColumns( ScreenEntities screenEntities, int decorationsOffsetX, double minX, double maxX,

@@ -106,7 +106,7 @@ public class MamutBranchViewTrackScheme
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
 		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(),
-				LongEdgesLineageTreeLayout::new, null );
+				( rootsModel, graph, selection, timepointModel ) -> new LongEdgesLineageTreeLayout( rootsModel, graph, selection ), null );
 	}
 
 	protected MamutBranchViewTrackScheme(
@@ -114,7 +114,7 @@ public class MamutBranchViewTrackScheme
 			final Map< String, Object > guiState,
 			final BranchTrackSchemeFactory trackSchemeGraphFactory,
 			final TrackSchemeOverlayFactory overlayFactory,
-			final LineageTreeLayout.LineageTreeLayoutFactory layoutFactory,
+			final LineageTreeLayout.LineageTreeLayoutFactory lineageTreeLayoutFactory,
 			final TimepointModel timepointModel )
 	{
 		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ),
@@ -126,7 +126,7 @@ public class MamutBranchViewTrackScheme
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.trackSchemeOverlayFactory( overlayFactory )
-				.lineageTreeLayoutFactory( layoutFactory )
+				.lineageTreeLayoutFactory( lineageTreeLayoutFactory )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
 
@@ -153,6 +153,7 @@ public class MamutBranchViewTrackScheme
 				highlightModel,
 				navigateFocusModel,
 				( timepointModel == null ) ? this.timepointModel : timepointModel,
+				this.timepointModel,
 				selectionModel,
 				rootsModel,
 				navigationHandler,
