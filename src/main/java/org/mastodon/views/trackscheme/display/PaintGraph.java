@@ -43,6 +43,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import org.mastodon.collection.RefList;
+import org.mastodon.util.ColorUtils;
 import org.mastodon.util.GeometryUtil;
 import org.mastodon.views.trackscheme.ScreenEdge;
 import org.mastodon.views.trackscheme.ScreenEntities;
@@ -106,6 +107,8 @@ public class PaintGraph
 	private static final double minDisplaySimplifiedVertexDist = 5.0;
 
 	private static final double avgLabelLetterWidth = 5.0;
+
+	protected static final float fadeRatio = 0.9f;
 
 	/*
 	 * FIELDS
@@ -317,9 +320,10 @@ public class PaintGraph
 		}
 		final boolean highlighted = ( highlightedEdgeId >= 0 ) && ( edge.getTrackSchemeEdgeId() == highlightedEdgeId );
 		final boolean selected = edge.isSelected();
+		final boolean faded = isFadingFutureTimepoints() && style.isFadeFutureTimepoints() && edge.isFaded();
 		final boolean ghost = vs.isGhost() && vt.isGhost();
 		final int specifiedColor = edge.getColor();
-		final Color drawColor = getColor( selected, ghost, transition, ratio, specifiedColor,
+		final Color drawColor = getColor( selected, ghost, faded, transition, ratio, specifiedColor,
 				style.getEdgeColor(), style.getSelectedEdgeColor(),
 				style.getGhostEdgeColor(), style.getGhostSelectedEdgeColor() );
 		g2.setColor( drawColor );
@@ -371,7 +375,8 @@ public class PaintGraph
 		if ( highlighted || focused )
 			spotradius *= 1.5;
 
-		final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
+		boolean faded = isFadingFutureTimepoints() && style.isFadeFutureTimepoints() && vertex.isFaded();
+		final Color fillColor = getColor( selected, ghost, faded, transition, ratio, specifiedColor,
 				disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
 				style.getSelectedSimplifiedVertexFillColor(),
 				disappear ? style.getGhostSelectedSimplifiedVertexFillColor()
@@ -411,10 +416,11 @@ public class PaintGraph
 			spotdiameter *= ( 1 + ratio );
 		final double spotradius = spotdiameter / 2;
 
-		final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
+		boolean faded = isFadingFutureTimepoints() && style.isFadeFutureTimepoints() && vertex.isFaded();
+		final Color fillColor = getColor( selected, ghost, faded, transition, ratio, specifiedColor,
 				style.getVertexFillColor(), style.getSelectedVertexFillColor(),
 				style.getGhostVertexFillColor(), style.getGhostSelectedVertexFillColor() );
-		final Color drawColor = getColor( selected, ghost, transition, ratio, 0,
+		final Color drawColor = getColor( selected, ghost, faded, transition, ratio, 0,
 				style.getVertexDrawColor(), style.getSelectedVertexDrawColor(),
 				style.getGhostVertexDrawColor(), style.getGhostSelectedVertexDrawColor() );
 
@@ -467,6 +473,17 @@ public class PaintGraph
 		final float tx = ( float ) ( x - bounds.getCenterX() );
 		final float ty = ( float ) ( y - bounds.getCenterY() );
 		layout.draw( g2, tx, ty );
+	}
+
+	protected Color getColor( final boolean isSelected, final boolean isGhost, final boolean isFaded, final Transition transition,
+			final double completionRatio, final int specifiedColor, final Color normalColor, final Color selectedColor,
+			final Color ghostNormalColor, final Color ghostSelectedColor )
+	{
+		Color color = getColor( isSelected, isGhost, transition, completionRatio, specifiedColor, normalColor, selectedColor,
+				ghostNormalColor, ghostSelectedColor );
+		if ( !isFaded )
+			return color;
+		return ColorUtils.getMixedColor( color, style.getBackgroundColor(), fadeRatio );
 	}
 
 	protected Color getColor(
@@ -526,6 +543,11 @@ public class PaintGraph
 					? TrackSchemeStyle.mixGhostColor( color, style.getBackgroundColor() )
 					: color;
 		}
+	}
+
+	protected boolean isFadingFutureTimepoints()
+	{
+		return false;
 	}
 
 	/**
