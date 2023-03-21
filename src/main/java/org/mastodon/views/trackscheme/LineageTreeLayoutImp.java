@@ -156,7 +156,8 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	public LineageTreeLayoutImp(
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final TrackSchemeGraph< ?, ? > graph,
-			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection, final @Nullable TimepointModel timepointModel )
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final @Nullable TimepointModel timepointModel )
 	{
 		this.graph = graph;
 		this.selection = selection;
