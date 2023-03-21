@@ -22,13 +22,19 @@ public class ColorUtils
 	 * @param color2
 	 *            the second {@link Color}
 	 * @param ratio
-	 *            the mixing ratio. {@code ratio} = 0 results in {@code color1}
-	 *            will be returned. {@code ratio} = 1 results in {@code color2}
-	 *            will be returned. {@code ratio} = 0.5 results in an equal
-	 *            mixture of both colors will be returned. 0.5 < {@code ratio} <
-	 *            1 means more {@code color2} will be used, 0.0 < {@code ratio}
-	 *            < 0.5 means more {@code color1} will be used during the
-	 *            mixing.
+	 *            the mixing ratio.
+	 *            <ul>
+	 *            <li>{@code ratio} {@code = 0} results in {@code color1} will
+	 *            be returned.</li>
+	 *            <li>{@code ratio} {@code = 1} results in {@code color2} will
+	 *            be returned.</li>
+	 *            <li>{@code ratio} {@code = 0.5} results in an equal mixture of
+	 *            both colors will be returned.</li>
+	 *            <li>{@code = 0.5 <} {@code ratio} {@code < 1} means more
+	 *            {@code color2} will be used</li>
+	 *            <li>{@code = 0.0 <} {@code ratio} {@code = <} 0.5 means more
+	 *            {@code color1} will be used during the mixing.</li>
+	 *            </ul>
 	 * @return the resulting {@link Color}
 	 */
 	@Nonnull
