@@ -61,6 +61,8 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 
 		final BooleanField selected = booleanField();
 
+		final BooleanField faded = booleanField();
+
 		final ByteField transition = byteField();
 
 		final DoubleField ipRatio = doubleField();
@@ -79,6 +81,8 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 		final IndexAttribute< ScreenEdge > targetScreenVertex = new IndexAttribute<>( layout.targetScreenVertex, this );
 
 		final BooleanAttribute< ScreenEdge > selected = new BooleanAttribute<>( layout.selected, this );
+
+		final BooleanAttribute< ScreenEdge > faded = new BooleanAttribute<>( layout.faded, this );
 
 		final ByteAttribute< ScreenEdge > transition = new ByteAttribute<>( layout.transition, this );
 
@@ -236,6 +240,21 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 	}
 
 	/**
+	 * Get the faded state of the edge.
+	 *
+	 * @return true, if the edge is faded.
+	 */
+	public boolean isFaded()
+	{
+		return pool.faded.get( this );
+	}
+
+	protected void setFaded( final boolean faded )
+	{
+		pool.faded.setQuiet( this, faded );
+	}
+
+	/**
 	 * Returns the color of this edge (ARGB bytes packed into {@code int}).
 	 *
 	 * @return the color.
@@ -275,6 +294,7 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 		setSourceScreenVertexIndex( e.getSourceScreenVertexIndex() );
 		setTargetScreenVertexIndex( e.getTargetScreenVertexIndex() );
 		setSelected( e.isSelected() );
+		setFaded( e.isFaded() );
 		setTransition( e.getTransition() );
 		setInterpolationCompletionRatio( e.getInterpolationCompletionRatio() );
 		setColor( e.getColor() );
