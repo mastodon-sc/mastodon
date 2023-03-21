@@ -132,6 +132,8 @@ public class DefaultObjTagMap< O, T > implements ObjTagMap< O, T >
 		final LabelSet< O, Integer > ref = idLabelSets.createRef();
 		try
 		{
+			if ( object == null )
+				return null;
 			final LabelSet< O, Integer > labels = idLabelSets.getLabels( object, ref );
 			for ( final Integer id : ids )
 				if ( labels.contains( id ) )
