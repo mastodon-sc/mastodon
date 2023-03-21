@@ -36,6 +36,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
+import org.mastodon.util.ColorUtils;
 import org.mastodon.views.trackscheme.ScreenEntities;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.ScreenVertex;
@@ -109,12 +110,13 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
 		final boolean ghost = vertex.isGhost();
+		final boolean faded = isFadingFutureTimepoints() && style.isFadeFutureTimepoints() && vertex.isFaded();
 		final int specifiedColor = vertex.getColor();
 
-		final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
+		final Color fillColor = getColor( selected, ghost, faded, transition, ratio, specifiedColor,
 				style.getVertexFillColor(), style.getSelectedVertexFillColor(),
 				style.getGhostVertexFillColor(), style.getGhostSelectedVertexFillColor() );
-		final Color drawColor = getColor( selected, ghost, transition, ratio, 0,
+		final Color drawColor = getColor( selected, ghost, faded, transition, ratio, 0,
 				style.getVertexDrawColor(), style.getSelectedVertexDrawColor(),
 				style.getGhostVertexDrawColor(), style.getGhostSelectedVertexDrawColor() );
 
@@ -147,7 +149,9 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 
 			if ( !label.isEmpty() )
 			{
-				g2.setColor( labelColor );
+				final Color drawLabelColor =
+						faded ? ColorUtils.getMixedColor( labelColor, style.getBackgroundColor(), fadeRatio ) : labelColor;
+				g2.setColor( drawLabelColor );
 				final FontRenderContext frc = g2.getFontRenderContext();
 				final TextLayout layout = new TextLayout( label, style.getFont(), frc );
 				final Rectangle2D bounds = layout.getBounds();
@@ -232,5 +236,10 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 		final double dx = x - vertex.getX();
 		final double dy = y - vertex.getY();
 		return ( dx * dx + dy * dy <= radius * radius );
+	}
+
+	protected boolean isFadingFutureTimepoints()
+	{
+		return true;
 	}
 }
