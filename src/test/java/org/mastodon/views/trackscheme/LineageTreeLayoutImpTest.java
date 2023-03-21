@@ -28,6 +28,12 @@
  */
 package org.mastodon.views.trackscheme;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.mamut.model.Link;
@@ -39,12 +45,6 @@ import org.mastodon.model.DefaultSelectionModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests {@link LineageTreeLayoutImp}
@@ -101,7 +101,7 @@ public class LineageTreeLayoutImpTest
 		SelectionModel< TrackSchemeVertex, TrackSchemeEdge > tsSelectionModel =
 				new SelectionModelAdapter<>( selectionModel, tsGraph.getVertexMap(), tsGraph.getEdgeMap() );
 		RootsModel< TrackSchemeVertex > tsRootsModel = new DefaultRootsModel<>( graph, tsGraph );
-		LineageTreeLayout layout = new LineageTreeLayoutImp( tsRootsModel, tsGraph, tsSelectionModel );
+		LineageTreeLayout layout = new LineageTreeLayoutImp( tsRootsModel, tsGraph, tsSelectionModel, null );
 		return layout;
 	}
 

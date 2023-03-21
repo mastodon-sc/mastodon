@@ -33,6 +33,7 @@ import java.util.Collection;
 import org.mastodon.collection.RefSet;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.scijava.listeners.Listeners;
 
@@ -91,6 +92,6 @@ public interface LineageTreeLayout
 	{
 		LineageTreeLayout create( final RootsModel< TrackSchemeVertex > rootsModel,
 				final TrackSchemeGraph< ?, ? > graph,
-				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection );
+				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection, final TimepointModel timepointModel );
 	}
 }

@@ -177,7 +177,9 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final TimepointModel timepoint;
+	private final TimepointModel navigationTimepointModel;
+
+	private final TimepointModel fadingTimepointModel;
 
 	private final TrackSchemeAutoFocus autoFocus;
 
@@ -197,17 +199,18 @@ public class TrackSchemePanel extends JPanel implements
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final TimepointModel timepoint,
+			final TimepointModel navigationTimepointModel, final TimepointModel fadingTimepointModel,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
-			final TrackSchemeOptions optional )
+			final TrackSchemeOptions trackSchemeOptions )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
-		this.timepoint = timepoint;
+		this.navigationTimepointModel = navigationTimepointModel;
+		this.fadingTimepointModel = fadingTimepointModel;
 
-		final Values options = optional.values;
+		final Values options = trackSchemeOptions.values;
 		ANIMATION_MILLISECONDS = options.getAnimationDurationMillis();
 
 		graph.graphChangeListeners().add( this );
@@ -223,10 +226,11 @@ public class TrackSchemePanel extends JPanel implements
 
 		highlight.listeners().add( this );
 		focus.listeners().add( this );
-		timepoint.listeners().add( this );
+		this.navigationTimepointModel.listeners().add( this );
+		this.fadingTimepointModel.listeners().add( this );
 		selection.listeners().add( this );
 
-		graphOverlay = options.getTrackSchemeOverlayFactory().create( graph, highlight, focus, optional );
+		graphOverlay = options.getTrackSchemeOverlayFactory().create( graph, highlight, focus, trackSchemeOptions );
 
 		display.overlays().add( graphOverlay );
 
@@ -245,7 +249,7 @@ public class TrackSchemePanel extends JPanel implements
 			}
 		} );
 
-		layout = optional.values.lineageTreeLayoutFactory().create( rootsModel, graph, selection );
+		layout = trackSchemeOptions.values.lineageTreeLayoutFactory().create( rootsModel, graph, selection, fadingTimepointModel );
 		contextLayout = new ContextLayout( graph, layout );
 		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
@@ -449,12 +453,13 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void timepointChanged()
 	{
-		final int t = timepoint.getTimepoint();
+		final int t = navigationTimepointModel.getTimepoint();
 		if ( graphOverlay.getCurrentTimepoint() != t )
 		{
 			graphOverlay.setCurrentTimepoint( t );
 			display.repaint();
 		}
+		entitiesAttributesChanged();
 	}
 
 	@Override
