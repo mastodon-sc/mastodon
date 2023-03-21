@@ -872,8 +872,7 @@ public class TrackSchemePanel extends JPanel implements
 			if ( duration > 0 )
 			{
 				copyIpStart();
-				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight(),
-						colorGenerator );
+				runCropAndScale( transform );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator( screenEntitiesIpStart, screenEntitiesIpEnd );
 			}
@@ -881,8 +880,7 @@ public class TrackSchemePanel extends JPanel implements
 			{
 				interpolator = null;
 				swapPools();
-				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight(),
-						colorGenerator );
+				runCropAndScale( transform );
 				lastComputedScreenEntities = screenEntities;
 			}
 		}
@@ -891,8 +889,7 @@ public class TrackSchemePanel extends JPanel implements
 		{
 			if ( interpolator != null )
 			{
-				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight(),
-						colorGenerator );
+				runCropAndScale( transform );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator(
 						screenEntitiesIpStart,
@@ -907,6 +904,13 @@ public class TrackSchemePanel extends JPanel implements
 				//				lastComputedScreenEntities = screenEntities;
 			}
 		}
+
+		private void runCropAndScale( ScreenTransform transform )
+		{
+			layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight(),
+					colorGenerator );
+		}
+
 
 		@Override
 		public void setTime( final long time )
