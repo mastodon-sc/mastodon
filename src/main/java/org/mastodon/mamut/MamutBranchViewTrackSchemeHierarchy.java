@@ -45,8 +45,8 @@ import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
-import org.mastodon.views.trackscheme.display.PaintHierarchicalGraph;
 import org.mastodon.views.trackscheme.display.PaintDecorations;
+import org.mastodon.views.trackscheme.display.PaintHierarchicalGraph;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.views.trackscheme.display.TrackSchemeOverlay;
@@ -111,10 +111,8 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 			final Model model = appModel.getModel();
 			final ModelBranchGraph graph = model.getBranchGraph();
 			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
-			final ModelGraphProperties< BranchSpot, BranchLink > properties = new MyModelGraphProperties( graph );
-			final TrackSchemeGraph< BranchSpot, BranchLink > trackSchemeGraph =
-					new TrackSchemeGraph<>( graph, idmap, properties );
-			return trackSchemeGraph;
+			final ModelGraphProperties< BranchSpot, BranchLink > properties = new TrackSchemeHierachryGraphProperties( graph );
+			return new TrackSchemeGraph<>( graph, idmap, properties );
 		}
 
 		/*
@@ -122,12 +120,12 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 		 * creation, they will be caused here. But for now, there is no
 		 * concurrent creation of vertices or editing of vertex properties.
 		 */
-		private static class MyModelGraphProperties extends DefaultModelGraphProperties< BranchSpot, BranchLink >
+		private static class TrackSchemeHierachryGraphProperties extends DefaultModelGraphProperties< BranchSpot, BranchLink >
 		{
 
 			private final InverseDepthFirstIterator< BranchSpot, BranchLink > it;
 
-			public MyModelGraphProperties( final ModelBranchGraph graph )
+			public TrackSchemeHierachryGraphProperties( final ModelBranchGraph graph )
 			{
 				this.it = new InverseDepthFirstIterator<>( graph );
 			}
