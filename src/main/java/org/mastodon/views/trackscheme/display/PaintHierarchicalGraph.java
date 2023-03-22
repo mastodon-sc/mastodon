@@ -150,7 +150,7 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 			if ( !label.isEmpty() )
 			{
 				final Color drawLabelColor =
-						faded ? ColorUtils.getMixedColor( labelColor, style.getBackgroundColor(), fadeRatio ) : labelColor;
+						faded ? ColorUtils.mixColors( labelColor, style.getBackgroundColor(), fadeRatio ) : labelColor;
 				g2.setColor( drawLabelColor );
 				final FontRenderContext frc = g2.getFontRenderContext();
 				final TextLayout layout = new TextLayout( label, style.getFont(), frc );
