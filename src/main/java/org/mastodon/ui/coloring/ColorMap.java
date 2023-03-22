@@ -51,6 +51,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mastodon.util.ColorUtils;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -224,22 +225,7 @@ public class ColorMap
 
 		final double theta = ( val - alphas[ i - 1 ] ) / ( alphas[ i ] - alphas[ i - 1 ] );
 
-		final int c1 = colors[ i - 1 ];
-		final int a1 = ( c1 >> 24 ) & 0xFF;
-		final int r1 = ( c1 >> 16 ) & 0xFF;
-		final int g1 = ( c1 >> 8 ) & 0xFF;
-		final int b1 = c1 & 255;
-		final int c2 = colors[ i ];
-		final int a2 = ( c2 >> 24 ) & 0xFF;
-		final int r2 = ( c2 >> 16 ) & 0xFF;
-		final int g2 = ( c2 >> 8 ) & 0xFF;
-		final int b2 = c2 & 0xFF;
-
-		final int r = ( int ) ( ( r2 - r1 ) * theta + r1 );
-		final int g = ( int ) ( ( g2 - g1 ) * theta + g1 );
-		final int b = ( int ) ( ( b2 - b1 ) * theta + b1 );
-		final int a = ( int ) ( ( a2 - a1 ) * theta + a1 );
-		return ( a << 24 ) | ( r << 16 ) | ( g << 8 ) | b;
+		return ColorUtils.mixColors( colors[ i - 1 ], colors[ i ], ( float ) theta );
 	}
 
 	/**

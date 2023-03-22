@@ -52,8 +52,6 @@ import org.mastodon.views.trackscheme.ScreenVertex.Transition;
 import org.mastodon.views.trackscheme.ScreenVertexRange;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 
-import net.imglib2.type.numeric.ARGBType;
-
 /**
  * Painting the TrackScheme graph.
  * <p>
@@ -483,7 +481,7 @@ public class PaintGraph
 				ghostNormalColor, ghostSelectedColor );
 		if ( !isFaded )
 			return color;
-		return ColorUtils.getMixedColor( color, style.getBackgroundColor(), fadeRatio );
+		return ColorUtils.mixColors( color, style.getBackgroundColor(), fadeRatio );
 	}
 
 	protected Color getColor(
@@ -514,31 +512,12 @@ public class PaintGraph
 					? 1 - completionRatio
 					: completionRatio;
 			final boolean fade = ( transition == APPEAR || transition == DISAPPEAR );
-			int r, g, b, a;
-			if ( specifiedColor == 0 )
-			{
-				r = normalColor.getRed();
-				g = normalColor.getGreen();
-				b = normalColor.getBlue();
-				a = normalColor.getAlpha();
-			}
-			else
-			{
-				r = ARGBType.red( specifiedColor );
-				g = ARGBType.green( specifiedColor );
-				b = ARGBType.blue( specifiedColor );
-				a = ARGBType.alpha( specifiedColor );
-			}
+			int rgb = specifiedColor == 0 ? normalColor.getRGB() : specifiedColor;
 			if ( isSelected || !fade )
-			{
-				r = ( int ) ( ratio * r + ( 1 - ratio ) * selectedColor.getRed() );
-				g = ( int ) ( ratio * g + ( 1 - ratio ) * selectedColor.getGreen() );
-				b = ( int ) ( ratio * b + ( 1 - ratio ) * selectedColor.getBlue() );
-				a = ( int ) ( ratio * a + ( 1 - ratio ) * selectedColor.getAlpha() );
-			}
+				rgb = ColorUtils.mixColors( selectedColor.getRGB(), rgb, ( float ) ratio );
 			if ( fade )
-				a = ( int ) ( a * ( 1 - ratio ) );
-			final Color color = new Color( r, g, b, a );
+				rgb = ColorUtils.scaleAlpha( rgb, (float) (1 - ratio) );
+			final Color color = new Color( rgb );
 			return isGhost
 					? TrackSchemeStyle.mixGhostColor( color, style.getBackgroundColor() )
 					: color;
