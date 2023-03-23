@@ -56,7 +56,7 @@ public interface LineageTreeLayout
 	int nextLayoutTimestamp();
 
 	void cropAndScale( ScreenTransform transform, ScreenEntities screenEntities, int decorationsOffsetX,
-			int decorationsOffsetY, GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator );
+			int decorationsOffsetY );
 
 	TrackSchemeVertex getClosestActiveVertex( RealLocalizable layoutPos, double aspectRatioXtoY,
 			TrackSchemeVertex ref );
@@ -92,6 +92,8 @@ public interface LineageTreeLayout
 	{
 		LineageTreeLayout create( final RootsModel< TrackSchemeVertex > rootsModel,
 				final TrackSchemeGraph< ?, ? > graph,
-				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection, final TimepointModel timepointModel );
+				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
+				final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
+				final TimepointModel timepointModel );
 	}
 }

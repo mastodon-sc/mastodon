@@ -249,9 +249,9 @@ public class TrackSchemePanel extends JPanel implements
 			}
 		} );
 
-		layout = trackSchemeOptions.values.lineageTreeLayoutFactory().create( rootsModel, graph, selection, fadingTimepointModel );
-		contextLayout = new ContextLayout( graph, layout );
 		colorGenerator = options.getGraphColorGenerator();
+		layout = trackSchemeOptions.values.lineageTreeLayoutFactory().create( rootsModel, graph, selection, colorGenerator, fadingTimepointModel );
+		contextLayout = new ContextLayout( graph, layout );
 		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
@@ -907,8 +907,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		private void runCropAndScale( ScreenTransform transform )
 		{
-			layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight(),
-					colorGenerator );
+			layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight() );
 		}
 
 

@@ -74,8 +74,7 @@ public class LineageTreeLayoutImpTest
 		LineageTreeLayout layout = initLineageTreeLayout( graph, tsGraph );
 		// run
 		layout.layout();
-		layout.cropAndScale( transform, screenEntities, 0, 0,
-				new GraphColorGeneratorAdapter<>( tsGraph.getVertexMap(), tsGraph.getEdgeMap() ) );
+		layout.cropAndScale( transform, screenEntities, 0, 0 );
 		// test
 		assertEquals( Arrays.asList( "a", "b", "c", "d" ), getVertexLabels( screenEntities ) );
 		assertEquals( Arrays.asList( "a->b", "a->c", "b->d", "c->d" ), getEdges( screenEntities ) );
@@ -101,8 +100,9 @@ public class LineageTreeLayoutImpTest
 		SelectionModel< TrackSchemeVertex, TrackSchemeEdge > tsSelectionModel =
 				new SelectionModelAdapter<>( selectionModel, tsGraph.getVertexMap(), tsGraph.getEdgeMap() );
 		RootsModel< TrackSchemeVertex > tsRootsModel = new DefaultRootsModel<>( graph, tsGraph );
-		LineageTreeLayout layout = new LineageTreeLayoutImp( tsRootsModel, tsGraph, tsSelectionModel, null );
-		return layout;
+		GraphColorGeneratorAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > colorGenerator =
+				new GraphColorGeneratorAdapter<>( tsGraph.getVertexMap(), tsGraph.getEdgeMap() );
+		return new LineageTreeLayoutImp( tsRootsModel, tsGraph, tsSelectionModel, colorGenerator, null );
 	}
 
 	private ScreenTransform initScreenTransform()

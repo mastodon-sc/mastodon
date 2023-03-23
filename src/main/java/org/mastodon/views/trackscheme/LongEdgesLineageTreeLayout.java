@@ -31,6 +31,7 @@ package org.mastodon.views.trackscheme;
 import org.mastodon.collection.RefList;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.views.trackscheme.ScreenVertex.ScreenVertexPool;
@@ -56,9 +57,11 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 	public LongEdgesLineageTreeLayout(
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final TrackSchemeGraph< ?, ? > graph,
-			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
+			final TimepointModel timepointModel )
 	{
-		super( rootsModel, graph, selection, null );
+		super( rootsModel, graph, selection, colorGenerator, timepointModel );
 	}
 
 	@Override
@@ -66,8 +69,7 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 			final ScreenTransform transform,
 			final ScreenEntities screenEntities,
 			final int decorationsOffsetX,
-			final int decorationsOffsetY,
-			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator )
+			final int decorationsOffsetY )
 	{
 		final double minX = transform.getMinX();
 		final double maxX = transform.getMaxX();

@@ -114,7 +114,7 @@ public class MamutBranchViewTrackScheme
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
 		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(),
-				( rootsModel, graph, selection, timepointModel ) -> new LongEdgesLineageTreeLayout( rootsModel, graph, selection ), null );
+				LongEdgesLineageTreeLayout::new, null );
 	}
 
 	protected MamutBranchViewTrackScheme(
