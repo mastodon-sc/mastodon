@@ -90,6 +90,8 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 
 	protected final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
+	protected final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator;
+
 	@Nullable
 	protected final TimepointModel timepointModel;
 
@@ -157,10 +159,12 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
 			final @Nullable TimepointModel timepointModel )
 	{
 		this.graph = graph;
 		this.selection = selection;
+		this.colorGenerator = colorGenerator;
 		this.timepointModel = timepointModel;
 		this.roots = rootsModel;
 		listeners = new Listeners.SynchronizedList<>();
@@ -322,13 +326,10 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	 *            the screen entities are shifted in X by this amount.
 	 * @param decorationsOffsetY
 	 *            the screen entities are shifted in Y by this amount.
-	 * @param colorGenerator
-	 *            the color generator used to generate vertex and edge colors.
 	 */
 	@Override
 	public void cropAndScale( final ScreenTransform transform, final ScreenEntities screenEntities,
-			final int decorationsOffsetX, final int decorationsOffsetY,
-			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator )
+			final int decorationsOffsetX, final int decorationsOffsetY )
 	{
 		final double minX = transform.getMinX();
 		final double maxX = transform.getMaxX();
