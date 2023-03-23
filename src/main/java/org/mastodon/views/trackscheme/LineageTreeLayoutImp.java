@@ -328,7 +328,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 	 *            the screen entities are shifted in Y by this amount.
 	 */
 	@Override
-	public void cropAndScale( final ScreenTransform transform, final ScreenEntities screenEntities,
+	public void cropAndScale(final ScreenTransform transform, final ScreenEntities screenEntities,
 			final int decorationsOffsetX, final int decorationsOffsetY )
 	{
 		final double minX = transform.getMinX();
@@ -348,8 +348,8 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 
 		final TrackSchemeVertex targetTrackSchemeVertex = graph.vertexRef();
 		final TrackSchemeVertex sourceTrackSchemeVertex = graph.vertexRef();
-		final ScreenVertex screenVertex = screenVertexPool.createRef();
-		final ScreenEdge screenEdge = screenEdgePool.createRef();
+		final ScreenVertex vertexRef = screenVertexPool.createRef();
+		final ScreenEdge edgeRef = screenEdgePool.createRef();
 		final ScreenVertexRange sr = screenRangePool.createRef();
 
 		final double allowedMinD = 2.0 / xScale;
@@ -400,7 +400,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 					{
 						vertexList.get( i, targetTrackSchemeVertex );
 						final double x = ( targetTrackSchemeVertex.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-						addScreenVertex( colorGenerator, screenVertices, screenVertexPool, targetTrackSchemeVertex, screenVertex, x, y, y );
+						addScreenVertex( screenVertices, screenVertexPool, targetTrackSchemeVertex, vertexRef, x, y, y );
 
 						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
 						prevX = x;
@@ -414,28 +414,17 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 
 							int v2si = sourceTrackSchemeVertex.getScreenVertexIndex();
 							if ( v2si < 0 || v2si >= screenVertices.size()
-									|| screenVertices.get( v2si, screenVertex ).getTrackSchemeVertexId()
+									|| screenVertices.get( v2si, vertexRef ).getTrackSchemeVertexId()
 											!= sourceTrackSchemeVertex.getInternalPoolIndex() )
 							{
 								// ScreenVertex for v2 not found. Adding one...
 								final double nx = ( sourceTrackSchemeVertex.getLayoutX() - minX ) * xScale + decorationsOffsetX;
 								final double ny = ( sourceTrackSchemeVertex.getTimepoint() - minY ) * yScale + decorationsOffsetY;
-								addScreenVertex( colorGenerator, screenVertices, screenVertexPool, sourceTrackSchemeVertex, screenVertex,
+								addScreenVertex( screenVertices, screenVertexPool, sourceTrackSchemeVertex, vertexRef,
 										nx, ny, ny );
 							}
 
-							final int eid = edge.getInternalPoolIndex();
-							final int sourceScreenVertexIndex = sourceTrackSchemeVertex.getScreenVertexIndex();
-							final int targetScreenVertexIndex = targetTrackSchemeVertex.getScreenVertexIndex();
-							final boolean eselected = selection.isSelected( edge );
-
-							screenEdgePool.create( screenEdge ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected,
-									colorGenerator.color( edge, sourceTrackSchemeVertex, targetTrackSchemeVertex ) );
-							if ( timepointModel != null )
-								screenEdge.setFaded( targetTrackSchemeVertex.isBeforeTimepoint( timepointModel.getTimepoint() ) );
-							screenEdges.add( screenEdge );
-							final int sei = screenEdge.getInternalPoolIndex();
-							edge.setScreenEdgeIndex( sei );
+							addScreenEdge( screenEdges, screenEdgePool, edge, sourceTrackSchemeVertex, targetTrackSchemeVertex, edgeRef );
 						}
 					}
 					else
@@ -454,22 +443,21 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 				}
 				for ( int i = timepointStartScreenVertexIndex; i < screenVertices.size(); ++i )
 				{
-					screenVertices.get( i, screenVertex ).setVertexDist( minVertexScreenDist );
+					screenVertices.get( i, vertexRef ).setVertexDist( minVertexScreenDist );
 				}
 			}
 		}
 
-		screenEdgePool.releaseRef( screenEdge );
-		screenVertexPool.releaseRef( screenVertex );
+		screenEdgePool.releaseRef( edgeRef );
+		screenVertexPool.releaseRef( vertexRef );
 		graph.releaseRef( targetTrackSchemeVertex );
 		graph.releaseRef( sourceTrackSchemeVertex );
 
 		buildScreenColumns( screenEntities, decorationsOffsetX, minX, maxX, xScale );
 	}
 
-	protected void addScreenVertex( GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
-			RefList< ScreenVertex > screenVertices, ScreenVertexPool screenVertexPool, TrackSchemeVertex trackSchemeVertex,
-			ScreenVertex screenVertex, double x, double y, double firstY )
+	protected void addScreenVertex( RefList< ScreenVertex > screenVertices, ScreenVertexPool screenVertexPool,
+			TrackSchemeVertex trackSchemeVertex, ScreenVertex screenVertex, double x, double y, double firstY )
 	{
 		final int v1si = screenVertices.size();
 		trackSchemeVertex.setScreenVertexIndex( v1si );
@@ -483,6 +471,23 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		if ( timepointModel != null )
 			screenVertex.setFaded( trackSchemeVertex.isBeforeTimepoint( timepointModel.getTimepoint() ) );
 		screenVertices.add( screenVertex );
+	}
+
+	protected void addScreenEdge( RefList< ScreenEdge > screenEdges, ScreenEdgePool screenEdgePool,
+			TrackSchemeEdge edge, TrackSchemeVertex sourceTrackSchemeVertex, TrackSchemeVertex targetTrackSchemeVertex, ScreenEdge ref )
+	{
+		final int eid = edge.getInternalPoolIndex();
+		final int sourceScreenVertexIndex = sourceTrackSchemeVertex.getScreenVertexIndex();
+		final int targetScreenVertexIndex = targetTrackSchemeVertex.getScreenVertexIndex();
+		final boolean selected = selection.isSelected( edge );
+
+		screenEdgePool.create( ref ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, selected,
+				colorGenerator.color( edge, sourceTrackSchemeVertex, targetTrackSchemeVertex ) );
+		if ( timepointModel != null )
+			ref.setFaded( targetTrackSchemeVertex.isBeforeTimepoint( timepointModel.getTimepoint() ) );
+		screenEdges.add( ref );
+		final int sei = ref.getInternalPoolIndex();
+		edge.setScreenEdgeIndex( sei );
 	}
 
 	protected void buildScreenColumns( ScreenEntities screenEntities, int decorationsOffsetX, double minX, double maxX,
