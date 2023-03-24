@@ -31,17 +31,26 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
  */
 public class ExampleGraph1 extends AbstractExampleGraph
 {
+	public final Spot spot0;
+
+	public final Spot spot1;
+
+	public final Spot spot2;
+
+	public final Spot spot3;
+
+	public final Spot spot4;
 
 	public final BranchSpot branchSpotA;
 
 	public ExampleGraph1()
 	{
 		super();
-		Spot spot0 = addNode( "0", 0, new double[] { 1d, 2d, 3d } );
-		Spot spot1 = addNode( "1", 1, new double[] { 2d, 4d, 6d } );
-		Spot spot2 = addNode( "2", 2, new double[] { 3d, 6d, 9d } );
-		Spot spot3 = addNode( "3", 3, new double[] { 4d, 8d, 12d } );
-		Spot spot4 = addNode( "4", 3, new double[] { 5d, 10d, 15d } );
+		spot0 = addNode( "0", 0, new double[] { 1d, 2d, 3d } );
+		spot1 = addNode( "1", 1, new double[] { 2d, 4d, 6d } );
+		spot2 = addNode( "2", 2, new double[] { 3d, 6d, 9d } );
+		spot3 = addNode( "3", 3, new double[] { 4d, 8d, 12d } );
+		spot4 = addNode( "4", 3, new double[] { 5d, 10d, 15d } );
 
 		addEdge( spot0, spot1 );
 		addEdge( spot1, spot2 );
