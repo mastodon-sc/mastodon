@@ -238,6 +238,7 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 		return ( dx * dx + dy * dy <= radius * radius );
 	}
 
+	@Override
 	protected boolean isFadingFutureTimepoints()
 	{
 		return true;

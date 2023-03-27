@@ -31,6 +31,7 @@ package org.mastodon.mamut;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
@@ -38,7 +39,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.model.DefaultTimepointModel;
+import org.mastodon.model.DefaultFadedModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
@@ -67,11 +68,14 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 	public MamutBranchViewTrackSchemeHierarchy( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel, guiState, new BranchHierarchyTrackSchemeFactory(), new HierarchyTrackSchemeOverlayFactory(),
-				LineageTreeLayoutImp::new, new DefaultTimepointModel() );
+				LineageTreeLayoutImp::new );
 
 		// Window title.
 		final TrackSchemeFrame frame = getFrame();
 		frame.setTitle( "TrackScheme Hierarchy" );
+
+		// Change timepoint model of faded model adapter to actual timepoint model.
+		this.fadedModelAdapter.setFadedModel( new DefaultFadedModel( this.timepointModel ) );
 
 		// Min & max levels.
 		final GraphChangeListener gcl = () -> {
@@ -161,5 +165,6 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 					new PaintHierarchicalGraph(), options );
 		}
 	}
+
 
 }

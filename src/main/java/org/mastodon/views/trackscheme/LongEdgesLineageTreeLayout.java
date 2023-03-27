@@ -29,9 +29,9 @@
 package org.mastodon.views.trackscheme;
 
 import org.mastodon.collection.RefList;
+import org.mastodon.model.FadedModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.views.trackscheme.ScreenVertex.ScreenVertexPool;
@@ -59,9 +59,9 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
-			final TimepointModel timepointModel )
+			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel )
 	{
-		super( rootsModel, graph, selection, colorGenerator, timepointModel );
+		super( rootsModel, graph, selection, colorGenerator, fadedModel );
 	}
 
 	@Override

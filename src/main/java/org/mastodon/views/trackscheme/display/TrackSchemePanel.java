@@ -44,6 +44,7 @@ import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
 import org.mastodon.graph.GraphChangeListener;
+import org.mastodon.model.FadedModel;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightListener;
@@ -179,8 +180,6 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TimepointModel navigationTimepointModel;
 
-	private final TimepointModel fadingTimepointModel;
-
 	private final TrackSchemeAutoFocus autoFocus;
 
 	private final TrackSchemeNavigationActions navigationActions;
@@ -199,7 +198,8 @@ public class TrackSchemePanel extends JPanel implements
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final TimepointModel navigationTimepointModel, final TimepointModel fadingTimepointModel,
+			final TimepointModel navigationTimepointModel,
+			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
@@ -208,7 +208,6 @@ public class TrackSchemePanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.navigationTimepointModel = navigationTimepointModel;
-		this.fadingTimepointModel = fadingTimepointModel;
 
 		final Values options = trackSchemeOptions.values;
 		ANIMATION_MILLISECONDS = options.getAnimationDurationMillis();
@@ -227,7 +226,6 @@ public class TrackSchemePanel extends JPanel implements
 		highlight.listeners().add( this );
 		focus.listeners().add( this );
 		this.navigationTimepointModel.listeners().add( this );
-		this.fadingTimepointModel.listeners().add( this );
 		selection.listeners().add( this );
 
 		graphOverlay = options.getTrackSchemeOverlayFactory().create( graph, highlight, focus, trackSchemeOptions );
@@ -250,7 +248,7 @@ public class TrackSchemePanel extends JPanel implements
 		} );
 
 		colorGenerator = options.getGraphColorGenerator();
-		layout = trackSchemeOptions.values.lineageTreeLayoutFactory().create( rootsModel, graph, selection, colorGenerator, fadingTimepointModel );
+		layout = trackSchemeOptions.values.lineageTreeLayoutFactory().create( rootsModel, graph, selection, colorGenerator, fadedModel );
 		contextLayout = new ContextLayout( graph, layout );
 		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
