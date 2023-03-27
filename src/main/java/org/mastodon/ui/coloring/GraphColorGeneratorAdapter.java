@@ -44,9 +44,9 @@ import org.mastodon.graph.Vertex;
  * @param <E>
  *            edge type of wrapped source graph.
  * @param <WV>
- *            vertex type this {@code GraphColorGenerator}.
+ *            vertex type of this {@code GraphColorGenerator}.
  * @param <WE>
- *            edge type this {@code GraphColorGenerator}.
+ *            edge type of this {@code GraphColorGenerator}.
  *
  * @author Tobias Pietzsch
  */
