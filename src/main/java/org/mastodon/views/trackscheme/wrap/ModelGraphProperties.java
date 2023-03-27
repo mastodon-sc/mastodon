@@ -56,10 +56,6 @@ public interface ModelGraphProperties< V, E >
 {
 	public int getTimepoint( V v );
 
-	boolean isBeforeTimepoint( V v, int timepoint );
-
-	boolean isAfterTimepoint( V v, int timepoint );
-
 	default public int getFirstTimePoint( V v )
 	{
 		return getTimepoint( v );
