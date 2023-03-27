@@ -40,6 +40,7 @@ import javax.swing.WindowConstants;
 import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
+import org.mastodon.model.FadedModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
@@ -64,7 +65,8 @@ public class TrackSchemeFrame extends ViewFrame
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final TimepointModel navigationTimepointModel, final TimepointModel fadingTimepointModel,
+			final TimepointModel navigationTimepointModel,
+			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
@@ -79,7 +81,8 @@ public class TrackSchemeFrame extends ViewFrame
 				graph,
 				highlight,
 				focus,
-				navigationTimepointModel, fadingTimepointModel,
+				navigationTimepointModel,
+				fadedModel,
 				selection,
 				rootsModel,
 				navigation,

@@ -32,16 +32,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edges;
+import org.mastodon.model.FadedModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
@@ -92,8 +92,8 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 
 	protected final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator;
 
-	@Nullable
-	protected final TimepointModel timepointModel;
+	@Nonnull
+	protected final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel;
 
 	private final Listeners.List< LayoutListener > listeners;
 
@@ -160,12 +160,12 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
-			final @Nullable TimepointModel timepointModel )
+			final @Nonnull FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel )
 	{
 		this.graph = graph;
 		this.selection = selection;
 		this.colorGenerator = colorGenerator;
-		this.timepointModel = timepointModel;
+		this.fadedModel = fadedModel;
 		this.roots = rootsModel;
 		listeners = new Listeners.SynchronizedList<>();
 		rightmost = 0;
@@ -468,8 +468,8 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		// TODO move setYStart into init
 		screenVertexPool.create( screenVertex ).init( id, label, x, y, selected, ghost, colorGenerator.color( trackSchemeVertex ) )
 				.setYStart( firstY );
-		if ( timepointModel != null )
-			screenVertex.setFaded( trackSchemeVertex.isBeforeTimepoint( timepointModel.getTimepoint() ) );
+		screenVertex.setFaded( fadedModel.isFaded( trackSchemeVertex ) );
+
 		screenVertices.add( screenVertex );
 	}
 
@@ -483,8 +483,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 
 		screenEdgePool.create( ref ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, selected,
 				colorGenerator.color( edge, sourceTrackSchemeVertex, targetTrackSchemeVertex ) );
-		if ( timepointModel != null )
-			ref.setFaded( targetTrackSchemeVertex.isBeforeTimepoint( timepointModel.getTimepoint() ) );
+		ref.setFaded( fadedModel.isFaded( edge ) );
 		screenEdges.add( ref );
 		final int sei = ref.getInternalPoolIndex();
 		edge.setScreenEdgeIndex( sei );

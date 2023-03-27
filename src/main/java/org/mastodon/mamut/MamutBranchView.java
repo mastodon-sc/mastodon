@@ -37,6 +37,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 
+import org.mastodon.adapter.FadedModelAdapter;
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
@@ -116,6 +117,8 @@ public class MamutBranchView<
 
 	protected final SelectionModelAdapter< BranchSpot, BranchLink, V, E > selectionModel;
 
+	protected final FadedModelAdapter< BranchSpot, BranchLink, V, E > fadedModelAdapter;
+
 	protected final NavigationHandlerAdapter< BranchSpot, BranchLink, V, E > navigationHandler;
 
 	protected final ArrayList< Runnable > runOnClose;
@@ -170,6 +173,9 @@ public class MamutBranchView<
 
 		// Time-point.
 		this.timepointModel = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
+
+		// Faded model adapter - initialized with a null FadeModel here. Subclasses may set the faded model of this adapter.
+		this.fadedModelAdapter = new FadedModelAdapter<>( null, vertexMap, edgeMap );
 
 		// Tag-set.
 		this.tagSetModel = branchTagSetModel( appModel );
