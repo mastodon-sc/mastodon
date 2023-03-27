@@ -46,9 +46,9 @@ import org.mastodon.model.SelectionModel;
  * @param <E>
  *            edge type of source graph.
  * @param <WV>
- *            vertex type this wrapped {@link SelectionModel}.
+ *            vertex type of this wrapped {@link SelectionModel}.
  * @param <WE>
- *            edge type this wrapped {@link SelectionModel}.
+ *            edge type of this wrapped {@link SelectionModel}.
  */
 public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
 		WE extends Edge< WV > >
