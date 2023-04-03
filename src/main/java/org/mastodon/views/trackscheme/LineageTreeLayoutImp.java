@@ -32,8 +32,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
@@ -92,7 +90,6 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 
 	protected final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator;
 
-	@Nonnull
 	protected final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel;
 
 	private final Listeners.List< LayoutListener > listeners;
@@ -160,7 +157,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
-			final @Nonnull FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel )
+			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel )
 	{
 		this.graph = graph;
 		this.selection = selection;
