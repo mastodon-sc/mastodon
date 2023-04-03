@@ -178,7 +178,7 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final TimepointModel navigationTimepointModel;
+	private final TimepointModel timepointModel;
 
 	private final TrackSchemeAutoFocus autoFocus;
 
@@ -198,7 +198,7 @@ public class TrackSchemePanel extends JPanel implements
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final TimepointModel navigationTimepointModel,
+			final TimepointModel timepointModel,
 			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final RootsModel< TrackSchemeVertex > rootsModel,
@@ -207,7 +207,7 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
-		this.navigationTimepointModel = navigationTimepointModel;
+		this.timepointModel = timepointModel;
 
 		final Values optionValues = options.values;
 		ANIMATION_MILLISECONDS = optionValues.getAnimationDurationMillis();
@@ -225,7 +225,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		highlight.listeners().add( this );
 		focus.listeners().add( this );
-		this.navigationTimepointModel.listeners().add( this );
+		this.timepointModel.listeners().add( this );
 		selection.listeners().add( this );
 
 		graphOverlay = optionValues.getTrackSchemeOverlayFactory().create( graph, highlight, focus, options );
@@ -451,7 +451,7 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void timepointChanged()
 	{
-		final int t = navigationTimepointModel.getTimepoint();
+		final int t = timepointModel.getTimepoint();
 		if ( graphOverlay.getCurrentTimepoint() != t )
 		{
 			graphOverlay.setCurrentTimepoint( t );
