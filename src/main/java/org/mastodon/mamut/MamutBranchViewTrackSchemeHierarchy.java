@@ -115,7 +115,7 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 			final Model model = appModel.getModel();
 			final ModelBranchGraph graph = model.getBranchGraph();
 			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
-			final ModelGraphProperties< BranchSpot, BranchLink > properties = new TrackSchemeHierachryGraphProperties( graph );
+			final ModelGraphProperties< BranchSpot, BranchLink > properties = new TrackSchemeHierarchyGraphProperties( graph );
 			return new TrackSchemeGraph<>( graph, idmap, properties );
 		}
 
@@ -124,12 +124,12 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 		 * creation, they will be caused here. But for now, there is no
 		 * concurrent creation of vertices or editing of vertex properties.
 		 */
-		private static class TrackSchemeHierachryGraphProperties extends DefaultModelGraphProperties< BranchSpot, BranchLink >
+		private static class TrackSchemeHierarchyGraphProperties extends DefaultModelGraphProperties< BranchSpot, BranchLink >
 		{
 
 			private final InverseDepthFirstIterator< BranchSpot, BranchLink > it;
 
-			public TrackSchemeHierachryGraphProperties( final ModelBranchGraph graph )
+			public TrackSchemeHierarchyGraphProperties( final ModelBranchGraph graph )
 			{
 				this.it = new InverseDepthFirstIterator<>( graph );
 			}
