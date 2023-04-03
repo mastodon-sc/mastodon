@@ -102,9 +102,6 @@ public class MamutBranchViewTrackScheme
 
 	private final ColoringModel coloringModel;
 
-	@Nullable
-	private JLabel timepointAndNumberOfSpotsLabel;
-
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel )
 	{
 		this( appModel, new HashMap<>() );
