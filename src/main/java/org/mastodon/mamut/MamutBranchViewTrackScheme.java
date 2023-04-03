@@ -399,16 +399,4 @@ public class MamutBranchViewTrackScheme
 	{
 		return colorBarOverlay;
 	}
-
-	private void updateTimepointAndNumberOfSpotsLabel( @Nonnull Model model )
-	{
-		SwingUtilities
-				.invokeLater( () -> {
-					if ( timepointAndNumberOfSpotsLabel == null )
-						return;
-					final int timepoint = timepointModel.getTimepoint();
-					final int nSpots = model.getSpatioTemporalIndex().getSpatialIndex( timepointModel.getTimepoint() ).size();
-					timepointAndNumberOfSpotsLabel.setText( "timepoint: " + timepoint + "   spots: " + nSpots );
-				} );
-	}
 }
