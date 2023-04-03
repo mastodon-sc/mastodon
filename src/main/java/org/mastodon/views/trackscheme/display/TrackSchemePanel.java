@@ -203,20 +203,20 @@ public class TrackSchemePanel extends JPanel implements
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
-			final TrackSchemeOptions trackSchemeOptions )
+			final TrackSchemeOptions options )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.navigationTimepointModel = navigationTimepointModel;
 
-		final Values options = trackSchemeOptions.values;
-		ANIMATION_MILLISECONDS = options.getAnimationDurationMillis();
+		final Values optionValues = options.values;
+		ANIMATION_MILLISECONDS = optionValues.getAnimationDurationMillis();
 
 		graph.graphChangeListeners().add( this );
 		navigation.listeners().add( this );
 
-		final int w = options.getWidth();
-		final int h = options.getHeight();
+		final int w = optionValues.getWidth();
+		final int h = optionValues.getHeight();
 		display = new InteractiveDisplayCanvas( w, h );
 
 		screenTransform = new ScreenTransformState( new ScreenTransform( -10000, 10000, -10000, 10000, w, h ) );
@@ -228,7 +228,7 @@ public class TrackSchemePanel extends JPanel implements
 		this.navigationTimepointModel.listeners().add( this );
 		selection.listeners().add( this );
 
-		graphOverlay = options.getTrackSchemeOverlayFactory().create( graph, highlight, focus, trackSchemeOptions );
+		graphOverlay = optionValues.getTrackSchemeOverlayFactory().create( graph, highlight, focus, options );
 
 		display.overlays().add( graphOverlay );
 
@@ -247,8 +247,8 @@ public class TrackSchemePanel extends JPanel implements
 			}
 		} );
 
-		colorGenerator = options.getGraphColorGenerator();
-		layout = trackSchemeOptions.values.lineageTreeLayoutFactory().create( rootsModel, graph, selection, colorGenerator, fadedModel );
+		colorGenerator = optionValues.getGraphColorGenerator();
+		layout = optionValues.lineageTreeLayoutFactory().create( rootsModel, graph, selection, colorGenerator, fadedModel );
 		contextLayout = new ContextLayout( graph, layout );
 		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
@@ -325,7 +325,7 @@ public class TrackSchemePanel extends JPanel implements
 		xScrollPanel.add( Box.createRigidArea( new Dimension( space, 0 ) ), BorderLayout.EAST );
 		add( xScrollPanel, BorderLayout.SOUTH );
 
-		setNavigationEtiquette( options.getNavigationEtiquette() );
+		setNavigationEtiquette( optionValues.getNavigationEtiquette() );
 
 		painterThread.start();
 	}
