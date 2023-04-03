@@ -211,11 +211,8 @@ public class MamutViewTrackScheme
 				frame.getTrackschemePanel() );
 
 		// Timepoint and number of spots.
-		if ( timepointModel != null )
-		{
-			TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel = new TimepointAndNumberOfSpotsLabel( timepointModel, model );
-			frame.getSettingsPanel().add( timepointAndNumberOfSpotsLabel );
-		}
+		TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel = new TimepointAndNumberOfSpotsLabel( timepointModel, model );
+		frame.getSettingsPanel().add( timepointAndNumberOfSpotsLabel );
 
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
 				focusModel, frame.getTrackschemePanel() );
