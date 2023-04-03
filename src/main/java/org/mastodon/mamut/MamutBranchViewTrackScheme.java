@@ -183,11 +183,8 @@ public class MamutBranchViewTrackScheme
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
 
 		// Timepoint and number of spots.
-		if ( timepointModel != null )
-		{
-			TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel = new TimepointAndNumberOfSpotsLabel( timepointModel, model );
-			frame.getSettingsPanel().add( timepointAndNumberOfSpotsLabel );
-		}
+		TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel = new TimepointAndNumberOfSpotsLabel( timepointModel, model );
+		frame.getSettingsPanel().add( timepointAndNumberOfSpotsLabel );
 
 		// Regen branch graph.
 		frame.getSettingsPanel().add( new BranchGraphSyncButton( appModel.getBranchGraphSync() ) );
