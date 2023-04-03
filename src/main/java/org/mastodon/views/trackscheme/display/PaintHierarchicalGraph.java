@@ -110,7 +110,7 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
 		final boolean ghost = vertex.isGhost();
-		final boolean faded = isFadingFutureTimepoints() && style.isFadeFutureTimepoints() && vertex.isFaded();
+		final boolean faded = style.isFadeFutureTimepoints() && vertex.isFaded();
 		final int specifiedColor = vertex.getColor();
 
 		final Color fillColor = getColor( selected, ghost, faded, transition, ratio, specifiedColor,
@@ -236,11 +236,5 @@ public class PaintHierarchicalGraph extends PaintBranchGraph
 		final double dx = x - vertex.getX();
 		final double dy = y - vertex.getY();
 		return ( dx * dx + dy * dy <= radius * radius );
-	}
-
-	@Override
-	protected boolean isFadingFutureTimepoints()
-	{
-		return true;
 	}
 }

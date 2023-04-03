@@ -318,7 +318,7 @@ public class PaintGraph
 		}
 		final boolean highlighted = ( highlightedEdgeId >= 0 ) && ( edge.getTrackSchemeEdgeId() == highlightedEdgeId );
 		final boolean selected = edge.isSelected();
-		final boolean faded = isFadingFutureTimepoints() && style.isFadeFutureTimepoints() && edge.isFaded();
+		final boolean faded = style.isFadeFutureTimepoints() && edge.isFaded();
 		final boolean ghost = vs.isGhost() && vt.isGhost();
 		final int specifiedColor = edge.getColor();
 		final Color drawColor = getColor( selected, ghost, faded, transition, ratio, specifiedColor,
@@ -373,7 +373,7 @@ public class PaintGraph
 		if ( highlighted || focused )
 			spotradius *= 1.5;
 
-		boolean faded = isFadingFutureTimepoints() && style.isFadeFutureTimepoints() && vertex.isFaded();
+		boolean faded = style.isFadeFutureTimepoints() && vertex.isFaded();
 		final Color fillColor = getColor( selected, ghost, faded, transition, ratio, specifiedColor,
 				disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
 				style.getSelectedSimplifiedVertexFillColor(),
@@ -414,7 +414,7 @@ public class PaintGraph
 			spotdiameter *= ( 1 + ratio );
 		final double spotradius = spotdiameter / 2;
 
-		boolean faded = isFadingFutureTimepoints() && style.isFadeFutureTimepoints() && vertex.isFaded();
+		boolean faded = style.isFadeFutureTimepoints() && vertex.isFaded();
 		final Color fillColor = getColor( selected, ghost, faded, transition, ratio, specifiedColor,
 				style.getVertexFillColor(), style.getSelectedVertexFillColor(),
 				style.getGhostVertexFillColor(), style.getGhostSelectedVertexFillColor() );
@@ -522,11 +522,6 @@ public class PaintGraph
 					? TrackSchemeStyle.mixGhostColor( color, style.getBackgroundColor() )
 					: color;
 		}
-	}
-
-	protected boolean isFadingFutureTimepoints()
-	{
-		return false;
 	}
 
 	/**
