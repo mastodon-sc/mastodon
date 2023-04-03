@@ -42,13 +42,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.JLabel;
 
 import org.mastodon.app.ui.BranchGraphSyncButton;
 import org.mastodon.app.ui.MastodonFrameViewActions;
