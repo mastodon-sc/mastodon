@@ -15,8 +15,10 @@ import javax.swing.SwingUtilities;
  */
 public class TimepointAndNumberOfSpotsLabel extends JLabel
 {
+	@Nonnull
 	private final TimepointModel timepointModel;
 
+	@Nonnull
 	private final Model model;
 
 	/**
