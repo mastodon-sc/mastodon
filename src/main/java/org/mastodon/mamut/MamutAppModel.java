@@ -29,6 +29,8 @@
 package org.mastodon.mamut;
 
 import org.mastodon.app.MastodonAppModel;
+import org.mastodon.logging.MastodonLogger;
+import org.mastodon.logging.VoidMastodonLogger;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -72,6 +74,9 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	private final int maxTimepoint;
 
 	private final BranchGraphSynchronizer branchGraphSync;
+
+	// Discard all messages by default.
+	private MastodonLogger log = new VoidMastodonLogger();
 
 	public MamutAppModel(
 			final Model model,
@@ -156,5 +161,15 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public BranchGraphSynchronizer getBranchGraphSync()
 	{
 		return branchGraphSync;
+	}
+
+	public void setLog( final MastodonLogger log )
+	{
+		this.log = log;
+	}
+
+	public MastodonLogger getLog()
+	{
+		return log;
 	}
 }
