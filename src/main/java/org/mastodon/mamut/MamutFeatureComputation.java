@@ -36,6 +36,7 @@ import java.util.Set;
 
 import javax.swing.JDialog;
 
+import org.mastodon.feature.DefaultFeatureComputerService;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureComputer;
 import org.mastodon.feature.FeatureComputerService;
@@ -63,14 +64,13 @@ public class MamutFeatureComputation
 		computerService.setModel( appModel.getModel() );
 		computerService.setSharedBdvData( appModel.getSharedBdvData() );
 		final MyFeatureComputerService myComputerService =
-				new MyFeatureComputerService( computerService, appModel.getModel().getFeatureModel() );
+				new MyFeatureComputerService( computerService, appModel );
 
 		// Controller.
 		final Collection< Class< ? > > targets =
 				Arrays.asList( Spot.class, Link.class, BranchSpot.class, BranchLink.class );
 		final MamutFeatureComputationController controller =
 				new MamutFeatureComputationController( myComputerService, targets, appModel.getBranchGraphSync() );
-		computerService.computationStatusListeners().add( controller.getComputationStatusListener() );
 
 		// Listen to model changes and echo in the GUI
 		final ModelGraph graph = appModel.getModel().getGraph();
@@ -117,14 +117,17 @@ public class MamutFeatureComputation
 	private static final class MyFeatureComputerService extends AbstractService implements FeatureComputerService
 	{
 
-		private final FeatureComputerService wrapped;
+		private final DefaultFeatureComputerService wrapped;
 
 		private final FeatureModel featureModel;
 
-		public MyFeatureComputerService( final FeatureComputerService wrapped, final FeatureModel featureModel )
+		private final MamutAppModel appModel;
+
+		public MyFeatureComputerService( final DefaultFeatureComputerService wrapped, final MamutAppModel appModel )
 		{
 			this.wrapped = wrapped;
-			this.featureModel = featureModel;
+			this.appModel = appModel;
+			this.featureModel = appModel.getModel().getFeatureModel();
 		}
 
 		@Override
@@ -173,6 +176,7 @@ public class MamutFeatureComputation
 		public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll,
 				final Collection< FeatureSpec< ?, ? > > featureKeys )
 		{
+			wrapped.setLog( appModel.getLog() );
 			final Map< FeatureSpec< ?, ? >, Feature< ? > > map = wrapped.compute( forceComputeAll, featureKeys );
 			if ( wrapped.isCanceled() )
 				return null;

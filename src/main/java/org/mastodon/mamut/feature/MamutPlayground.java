@@ -38,6 +38,7 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.logging.SysOutMastodonLogger;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -65,6 +66,7 @@ public class MamutPlayground
 				context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setLog( new SysOutMastodonLogger() );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =
 				featureComputerService.compute( SpotCenterIntensityFeature.SPEC );
 

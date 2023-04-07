@@ -61,6 +61,7 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.algorithm.ConnectedComponents;
 import org.mastodon.graph.io.RawGraphIO;
+import org.mastodon.logging.VoidMastodonLogger;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.model.Link;
@@ -348,6 +349,7 @@ public class MaMuTExporterTest
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( sharedBdvData );
+		featureComputerService.setLog( new VoidMastodonLogger() );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute( featureKeys );
 
 		final FeatureModel featureModel = model.getFeatureModel();

@@ -39,6 +39,7 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.logging.SysOutMastodonLogger;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.TrackSizeFeature;
@@ -77,6 +78,7 @@ public class MaMuTExportExample
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setLog( new SysOutMastodonLogger() );
 		System.out.println( "Computing all discovered features: " + featureKeys );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute( featureKeys );
 		System.out.println( "Done." );

@@ -31,6 +31,7 @@ package org.mastodon.mamut.feature;
 import java.io.IOException;
 
 import org.jdom2.JDOMException;
+import org.mastodon.logging.SysOutMastodonLogger;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
@@ -77,6 +78,7 @@ public class SpotIntensityBenchmark
 				context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setLog( new SysOutMastodonLogger() );
 		System.out.println( "Computing spot intensity..." );
 		for ( int i = 0; i < 5; i++ )
 		{

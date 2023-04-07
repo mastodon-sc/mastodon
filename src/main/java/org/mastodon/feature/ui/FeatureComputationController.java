@@ -37,7 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatusListener;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureComputer;
 import org.mastodon.feature.FeatureComputerService;
@@ -57,8 +56,6 @@ public class FeatureComputationController implements GraphChangeListener
 
 	private final FeatureComputationModel model;
 
-	private final FeatureComputationStatusListener computationStatusListener;
-
 	public FeatureComputationController( final FeatureComputerService computerService,
 			final Collection< Class< ? > > targets )
 	{
@@ -73,36 +70,6 @@ public class FeatureComputationController implements GraphChangeListener
 
 		gui.btnCompute.addActionListener( ( e ) -> compute() );
 		gui.btnCancel.addActionListener( ( e ) -> cancel() );
-
-		gui.progressBar.setString( "" );
-		computationStatusListener = new FeatureComputationStatusListener()
-		{
-			@Override
-			public void status( final String status )
-			{
-				SwingUtilities.invokeLater( () -> gui.progressBar.setString( status ) );
-			}
-
-			@Override
-			public void progress( final double progress )
-			{
-				SwingUtilities.invokeLater( () -> gui.progressBar.setValue( ( int ) ( 100 * progress ) ) );
-			}
-
-			@Override
-			public void clear()
-			{
-				SwingUtilities.invokeLater( () -> {
-					gui.progressBar.setValue( 0 );
-					gui.progressBar.setString( "" );
-				} );
-			}
-		};
-	}
-
-	public FeatureComputationStatusListener getComputationStatusListener()
-	{
-		return computationStatusListener;
 	}
 
 	private void cancel()

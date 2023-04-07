@@ -43,6 +43,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.logging.SysOutMastodonLogger;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.project.MamutProject;
@@ -73,6 +74,7 @@ public class RawDeserializationExample
 				windowManager.getContext().getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setLog( new SysOutMastodonLogger() );
 		System.out.println( "\nComputing features..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =

@@ -39,8 +39,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
+import org.mastodon.logging.MastodonLogger;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
@@ -49,6 +49,7 @@ import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.Cancelable;
 import org.scijava.ItemIO;
+import org.scijava.log.LogSource;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -81,7 +82,9 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 	private AtomicBoolean forceComputeAll;
 
 	@Parameter
-	private FeatureComputationStatus status;
+	private MastodonLogger log;
+
+	private LogSource logSource;
 
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotCenterIntensityFeature output;
@@ -113,6 +116,10 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 	@Override
 	public void run()
 	{
+		if ( logSource == null )
+			logSource = log.getLogSourceRoot().subSource( SpotCenterIntensityFeature.KEY );
+
+		log.setStatus( SpotCenterIntensityFeature.KEY, logSource );
 		cancelReason = null;
 		final boolean recomputeAll = forceComputeAll.get();
 
@@ -136,7 +143,7 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 			final Source< RealType< ? > > source = ( Source< RealType< ? > > ) sources.get( iSource ).getSpimSource();
 			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
 			{
-				status.notifyProgress( ( double ) done++ / todo );
+				log.setProgress( ( double ) done++ / todo, logSource );
 				if ( isCanceled() )
 					break;
 
@@ -164,6 +171,7 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 			}
 		}
 		executor.shutdown();
+		log.setProgress( 1., logSource );
 	}
 
 	@Override

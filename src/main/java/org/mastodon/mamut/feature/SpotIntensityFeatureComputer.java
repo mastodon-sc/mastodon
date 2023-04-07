@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
 
-import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
+import org.mastodon.logging.MastodonLogger;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
@@ -43,6 +43,7 @@ import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Cancelable;
 import org.scijava.ItemIO;
+import org.scijava.log.LogSource;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.DoubleArray;
@@ -65,7 +66,9 @@ public class SpotIntensityFeatureComputer implements MamutFeatureComputer, Cance
 	private AtomicBoolean forceComputeAll;
 
 	@Parameter
-	private FeatureComputationStatus status;
+	private MastodonLogger log;
+
+	private LogSource logSource;
 
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotIntensityFeature output;
@@ -109,6 +112,10 @@ public class SpotIntensityFeatureComputer implements MamutFeatureComputer, Cance
 	@Override
 	public void run()
 	{
+		if ( logSource == null )
+			logSource = log.getLogSourceRoot().subSource( SpotIntensityFeature.KEY );
+
+		log.setStatus( SpotIntensityFeature.KEY, logSource );
 		cancelReason = null;
 		final boolean recomputeAll = forceComputeAll.get();
 
@@ -146,8 +153,7 @@ public class SpotIntensityFeatureComputer implements MamutFeatureComputer, Cance
 
 			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
 			{
-
-				status.notifyProgress( ( double ) done++ / todo );
+				log.setProgress( ( double ) done++ / todo, logSource );
 
 				final SpatialIndex< Spot > toProcess = model.getSpatioTemporalIndex().getSpatialIndex( timepoint );
 				for ( final Spot spot : toProcess )
@@ -209,6 +215,7 @@ public class SpotIntensityFeatureComputer implements MamutFeatureComputer, Cance
 				}
 			}
 		}
+		log.setProgress( 1., logSource );
 	}
 
 	public static final long nSpots( final IntFunction< Iterable< Spot > > index, final int numTimepoints )

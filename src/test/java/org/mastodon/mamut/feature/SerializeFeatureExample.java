@@ -39,6 +39,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.logging.SysOutMastodonLogger;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelUtils;
@@ -69,6 +70,7 @@ public class SerializeFeatureExample
 		final MamutFeatureComputerService featureComputerService =
 				windowManager.getContext().getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
+		featureComputerService.setLog( new SysOutMastodonLogger() );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "\nComputing features..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
