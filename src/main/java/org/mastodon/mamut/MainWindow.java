@@ -60,11 +60,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.logging.DefaultMastodonLogger;
+import org.mastodon.logging.MastodonLogPanel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
 
@@ -78,16 +81,31 @@ public class MainWindow extends JFrame
 
 	private final ViewMenu menu;
 
+	private final JToggleButton btnLog;
+
+	private MastodonLogPanel mastodonLogPanel;
+
+	private int previousAMHash = 0;
+
+	private final WindowManager windowManager;
+
+	private final JPanel buttonsPanel;
+
 	public MainWindow( final WindowManager windowManager )
 	{
 		super( "Mastodon" );
+		this.windowManager = windowManager;
 		setIconImages( MASTODON_ICON );
 		setLocationByPlatform( true );
 		setLocationRelativeTo( null );
 
 		final ActionMap actionMap = windowManager.getGlobalAppActions().getActionMap();
 
-		final JPanel buttonsPanel = new JPanel();
+		/*
+		 * BUTTONS
+		 */
+
+		this.buttonsPanel = new JPanel();
 		buttonsPanel.setLayout( new MigLayout() );
 
 		// Views:
@@ -166,6 +184,22 @@ public class MainWindow extends JFrame
 		buttonsPanel.setOpaque( false );
 		content.add( buttonsPanel, BorderLayout.NORTH );
 
+		this.btnLog = new JToggleButton( "Log" );
+		btnLog.setFont( btnLog.getFont().deriveFont( btnLog.getFont().getSize2D() - 4f ) );
+		buttonsPanel.add( btnLog, "cell 1 10, alignx right" );
+
+		/*
+		 * LOG PANEL
+		 */
+
+		final boolean showLog = false;
+		setLogPanelVisible( showLog );
+		btnLog.addActionListener( e -> setLogPanelVisible( btnLog.isSelected() ) );
+
+		/*
+		 * MENU
+		 */
+
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
@@ -181,12 +215,67 @@ public class MainWindow extends JFrame
 			@Override
 			public void windowClosing( final WindowEvent e )
 			{
-				close( windowManager, actionMap.get( ProjectManager.SAVE_PROJECT ), e );
+				close( actionMap.get( ProjectManager.SAVE_PROJECT ), e );
 			}
 		} );
 
 		pack();
 		setResizable( false );
+	}
+
+	public void setLogPanelVisible( final boolean visible )
+	{
+		final MamutAppModel appModel = windowManager.getAppModel();
+		if ( mastodonLogPanel == null )
+		{
+			// Create the panel.
+			if ( appModel != null )
+			{
+				final DefaultMastodonLogger logger = new DefaultMastodonLogger( windowManager.getContext() );
+				appModel.setLog( logger );
+				mastodonLogPanel = logger.getMastodonLogPanel();
+				mastodonLogPanel.setPreferredSize( buttonsPanel.getSize() );
+				getContentPane().add( mastodonLogPanel, BorderLayout.CENTER );
+			}
+			else
+			{
+				btnLog.setSelected( false );
+				return;
+			}
+		}
+		else
+		{
+			// Did we change AppModel?
+			if ( appModel == null )
+			{
+				getContentPane().remove( mastodonLogPanel );
+				pack();
+				btnLog.setSelected( false );
+				return;
+			}
+			else
+			{
+				final int currentAMHash = appModel.hashCode();
+				if ( currentAMHash != previousAMHash )
+				{
+					previousAMHash = currentAMHash;
+					getContentPane().remove( mastodonLogPanel );
+					final DefaultMastodonLogger logger = new DefaultMastodonLogger( windowManager.getContext() );
+					appModel.setLog( logger );
+					mastodonLogPanel = logger.getMastodonLogPanel();
+					mastodonLogPanel.setPreferredSize( buttonsPanel.getSize() );
+					getContentPane().add( mastodonLogPanel, BorderLayout.CENTER );
+				}
+			}
+		}
+		btnLog.setSelected( visible );
+		mastodonLogPanel.setVisible( visible );
+		pack();
+	}
+
+	public boolean isLogPanelVisible()
+	{
+		return btnLog.isSelected();
 	}
 
 	/**
@@ -195,15 +284,13 @@ public class MainWindow extends JFrame
 	 * Returns <code>true</code> if Mastodon has been closed, or
 	 * <code>false</code> if the user canceled closing.
 	 * 
-	 * @param windowManager
-	 *            the Mastodon window manager controlled in this windown.
 	 * @param saveAction
 	 *            the action that saves the Mastodon file.
 	 * @param trigger
 	 *            the event that triggered this action.
 	 * @return <code>true</code> if the Mastodon instance has been closed.
 	 */
-	public boolean close( final WindowManager windowManager, final Action saveAction, final WindowEvent trigger )
+	public boolean close( final Action saveAction, final WindowEvent trigger )
 	{
 		if ( windowManager != null && windowManager.getAppModel() == null
 				|| windowManager.getAppModel().getModel().isSavePoint() )
@@ -262,17 +349,17 @@ public class MainWindow extends JFrame
 	{
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
-						//						item( ProjectManager.CREATE_PROJECT ),
-						//						item( ProjectManager.CREATE_PROJECT_FROM_URL ),
-						//						item( ProjectManager.LOAD_PROJECT ),
+						// item( ProjectManager.CREATE_PROJECT ),
+						// item( ProjectManager.CREATE_PROJECT_FROM_URL ),
+						// item( ProjectManager.LOAD_PROJECT ),
 						item( ProjectManager.SAVE_PROJECT ),
 						item( ProjectManager.SAVE_PROJECT_AS ),
 						separator(),
-						//						item( ProjectManager.IMPORT_TGMM ),
-						//						item( ProjectManager.IMPORT_SIMI ),
-						//						item( ProjectManager.IMPORT_MAMUT ),
-						//						item( ProjectManager.EXPORT_MAMUT ),
-						//						separator(),
+						// item( ProjectManager.IMPORT_TGMM ),
+						// item( ProjectManager.IMPORT_SIMI ),
+						// item( ProjectManager.IMPORT_MAMUT ),
+						// item( ProjectManager.EXPORT_MAMUT ),
+						// separator(),
 						item( WindowManager.PREFERENCES_DIALOG ),
 						separator(),
 						item( WindowManager.OPEN_ONLINE_DOCUMENTATION ) ),
