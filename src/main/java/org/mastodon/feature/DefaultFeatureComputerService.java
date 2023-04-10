@@ -41,6 +41,7 @@ import org.mastodon.feature.FeatureDependencyGraph.Edge;
 import org.mastodon.feature.FeatureDependencyGraph.Vertex;
 import org.mastodon.graph.algorithm.TopologicalSort;
 import org.mastodon.logging.MastodonLogger;
+import org.mastodon.logging.VoidMastodonLogger;
 import org.scijava.Cancelable;
 import org.scijava.InstantiableException;
 import org.scijava.command.CommandInfo;
@@ -77,7 +78,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 
 	private FeatureComputer currentFeatureComputer;
 
-	protected MastodonLogger log;
+	protected MastodonLogger log = new VoidMastodonLogger();
 
 	protected LogSource logSource;
 
