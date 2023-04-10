@@ -416,10 +416,8 @@ public class MastodonLauncher extends JFrame
 										MastodonIcons.MASTODON_ICON_MEDIUM );
 								if ( val == JOptionPane.YES_OPTION )
 								{
-									final ActionMap actionMap =
-											windowManager.getAppModel().getAppActions().getActionMap();
-									final boolean hasBeenClosed = mainWindow.close( windowManager,
-											actionMap.get( ProjectManager.SAVE_PROJECT ), e );
+									final ActionMap actionMap =	windowManager.getAppModel().getAppActions().getActionMap();
+									final boolean hasBeenClosed = mainWindow.close( actionMap.get( ProjectManager.SAVE_PROJECT ), e );
 									if ( hasBeenClosed )
 										window.close();
 								}
@@ -684,6 +682,9 @@ public class MastodonLauncher extends JFrame
 
 	private class LauncherDropTarget extends DropTarget
 	{
+		
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public synchronized void drop( DropTargetDropEvent dropTargetDropEvent )
 		{
