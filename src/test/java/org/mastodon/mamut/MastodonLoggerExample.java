@@ -36,7 +36,7 @@ public class MastodonLoggerExample
 					frame.setVisible( true );
 
 					// Make the logger visible.
-					frame.setLogPanelVisible( true );
+					windowManager.toggleLog();
 
 					// Send some messages.
 					final MastodonLogger logger = windowManager.getAppModel().getLog();

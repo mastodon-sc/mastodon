@@ -60,14 +60,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenu;
-import org.mastodon.logging.DefaultMastodonLogger;
-import org.mastodon.logging.MastodonLogPanel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
 
@@ -81,15 +78,7 @@ public class MainWindow extends JFrame
 
 	private final ViewMenu menu;
 
-	private final JToggleButton btnLog;
-
-	private MastodonLogPanel mastodonLogPanel;
-
-	private int previousAMHash = 0;
-
 	private final WindowManager windowManager;
-
-	private final JPanel buttonsPanel;
 
 	public MainWindow( final WindowManager windowManager )
 	{
@@ -105,7 +94,7 @@ public class MainWindow extends JFrame
 		 * BUTTONS
 		 */
 
-		this.buttonsPanel = new JPanel();
+		final JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout( new MigLayout() );
 
 		// Views:
@@ -184,18 +173,6 @@ public class MainWindow extends JFrame
 		buttonsPanel.setOpaque( false );
 		content.add( buttonsPanel, BorderLayout.NORTH );
 
-		this.btnLog = new JToggleButton( "Log" );
-		btnLog.setFont( btnLog.getFont().deriveFont( btnLog.getFont().getSize2D() - 4f ) );
-		buttonsPanel.add( btnLog, "cell 1 10, alignx right" );
-
-		/*
-		 * LOG PANEL
-		 */
-
-		final boolean showLog = false;
-		setLogPanelVisible( showLog );
-		btnLog.addActionListener( e -> setLogPanelVisible( btnLog.isSelected() ) );
-
 		/*
 		 * MENU
 		 */
@@ -221,61 +198,6 @@ public class MainWindow extends JFrame
 
 		pack();
 		setResizable( false );
-	}
-
-	public void setLogPanelVisible( final boolean visible )
-	{
-		final MamutAppModel appModel = windowManager.getAppModel();
-		if ( mastodonLogPanel == null )
-		{
-			// Create the panel.
-			if ( appModel != null )
-			{
-				final DefaultMastodonLogger logger = new DefaultMastodonLogger( windowManager.getContext() );
-				appModel.setLog( logger );
-				mastodonLogPanel = logger.getMastodonLogPanel();
-				mastodonLogPanel.setPreferredSize( buttonsPanel.getSize() );
-				getContentPane().add( mastodonLogPanel, BorderLayout.CENTER );
-			}
-			else
-			{
-				btnLog.setSelected( false );
-				return;
-			}
-		}
-		else
-		{
-			// Did we change AppModel?
-			if ( appModel == null )
-			{
-				getContentPane().remove( mastodonLogPanel );
-				pack();
-				btnLog.setSelected( false );
-				return;
-			}
-			else
-			{
-				final int currentAMHash = appModel.hashCode();
-				if ( currentAMHash != previousAMHash )
-				{
-					previousAMHash = currentAMHash;
-					getContentPane().remove( mastodonLogPanel );
-					final DefaultMastodonLogger logger = new DefaultMastodonLogger( windowManager.getContext() );
-					appModel.setLog( logger );
-					mastodonLogPanel = logger.getMastodonLogPanel();
-					mastodonLogPanel.setPreferredSize( buttonsPanel.getSize() );
-					getContentPane().add( mastodonLogPanel, BorderLayout.CENTER );
-				}
-			}
-		}
-		btnLog.setSelected( visible );
-		mastodonLogPanel.setVisible( visible );
-		pack();
-	}
-
-	public boolean isLogPanelVisible()
-	{
-		return btnLog.isSelected();
 	}
 
 	/**
@@ -360,6 +282,7 @@ public class MainWindow extends JFrame
 						// item( ProjectManager.IMPORT_MAMUT ),
 						// item( ProjectManager.EXPORT_MAMUT ),
 						// separator(),
+						item( WindowManager.TOGGLE_LOG_DIALOG ),
 						item( WindowManager.PREFERENCES_DIALOG ),
 						separator(),
 						item( WindowManager.OPEN_ONLINE_DOCUMENTATION ) ),

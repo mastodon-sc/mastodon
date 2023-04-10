@@ -163,7 +163,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		return branchGraphSync;
 	}
 
-	public void setLog( final MastodonLogger log )
+	void setLog( final MastodonLogger log )
 	{
 		this.log = log;
 	}

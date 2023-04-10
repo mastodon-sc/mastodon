@@ -126,6 +126,8 @@ public class WindowManager
 
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 
+	public static final String TOGGLE_LOG_DIALOG = "toggle log";
+
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
@@ -143,6 +145,8 @@ public class WindowManager
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
+
+	static final String[] TOGGLE_LOG_DIALOG_KEYS = new String[] { "ctrl shift L" };
 
 	static final String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
 
@@ -186,6 +190,8 @@ public class WindowManager
 			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
 			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS,
 					"Show the feature computation dialog." );
+			descriptions.add( TOGGLE_LOG_DIALOG, TOGGLE_LOG_DIALOG_KEYS,
+					"Toggle the log dialog." );
 			descriptions.add( NEW_BRANCH_BDV_VIEW, NEW_BRANCH_BDV_VIEW_KEYS, "Open a new branch BigDataViewer view." );
 			descriptions.add( NEW_BRANCH_TRACKSCHEME_VIEW, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS,
 					"Open a new branch TrackScheme view." );
@@ -258,17 +264,22 @@ public class WindowManager
 
 	private final AbstractNamedAction featureComputationAction;
 
+	private final AbstractNamedAction toggleLogAction;
+
 	private MamutAppModel appModel;
 
 	private TagSetDialog tagSetDialog;
 
 	private JDialog featureComputationDialog;
 
+	private JDialog logDialog;
+
 	final ProjectManager projectManager;
 
 	private final Listeners.List< BdvViewCreatedListener > bdvViewCreatedListeners;
 
 	private final PreferencesDialog settings;
+
 
 	/**
 	 * Creates a new, empty WindowManager instance using the specified context.
@@ -323,6 +334,7 @@ public class WindowManager
 		newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
+		toggleLogAction = new RunnableAction( TOGGLE_LOG_DIALOG, this::toggleLog );
 		newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
 		newBranchTrackSchemeViewAction =
 				new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
@@ -338,6 +350,7 @@ public class WindowManager
 		globalAppActions.namedAction( newGrapherViewAction, NEW_GRAPHER_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
+		globalAppActions.namedAction( toggleLogAction, TOGGLE_LOG_DIALOG_KEYS );
 		globalAppActions.namedAction( newBranchBdvViewAction, NEW_BRANCH_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newBranchTrackSchemeViewAction, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( newHierarchyTrackSchemeViewAction, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS );
@@ -407,6 +420,8 @@ public class WindowManager
 			tagSetDialog = null;
 			featureComputationDialog.dispose();
 			featureComputationDialog = null;
+			logDialog.dispose();
+			logDialog = null;
 			featureProjectionsManager.setModel( null, 1 );
 			updateEnabledActions();
 			return;
@@ -425,7 +440,7 @@ public class WindowManager
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
-
+		logDialog = new MamutLogDialog( null, appModel, context, toggleLogAction );
 		updateEnabledActions();
 
 		plugins.setAppPluginModel( new MamutPluginAppModel( appModel, this ) );
@@ -933,9 +948,7 @@ public class WindowManager
 	public void editTagSets()
 	{
 		if ( appModel != null )
-		{
 			tagSetDialog.setVisible( true );
-		}
 	}
 
 	/**
@@ -944,9 +957,16 @@ public class WindowManager
 	public void computeFeatures()
 	{
 		if ( appModel != null )
-		{
 			featureComputationDialog.setVisible( true );
-		}
+	}
+
+	/**
+	 * Toggles the log dialog visibility.
+	 */
+	public void toggleLog()
+	{
+		if ( appModel != null )
+			logDialog.setVisible( !logDialog.isVisible() );
 	}
 
 	/**
@@ -969,6 +989,7 @@ public class WindowManager
 			windows.add( w.getFrame() );
 		windows.add( tagSetDialog );
 		windows.add( featureComputationDialog );
+		windows.add( logDialog );
 
 		try
 		{
