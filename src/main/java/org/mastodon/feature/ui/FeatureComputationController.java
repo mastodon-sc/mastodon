@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
+import org.mastodon.feature.DefaultFeatureComputerService;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureComputer;
 import org.mastodon.feature.FeatureComputerService;
@@ -61,7 +62,7 @@ public class FeatureComputationController implements GraphChangeListener
 	{
 		this.computerService = computerService;
 		model = createModel( targets );
-		dialog = new JDialog( ( JFrame ) null, "Feature calculation" );
+		dialog = new JDialog( ( JFrame ) null, DefaultFeatureComputerService.SERVICE_NAME );
 		dialog.setLocationByPlatform( true );
 		dialog.setLocationRelativeTo( null );
 		gui = new FeatureComputationPanel( model, targets );

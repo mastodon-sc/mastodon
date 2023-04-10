@@ -56,6 +56,9 @@ import org.scijava.service.AbstractService;
 @Plugin( type = FeatureComputerService.class )
 public class DefaultFeatureComputerService extends AbstractService implements FeatureComputerService
 {
+
+	public static final String SERVICE_NAME = "Feature calculation";
+
 	@Parameter
 	private PluginService plugins;
 
@@ -222,8 +225,8 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll,
 			final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
-		log.setStatus( "Feature computation", logSource );
-		log.info( "Starting feature computation.", logSource );
+		log.setStatus( "Feature calculation", logSource );
+		log.info( "Starting feature calculation.", logSource );
 		cancelReason = null;
 		final List< FeatureSpec< ?, ? > > specs = new ArrayList<>();
 		for ( final FeatureSpec< ?, ? > spec : featureKeys )
@@ -269,7 +272,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 
 		currentFeatureComputer = null;
 		log.setProgress( 1., logSource );
-		log.info( "Feature computation done.", logSource );
+		log.info( "Feature calculation done.", logSource );
 		return ( featureModel );
 	}
 
@@ -349,6 +352,6 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	public void setLog( final MastodonLogger log )
 	{
 		this.log = log;
-		this.logSource = log.getLogSourceRoot().subSource( "Feature computer" );
+		this.logSource = log.getLogSourceRoot().subSource( SERVICE_NAME );
 	}
 }
