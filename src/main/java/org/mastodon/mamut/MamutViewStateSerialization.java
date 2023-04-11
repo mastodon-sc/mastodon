@@ -68,7 +68,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 /**
  * Collection of constants and utilities related to de/serializing a GUI state.
  */
-class MamutViewStateSerialization
+public class MamutViewStateSerialization
 {
 
 	static final String WINDOW_TAG = "Window";
@@ -180,7 +180,7 @@ class MamutViewStateSerialization
 	 * @see #TAG_SET_KEY
 	 * @see #FEATURE_COLOR_MODE_KEY
 	 */
-	static final String NO_COLORING_KEY = "NoColoring";
+	public static final String NO_COLORING_KEY = "NoColoring";
 
 	/**
 	 * Key that specifies the name of the tag-set to use for coloring scheme
@@ -190,7 +190,7 @@ class MamutViewStateSerialization
 	 * @see #NO_COLORING_KEY
 	 * @see #FEATURE_COLOR_MODE_KEY
 	 */
-	static final String TAG_SET_KEY = "TagSet";
+	public static final String TAG_SET_KEY = "TagSet";
 
 	/**
 	 * Key that specifies the name of the feature color mode to use for coloring
@@ -200,7 +200,7 @@ class MamutViewStateSerialization
 	 * @see #NO_COLORING_KEY
 	 * @see #TAG_SET_KEY
 	 */
-	static final String FEATURE_COLOR_MODE_KEY = "FeatureColorMode";
+	public static final String FEATURE_COLOR_MODE_KEY = "FeatureColorMode";
 
 	/**
 	 * Key that specifies the name of the chosen context provider. Values are
@@ -211,13 +211,13 @@ class MamutViewStateSerialization
 	/**
 	 * Key that specifies whether the colorbar is visible.
 	 */
-	static final String COLORBAR_VISIBLE_KEY = "ColorbarVisible";
+	public static final String COLORBAR_VISIBLE_KEY = "ColorbarVisible";
 
 	/**
 	 * Key that specifies the colorbar position. Values are {@link Position}
 	 * enum values.
 	 */
-	static final String COLORBAR_POSITION_KEY = "ColorbarPosition";
+	public static final String COLORBAR_POSITION_KEY = "ColorbarPosition";
 
 	/**
 	 * Key that specifies settings specific to the branch-graph view in a common
