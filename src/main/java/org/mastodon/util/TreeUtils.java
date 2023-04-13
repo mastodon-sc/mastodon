@@ -39,40 +39,33 @@ public class TreeUtils
 			final RefList< V > roots,
 			final RefSet< V > selectedVertices )
 	{
-		// Note: The method iterates over the graph in depth-first order starting from each root.
-		// Whenever the iteration hits a node that is in the selectedVertices set, it adds
-		// it to the returned list, and then skips all its descendants. This ensures that
-		// the returned list contains only the root nodes of the selected subtrees.
-
-		// Note: The DepthFirstIteration class does not detect loops in the graph. It
-		// can therefore get stuck in an infinite loop. The code below keeps track of the
-		// nodes that have been visited, skipping them if they are visited again.
-
 		final RefList< V > selectedSubtreeRoots = RefCollections.createRefList( graph.vertices() );
-		final RefSet< V > visited = RefCollections.createRefSet( graph.vertices() );
+		final RefSet< V > visitedNodes = RefCollections.createRefSet( graph.vertices() );
 
 		for ( final V realRoot : roots )
 			for ( final DepthFirstIteration.Step< V > step : DepthFirstIteration.forRoot( graph, realRoot ) )
-			{
-				if ( step.isSecondVisit() )
-					continue;
+				if ( ensureNoLoop( step, visitedNodes ) && !step.isSecondVisit() ) {
 
-				final V node = step.node();
-
-				// loop detection
-				if ( !visited.add( node ) )  // The depth first iteration enters a node for the second time. -> there's a loop.
-				{
-					step.truncate(); // Don't visit the child nodes
-					continue; // and skip this node.
+					final V node = step.node();
+					if ( selectedVertices.contains( node ) )
+					{
+						selectedSubtreeRoots.add( node );
+						step.truncate(); // don't visit the child nodes
+					}
 				}
-
-				if ( selectedVertices.contains( node ) )
-				{
-					selectedSubtreeRoots.add( node );
-					step.truncate(); // don't visit the child nodes
-				}
-			}
 
 		return selectedSubtreeRoots;
+	}
+
+	private static < V extends Vertex< ? > > boolean ensureNoLoop( DepthFirstIteration.Step< V > step, RefSet< V > visitedNodes )
+	{
+		if ( !step.isFirstVisit() )
+			return true;
+
+		boolean isLoop = !visitedNodes.add( step.node() ); // The depth first iteration enters a node for the second time. -> there's a loop.
+		if ( isLoop )
+			step.truncate(); // Break the loop by not visiting the child nodes.
+
+		return !isLoop;
 	}
 }
