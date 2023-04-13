@@ -195,21 +195,7 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 
 	private RefList< TrackSchemeVertex > getRealRoots( final RefSet< TrackSchemeVertex > selectedNodes )
 	{
-		final TrackSchemeVertex parent = viewGraph.vertexRef();
-		final RefSet< TrackSchemeVertex > roots = new RefSetImp<>( viewGraph.getVertexPool() );
-		A: for ( final TrackSchemeVertex vertex : selectedNodes )
-		{
-			parent.refTo( vertex );
-			while ( !parent.incomingEdges().isEmpty() )
-			{
-				parent.incomingEdges().iterator().next().getSource( parent );
-				if ( selectedNodes.contains( parent ) )
-					continue A;
-			}
-			roots.add( parent );
-		}
-		viewGraph.releaseRef( parent );
+		RefSet< TrackSchemeVertex > roots = TreeUtils.findRealRoots( viewGraph, selectedNodes );
 		return LexicographicalVertexOrder.sort( viewGraph, roots );
 	}
-
 }

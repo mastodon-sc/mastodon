@@ -1,10 +1,14 @@
 package org.mastodon.util;
 
+import java.util.Collection;
+
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 
 public class TreeUtils
 {
@@ -67,5 +71,29 @@ public class TreeUtils
 			step.truncate(); // Break the loop by not visiting the child nodes.
 
 		return !isLoop;
+	}
+
+	public static <V extends Vertex<E>, E extends Edge< V > > RefSet< V > findRealRoots( Graph< V, E > graph, Collection< V > selectedNodes )
+	{
+		final RefSet< V > visited = RefCollections.createRefSet( graph.vertices() );
+
+		InverseDepthFirstIterator< V, E > it = new InverseDepthFirstIterator<>( graph );
+		for( V node : selectedNodes )
+		{
+			it.reset( node );
+			while ( it.hasNext() )
+			{
+				final V previousNode = it.next();
+				boolean visitedBefore = ( !visited.add( previousNode ) );
+				if ( visitedBefore )
+					break;
+			}
+		}
+
+		final RefSet< V > realRoots = RefCollections.createRefSet( graph.vertices() );
+		for( V node : visited )
+			if ( node.incomingEdges().isEmpty() )
+				realRoots.add( node );
+		return realRoots;
 	}
 }
