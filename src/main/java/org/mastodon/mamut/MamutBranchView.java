@@ -111,6 +111,8 @@ public class MamutBranchView<
 
 	protected final TimepointModelAdapter timepointModel;
 
+	protected final TimepointModelAdapter fadingTimepointModel;
+
 	protected final HighlightModelAdapter< BranchSpot, BranchLink, V, E > highlightModel;
 
 	protected final FocusModelAdapter< BranchSpot, BranchLink, V, E > focusModel;
@@ -174,6 +176,9 @@ public class MamutBranchView<
 		// Time-point.
 		this.timepointModel = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
 
+		// Time-point adapter.
+		this.fadingTimepointModel = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
+
 		// Faded model adapter - initialized with a null FadeModel here. Subclasses may set the faded model of this adapter.
 		this.fadedModelAdapter = new FadedModelAdapter<>( null, vertexMap, edgeMap );
 
@@ -184,6 +189,7 @@ public class MamutBranchView<
 		this.runOnClose = new ArrayList<>();
 		runOnClose.add( () -> {
 			timepointModel.listeners().removeAll();
+			fadingTimepointModel.listeners().removeAll();
 			highlightModel.listeners().removeAll();
 			focusModel.listeners().removeAll();
 			selectionModel.listeners().removeAll();
