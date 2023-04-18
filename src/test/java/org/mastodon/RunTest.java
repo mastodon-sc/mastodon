@@ -9,6 +9,6 @@ public class RunTest
 {
 	@Test
 	public void test() {
-		throw new RuntimeException("This is just a dummy test, to see if github runs the unit tests.");
+		// dummy test that succeeds.
 	}
 }
