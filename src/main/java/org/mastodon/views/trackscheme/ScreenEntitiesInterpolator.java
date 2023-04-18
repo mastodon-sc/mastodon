@@ -153,11 +153,13 @@ public class ScreenEntitiesInterpolator
 			final int targetIndex =
 					end.getVertices().get( e.getTargetScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
 			final boolean endSelected = e.isSelected();
+			final boolean endFaded = e.isFaded();
 			current.getEdges().add( current.getEdgePool().create( eCurrent ).init(
 					e.getTrackSchemeEdgeId(),
 					sourceIndex,
 					targetIndex,
 					endSelected,
+					endFaded,
 					e.getColor() ) );
 			if ( idToStartEdge.get( e.getTrackSchemeEdgeId(), eStart ) != null )
 			{
@@ -206,6 +208,7 @@ public class ScreenEntitiesInterpolator
 		final boolean endSelected = vEnd.isSelected();
 		vCurrent.setSelected( endSelected );
 		vCurrent.setGhost( vEnd.isGhost() );
+		vCurrent.setFaded( vEnd.isFaded() );
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		double startX = vStart.getX();
 		double startY = vStart.getY();
@@ -236,6 +239,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setLabel( vStart.getLabel() );
 		vCurrent.setSelected( vStart.isSelected() );
 		vCurrent.setGhost( vStart.isGhost() );
+		vCurrent.setFaded( vStart.isFaded() );
 		vCurrent.setVertexDist( vStart.getVertexDist() );
 		double startX = vStart.getX();
 		double startY = vStart.getY();
@@ -260,6 +264,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setLabel( vEnd.getLabel() );
 		vCurrent.setSelected( vEnd.isSelected() );
 		vCurrent.setGhost( vEnd.isGhost() );
+		vCurrent.setFaded( vEnd.isFaded() );
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		vCurrent.setX( vEnd.getX() );
 		vCurrent.setY( vEnd.getY() );

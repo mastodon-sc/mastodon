@@ -125,12 +125,14 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 			final int sourceScreenVertexIndex,
 			final int targetScreenVertexIndex,
 			final boolean selected,
+			final boolean faded,
 			final int color )
 	{
 		setTrackSchemeEdgeId( id );
 		setSourceScreenVertexIndex( sourceScreenVertexIndex );
 		setTargetScreenVertexIndex( targetScreenVertexIndex );
 		setSelected( selected );
+		setFaded( faded );
 		setTransition( NONE );
 		setColor( color );
 		return this;

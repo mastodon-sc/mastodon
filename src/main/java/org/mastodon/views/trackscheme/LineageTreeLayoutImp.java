@@ -462,10 +462,10 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		final String label = trackSchemeVertex.getLabel();
 		final boolean selected = selection.isSelected( trackSchemeVertex );
 		final boolean ghost = trackSchemeVertex.isGhost();
+		final boolean faded = fadedModel.isFaded( trackSchemeVertex );
 		// TODO move setYStart into init
-		screenVertexPool.create( screenVertex ).init( id, label, x, y, selected, ghost, colorGenerator.color( trackSchemeVertex ) )
+		screenVertexPool.create( screenVertex ).init( id, label, x, y, selected, ghost, faded, colorGenerator.color( trackSchemeVertex ) )
 				.setYStart( firstY );
-		screenVertex.setFaded( fadedModel.isFaded( trackSchemeVertex ) );
 
 		screenVertices.add( screenVertex );
 	}
@@ -478,9 +478,8 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		final int targetScreenVertexIndex = targetTrackSchemeVertex.getScreenVertexIndex();
 		final boolean selected = selection.isSelected( edge );
 
-		screenEdgePool.create( ref ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, selected,
+		screenEdgePool.create( ref ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, selected, fadedModel.isFaded( edge ),
 				colorGenerator.color( edge, sourceTrackSchemeVertex, targetTrackSchemeVertex ) );
-		ref.setFaded( fadedModel.isFaded( edge ) );
 		screenEdges.add( ref );
 		final int sei = ref.getInternalPoolIndex();
 		edge.setScreenEdgeIndex( sei );

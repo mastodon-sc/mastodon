@@ -129,7 +129,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new DefaultNavigationHandler<>();
 		final TrackSchemeOptions options = TrackSchemeOptions.options().style( style );
 		final TrackSchemePanel previewPanel =
-				new TrackSchemePanel( graph, highlight, focus, timepoint, fadedModel, selection, roots, navigation, options );
+				new TrackSchemePanel( graph, highlight, focus, timepoint, timepoint, fadedModel, selection, roots, navigation, options );
 		previewPanel.setTimepointRange( 0, 7 );
 		timepoint.setTimepoint( 2 );
 		previewPanel.graphChanged();
