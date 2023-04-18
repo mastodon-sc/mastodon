@@ -170,6 +170,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 			final double y,
 			final boolean selected,
 			final boolean ghost,
+			final boolean faded,
 			final int color )
 	{
 		setTrackSchemeVertexId( id );
@@ -178,6 +179,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		setY( y );
 		setSelected( selected );
 		setGhost( ghost );
+		setFaded( faded );
 		setTransition( NONE );
 		setColor( color );
 		return this;
