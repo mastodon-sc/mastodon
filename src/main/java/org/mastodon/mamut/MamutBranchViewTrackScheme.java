@@ -62,6 +62,7 @@ import org.mastodon.model.BranchTrackSchemeRootsModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.RootsModel;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
@@ -106,7 +107,7 @@ public class MamutBranchViewTrackScheme
 	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
 		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(),
-				LongEdgesLineageTreeLayout::new );
+				LongEdgesLineageTreeLayout::new, null );
 	}
 
 	protected MamutBranchViewTrackScheme(
@@ -114,7 +115,8 @@ public class MamutBranchViewTrackScheme
 			final Map< String, Object > guiState,
 			final BranchTrackSchemeFactory trackSchemeGraphFactory,
 			final TrackSchemeOverlayFactory overlayFactory,
-			final LineageTreeLayout.LineageTreeLayoutFactory lineageTreeLayoutFactory )
+			final LineageTreeLayout.LineageTreeLayoutFactory lineageTreeLayoutFactory,
+			final TimepointModel timepointModel )
 	{
 		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ),
 				new String[] { KeyConfigContexts.TRACKSCHEME } );
@@ -151,8 +153,9 @@ public class MamutBranchViewTrackScheme
 				viewGraph,
 				highlightModel,
 				navigateFocusModel,
-				this.timepointModel,
-				this.fadedModelAdapter,
+				( timepointModel == null ) ? this.timepointModel : timepointModel,
+				fadingTimepointModel,
+				fadedModelAdapter,
 				selectionModel,
 				rootsModel,
 				navigationHandler,
@@ -179,7 +182,8 @@ public class MamutBranchViewTrackScheme
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
 
 		// Timepoint and number of spots.
-		TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel = new TimepointAndNumberOfSpotsLabel( timepointModel, model );
+		TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel =
+				new TimepointAndNumberOfSpotsLabel( this.timepointModel, model );
 		frame.getSettingsPanel().add( timepointAndNumberOfSpotsLabel );
 
 		// Regen branch graph.
