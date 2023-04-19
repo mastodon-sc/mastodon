@@ -18,13 +18,13 @@ public class DefaultFadedModel
 	}
 
 	@Override
-	public boolean isFaded( BranchSpot branchSpot )
+	public boolean isFaded( final BranchSpot branchSpot )
 	{
 		return branchSpot.getFirstTimePoint() > timepointModel.getTimepoint();
 	}
 
 	@Override
-	public boolean isFaded( BranchLink branchLink )
+	public boolean isFaded( final BranchLink branchLink )
 	{
 		return branchLink.getTarget().getFirstTimePoint() > timepointModel.getTimepoint();
 	}
