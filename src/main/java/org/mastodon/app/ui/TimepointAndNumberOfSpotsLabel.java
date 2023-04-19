@@ -3,7 +3,6 @@ package org.mastodon.app.ui;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.model.TimepointModel;
 
-import javax.annotation.Nonnull;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
@@ -15,10 +14,8 @@ import javax.swing.SwingUtilities;
  */
 public class TimepointAndNumberOfSpotsLabel extends JLabel
 {
-	@Nonnull
 	private final TimepointModel timepointModel;
 
-	@Nonnull
 	private final Model model;
 
 	/**
@@ -30,7 +27,7 @@ public class TimepointAndNumberOfSpotsLabel extends JLabel
 	 * @param model
 	 *            the model to get the number of spots from
 	 */
-	public TimepointAndNumberOfSpotsLabel( @Nonnull final TimepointModel timepointModel, @Nonnull final Model model )
+	public TimepointAndNumberOfSpotsLabel( final TimepointModel timepointModel, final Model model )
 	{
 		this.timepointModel = timepointModel;
 		this.model = model;
