@@ -40,7 +40,7 @@ public class ColorUtils
 	 * @return the resulting {@link Color}
 	 */
 	@Nonnull
-	public static Color mixColors( Color color0, Color color1, float ratio )
+	public static Color mixColors( final Color color0, final Color color1, final float ratio )
 	{
 		return new Color( mixColors( color0.getRGB(), color1.getRGB(), ratio ) );
 	}
@@ -70,7 +70,7 @@ public class ColorUtils
 	 *            </ul>
 	 * @return the resulting {@link Color}
 	 */
-	public static int mixColors( int color0, int color1, float ratio )
+	public static int mixColors( final int color0, final int color1, float ratio )
 	{
 		if ( ratio > 1f )
 			ratio = 1f;
@@ -103,7 +103,7 @@ public class ColorUtils
 	 * @param factor the factor that is used to scale the alpha value.
 	 * @return the resulting color.
 	 */
-	public static int scaleAlpha( int color, float factor )
+	public static int scaleAlpha( final int color, float factor )
 	{
 		if (factor > 1)
 			factor = 1;
