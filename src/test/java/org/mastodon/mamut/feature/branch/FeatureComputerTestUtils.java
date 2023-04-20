@@ -20,8 +20,7 @@ public class FeatureComputerTestUtils
 	public static FeatureProjection< BranchSpot > getBranchSpotFeatureProjection( @Nonnull Context context, @Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec, @Nonnull FeatureProjectionSpec featureProjectionSpec )
 	{
 		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
-		Feature< BranchSpot > feature = ( Feature< BranchSpot > ) featureComputerService.compute( spec ).get( spec );
-
+		Feature< BranchSpot > feature = Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
 		return feature.project( FeatureProjectionKey.key( featureProjectionSpec ) );
 	}
 
@@ -29,7 +28,7 @@ public class FeatureComputerTestUtils
 	public static FeatureProjection< Spot > getSpotFeatureProjection( @Nonnull Context context, @Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< Spot >, Spot > spec, @Nonnull FeatureProjectionSpec featureProjectionSpec )
 	{
 		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
-		Feature< Spot > feature = ( Feature< Spot > ) featureComputerService.compute( spec ).get( spec );
+		Feature< Spot > feature = Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
 		return feature.project( FeatureProjectionKey.key( featureProjectionSpec ) );
 	}
 
