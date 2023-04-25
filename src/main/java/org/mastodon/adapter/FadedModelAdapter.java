@@ -4,6 +4,8 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.FadedModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.TimepointListener;
+import org.scijava.listeners.Listeners;
 
 import javax.annotation.Nullable;
 
@@ -32,6 +34,8 @@ public class FadedModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 
 	private final RefBimap< E, WE > edgeMap;
 
+	private final Listeners.List< TimepointListener > listeners = new Listeners.SynchronizedList<>();
+
 	public FadedModelAdapter(
 			@Nullable final FadedModel< V, E > fadedModel,
 			final RefBimap< V, WV > vertexMap,
@@ -58,8 +62,16 @@ public class FadedModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 		return fadedModel.isFaded( edgeMap.getLeft( edge ) );
 	}
 
+	@Override
+	public Listeners< TimepointListener > listeners()
+	{
+		return listeners;
+	}
+
 	public void setFadedModel( final @Nullable FadedModel< V, E > fadedModel )
 	{
 		this.fadedModel = fadedModel;
+		if ( this.fadedModel != null )
+			fadedModel.listeners().addAll( listeners.list );
 	}
 }

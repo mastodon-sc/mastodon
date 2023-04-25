@@ -2,6 +2,7 @@ package org.mastodon.model;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.scijava.listeners.Listeners;
 
 /**
  * A class that manages the fading of vertices and edges in a graph.
@@ -34,4 +35,6 @@ public interface FadedModel< V extends Vertex< E >, E extends Edge< V > >
 	 * @return {@code true} if the edge is faded.
 	 */
 	boolean isFaded( final E edge );
+
+	Listeners< TimepointListener > listeners();
 }

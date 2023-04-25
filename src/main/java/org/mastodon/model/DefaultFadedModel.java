@@ -2,6 +2,7 @@ package org.mastodon.model;
 
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.scijava.listeners.Listeners;
 
 public class DefaultFadedModel
 		implements FadedModel< BranchSpot, BranchLink >
@@ -27,5 +28,11 @@ public class DefaultFadedModel
 	public boolean isFaded( final BranchLink branchLink )
 	{
 		return branchLink.getTarget().getFirstTimePoint() > timepointModel.getTimepoint();
+	}
+
+	@Override
+	public Listeners< TimepointListener > listeners()
+	{
+		return this.timepointModel.listeners();
 	}
 }
