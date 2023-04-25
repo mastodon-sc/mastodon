@@ -83,7 +83,6 @@ public class TrackSchemeFrame extends ViewFrame
 				highlight,
 				focus,
 				timepointModel,
-				fadingTimepointModel,
 				fadedModel,
 				selection,
 				rootsModel,

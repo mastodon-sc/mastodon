@@ -199,7 +199,6 @@ public class TrackSchemePanel extends JPanel implements
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TimepointModel timepointModel,
-			final TimepointModel fadingTimepointModel,
 			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final RootsModel< TrackSchemeVertex > rootsModel,
@@ -227,8 +226,7 @@ public class TrackSchemePanel extends JPanel implements
 		highlight.listeners().add( this );
 		focus.listeners().add( this );
 		this.timepointModel.listeners().add( this );
-		if ( fadingTimepointModel != null )
-			fadingTimepointModel.listeners().add( this );
+		fadedModel.listeners().add( this );
 		selection.listeners().add( this );
 
 		graphOverlay = options.getTrackSchemeOverlayFactory().create( graph, highlight, focus, trackSchemeOptions );
