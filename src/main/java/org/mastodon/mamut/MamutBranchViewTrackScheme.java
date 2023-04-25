@@ -49,7 +49,7 @@ import javax.swing.SwingUtilities;
 import org.mastodon.app.ui.BranchGraphSyncButton;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
-import org.mastodon.app.ui.TimepointAndNumberOfSpotsLabel;
+import org.mastodon.app.ui.TimepointAndNumberOfSpotsPanel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;
@@ -182,9 +182,9 @@ public class MamutBranchViewTrackScheme
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
 
 		// Timepoint and number of spots.
-		TimepointAndNumberOfSpotsLabel timepointAndNumberOfSpotsLabel =
-				new TimepointAndNumberOfSpotsLabel( this.timepointModel, model );
-		frame.getSettingsPanel().add( timepointAndNumberOfSpotsLabel );
+		TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel =
+				new TimepointAndNumberOfSpotsPanel( this.timepointModel, model );
+		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
 		// Regen branch graph.
 		frame.getSettingsPanel().add( new BranchGraphSyncButton( appModel.getBranchGraphSync() ) );
