@@ -12,39 +12,31 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
-import javax.annotation.Nonnull;
-
 public class FeatureComputerTestUtils
 {
 
-	@Nonnull
-	public static Feature< BranchSpot > getBranchSpotFeature( @Nonnull Context context,
-			@Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec )
+	public static Feature< BranchSpot > getBranchSpotFeature( Context context, AbstractExampleGraph exampleGraph,
+			FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec )
 	{
 		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
 		return Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
 	}
 
-	@Nonnull
-	public static Feature< Spot > getSpotFeature( @Nonnull Context context, @Nonnull AbstractExampleGraph exampleGraph,
-			@Nonnull FeatureSpec< ? extends Feature< Spot >, Spot > spec )
+	public static Feature< Spot > getSpotFeature( Context context, AbstractExampleGraph exampleGraph,
+			FeatureSpec< ? extends Feature< Spot >, Spot > spec )
 	{
 		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
 		return Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
 	}
 
-	@Nonnull
-	public static FeatureProjection< BranchSpot > getBranchSpotFeatureProjection( @Nonnull Context context,
-			@Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec,
-			@Nonnull FeatureProjectionSpec featureProjectionSpec )
+	public static FeatureProjection< BranchSpot > getBranchSpotFeatureProjection( Context context, AbstractExampleGraph exampleGraph,
+			FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec, FeatureProjectionSpec featureProjectionSpec )
 	{
 		Feature< BranchSpot > feature = getBranchSpotFeature( context, exampleGraph, spec );
 		return feature.project( FeatureProjectionKey.key( featureProjectionSpec ) );
 	}
 
-	@Nonnull
-	private static MamutFeatureComputerService getMamutFeatureComputerService( @Nonnull Context context,
-			@Nonnull AbstractExampleGraph exampleGraph )
+	private static MamutFeatureComputerService getMamutFeatureComputerService( Context context, AbstractExampleGraph exampleGraph )
 	{
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( exampleGraph.getModel() );
