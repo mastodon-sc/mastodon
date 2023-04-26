@@ -17,6 +17,7 @@ public class DefaultFadedModel
 	public DefaultFadedModel( final TimepointModel timepointModel )
 	{
 		this.timepointModel = timepointModel;
+		this.timepointModel.listeners().add( this );
 		listeners = new Listeners.SynchronizedList<>();
 	}
 
@@ -39,8 +40,8 @@ public class DefaultFadedModel
 	}
 
 	@Override
-	public Listeners< TimepointListener > listeners()
+	public void timepointChanged()
 	{
-		return this.timepointModel.listeners();
+		listeners.list.forEach( FadedListener::fadedChanged );
 	}
 }
