@@ -15,7 +15,7 @@ import org.scijava.listeners.Listeners;
  * @param <E>
  *            the type of the edges.
  */
-public interface FadedModel< V extends Vertex< E >, E extends Edge< V > > extends TimepointListener
+public interface FadingModel< V extends Vertex< E >, E extends Edge< V > > extends TimepointListener
 {
 
 	/**
@@ -36,5 +36,5 @@ public interface FadedModel< V extends Vertex< E >, E extends Edge< V > > extend
 	 */
 	boolean isFaded( final E edge );
 
-	Listeners< FadedListener > listeners();
+	Listeners< FadingListener > listeners();
 }

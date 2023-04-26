@@ -155,7 +155,7 @@ public class MamutBranchViewTrackScheme
 				navigateFocusModel,
 				( timepointModel == null ) ? this.timepointModel : timepointModel,
 				fadingTimepointModel,
-				fadedModelAdapter,
+				fadingModelAdapter,
 				selectionModel,
 				rootsModel,
 				navigationHandler,
