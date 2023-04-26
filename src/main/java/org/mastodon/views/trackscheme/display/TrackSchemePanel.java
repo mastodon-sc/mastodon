@@ -423,12 +423,6 @@ public class TrackSchemePanel extends JPanel implements
 				//				System.out.println( "paint: entitiesAttributesChanged" ); // DEBUG
 				entityAnimator.continueAnimation( transform, 0 );
 			}
-			else if ( flags.fadingChanged )
-			{
-				// TODO which choice is better here startAnimation or continueAnimation?
-				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
-				// entityAnimator.continueAnimation( transform, 0 );
-			}
 
 			entityAnimator.setTime( System.currentTimeMillis() );
 			entityAnimator.setPaintEntities( graphOverlay );
@@ -510,8 +504,7 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void fadingChanged()
 	{
-		flags.setFadingChanged();
-		painterThread.requestRepaint();
+		entitiesAttributesChanged();
 	}
 
 	// TODO: THIS IS FOR TESTING ONLY
@@ -979,8 +972,6 @@ public class TrackSchemePanel extends JPanel implements
 
 		private boolean entitiesAttributesChanged;
 
-		private boolean fadingChanged;
-
 		public Flags()
 		{
 			transformChanged = false;
@@ -988,7 +979,6 @@ public class TrackSchemePanel extends JPanel implements
 			graphChanged = false;
 			contextChanged = false;
 			entitiesAttributesChanged = false;
-			fadingChanged = false;
 		}
 
 		public Flags( final Flags f )
@@ -998,7 +988,6 @@ public class TrackSchemePanel extends JPanel implements
 			graphChanged = f.graphChanged;
 			contextChanged = f.contextChanged;
 			entitiesAttributesChanged = f.entitiesAttributesChanged;
-			fadingChanged = f.fadingChanged;
 		}
 
 		public synchronized void setTransformChanged()
@@ -1026,11 +1015,6 @@ public class TrackSchemePanel extends JPanel implements
 			entitiesAttributesChanged = true;
 		}
 
-		public synchronized void setFadingChanged()
-		{
-			fadingChanged = true;
-		}
-
 		public synchronized Flags clear()
 		{
 			final Flags copy = new Flags( this );
@@ -1039,7 +1023,6 @@ public class TrackSchemePanel extends JPanel implements
 			graphChanged = false;
 			contextChanged = false;
 			entitiesAttributesChanged = false;
-			fadingChanged = false;
 			return copy;
 		}
 
@@ -1053,7 +1036,6 @@ public class TrackSchemePanel extends JPanel implements
 			str.append( "  - graphChanged:     " + graphChanged + "\n" );
 			str.append( "  - contextChanged:   " + contextChanged + "\n" );
 			str.append( "  - entitiesAttributesChanged:   " + entitiesAttributesChanged + "\n" );
-			str.append( "  - fadingChanged:   " + fadingChanged + "\n" );
 			return str.toString();
 		}
 	}
