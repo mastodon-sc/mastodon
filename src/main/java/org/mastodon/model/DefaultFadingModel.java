@@ -5,7 +5,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.listeners.Listeners;
 
 public class DefaultFadingModel
-		implements FadingModel< BranchSpot, BranchLink >
+		implements FadingModel< BranchSpot, BranchLink >, TimepointListener
 {
 	private final TimepointModel timepointModel;
 
