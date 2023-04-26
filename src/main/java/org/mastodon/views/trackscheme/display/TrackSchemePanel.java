@@ -44,6 +44,7 @@ import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
 import org.mastodon.graph.GraphChangeListener;
+import org.mastodon.model.FadedListener;
 import org.mastodon.model.FadedModel;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
@@ -84,6 +85,7 @@ public class TrackSchemePanel extends JPanel implements
 		HighlightListener,
 		FocusListener,
 		TimepointListener,
+		FadedListener,
 		GraphChangeListener,
 		SelectionListener,
 		NavigationListener< TrackSchemeVertex, TrackSchemeEdge >,
@@ -464,7 +466,6 @@ public class TrackSchemePanel extends JPanel implements
 			graphOverlay.setCurrentTimepoint( t );
 			display.repaint();
 		}
-		fadingChanged();
 	}
 
 	@Override
@@ -506,7 +507,8 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread.requestRepaint();
 	}
 
-	public void fadingChanged()
+	@Override
+	public void fadedChanged()
 	{
 		flags.setFadingChanged();
 		painterThread.requestRepaint();
