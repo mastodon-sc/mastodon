@@ -8,6 +8,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.branch.exampleGraph.AbstractExampleGraph;
+import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
@@ -18,14 +19,13 @@ public class FeatureComputerTestUtils
 	public static Feature< BranchSpot > getBranchSpotFeature( Context context, AbstractExampleGraph exampleGraph,
 			FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec )
 	{
-		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
+		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph.getModel() );
 		return Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
 	}
 
-	public static Feature< Spot > getSpotFeature( Context context, AbstractExampleGraph exampleGraph,
-			FeatureSpec< ? extends Feature< Spot >, Spot > spec )
+	public static Feature< Spot > getSpotFeature( Context context, Model model, FeatureSpec< ? extends Feature< Spot >, Spot > spec )
 	{
-		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
+		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, model );
 		return Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
 	}
 
@@ -36,10 +36,10 @@ public class FeatureComputerTestUtils
 		return feature.project( FeatureProjectionKey.key( featureProjectionSpec ) );
 	}
 
-	private static MamutFeatureComputerService getMamutFeatureComputerService( Context context, AbstractExampleGraph exampleGraph )
+	private static MamutFeatureComputerService getMamutFeatureComputerService( Context context, Model model )
 	{
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		featureComputerService.setModel( exampleGraph.getModel() );
+		featureComputerService.setModel( model );
 		return featureComputerService;
 	}
 }
