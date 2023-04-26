@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  */
 public class FadingModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
 		WE extends Edge< WV > >
-		implements FadingModel< WV, WE >
+		implements FadingModel< WV, WE >, FadingListener
 {
 	@Nullable
 	private FadingModel< V, E > fadingModel;
@@ -70,9 +70,24 @@ public class FadingModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV 
 
 	public void setFadingModel( final @Nullable FadingModel< V, E > fadingModel )
 	{
+		if ( this.fadingModel != null )
+			this.fadingModel.listeners().remove( this );
 		this.fadingModel = fadingModel;
 		if ( this.fadingModel != null )
-			fadingModel.listeners().addAll( listeners.list );
+			this.fadingModel.listeners().add( this );
 	}
 
+	public void removeAllListeners()
+	{
+		if ( fadingModel != null )
+			fadingModel.listeners().remove( this );
+		listeners.list.clear();
+	}
+
+	@Override
+	public void fadingChanged()
+	{
+		for ( FadingListener fadingListener : listeners.list )
+			fadingListener.fadingChanged();
+	}
 }
