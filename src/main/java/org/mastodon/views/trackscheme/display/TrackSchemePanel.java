@@ -44,8 +44,8 @@ import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.model.FadedListener;
-import org.mastodon.model.FadedModel;
+import org.mastodon.model.FadingListener;
+import org.mastodon.model.FadingModel;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightListener;
@@ -85,7 +85,7 @@ public class TrackSchemePanel extends JPanel implements
 		HighlightListener,
 		FocusListener,
 		TimepointListener,
-		FadedListener,
+		FadingListener,
 		GraphChangeListener,
 		SelectionListener,
 		NavigationListener< TrackSchemeVertex, TrackSchemeEdge >,
@@ -201,7 +201,7 @@ public class TrackSchemePanel extends JPanel implements
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TimepointModel timepointModel,
-			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel,
+			final FadingModel< TrackSchemeVertex, TrackSchemeEdge > fadingModel,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
@@ -228,7 +228,7 @@ public class TrackSchemePanel extends JPanel implements
 		highlight.listeners().add( this );
 		focus.listeners().add( this );
 		this.timepointModel.listeners().add( this );
-		fadedModel.listeners().add( this );
+		fadingModel.listeners().add( this );
 		selection.listeners().add( this );
 
 		graphOverlay = options.getTrackSchemeOverlayFactory().create( graph, highlight, focus, trackSchemeOptions );
@@ -251,7 +251,7 @@ public class TrackSchemePanel extends JPanel implements
 		} );
 
 		colorGenerator = options.getGraphColorGenerator();
-		layout = options.lineageTreeLayoutFactory().create( rootsModel, graph, selection, colorGenerator, fadedModel );
+		layout = options.lineageTreeLayoutFactory().create( rootsModel, graph, selection, colorGenerator, fadingModel );
 		contextLayout = new ContextLayout( graph, layout );
 		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
@@ -508,7 +508,7 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	@Override
-	public void fadedChanged()
+	public void fadingChanged()
 	{
 		flags.setFadingChanged();
 		painterThread.requestRepaint();

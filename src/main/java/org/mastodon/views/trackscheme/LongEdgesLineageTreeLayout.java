@@ -29,7 +29,7 @@
 package org.mastodon.views.trackscheme;
 
 import org.mastodon.collection.RefList;
-import org.mastodon.model.FadedModel;
+import org.mastodon.model.FadingModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
@@ -59,9 +59,9 @@ public class LongEdgesLineageTreeLayout extends LineageTreeLayoutImp
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
-			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel )
+			final FadingModel< TrackSchemeVertex, TrackSchemeEdge > fadingModel )
 	{
-		super( rootsModel, graph, selection, colorGenerator, fadedModel );
+		super( rootsModel, graph, selection, colorGenerator, fadingModel );
 	}
 
 	@Override

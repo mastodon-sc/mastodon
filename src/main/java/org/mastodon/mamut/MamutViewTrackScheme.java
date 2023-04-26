@@ -46,7 +46,7 @@ import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.adapter.FadedModelAdapter;
+import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.TimepointAndNumberOfSpotsPanel;
@@ -156,8 +156,8 @@ public class MamutViewTrackScheme
 
 		final RootsModel< TrackSchemeVertex > rootsModel = new DefaultRootsModel<>( model.getGraph(), viewGraph );
 
-		FadedModelAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > fadedModelAdapter =
-				new FadedModelAdapter<>( null, viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+		FadingModelAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > fadingModelAdapter =
+				new FadingModelAdapter<>( null, viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
@@ -165,7 +165,7 @@ public class MamutViewTrackScheme
 				navigateFocusModel,
 				timepointModel,
 				timepointModel,
-				fadedModelAdapter,
+				fadingModelAdapter,
 				selectionModel,
 				rootsModel,
 				navigationHandler,

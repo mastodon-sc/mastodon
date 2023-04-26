@@ -39,7 +39,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.model.DefaultFadedModel;
+import org.mastodon.model.DefaultFadingModel;
 import org.mastodon.model.DefaultTimepointModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
@@ -75,8 +75,8 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 		final TrackSchemeFrame frame = getFrame();
 		frame.setTitle( "TrackScheme Hierarchy" );
 
-		// Change timepoint model of faded model adapter to actual timepoint model.
-		this.fadedModelAdapter.setFadedModel( new DefaultFadedModel( this.fadingTimepointModel ) );
+		// Change timepoint model of fading model adapter to actual timepoint model.
+		this.fadingModelAdapter.setFadingModel( new DefaultFadingModel( this.fadingTimepointModel ) );
 
 		// Min & max levels.
 		final GraphChangeListener gcl = () -> {

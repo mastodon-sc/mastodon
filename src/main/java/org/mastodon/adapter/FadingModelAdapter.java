@@ -2,8 +2,8 @@ package org.mastodon.adapter;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.model.FadedListener;
-import org.mastodon.model.FadedModel;
+import org.mastodon.model.FadingListener;
+import org.mastodon.model.FadingModel;
 import org.mastodon.model.SelectionModel;
 import org.scijava.listeners.Listeners;
 
@@ -23,25 +23,25 @@ import javax.annotation.Nullable;
  * @param <WE>
  *            edge type of the wrapped {@link SelectionModel}.
  */
-public class FadedModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
+public class FadingModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
 		WE extends Edge< WV > >
-		implements FadedModel< WV, WE >
+		implements FadingModel< WV, WE >
 {
 	@Nullable
-	private FadedModel< V, E > fadedModel;
+	private FadingModel< V, E > fadingModel;
 
 	private final RefBimap< V, WV > vertexMap;
 
 	private final RefBimap< E, WE > edgeMap;
 
-	private final Listeners.List< FadedListener > listeners = new Listeners.SynchronizedList<>();
+	private final Listeners.List< FadingListener > listeners = new Listeners.SynchronizedList<>();
 
-	public FadedModelAdapter(
-			@Nullable final FadedModel< V, E > fadedModel,
+	public FadingModelAdapter(
+			@Nullable final FadingModel< V, E > fadingModel,
 			final RefBimap< V, WV > vertexMap,
 			final RefBimap< E, WE > edgeMap )
 	{
-		this.fadedModel = fadedModel;
+		this.fadingModel = fadingModel;
 		this.vertexMap = vertexMap;
 		this.edgeMap = edgeMap;
 	}
@@ -49,36 +49,36 @@ public class FadedModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 	@Override
 	public boolean isFaded( final WV vertex )
 	{
-		if ( fadedModel == null )
+		if ( fadingModel == null )
 			return false;
-		return fadedModel.isFaded( vertexMap.getLeft( vertex ) );
+		return fadingModel.isFaded( vertexMap.getLeft( vertex ) );
 	}
 
 	@Override
 	public boolean isFaded( final WE edge )
 	{
-		if ( fadedModel == null )
+		if ( fadingModel == null )
 			return false;
-		return fadedModel.isFaded( edgeMap.getLeft( edge ) );
+		return fadingModel.isFaded( edgeMap.getLeft( edge ) );
 	}
 
 	@Override
-	public Listeners< FadedListener > listeners()
+	public Listeners< FadingListener > listeners()
 	{
 		return listeners;
 	}
 
-	public void setFadedModel( final @Nullable FadedModel< V, E > fadedModel )
+	public void setFadingModel( final @Nullable FadingModel< V, E > fadingModel )
 	{
-		this.fadedModel = fadedModel;
-		if ( this.fadedModel != null )
-			fadedModel.listeners().addAll( listeners.list );
+		this.fadingModel = fadingModel;
+		if ( this.fadingModel != null )
+			fadingModel.listeners().addAll( listeners.list );
 	}
 
 	@Override
 	public void timepointChanged()
 	{
-		if ( fadedModel != null )
-			fadedModel.timepointChanged();
+		if ( fadingModel != null )
+			fadingModel.timepointChanged();
 	}
 }

@@ -37,7 +37,7 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edges;
-import org.mastodon.model.FadedModel;
+import org.mastodon.model.FadingModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
@@ -90,7 +90,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 
 	protected final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator;
 
-	protected final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel;
+	protected final FadingModel< TrackSchemeVertex, TrackSchemeEdge > fadingModel;
 
 	private final Listeners.List< LayoutListener > listeners;
 
@@ -157,12 +157,12 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 			final TrackSchemeGraph< ?, ? > graph,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
-			final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel )
+			final FadingModel< TrackSchemeVertex, TrackSchemeEdge > fadingModel )
 	{
 		this.graph = graph;
 		this.selection = selection;
 		this.colorGenerator = colorGenerator;
-		this.fadedModel = fadedModel;
+		this.fadingModel = fadingModel;
 		this.roots = rootsModel;
 		listeners = new Listeners.SynchronizedList<>();
 		rightmost = 0;
@@ -462,7 +462,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		final String label = trackSchemeVertex.getLabel();
 		final boolean selected = selection.isSelected( trackSchemeVertex );
 		final boolean ghost = trackSchemeVertex.isGhost();
-		final boolean faded = fadedModel.isFaded( trackSchemeVertex );
+		final boolean faded = fadingModel.isFaded( trackSchemeVertex );
 		// TODO move setYStart into init
 		screenVertexPool.create( screenVertex ).init( id, label, x, y, selected, ghost, faded, colorGenerator.color( trackSchemeVertex ) )
 				.setYStart( firstY );
@@ -478,7 +478,7 @@ public class LineageTreeLayoutImp implements LineageTreeLayout
 		final int targetScreenVertexIndex = targetTrackSchemeVertex.getScreenVertexIndex();
 		final boolean selected = selection.isSelected( edge );
 
-		screenEdgePool.create( ref ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, selected, fadedModel.isFaded( edge ),
+		screenEdgePool.create( ref ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, selected, fadingModel.isFaded( edge ),
 				colorGenerator.color( edge, sourceTrackSchemeVertex, targetTrackSchemeVertex ) );
 		screenEdges.add( ref );
 		final int sei = ref.getInternalPoolIndex();

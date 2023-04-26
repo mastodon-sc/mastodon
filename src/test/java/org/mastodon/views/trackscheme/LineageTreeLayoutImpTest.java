@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.mastodon.adapter.FadedModelAdapter;
+import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
@@ -43,7 +43,7 @@ import org.mastodon.mamut.model.ModelGraphTrackSchemeProperties;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.DefaultSelectionModel;
-import org.mastodon.model.FadedModel;
+import org.mastodon.model.FadingModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
@@ -104,9 +104,9 @@ public class LineageTreeLayoutImpTest
 		RootsModel< TrackSchemeVertex > tsRootsModel = new DefaultRootsModel<>( graph, tsGraph );
 		GraphColorGeneratorAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > colorGenerator =
 				new GraphColorGeneratorAdapter<>( tsGraph.getVertexMap(), tsGraph.getEdgeMap() );
-		final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel =
-				new FadedModelAdapter<>( null, tsGraph.getVertexMap(), tsGraph.getEdgeMap() );
-		return new LineageTreeLayoutImp( tsRootsModel, tsGraph, tsSelectionModel, colorGenerator, fadedModel );
+		final FadingModel< TrackSchemeVertex, TrackSchemeEdge > fadingModel =
+				new FadingModelAdapter<>( null, tsGraph.getVertexMap(), tsGraph.getEdgeMap() );
+		return new LineageTreeLayoutImp( tsRootsModel, tsGraph, tsSelectionModel, colorGenerator, fadingModel );
 	}
 
 	private ScreenTransform initScreenTransform()

@@ -60,7 +60,7 @@ import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
-import org.mastodon.adapter.FadedModelAdapter;
+import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.RefBimap;
@@ -76,7 +76,7 @@ import org.mastodon.model.DefaultHighlightModel;
 import org.mastodon.model.DefaultNavigationHandler;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.DefaultTimepointModel;
-import org.mastodon.model.FadedModel;
+import org.mastodon.model.FadingModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
@@ -124,12 +124,12 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final TimepointModel timepoint = new DefaultTimepointModel();
 		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection =
 				new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
-		final FadedModel< TrackSchemeVertex, TrackSchemeEdge > fadedModel = new FadedModelAdapter<>( null, vertexMap, edgeMap );
+		final FadingModel< TrackSchemeVertex, TrackSchemeEdge > fadingModel = new FadingModelAdapter<>( null, vertexMap, edgeMap );
 		final RootsModel< TrackSchemeVertex > roots = new DefaultRootsModel< DummyVertex, DummyEdge >( example, graph );
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new DefaultNavigationHandler<>();
 		final TrackSchemeOptions options = TrackSchemeOptions.options().style( style );
 		final TrackSchemePanel previewPanel =
-				new TrackSchemePanel( graph, highlight, focus, timepoint, fadedModel, selection, roots, navigation, options );
+				new TrackSchemePanel( graph, highlight, focus, timepoint, fadingModel, selection, roots, navigation, options );
 		previewPanel.setTimepointRange( 0, 7 );
 		timepoint.setTimepoint( 2 );
 		previewPanel.graphChanged();
