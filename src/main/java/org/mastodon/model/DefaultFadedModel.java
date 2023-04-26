@@ -7,8 +7,9 @@ import org.scijava.listeners.Listeners;
 public class DefaultFadedModel
 		implements FadedModel< BranchSpot, BranchLink >
 {
-
 	private final TimepointModel timepointModel;
+
+	private final Listeners.List< FadedListener > listeners;
 
 	/**
 	 * Creates a new Fading Model for the specified graph.
@@ -16,6 +17,7 @@ public class DefaultFadedModel
 	public DefaultFadedModel( final TimepointModel timepointModel )
 	{
 		this.timepointModel = timepointModel;
+		listeners = new Listeners.SynchronizedList<>();
 	}
 
 	@Override
@@ -28,6 +30,12 @@ public class DefaultFadedModel
 	public boolean isFaded( final BranchLink branchLink )
 	{
 		return branchLink.getTarget().getFirstTimePoint() > timepointModel.getTimepoint();
+	}
+
+	@Override
+	public Listeners< FadedListener > listeners()
+	{
+		return listeners;
 	}
 
 	@Override
