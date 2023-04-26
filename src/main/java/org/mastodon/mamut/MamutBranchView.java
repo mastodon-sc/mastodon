@@ -176,7 +176,7 @@ public class MamutBranchView<
 		// Time-point.
 		this.timepointModel = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
 
-		// Time-point adapter.
+		// Time-point used for fading.
 		this.fadingTimepointModel = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
 
 		// Fading model adapter - initialized with a null FadeModel here. Subclasses may set the faded model of this adapter.
