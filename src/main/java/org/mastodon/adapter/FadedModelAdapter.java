@@ -74,4 +74,11 @@ public class FadedModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 		if ( this.fadedModel != null )
 			fadedModel.listeners().addAll( listeners.list );
 	}
+
+	@Override
+	public void timepointChanged()
+	{
+		if ( fadedModel != null )
+			fadedModel.timepointChanged();
+	}
 }
