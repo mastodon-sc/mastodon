@@ -190,6 +190,7 @@ public class MamutBranchView<
 		runOnClose.add( () -> {
 			timepointModel.listeners().removeAll();
 			fadingTimepointModel.listeners().removeAll();
+			fadingModelAdapter.removeAllListeners();
 			highlightModel.listeners().removeAll();
 			focusModel.listeners().removeAll();
 			selectionModel.listeners().removeAll();
