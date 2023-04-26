@@ -36,5 +36,5 @@ public interface FadedModel< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	boolean isFaded( final E edge );
 
-	Listeners< TimepointListener > listeners();
+	Listeners< FadedListener > listeners();
 }
