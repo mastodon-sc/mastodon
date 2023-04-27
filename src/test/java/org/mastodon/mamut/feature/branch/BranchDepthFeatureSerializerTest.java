@@ -22,7 +22,7 @@ public class BranchDepthFeatureSerializerTest
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 			Feature< BranchSpot > branchDepthFeature =
-					FeatureComputerTestUtils.getBranchSpotFeature( context, exampleGraph2, BranchDepthFeature.SPEC );
+					FeatureComputerTestUtils.getFeature( context, exampleGraph2.getModel(), BranchDepthFeature.SPEC );
 
 			BranchDepthFeature branchDepthFeatureReloaded = null;
 			try
