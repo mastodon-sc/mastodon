@@ -1,4 +1,4 @@
-package org.mastodon.mamut.feature.branch;
+package org.mastodon.mamut.feature;
 
 import net.imglib2.util.Cast;
 import org.mastodon.feature.Feature;
@@ -6,7 +6,6 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.branch.exampleGraph.AbstractExampleGraph;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
