@@ -2,6 +2,7 @@ package org.mastodon.mamut.feature.branch;
 
 import org.junit.Test;
 import org.mastodon.feature.Feature;
+import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.FeatureSerializerTestUtils;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.branch.BranchSpot;
