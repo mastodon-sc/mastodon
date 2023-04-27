@@ -9,30 +9,21 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.branch.exampleGraph.AbstractExampleGraph;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
 public class FeatureComputerTestUtils
 {
 
-	public static Feature< BranchSpot > getBranchSpotFeature( Context context, AbstractExampleGraph exampleGraph,
-			FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec )
-	{
-		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph.getModel() );
-		return Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
-	}
-
-	public static Feature< Spot > getSpotFeature( Context context, Model model, FeatureSpec< ? extends Feature< Spot >, Spot > spec )
+	public static < T > Feature< T > getFeature( Context context, Model model, FeatureSpec< ? extends Feature< T >, T > spec )
 	{
 		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, model );
 		return Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
 	}
 
-	public static FeatureProjection< BranchSpot > getBranchSpotFeatureProjection( Context context, AbstractExampleGraph exampleGraph,
-			FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec, FeatureProjectionSpec featureProjectionSpec )
+	public static < T > FeatureProjection< T > getFeatureProjection( Context context, AbstractExampleGraph exampleGraph,
+			FeatureSpec< ? extends Feature< T >, T > spec, FeatureProjectionSpec featureProjectionSpec )
 	{
-		Feature< BranchSpot > feature = getBranchSpotFeature( context, exampleGraph, spec );
+		Feature< T > feature = getFeature( context, exampleGraph.getModel(), spec );
 		return feature.project( FeatureProjectionKey.key( featureProjectionSpec ) );
 	}
 
