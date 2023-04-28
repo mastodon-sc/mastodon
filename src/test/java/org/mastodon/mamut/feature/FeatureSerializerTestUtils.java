@@ -29,8 +29,6 @@ public class FeatureSerializerTestUtils
 			model.getFeatureModel().declareFeature( feature );
 			RawGraphIO.GraphToFileIdMap< Spot, Link > graphToFileIdMap;
 			graphToFileIdMap = model.saveRaw( writer );
-			if ( graphToFileIdMap == null )
-				throw new RuntimeException( "Graph to FileId map was not generated during saving model" );
 			MamutRawFeatureModelIO.serialize( context, model, graphToFileIdMap, writer );
 		}
 
