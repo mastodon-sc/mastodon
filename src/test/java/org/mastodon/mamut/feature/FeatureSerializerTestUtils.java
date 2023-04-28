@@ -40,18 +40,12 @@ public class FeatureSerializerTestUtils
 		// reload the model from temporary files
 		try (MamutProject.ProjectReader reader = reloadProject.openForReading())
 		{
-			RawGraphIO.FileIdToGraphMap< Spot, Link > fileIdToGraphMap;
-			fileIdToGraphMap = modelReloaded.loadRaw( reader );
-			if ( fileIdToGraphMap == null )
-				throw new RuntimeException( "FileId to Graph map was not generated during loading model" );
-			try
-			{
-				MamutRawFeatureModelIO.deserialize( context, modelReloaded, fileIdToGraphMap, reader );
-			}
-			catch ( ClassNotFoundException e )
-			{
-				throw new RuntimeException( "Could not find feature class. Message: " + e.getMessage() );
-			}
+			RawGraphIO.FileIdToGraphMap< Spot, Link > fileIdToGraphMap = modelReloaded.loadRaw( reader );
+			MamutRawFeatureModelIO.deserialize( context, modelReloaded, fileIdToGraphMap, reader );
+		}
+		catch ( ClassNotFoundException e )
+		{
+			throw new RuntimeException( "Could not find feature class.", e );
 		}
 		return modelReloaded.getFeatureModel().getFeature( feature.getSpec() );
 	}
