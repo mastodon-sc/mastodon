@@ -34,8 +34,7 @@ public class FeatureSerializerTestUtils
 			MamutRawFeatureModelIO.serialize( context, model, graphToFileIdMap, writer );
 		}
 
-		MamutProject reloadProject;
-		reloadProject = new MamutProject( projectRoot, datasetXmlFile );
+		MamutProject reloadProject = new MamutProject( projectRoot, datasetXmlFile );
 		Model modelReloaded = new Model();
 
 		// reload the model from temporary files
