@@ -11,13 +11,12 @@ import org.scijava.Context;
 import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class BranchDepthFeatureSerializerTest
 {
 
 	@Test
-	public void testFeatureSerialization()
+	public void testFeatureSerialization() throws IOException
 	{
 		try (Context context = new Context())
 		{
@@ -25,16 +24,9 @@ public class BranchDepthFeatureSerializerTest
 			Feature< BranchSpot > branchDepthFeature =
 					FeatureComputerTestUtils.getFeature( context, exampleGraph2.getModel(), BranchDepthFeature.SPEC );
 
-			BranchDepthFeature branchDepthFeatureReloaded = null;
-			try
-			{
-				branchDepthFeatureReloaded = ( BranchDepthFeature ) FeatureSerializerTestUtils.saveAndReload( context,
-						exampleGraph2.getModel(), branchDepthFeature );
-			}
-			catch ( IOException e )
-			{
-				fail( "Could not save and reload feature: " + e.getMessage() );
-			}
+			BranchDepthFeature branchDepthFeatureReloaded = ( BranchDepthFeature ) FeatureSerializerTestUtils.saveAndReload( context,
+					exampleGraph2.getModel(), branchDepthFeature );
+
 			// check that the feature has correct values after saving and reloading
 			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchDepthFeature, branchDepthFeatureReloaded,
 					exampleGraph2.branchSpotA ) );
