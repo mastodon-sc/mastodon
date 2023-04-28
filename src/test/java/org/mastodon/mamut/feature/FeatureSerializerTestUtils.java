@@ -67,9 +67,24 @@ public class FeatureSerializerTestUtils
 			return false;
 		if ( !feature1.getSpec().equals( feature2.getSpec() ) )
 			return false;
-
 		Set< FeatureProjection< T > > featureProjections1 = feature1.projections();
 		Set< FeatureProjection< T > > featureProjections2 = feature2.projections();
+		// check if the two features have the same projections
+		for ( FeatureProjection< T > featureProjection1 : featureProjections1 )
+		{
+			boolean found = false;
+			for ( FeatureProjection< T > featureProjection2 : featureProjections2 )
+			{
+				if ( featureProjection1.getKey().equals( featureProjection2.getKey() ) )
+				{
+					found = true;
+					break;
+				}
+			}
+			if ( !found )
+				return false;
+		}
+		// check if the two features have the same projection values for the given object
 		for ( FeatureProjection< T > featureProjection1 : featureProjections1 )
 		{
 			for ( FeatureProjection< T > featureProjection2 : featureProjections2 )
