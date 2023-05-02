@@ -6,7 +6,6 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.feature.branch.exampleGraph.AbstractExampleGraph;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 
@@ -19,10 +18,10 @@ public class FeatureComputerTestUtils
 		return Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
 	}
 
-	public static < T > FeatureProjection< T > getFeatureProjection( Context context, AbstractExampleGraph exampleGraph,
+	public static < T > FeatureProjection< T > getFeatureProjection( Context context, Model model,
 			FeatureSpec< ? extends Feature< T >, T > spec, FeatureProjectionSpec featureProjectionSpec )
 	{
-		Feature< T > feature = getFeature( context, exampleGraph.getModel(), spec );
+		Feature< T > feature = getFeature( context, model, spec );
 		return feature.project( FeatureProjectionKey.key( featureProjectionSpec ) );
 	}
 

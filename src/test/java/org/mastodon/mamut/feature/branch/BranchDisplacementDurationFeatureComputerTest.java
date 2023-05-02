@@ -19,8 +19,11 @@ public class BranchDisplacementDurationFeatureComputerTest
 		try (Context context = new Context())
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1,
-					BranchDisplacementDurationFeature.SPEC, BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC );
+
+			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context,
+					exampleGraph1.getModel(),
+					BranchDisplacementDurationFeature.SPEC,
+					BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC );
 
 			assertEquals( 3, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
@@ -32,8 +35,11 @@ public class BranchDisplacementDurationFeatureComputerTest
 		try (Context context = new Context())
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2,
-					BranchDisplacementDurationFeature.SPEC, BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC );
+
+			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context,
+					exampleGraph2.getModel(),
+					BranchDisplacementDurationFeature.SPEC,
+					BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC );
 
 			assertNotNull( featureProjection );
 			assertEquals( 2, featureProjection.value( exampleGraph2.branchSpotA ), 0 );
@@ -50,8 +56,11 @@ public class BranchDisplacementDurationFeatureComputerTest
 		try (Context context = new Context())
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1,
-					BranchDisplacementDurationFeature.SPEC, BranchDisplacementDurationFeature.DISPLACEMENT_PROJECTION_SPEC );
+
+			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context,
+					exampleGraph1.getModel(),
+					BranchDisplacementDurationFeature.SPEC,
+					BranchDisplacementDurationFeature.DISPLACEMENT_PROJECTION_SPEC );
 
 			assertEquals( Math.sqrt( 16 + 64 + 144 ), featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
@@ -63,8 +72,11 @@ public class BranchDisplacementDurationFeatureComputerTest
 		try (Context context = new Context())
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2,
-					BranchDisplacementDurationFeature.SPEC, BranchDisplacementDurationFeature.DISPLACEMENT_PROJECTION_SPEC );
+
+			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context,
+					exampleGraph2.getModel(),
+					BranchDisplacementDurationFeature.SPEC,
+					BranchDisplacementDurationFeature.DISPLACEMENT_PROJECTION_SPEC );
 
 			assertEquals( Math.sqrt( 4 + 16 + 36 ), featureProjection.value( exampleGraph2.branchSpotA ), 0d );
 			assertEquals( Math.sqrt( 4 + 16 + 36 ), featureProjection.value( exampleGraph2.branchSpotB ), 0d );
