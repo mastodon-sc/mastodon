@@ -19,8 +19,10 @@ public class BranchDepthFeatureComputerTest
 		try (Context context = new Context())
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1,
-					BranchDepthFeature.SPEC, BranchDepthFeature.PROJECTION_SPEC );
+			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context,
+					exampleGraph1.getModel(),
+					BranchDepthFeature.SPEC,
+					BranchDepthFeature.PROJECTION_SPEC );
 
 			assertEquals( 0, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
@@ -32,8 +34,10 @@ public class BranchDepthFeatureComputerTest
 		try (Context context = new Context())
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2,
-					BranchDepthFeature.SPEC, BranchDepthFeature.PROJECTION_SPEC );
+			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getFeatureProjection( context,
+					exampleGraph2.getModel(),
+					BranchDepthFeature.SPEC,
+					BranchDepthFeature.PROJECTION_SPEC );
 
 			assertEquals( 0, featureProjection.value( exampleGraph2.branchSpotA ), 0 );
 			assertEquals( 1, featureProjection.value( exampleGraph2.branchSpotB ), 0 );
