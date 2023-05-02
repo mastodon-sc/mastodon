@@ -9,6 +9,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import static org.junit.Assert.assertTrue;
 
@@ -21,23 +22,12 @@ public class BranchDepthFeatureSerializerTest
 		try (Context context = new Context())
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-			Feature< BranchSpot > branchDepthFeature =
-					FeatureComputerTestUtils.getFeature( context, exampleGraph2.getModel(), BranchDepthFeature.SPEC );
 
-			BranchDepthFeature branchDepthFeatureReloaded = ( BranchDepthFeature ) FeatureSerializerTestUtils.saveAndReload( context,
-					exampleGraph2.getModel(), branchDepthFeature );
+			Feature< BranchSpot > feature = FeatureComputerTestUtils.getFeature( context, exampleGraph2.getModel(), BranchDepthFeature.SPEC );
+			Feature< BranchSpot > featureReloaded = FeatureSerializerTestUtils.saveAndReload( context, exampleGraph2.getModel(), feature );
 
-			// check that the feature has correct values after saving and reloading
-			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchDepthFeature, branchDepthFeatureReloaded,
-					exampleGraph2.branchSpotA ) );
-			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchDepthFeature, branchDepthFeatureReloaded,
-					exampleGraph2.branchSpotB ) );
-			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchDepthFeature, branchDepthFeatureReloaded,
-					exampleGraph2.branchSpotC ) );
-			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchDepthFeature, branchDepthFeatureReloaded,
-					exampleGraph2.branchSpotD ) );
-			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchDepthFeature, branchDepthFeatureReloaded,
-					exampleGraph2.branchSpotE ) );
+			Collection< BranchSpot > branchSpots = exampleGraph2.getModel().getBranchGraph().vertices();
+			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( feature, featureReloaded, branchSpots ) );
 		}
 	}
 }

@@ -2,6 +2,8 @@ package org.mastodon.mamut.feature;
 
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
+import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -12,12 +14,16 @@ import org.scijava.Context;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import net.imglib2.util.Cast;
 
 public class FeatureSerializerTestUtils
 {
 
-	public static Feature< ? > saveAndReload( Context context, Model model, Feature< ? > feature ) throws IOException
+	public static < T > Feature< T > saveAndReload( Context context, Model model, Feature< T > feature ) throws IOException
 	{
 		File projectRoot = Files.createTempDirectory( "mamut" ).toFile();
 		File datasetXmlFile = Files.createTempFile( "project", ".xml" ).toFile();
@@ -45,58 +51,60 @@ public class FeatureSerializerTestUtils
 		{
 			throw new RuntimeException( "Could not find feature class.", e );
 		}
-		return modelReloaded.getFeatureModel().getFeature( feature.getSpec() );
+		return Cast.unchecked( modelReloaded.getFeatureModel().getFeature( feature.getSpec() ) );
 	}
 
 	/**
-	 * Checks, if the two features have the same spec and the same projection values for a given object.
-	 * <p>
-	 * The latter is done by comparing the values of the projections
-	 * of the two given features having the same key for the given object.
+	 * Checks, if the two features have the same spec and the same projection values for the given objects.
 	 *
 	 * @param feature1 first feature to compare
 	 * @param feature2 second feature to compare
-	 * @param object object to compare the projections on
-	 * @return {@code true} if the two features have the same spec and the same projection values for the given object,
+	 * @param objects objects to compare the projections on
+	 * @return {@code true} if the two features have the same spec and the same projection values for the given objects,
 	 * 		   {@code false} otherwise.
-	 * @param <T> the type of the object
+	 * @param <T> the type of the objects
 	 */
-	public static < T > boolean checkFeatureProjectionEquality( Feature< T > feature1, Feature< T > feature2, T object )
+	public static < T > boolean checkFeatureProjectionEquality( Feature< T > feature1, Feature< T > feature2, Collection< T > objects )
 	{
 		if ( feature1 == null || feature2 == null )
 			return false;
-		if ( !feature1.getSpec().equals( feature2.getSpec() ) )
+
+		FeatureSpec< ? extends Feature< T >, T > spec1 = feature1.getSpec();
+		FeatureSpec< ? extends Feature< T >, T > spec2 = feature2.getSpec();
+		if ( !spec1.equals( spec2 ) )
 			return false;
-		Set< FeatureProjection< T > > featureProjections1 = feature1.projections();
-		Set< FeatureProjection< T > > featureProjections2 = feature2.projections();
-		// check if the two features have the same projections
-		for ( FeatureProjection< T > featureProjection1 : featureProjections1 )
-		{
-			boolean found = false;
-			for ( FeatureProjection< T > featureProjection2 : featureProjections2 )
-			{
-				if ( featureProjection1.getKey().equals( featureProjection2.getKey() ) )
-				{
-					found = true;
-					break;
-				}
-			}
-			if ( !found )
+
+		Map< FeatureProjectionKey, FeatureProjection< T > > projections1 = feature1.projections().stream()
+				.collect( Collectors.toMap( FeatureProjection::getKey, x -> x ) );
+
+		Map< FeatureProjectionKey, FeatureProjection< T > > projections2 = feature1.projections().stream()
+				.collect( Collectors.toMap( FeatureProjection::getKey, x -> x ) );
+
+		if ( !projections1.keySet().equals( projections2.keySet() ) )
+			return false;
+
+		for ( FeatureProjectionKey key : projections1.keySet() )
+			if ( !checkProjectionEquals( projections1.get( key ), projections2.get( key ), objects ) )
 				return false;
-		}
-		// check if the two features have the same projection values for the given object
-		for ( FeatureProjection< T > featureProjection1 : featureProjections1 )
+
+		return true;
+	}
+
+	private static < T > boolean checkProjectionEquals(
+			FeatureProjection< T > projection1,
+			FeatureProjection< T > projection2,
+			Collection< T > objects )
+	{
+		for ( T object : objects )
 		{
-			for ( FeatureProjection< T > featureProjection2 : featureProjections2 )
-			{
-				if ( featureProjection1.getKey().equals( featureProjection2.getKey() ) )
-				{
-					double value1 = featureProjection1.value( object );
-					double value2 = featureProjection2.value( object );
-					if ( value1 != value2 )
-						return false;
-				}
-			}
+			boolean set1 = projection1.isSet( object );
+			boolean set2 = projection2.isSet( object );
+
+			if ( set1 != set2 )
+				return false;
+
+			if ( projection1.value( object ) != projection2.value( object ) )
+				return false;
 		}
 		return true;
 	}
