@@ -46,6 +46,7 @@ import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.app.ui.BranchGraphSyncButton;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
@@ -95,6 +96,8 @@ public class MamutBranchViewTrackScheme
 		extends MamutBranchView< TrackSchemeGraph< BranchSpot, BranchLink >, TrackSchemeVertex, TrackSchemeEdge >
 {
 
+	protected final FadingModelAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > fadingModelAdapter;
+
 	private final ColorBarOverlay colorBarOverlay;
 
 	private final ColoringModel coloringModel;
@@ -130,6 +133,10 @@ public class MamutBranchViewTrackScheme
 				.lineageTreeLayoutFactory( lineageTreeLayoutFactory )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
+
+		// Faded model adapter - initialized with a null FadeModel here. Subclasses may set the faded model of this adapter.
+		this.fadingModelAdapter = new FadingModelAdapter<>( null, vertexMap, edgeMap );
+		this.runOnClose.add( fadingModelAdapter::removeAllListeners );
 
 		// Restore position
 		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
