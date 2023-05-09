@@ -76,7 +76,7 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 		frame.setTitle( "TrackScheme Hierarchy" );
 
 		// Change timepoint model of fading model adapter to actual timepoint model.
-		this.fadingModelAdapter.setFadingModel( new DefaultFadingModel( this.fadingTimepointModel ) );
+		this.fadingModelAdapter.setFadingModel( new DefaultFadingModel( this.timepointModel ) );
 
 		// Min & max levels.
 		final GraphChangeListener gcl = () -> {
