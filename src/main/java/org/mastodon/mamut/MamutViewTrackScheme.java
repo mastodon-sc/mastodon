@@ -164,7 +164,6 @@ public class MamutViewTrackScheme
 				highlightModel,
 				navigateFocusModel,
 				timepointModel,
-				timepointModel,
 				fadingModelAdapter,
 				selectionModel,
 				rootsModel,
