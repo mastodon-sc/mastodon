@@ -1,6 +1,7 @@
 package org.mastodon.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.awt.Color;
 
@@ -29,10 +30,31 @@ public class ColorUtilsTest
 	}
 
 	@Test
-	public void testScaleAlpa()
+	public void testScaleAlpha()
 	{
 		assertEquals( 0x00ffffff, ColorUtils.scaleAlpha( 0x11ffffff, -1 ) );
 		assertEquals( 0x22aabbcc, ColorUtils.scaleAlpha( 0x44aabbcc, 0.5f ) );
 		assertEquals( 0x11ffffff, ColorUtils.scaleAlpha( 0x11ffffff, 2 ) );
+
+		Color input = Color.BLACK;
+		float ratio = 0.5f;
+		// generate color from result with valid alpha bits
+		Color resultWithAlpha = new Color( ColorUtils.scaleAlpha( input.getRGB(), ratio ), true );
+		assertEquals( 0, resultWithAlpha.getRed() );
+		assertEquals( 0, resultWithAlpha.getGreen() );
+		assertEquals( 0, resultWithAlpha.getBlue() );
+
+		assertEquals( 255, input.getAlpha() );
+		// alpha bits are set
+		assertEquals( 127, resultWithAlpha.getAlpha() );
+
+		// generate color from result without valid alpha bits
+		Color resultWithoutAlpha = new Color( ColorUtils.scaleAlpha( input.getRGB(), ratio ) );
+		assertEquals( 0, resultWithoutAlpha.getRed() );
+		assertEquals( 0, resultWithoutAlpha.getGreen() );
+		assertEquals( 0, resultWithoutAlpha.getBlue() );
+
+		// alpha bits are not set -> alpha is still (but wrongly) 255
+		assertEquals( 255, resultWithoutAlpha.getAlpha() );
 	}
 }
