@@ -517,7 +517,7 @@ public class PaintGraph
 				rgb = ColorUtils.mixColors( selectedColor.getRGB(), rgb, ( float ) ratio );
 			if ( fade )
 				rgb = ColorUtils.scaleAlpha( rgb, (float) (1 - ratio) );
-			final Color color = new Color( rgb );
+			final Color color = new Color( rgb, true );
 			return isGhost
 					? TrackSchemeStyle.mixGhostColor( color, style.getBackgroundColor() )
 					: color;
