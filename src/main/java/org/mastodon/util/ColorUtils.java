@@ -42,7 +42,7 @@ public class ColorUtils
 	@Nonnull
 	public static Color mixColors( final Color color0, final Color color1, final float ratio )
 	{
-		return new Color( mixColors( color0.getRGB(), color1.getRGB(), ratio ) );
+		return new Color( mixColors( color0.getRGB(), color1.getRGB(), ratio ), true );
 	}
 
 	/**
