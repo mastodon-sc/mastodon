@@ -5,10 +5,10 @@ import java.util.Collection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
+import org.mastodon.collection.RefStack;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 
 public class TreeUtils
 {
@@ -24,7 +24,7 @@ public class TreeUtils
 	 * of the returned list follows the order of the {@code roots} list and
 	 * the order of the outgoing edges of the graphs vertices.
 	 * <p>
-	 * Example:
+	 * Example {@code graph}:
 	 * <pre>
 	 *   A                B
 	 *  / \             /   \
@@ -46,8 +46,8 @@ public class TreeUtils
 		final RefList< V > selectedSubtreeRoots = RefCollections.createRefList( graph.vertices() );
 		final RefSet< V > visitedNodes = RefCollections.createRefSet( graph.vertices() );
 
-		for ( final V realRoot : roots )
-			for ( final DepthFirstIteration.Step< V > step : DepthFirstIteration.forRoot( graph, realRoot ) )
+		for ( final V root : roots )
+			for ( final DepthFirstIteration.Step< V > step : DepthFirstIteration.forRoot( graph, root ) )
 				if ( ensureNoLoop( step, visitedNodes ) && !step.isSecondVisit() ) {
 
 					final V node = step.node();
@@ -73,27 +73,74 @@ public class TreeUtils
 		return !isLoop;
 	}
 
-	public static <V extends Vertex<E>, E extends Edge< V > > RefSet< V > findRealRoots( Graph< V, E > graph, Collection< V > selectedNodes )
+	/**
+	 * Returns those roots of the given {@code graph} that are predecessors of
+	 * the given {@code nodes}. (A node is considered a root if it has no
+	 * incoming edges.)
+	 * <p>
+	 * Example {@code graph}:
+	 * <pre>
+	 *   A                B
+	 *  / \             /   \
+	 * a1  a2          b1    b2
+	 *     |          / \   / \
+	 *     a3        b3 b4 b5 b6
+	 *    / \
+	 *   a4 a5
+	 * </pre>
+	 * If {@code node} contains: {@code {a2}},
+	 * then the method returns a set {@code {A}}.
+	 */
+	public static <V extends Vertex<E>, E extends Edge< V > > RefSet< V > findRootsOfTheGivenNodes( Graph< V, E > graph, Collection< V > nodes )
 	{
-		final RefSet< V > visited = RefCollections.createRefSet( graph.vertices() );
+		return filterRoots( graph, computePredecessors( graph, nodes ) );
+	}
 
-		InverseDepthFirstIterator< V, E > it = new InverseDepthFirstIterator<>( graph );
-		for( V node : selectedNodes )
+	/**
+	 * @return the set of predecessors of the given {@code nodes}. Please note
+	 * that the set contains the given {@code nodes} as well.
+	 */
+	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > computePredecessors( Graph< V, E > graph, Collection< V > nodes )
+	{
+		// The following code performs an inverse depth first search starting
+		// from the given nodes. The set of visited nodes is returned.
+		V ref = graph.vertexRef();
+		V ref2 = graph.vertexRef();
+		try
 		{
-			it.reset( node );
-			while ( it.hasNext() )
-			{
-				final V previousNode = it.next();
-				boolean visitedBefore = ( !visited.add( previousNode ) );
-				if ( visitedBefore )
-					break;
+			final RefSet< V > visited = RefCollections.createRefSet( graph.vertices() );
+			visited.addAll( nodes );
+			final RefStack< V > stack = RefCollections.createRefStack( graph.vertices() );
+			stack.addAll( visited );
+			while ( ! stack.isEmpty() ) {
+				V node = stack.pop( ref );
+				for ( E edge : node.incomingEdges() ) {
+					V previousNode = edge.getSource( ref2 );
+					boolean firstVisit = visited.add( previousNode );
+					if ( firstVisit )
+						stack.add( previousNode );
+				}
 			}
+			return visited;
 		}
+		finally
+		{
+			graph.releaseRef( ref );
+			graph.releaseRef( ref2 );
+		}
+	}
 
-		final RefSet< V > realRoots = RefCollections.createRefSet( graph.vertices() );
-		for( V node : visited )
+	/**
+	 * @return a subset of the given {@code nodes} that contains only those
+	 * nodes that are roots of the {@code graph}. (A note is considered a root
+	 * if it has no incoming edges.)
+	 */
+	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > filterRoots( Graph< V, E > graph, Collection< V > nodes )
+	{
+		final RefSet< V > roots = RefCollections.createRefSet( graph.vertices() );
+		for ( V node : nodes )
 			if ( node.incomingEdges().isEmpty() )
-				realRoots.add( node );
-		return realRoots;
+				roots.add( node );
+		return roots;
 	}
 }

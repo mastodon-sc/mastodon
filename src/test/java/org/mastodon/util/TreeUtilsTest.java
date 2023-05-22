@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.mastodon.collection.RefCollections;
@@ -20,7 +22,10 @@ import org.mastodon.mamut.model.Spot;
  */
 public class TreeUtilsTest
 {
-	/** Test {@link TreeUtils#findSelectedSubtreeRoots} on {@link ExampleGraph2}. */
+	/**
+	 * Test {@link TreeUtils#findSelectedSubtreeRoots} on
+	 * {@link ExampleGraph2}.
+	 */
 	@Test
 	public void testFindSelectedSubtreeRoots()
 	{
@@ -44,7 +49,10 @@ public class TreeUtilsTest
 		assertEquals( exampleGraph.spot4, result.get( 0 ) );
 	}
 
-	/** Test {@link TreeUtils#findSelectedSubtreeRoots} on a simple graph with a loop. */
+	/**
+	 * Test {@link TreeUtils#findSelectedSubtreeRoots} on a simple graph
+	 * with a loop.
+	 */
 	@Test
 	public void testFindSelectedSubTreeRoots_dontGetStuckInLoops()
 	{
@@ -65,8 +73,7 @@ public class TreeUtilsTest
 		RefList< Spot > result = TreeUtils.findSelectedSubtreeRoots( graph, roots, selectedSpots );
 
 		// test
-		assertEquals( 1, result.size() );
-		assertEquals( b, result.get( 0 ) );
+		assertEquals( Arrays.asList( b ), result );
 	}
 
 	@Test
@@ -88,9 +95,10 @@ public class TreeUtilsTest
 		graph.addEdge( a1, a2 ).init();
 		graph.addEdge( a2, a3 ).init();
 
-		assertEquals( Collections.singleton( a ), TreeUtils.findRealRoots( graph, Arrays.asList( a, a1, a2, a3 ) ) );
-		assertEquals( Collections.singleton( a ), TreeUtils.findRealRoots( graph, Collections.singleton( a3 ) ) );
-		assertEquals( Collections.singleton( b ), TreeUtils.findRealRoots( graph, Collections.singleton( b ) ) );
+		assertEquals( Collections.singleton( a ), TreeUtils.findRootsOfTheGivenNodes( graph, Arrays.asList( a, a1, a2, a3 ) ) );
+		assertEquals( Collections.singleton( a ), TreeUtils.findRootsOfTheGivenNodes( graph, Collections.singleton( a3 ) ) );
+		assertEquals( Collections.singleton( b ), TreeUtils.findRootsOfTheGivenNodes( graph, Collections.singleton( b ) ) );
+		assertEquals( createSet( a, b ), TreeUtils.findRootsOfTheGivenNodes( graph, Arrays.asList( a2, b ) ) );
 	}
 
 	@Test
@@ -104,8 +112,34 @@ public class TreeUtilsTest
 		graph.addEdge( b, c );
 		graph.addEdge( c, b ); // loop between b and c
 		// process
-		RefSet< Spot > result = TreeUtils.findRealRoots( graph, Collections.singleton( c ) );
+		RefSet< Spot > result = TreeUtils.findRootsOfTheGivenNodes( graph, Collections.singleton( c ) );
 		// test
 		assertEquals( Collections.singleton( a ), result );
+	}
+
+	@Test
+	public void testFindRealRoots_noTree() {
+		// Example graph:
+		//   a   b
+		//    \ /
+		//     c
+		//     |
+		//     d
+		ModelGraph graph = new ModelGraph();
+		Spot a = graph.addVertex().init( 0, new double[] { 0, 0, 0 }, 1 );
+		Spot b = graph.addVertex().init( 1, new double[] { 0, 0, 0 }, 1 );
+		Spot c = graph.addVertex().init( 2, new double[] { 0, 0, 0 }, 1 );
+		Spot d = graph.addVertex().init( 3, new double[] { 0, 0, 0 }, 1 );
+		graph.addEdge( a, c );
+		graph.addEdge( b, c );
+		graph.addEdge( c, d );
+
+		assertEquals( createSet( a, b ), TreeUtils.findRootsOfTheGivenNodes( graph, Arrays.asList( b, c, d ) ) );
+		assertEquals( createSet( a, b ), TreeUtils.findRootsOfTheGivenNodes( graph, Arrays.asList( a, c, d ) ) );
+	}
+
+	private < T > Set< T > createSet( T... elements )
+	{
+		return new HashSet<>( Arrays.asList( elements ) );
 	}
 }
