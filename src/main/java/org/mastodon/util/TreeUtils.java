@@ -74,11 +74,10 @@ public class TreeUtils
 	}
 
 	/**
-	 * Returns those roots of the given {@code graph} that are predecessors of
-	 * the given {@code nodes}. (A node is considered a root if it has no
-	 * incoming edges.)
+	 * This method returns the root nodes of the trees containing any of the
+	 * given {@code nodes}.
 	 * <p>
-	 * Example {@code graph}:
+	 * Example:
 	 * <pre>
 	 *   A                B
 	 *  / \             /   \
@@ -88,8 +87,12 @@ public class TreeUtils
 	 *    / \
 	 *   a4 a5
 	 * </pre>
-	 * If {@code node} contains: {@code {a2}},
-	 * then the method returns a set {@code {A}}.
+	 * <p>
+	 * If {@code nodes} contains {@code {a2, a4}} then the method will return
+	 * {@code {A}}.
+	 * <p>
+	 * If {@code nodes} contains {@code {a2, a4, b6}} then the method will
+	 * return {@code {A, B}}.
 	 */
 	public static <V extends Vertex<E>, E extends Edge< V > > RefSet< V > findRootsOfTheGivenNodes( Graph< V, E > graph, Collection< V > nodes )
 	{
@@ -98,7 +101,7 @@ public class TreeUtils
 
 	/**
 	 * @return the set of predecessors of the given {@code nodes}. Please note
-	 * that the set contains the given {@code nodes} as well.
+	 * that returned set also contains all the given {@code nodes}.
 	 */
 	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > computePredecessors( Graph< V, E > graph, Collection< V > nodes )
 	{
