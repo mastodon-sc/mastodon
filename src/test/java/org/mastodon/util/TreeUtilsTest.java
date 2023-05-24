@@ -120,9 +120,9 @@ public class TreeUtilsTest
 	@Test
 	public void testFindRootsOfTheGivenNodes_noTree() {
 		// Example graph:
-		//   a   b
-		//    \ /
-		//     c
+		//   a   b     f
+		//    \ / \
+		//     c   e
 		//     |
 		//     d
 		ModelGraph graph = new ModelGraph();
@@ -130,12 +130,16 @@ public class TreeUtilsTest
 		Spot b = graph.addVertex().init( 1, new double[] { 0, 0, 0 }, 1 );
 		Spot c = graph.addVertex().init( 2, new double[] { 0, 0, 0 }, 1 );
 		Spot d = graph.addVertex().init( 3, new double[] { 0, 0, 0 }, 1 );
+		Spot e = graph.addVertex().init( 4, new double[] { 0, 0, 0 }, 1 );
+		Spot f = graph.addVertex().init( 4, new double[] { 0, 0, 0 }, 1 );
 		graph.addEdge( a, c );
 		graph.addEdge( b, c );
 		graph.addEdge( c, d );
+		graph.addEdge( b, e );
 
 		assertEquals( createSet( a, b ), TreeUtils.findRootsOfTheGivenNodes( graph, Arrays.asList( b, c, d ) ) );
 		assertEquals( createSet( a, b ), TreeUtils.findRootsOfTheGivenNodes( graph, Arrays.asList( a, c, d ) ) );
+		assertEquals( createSet( a, b ), TreeUtils.findRootsOfTheGivenNodes( graph, Collections.singletonList( e ) ) );
 	}
 
 	@SafeVarargs

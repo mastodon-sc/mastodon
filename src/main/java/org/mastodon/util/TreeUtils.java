@@ -74,13 +74,13 @@ public class TreeUtils
 	}
 
 	/**
-	 * This method returns the root nodes of the trees containing any of the
-	 * given {@code nodes}.
+	 * This method returns the root nodes of the tracks (connected components)
+	 * that contain any of the given {@code nodes}.
 	 * <p>
 	 * Example:
 	 * <pre>
-	 *   A                B
-	 *  / \             /   \
+	 *   A                B      C
+	 *  / \             /   \  /
 	 * a1  a2          b1    b2
 	 *     |          / \   / \
 	 *     a3        b3 b4 b5 b6
@@ -91,19 +91,19 @@ public class TreeUtils
 	 * If {@code nodes} contains {@code {a2, a4}} then the method will return
 	 * {@code {A}}.
 	 * <p>
-	 * If {@code nodes} contains {@code {a2, a4, b6}} then the method will
-	 * return {@code {A, B}}.
+	 * If {@code nodes} contains {@code {a2, a4, b4}} then the method will
+	 * return {@code {A, B, C}}.
 	 */
 	public static <V extends Vertex<E>, E extends Edge< V > > RefSet< V > findRootsOfTheGivenNodes( Graph< V, E > graph, Collection< V > nodes )
 	{
-		return filterRoots( graph, computePredecessors( graph, nodes ) );
+		return filterRoots( graph, findAllConnectedNodes( graph, nodes ) );
 	}
 
 	/**
 	 * @return the set of predecessors of the given {@code nodes}. Please note
 	 * that returned set also contains all the given {@code nodes}.
 	 */
-	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > computePredecessors( Graph< V, E > graph, Collection< V > nodes )
+	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > findAllConnectedNodes( Graph< V, E > graph, Collection< V > nodes )
 	{
 		// The following code performs an inverse depth first search starting
 		// from the given nodes. The set of visited nodes is returned.
@@ -118,10 +118,12 @@ public class TreeUtils
 			while ( ! stack.isEmpty() ) {
 				V node = stack.pop( ref );
 				for ( E edge : node.incomingEdges() ) {
-					V previousNode = edge.getSource( ref2 );
-					boolean firstVisit = visited.add( previousNode );
-					if ( firstVisit )
-						stack.add( previousNode );
+					V parentNode = edge.getSource( ref2 );
+					addNode( visited, stack, parentNode );
+				}
+				for ( E edge : node.outgoingEdges() ) {
+					V childNode = edge.getTarget( ref2 );
+					addNode( visited, stack, childNode );
 				}
 			}
 			return visited;
@@ -131,6 +133,13 @@ public class TreeUtils
 			graph.releaseRef( ref );
 			graph.releaseRef( ref2 );
 		}
+	}
+
+	private static < V extends Vertex<E>, E extends Edge< V > > void addNode( RefSet< V > visited, RefStack< V > stack, V parentNode )
+	{
+		boolean firstVisit = visited.add( parentNode );
+		if ( firstVisit )
+			stack.add( parentNode );
 	}
 
 	/**
