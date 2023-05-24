@@ -73,11 +73,11 @@ public class TreeUtilsTest
 		RefList< Spot > result = TreeUtils.findSelectedSubtreeRoots( graph, roots, selectedSpots );
 
 		// test
-		assertEquals( Arrays.asList( b ), result );
+		assertEquals( Collections.singletonList( b ), result );
 	}
 
 	@Test
-	public void testFindRealRoots() {
+	public void testFindRootsOfTheGivenNodes() {
 		// Example graph:
 		//   a   b
 		//   |
@@ -102,7 +102,7 @@ public class TreeUtilsTest
 	}
 
 	@Test
-	public void testFindRealRoots_dontGetStuckInLoops() {
+	public void testFindRootsOfTheGivenNodes_dontGetStuckInLoops() {
 		// setup
 		ModelGraph graph = new ModelGraph();
 		Spot a = graph.addVertex().init( 0, new double[] { 0, 0, 0 }, 1 );
@@ -118,7 +118,7 @@ public class TreeUtilsTest
 	}
 
 	@Test
-	public void testFindRealRoots_noTree() {
+	public void testFindRootsOfTheGivenNodes_noTree() {
 		// Example graph:
 		//   a   b
 		//    \ /
@@ -138,7 +138,8 @@ public class TreeUtilsTest
 		assertEquals( createSet( a, b ), TreeUtils.findRootsOfTheGivenNodes( graph, Arrays.asList( a, c, d ) ) );
 	}
 
-	private < T > Set< T > createSet( T... elements )
+	@SafeVarargs
+	private static < T > Set< T > createSet( T... elements )
 	{
 		return new HashSet<>( Arrays.asList( elements ) );
 	}
