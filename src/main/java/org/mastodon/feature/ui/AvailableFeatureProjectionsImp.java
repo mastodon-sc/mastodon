@@ -353,6 +353,8 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 		 */
 		featureSpecsService.getSpecs( vertexClass ).forEach( projections::add );
 		featureSpecsService.getSpecs( edgeClass ).forEach( projections::add );
+		featureSpecsService.getSpecs( branchVertexClass ).forEach( projections::add );
+		featureSpecsService.getSpecs( branchEdgeClass ).forEach( projections::add );
 
 		/*
 		 * Feature specs from feature model.
