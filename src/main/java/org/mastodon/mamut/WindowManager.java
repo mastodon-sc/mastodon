@@ -989,6 +989,14 @@ public class WindowManager
 		}
 	}
 
+	/**
+	 * This method is called when the MainWindow is closed.
+	 */
+	public void dispose() {
+		setAppModel( null );
+		settings.dispose();
+	}
+
 	KeyPressedManager getKeyPressedManager()
 	{
 		return keyPressedManager;

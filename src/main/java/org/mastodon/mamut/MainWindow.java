@@ -208,7 +208,7 @@ public class MainWindow extends JFrame
 		if ( windowManager != null && windowManager.getAppModel() == null
 				|| windowManager.getAppModel().getModel().isSavePoint() )
 		{
-			windowManager.closeAllWindows();
+			windowManager.dispose();
 			dispose();
 			return true;
 		}
@@ -242,7 +242,7 @@ public class MainWindow extends JFrame
 
 		case JOptionPane.NO_OPTION:
 			if ( windowManager != null )
-				windowManager.closeAllWindows();
+				windowManager.dispose();
 			dispose();
 		}
 		return true;
