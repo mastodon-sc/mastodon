@@ -73,11 +73,11 @@ import org.mastodon.views.grapher.datagraph.ScreenEntitiesInterpolator;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.DataDisplayOptions.Values;
 import org.mastodon.views.trackscheme.display.animate.AbstractAnimator;
+import org.mastodon.views.PainterThread;
 
 import bdv.viewer.InteractiveDisplayCanvas;
 import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TransformListener;
-import bdv.viewer.render.PainterThread;
 
 public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends JPanel
 		implements
