@@ -34,10 +34,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.scijava.Cancelable;
-import org.scijava.service.SciJavaService;
+import org.scijava.Context;
 
-public interface FeatureComputerService extends Cancelable, SciJavaService
+public interface FeatureComputerService extends Cancelable
 {
+	public Context getContext();
 
 	/**
 	 * Get {@code FeatureSpec}s for all features computable by this service.

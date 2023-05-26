@@ -27,7 +27,7 @@ public class FeatureComputerTestUtils
 
 	private static MamutFeatureComputerService getMamutFeatureComputerService( Context context, Model model )
 	{
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService = MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );
 		return featureComputerService;
 	}

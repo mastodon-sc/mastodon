@@ -41,6 +41,7 @@ import org.mastodon.feature.FeatureDependencyGraph.Edge;
 import org.mastodon.feature.FeatureDependencyGraph.Vertex;
 import org.mastodon.graph.algorithm.TopologicalSort;
 import org.scijava.Cancelable;
+import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandModule;
@@ -48,13 +49,13 @@ import org.scijava.command.CommandService;
 import org.scijava.listeners.Listeners;
 import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 
-@Plugin( type = FeatureComputerService.class )
-public class DefaultFeatureComputerService extends AbstractService implements FeatureComputerService
+public class DefaultFeatureComputerService implements FeatureComputerService
 {
+	@Parameter
+	private Context context;
+
 	@Parameter
 	private PluginService plugins;
 
@@ -91,6 +92,11 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	}
 
 	@Override
+	public Context getContext()
+	{
+		return context;
+	}
+
 	public void initialize()
 	{
 		dependencies.clear();

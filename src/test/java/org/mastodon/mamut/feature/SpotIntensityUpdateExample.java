@@ -72,7 +72,7 @@ public class SpotIntensityUpdateExample
 
 		final Context context = windowManager.getContext();
 		final MamutFeatureComputerService featureComputerService =
-				context.getService( MamutFeatureComputerService.class );
+				MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "Computing spot intensity..." );

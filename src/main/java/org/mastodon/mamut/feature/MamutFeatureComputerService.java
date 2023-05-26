@@ -46,12 +46,11 @@ import org.mastodon.mamut.model.SpotPool;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
+import org.scijava.Context;
 import org.scijava.command.CommandModule;
 import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
 
-@Plugin( type = MamutFeatureComputerService.class )
 public class MamutFeatureComputerService extends DefaultFeatureComputerService
 {
 
@@ -66,6 +65,12 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 
 	private PropertyChangeListener< Spot > vertexPropertyListener;
 
+	public static MamutFeatureComputerService newInstance( Context context ) {
+		MamutFeatureComputerService service = new MamutFeatureComputerService();
+		context.inject( service );
+		service.initialize();
+		return service;
+	}
 	public MamutFeatureComputerService()
 	{
 		super( MamutFeatureComputer.class );

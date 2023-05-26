@@ -67,7 +67,7 @@ public class SerializeFeatureExample
 
 		// Compute features.
 		final MamutFeatureComputerService featureComputerService =
-				windowManager.getContext().getService( MamutFeatureComputerService.class );
+				MamutFeatureComputerService.newInstance( windowManager.getContext() );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "\nComputing features..." );
