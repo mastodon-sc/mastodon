@@ -97,7 +97,11 @@ public class ColorUtils
 	}
 
 	/**
-	 * Scales the alpha value of the given color by the given factor.
+	 * Scales the alpha value of the given color by the given factor.<p>
+	 * When using the resulting value to create a {@link Color} object,
+	 * the {@link Color} object should be created with the {@code hasAlpha}
+	 * parameter set to {@code true} to indicate that the alpha value is valid.
+	 * @see Color#Color(int, boolean)
 	 *
 	 * @param color color encoded as int, see {@link Color#getRGB()}.
 	 * @param factor the factor that is used to scale the alpha value.
