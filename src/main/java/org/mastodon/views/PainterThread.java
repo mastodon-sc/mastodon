@@ -7,6 +7,18 @@ import bdv.viewer.RequestRepaint;
 
 /**
  * Thread to repaint display.
+ * <p>
+ * This is a copy of {@link bdv.viewer.render.PainterThread} with
+ * the significant difference that it uses a {@link WeakReference}
+ * to the {@link Paintable}. This has the following consequences:
+ * <ul>
+ *     <li>The thread never prevents the garbage collection of the paintable.</li>
+ *     <li>
+ *         The thread automatically shuts down if the paintable gets garbage collected.
+ *         It's not necessary (but still possible) to explicitly terminate the thread
+ *         by calling {@link Thread#interrupt() thread.interrupt()}.
+ *     </li>
+ * </ul>
  */
 public class PainterThread extends Thread implements RequestRepaint
 {
