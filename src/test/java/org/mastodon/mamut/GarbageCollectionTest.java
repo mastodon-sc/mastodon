@@ -29,7 +29,9 @@
 package org.mastodon.mamut;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeFalse;
 
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
@@ -73,6 +75,9 @@ public class GarbageCollectionTest
 	@Test
 	public void testIfMastodonIsGarbageCollectable()
 	{
+		assumeFalse( "Skip test for memory leaks in the Mastodon UI. (running in headless mode)",
+				GraphicsEnvironment.isHeadless() );
+
 		try( Context context = new Context() ) {
 			WeakReference< ModelGraph > modelGraph = openAndCloseMastodon( context );
 			GarbageCollectionUtils.triggerGarbageCollection();

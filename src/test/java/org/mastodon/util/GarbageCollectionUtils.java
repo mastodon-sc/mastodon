@@ -29,6 +29,7 @@
 package org.mastodon.util;
 
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,9 @@ public class GarbageCollectionUtils
 	 */
 	public static void triggerGarbageCollection()
 	{
-		workAroundSwingMemoryLeak();
+		if ( !GraphicsEnvironment.isHeadless() )
+			workAroundSwingMemoryLeak();
+
 		// NB: The garbage collection needs to be triggered twice
 		// in order to cause a full garbage collection.
 		triggerGarbageCollectionOnce();
