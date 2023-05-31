@@ -46,6 +46,31 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
  */
 public class ExampleGraph2 extends AbstractExampleGraph
 {
+
+	public final Spot spot0;
+
+	public final Spot spot1;
+
+	public final Spot spot2;
+
+	public final Spot spot3;
+
+	public final Spot spot4;
+
+	public final Spot spot5;
+
+	public final Spot spot6;
+
+	public final Spot spot7;
+
+	public final Spot spot8;
+
+	public final Spot spot10;
+
+	public final Spot spot11;
+
+	public final Spot spot13;
+
 	public final BranchSpot branchSpotA;
 
 	public final BranchSpot branchSpotB;
@@ -58,18 +83,18 @@ public class ExampleGraph2 extends AbstractExampleGraph
 
 	public ExampleGraph2()
 	{
-		Spot spot0 = addNode( "0", 0, new double[]{1d, 2d, 3d} );
-		Spot spot1 = addNode( "1", 1, new double[]{0d, 0d, 0d} );
-		Spot spot2 = addNode( "2", 2, new double[]{3d, 6d, 9d} );
-		Spot spot3 = addNode( "3", 3, new double[]{4d, 8d, 12d} );
-		Spot spot4 = addNode( "4", 4, new double[]{5d, 10d, 15d} );
-		Spot spot5 = addNode( "5", 5, new double[]{6d, 12d, 18d} );
-		Spot spot6 = addNode( "6", 6, new double[]{0d, 0d, 0d} );
-		Spot spot7 = addNode( "7", 7, new double[]{8d, 16d, 24d} );
-		Spot spot8 = addNode( "8", 5, new double[]{9d, 18d, 27d} );
-		Spot spot10 = addNode( "10", 7, new double[]{11d, 22d, 33d} );
-		Spot spot11 = addNode( "11", 3, new double[]{12d, 24d, 36d} );
-		Spot spot13 = addNode( "13", 5, new double[]{14d, 28d, 42d} );
+		spot0 = addNode( "0", 0, new double[] { 1d, 2d, 3d } );
+		spot1 = addNode( "1", 1, new double[] { 0d, 0d, 0d } );
+		spot2 = addNode( "2", 2, new double[] { 3d, 6d, 9d } );
+		spot3 = addNode( "3", 3, new double[] { 4d, 8d, 12d } );
+		spot4 = addNode( "4", 4, new double[] { 5d, 10d, 15d } );
+		spot5 = addNode( "5", 5, new double[] { 6d, 12d, 18d } );
+		spot6 = addNode( "6", 6, new double[] { 0d, 0d, 0d } );
+		spot7 = addNode( "7", 7, new double[] { 8d, 16d, 24d } );
+		spot8 = addNode( "8", 5, new double[] { 9d, 18d, 27d } );
+		spot10 = addNode( "10", 7, new double[] { 11d, 22d, 33d } );
+		spot11 = addNode( "11", 3, new double[] { 12d, 24d, 36d } );
+		spot13 = addNode( "13", 5, new double[] { 14d, 28d, 42d } );
 
 		addEdge( spot0, spot1 );
 		addEdge( spot1, spot2 );

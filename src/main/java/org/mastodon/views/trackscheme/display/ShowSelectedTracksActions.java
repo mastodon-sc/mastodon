@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,7 +41,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.util.DepthFirstIteration;
+import org.mastodon.util.TreeUtils;
 import org.mastodon.views.trackscheme.LexicographicalVertexOrder;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
@@ -172,7 +172,8 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 		final RefSet< TrackSchemeVertex > selectedNodes = new RefSetImp<>( viewGraph.getVertexPool() );
 		selectedNodes.addAll( selectionModel.getSelectedVertices() );
 		addEdgeTargets( selectedNodes, selectionModel.getSelectedEdges() );
-		return filterRootNodes( selectedNodes );
+		RefList< TrackSchemeVertex > sortedRoots = LexicographicalVertexOrder.sort( viewGraph, viewGraph.getRoots() );
+		return TreeUtils.findSelectedSubtreeRoots( viewGraph, sortedRoots, selectedNodes );
 	}
 
 	private RefList< TrackSchemeVertex > getSelectedWholeTrackRoots()
@@ -192,40 +193,9 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 		viewGraph.releaseRef( targetRef );
 	}
 
-	private RefList< TrackSchemeVertex > filterRootNodes( final RefSet< TrackSchemeVertex > selectedVertices )
-	{
-		final RefList< TrackSchemeVertex > roots = new RefArrayList<>( viewGraph.getVertexPool() );
-		for ( final TrackSchemeVertex realRoot : LexicographicalVertexOrder.sort( viewGraph, viewGraph.getRoots() ) )
-			for ( final DepthFirstIteration.Step< TrackSchemeVertex > step : DepthFirstIteration.forRoot( viewGraph,
-					realRoot ) )
-			{
-				final TrackSchemeVertex node = step.node();
-				if ( selectedVertices.contains( node ) )
-				{
-					roots.add( node );
-					step.truncate();
-				}
-			}
-		return roots;
-	}
-
 	private RefList< TrackSchemeVertex > getRealRoots( final RefSet< TrackSchemeVertex > selectedNodes )
 	{
-		final TrackSchemeVertex parent = viewGraph.vertexRef();
-		final RefSet< TrackSchemeVertex > roots = new RefSetImp<>( viewGraph.getVertexPool() );
-		A: for ( final TrackSchemeVertex vertex : selectedNodes )
-		{
-			parent.refTo( vertex );
-			while ( !parent.incomingEdges().isEmpty() )
-			{
-				parent.incomingEdges().iterator().next().getSource( parent );
-				if ( selectedNodes.contains( parent ) )
-					continue A;
-			}
-			roots.add( parent );
-		}
-		viewGraph.releaseRef( parent );
+		RefSet< TrackSchemeVertex > roots = TreeUtils.findRootsOfTheGivenNodes( viewGraph, selectedNodes );
 		return LexicographicalVertexOrder.sort( viewGraph, roots );
 	}
-
 }
