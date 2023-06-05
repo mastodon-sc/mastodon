@@ -6,11 +6,15 @@ import java.util.concurrent.RejectedExecutionException;
 import bdv.viewer.RequestRepaint;
 
 /**
- * Thread to repaint display.
+ * Note: This class should be replaced with {@link bdv.viewer.render.PainterThread}
+ * as soon as the PR https://github.com/bigdataviewer/bigdataviewer-core/pull/163
+ * is merged, released and on the FIJI update site.
  * <p>
- * This is a copy of {@link bdv.viewer.render.PainterThread} with
- * the significant difference that it uses a {@link WeakReference}
- * to the {@link Paintable}. This has the following consequences:
+ * This is a workaround for a memory leak related to
+ * {@link bdv.viewer.render.PainterThread}. This is actually a
+ * copy of the class in BDV core with the significant difference
+ * that it uses a {@link WeakReference} to the {@link Paintable}.
+ * This has the following consequences:
  * <ul>
  *     <li>The thread never prevents the garbage collection of the paintable.</li>
  *     <li>
