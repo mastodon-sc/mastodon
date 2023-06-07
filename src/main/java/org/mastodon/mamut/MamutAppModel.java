@@ -42,6 +42,7 @@ import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
+import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -72,6 +73,8 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	private final int maxTimepoint;
 
 	private final BranchGraphSynchronizer branchGraphSync;
+
+	private final Listeners.List< CloseListener > closeListeners = new Listeners.List<>();
 
 	public MamutAppModel(
 			final Model model,
@@ -156,5 +159,17 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public BranchGraphSynchronizer getBranchGraphSync()
 	{
 		return branchGraphSync;
+	}
+
+	public void close() {
+		closeListeners.list.forEach( CloseListener::close );
+	}
+
+	/**
+	 * Listeners that are notified when the Mastodon project is closed,
+	 * by for example closing the main window.
+	 */
+	public Listeners< CloseListener > closeListeners() {
+		return closeListeners;
 	}
 }
