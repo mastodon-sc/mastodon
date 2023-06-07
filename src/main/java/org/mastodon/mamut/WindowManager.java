@@ -399,6 +399,8 @@ public class WindowManager
 	void setAppModel( final MamutAppModel appModel )
 	{
 		closeAllWindows();
+		if ( this.appModel != null )
+			this.appModel.close();
 
 		this.appModel = appModel;
 		if ( appModel == null )
