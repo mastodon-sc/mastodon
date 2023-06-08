@@ -702,10 +702,11 @@ public class ProjectManager
 		// Prepare image data.
 		final SharedBigDataViewerData sharedBdvData = openImageData( localProject, windowManager, loadDummyData );
 
+		this.project = localProject;
+
 		// Load model.
 		loadModel( windowManager, sharedBdvData, localProject, restoreGUIState );
 
-		this.project = localProject;
 		updateEnabledActions();
 	}
 
