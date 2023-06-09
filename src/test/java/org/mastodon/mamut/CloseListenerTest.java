@@ -29,7 +29,9 @@
 package org.mastodon.mamut;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -49,6 +51,7 @@ public class CloseListenerTest
 	@Test
 	public void testCloseListeners() throws IOException, SpimDataException
 	{
+		assumeFalse( "This test requires a display.", GraphicsEnvironment.isHeadless() );
 		try ( Context context = new Context() ) {
 			// setup
 			WindowManager windowManager = openTinyProject( context );
