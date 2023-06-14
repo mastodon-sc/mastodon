@@ -166,10 +166,10 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	}
 
 	/**
-	 * Listeners that are notified when the Mastodon project is closed,
-	 * by for example closing the main window.
+	 * Listeners that are notified when the Mastodon project is closed.
 	 */
-	public Listeners< CloseListener > closeListeners() {
+	public Listeners< CloseListener > projectClosedListeners()
+	{
 		return closeListeners;
 	}
 }
