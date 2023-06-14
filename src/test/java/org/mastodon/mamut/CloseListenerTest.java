@@ -52,12 +52,13 @@ public class CloseListenerTest
 	public void testCloseListeners() throws IOException, SpimDataException
 	{
 		assumeFalse( "This test requires a display.", GraphicsEnvironment.isHeadless() );
-		try ( Context context = new Context() ) {
+		try (Context context = new Context())
+		{
 			// setup
 			WindowManager windowManager = openTinyProject( context );
 			MamutAppModel appModel = windowManager.getAppModel();
 			final int[] counter = new int[] { 0 };
-			appModel.closeListeners().add( () -> counter[ 0 ]++ );
+			appModel.projectClosedListeners().add( () -> counter[ 0 ]++ );
 			// process
 			windowManager.setAppModel( null ); // NB: This is the current way to close a Mastodon project. It could maybe use some refactoring.
 			// test
