@@ -161,7 +161,8 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		return branchGraphSync;
 	}
 
-	public void close() {
+	public void close()
+	{
 		closeListeners.list.forEach( CloseListener::close );
 	}
 
