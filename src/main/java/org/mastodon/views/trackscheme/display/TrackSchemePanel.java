@@ -71,11 +71,11 @@ import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions.Values;
 import org.mastodon.views.trackscheme.display.animate.AbstractAnimator;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
-import org.mastodon.views.PainterThread;
 
 import bdv.viewer.InteractiveDisplayCanvas;
 import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TransformListener;
+import bdv.viewer.render.PainterThread;
 
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
