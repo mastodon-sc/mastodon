@@ -78,15 +78,16 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge >
 
 		private final DummyGraph graph;
 
-		private SelectionModel< DummyVertex, DummyEdge > selectionModel;
+		private final Collection< DummyVertex > vertices;
+
+		private final Collection< DummyEdge > edges;
 
 		private Examples( final DummyGraph graph, final Collection< DummyVertex > vertices,
 				final Collection< DummyEdge > edges )
 		{
 			this.graph = graph;
-			this.selectionModel = new DefaultSelectionModel<>( graph, graph.getIdBimap() );
-			selectionModel.setEdgesSelected( edges, true );
-			selectionModel.setVerticesSelected( vertices, true );
+			this.vertices = vertices;
+			this.edges = edges;
 		}
 
 		public DummyGraph getGraph()
@@ -96,6 +97,9 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge >
 
 		public SelectionModel< DummyVertex, DummyEdge > getSelectionModel()
 		{
+			DefaultSelectionModel< DummyVertex, DummyEdge > selectionModel = new DefaultSelectionModel<>( graph, graph.getIdBimap() );
+			selectionModel.setEdgesSelected( edges, true );
+			selectionModel.setVerticesSelected( vertices, true );
 			return selectionModel;
 		}
 	}

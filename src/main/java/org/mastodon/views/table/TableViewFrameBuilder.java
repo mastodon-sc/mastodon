@@ -45,6 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -797,6 +798,8 @@ public class TableViewFrameBuilder
 			SwingUtilities.replaceUIActionMap( pane, keybindings.getConcatenatedActionMap() );
 			SwingUtilities.replaceUIInputMap( pane, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
 					keybindings.getConcatenatedInputMap() );
+
+			setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 		}
 
 		public FeatureTagTablePanel< ? > getCurrentlyDisplayedTable()

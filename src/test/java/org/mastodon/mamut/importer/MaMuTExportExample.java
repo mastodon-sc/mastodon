@@ -73,7 +73,7 @@ public class MaMuTExportExample
 
 		final Context context = windowManager.getContext();
 		final MamutFeatureComputerService featureComputerService =
-				context.getService( MamutFeatureComputerService.class );
+				MamutFeatureComputerService.newInstance( context );
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );

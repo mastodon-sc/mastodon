@@ -59,7 +59,7 @@ public class MamutFeatureComputation
 	public static final JDialog getDialog( final MamutAppModel appModel, final Context context )
 	{
 		// Prepare services.
-		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService computerService = MamutFeatureComputerService.newInstance( context );
 		computerService.setModel( appModel.getModel() );
 		computerService.setSharedBdvData( appModel.getSharedBdvData() );
 		final MyFeatureComputerService myComputerService =
@@ -114,7 +114,7 @@ public class MamutFeatureComputation
 		}
 	}
 
-	private static final class MyFeatureComputerService extends AbstractService implements FeatureComputerService
+	private static final class MyFeatureComputerService implements FeatureComputerService
 	{
 
 		private final FeatureComputerService wrapped;
@@ -131,18 +131,6 @@ public class MamutFeatureComputation
 		public Context getContext()
 		{
 			return wrapped.getContext();
-		}
-
-		@Override
-		public Context context()
-		{
-			return wrapped.context();
-		}
-
-		@Override
-		public void setContext( final Context context )
-		{
-			wrapped.setContext( context );
 		}
 
 		@Override
