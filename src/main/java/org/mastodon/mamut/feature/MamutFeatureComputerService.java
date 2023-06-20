@@ -51,6 +51,15 @@ import org.scijava.command.CommandModule;
 import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Parameter;
 
+/**
+ * NB: This is now longer a {@link org.scijava.service.Service} in terms of
+ * the SciJava framework. Each Mastodon project requires its own instance
+ * of this {@link MamutFeatureComputerService}, in order to avoid thread
+ * safety issues. There can be multiple Mastodon projects open in the same
+ * Fiji in parallel. It must therefore be possible to create multiple
+ * {@link MamutFeatureComputerService} instances. The SciJava framework
+ * would give us a single instance of this service.
+ */
 public class MamutFeatureComputerService extends DefaultFeatureComputerService
 {
 
@@ -71,7 +80,8 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 		service.initialize();
 		return service;
 	}
-	public MamutFeatureComputerService()
+
+	private MamutFeatureComputerService()
 	{
 		super( MamutFeatureComputer.class );
 	}
