@@ -181,6 +181,7 @@
 
 		<mastodon-collection.version>1.0.0-beta-24</mastodon-collection.version>
 		<mastodon-graph.version>1.0.0-beta-24</mastodon-graph.version>
+		<bigdataviewer-core.version>10.4.7</bigdataviewer-core.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
