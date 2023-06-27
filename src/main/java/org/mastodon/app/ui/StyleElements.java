@@ -29,6 +29,7 @@
 package org.mastodon.app.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -50,6 +51,7 @@ import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.JSpinner.DefaultEditor;
 import javax.swing.SpinnerListModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -544,6 +546,16 @@ public class StyleElements
 		slider.setNumColummns( tfCols );
 		slider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
 		return slider;
+	}
+
+	public static JSpinner linkedSpinner( final IntElement element )
+	{
+		final BoundedValue value = element.getValue();
+		final SpinnerNumberModel model = new SpinnerNumberModel( element.get(), value.getRangeMin(), value.getRangeMax(), 1 );
+		final JSpinner spinner = new JSpinner( model );
+		spinner.setMaximumSize( new Dimension( 80, spinner.getMaximumSize().height ) );
+		model.addChangeListener( e -> element.set( ( ( Number ) model.getValue() ).intValue() ) );
+		return spinner;
 	}
 
 	public static SliderPanelDouble linkedSliderPanel( final DoubleElement element, final int tfCols )
