@@ -28,7 +28,6 @@
  */
 package org.mastodon.views.bdv.overlay.ui;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -39,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mastodon.io.IOUtils;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.Yaml;
 
@@ -161,7 +161,7 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 	{
 		try
 		{
-			mkdirs( filename );
+			IOUtils.mkdirs( filename );
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = RenderSettingsIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
@@ -174,15 +174,5 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 		{
 			e.printStackTrace();
 		}
-	}
-
-	/*
-	 * STATIC UTILITIES
-	 */
-
-	private static boolean mkdirs( final String fileName )
-	{
-		final File dir = new File( fileName ).getParentFile();
-		return dir == null ? false : dir.mkdirs();
 	}
 }
