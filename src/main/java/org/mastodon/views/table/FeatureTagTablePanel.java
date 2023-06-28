@@ -453,7 +453,7 @@ public class FeatureTagTablePanel< O > extends JPanel
 			if ( null == feature.projections() )
 				continue;
 			final List< FeatureProjection< ? > > projections = new ArrayList<>( feature.projections() );
-			if ( projections.size() == 1 )
+			if ( projections.size() == 1 && projections.iterator().next().getKey().toString().equals( fs.getKey().toString() ) )
 			{
 				final ColumnGroup projectionGroup = new ColumnGroup( " " );
 				projectionGroup.setHeaderRenderer( headerRendererMid );

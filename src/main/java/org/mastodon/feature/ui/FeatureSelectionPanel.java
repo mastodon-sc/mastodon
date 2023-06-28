@@ -273,13 +273,22 @@ public class FeatureSelectionPanel
 		cbProjections.setModel( new DefaultComboBoxModel<>( pk ) );
 
 		// Visibility.
-		final Multiplicity multiplicity = availableFeatureProjections.multiplicity( targetType, featureKey );
-		final boolean projectionCBVisible = ( null != featureKey ) && ( projectionKeys.size() > 1 );
+
+		/*
+		 * Combo box for projection is visible is there is more than 1
+		 * projection or if the sole projection has a different key than its
+		 * feature.
+		 */
+		final boolean projectionCBVisible = ( null != featureKey )
+				&& ( projectionKeys.size() > 1
+						|| !projectionKeys.iterator().next().toString().equals( featureKey ) );
+
 		arrowStrut.setVisible( projectionCBVisible );
 		cbProjections.setVisible( projectionCBVisible );
 		lblArrow.setVisible( projectionCBVisible );
 		featureStrut.setVisible( projectionCBVisible );
 
+		final Multiplicity multiplicity = availableFeatureProjections.multiplicity( targetType, featureKey );
 		projectionStrut.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
 		lblSource1.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
 		cbSource1.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
