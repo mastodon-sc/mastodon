@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
@@ -358,7 +359,13 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 		 * Feature specs from feature model.
 		 */
 		if ( featureModel != null )
-			featureModel.getFeatureSpecs().forEach( projections::add );
+		{
+			for ( final FeatureSpec< ?, ? > fs : featureModel.getFeatureSpecs() )
+			{
+				final Feature< ? > feature = featureModel.getFeature( fs );
+				projections.add( feature.getSpec() );
+			}
+		}
 
 		/*
 		 * Feature projections used in existing FeatureColorModes
