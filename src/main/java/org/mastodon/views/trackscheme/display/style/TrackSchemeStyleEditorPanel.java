@@ -30,8 +30,10 @@ package org.mastodon.views.trackscheme.display.style;
 
 import static org.mastodon.app.ui.StyleElements.booleanElement;
 import static org.mastodon.app.ui.StyleElements.colorElement;
+import static org.mastodon.app.ui.StyleElements.label;
 import static org.mastodon.app.ui.StyleElements.linkedCheckBox;
 import static org.mastodon.app.ui.StyleElements.linkedColorButton;
+import static org.mastodon.app.ui.StyleElements.linkedLabel;
 import static org.mastodon.app.ui.StyleElements.separator;
 
 import java.awt.BorderLayout;
@@ -55,6 +57,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
@@ -67,6 +70,7 @@ import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.app.ui.StyleElements.BooleanElement;
 import org.mastodon.app.ui.StyleElements.ColorElement;
+import org.mastodon.app.ui.StyleElements.LabelElement;
 import org.mastodon.app.ui.StyleElements.Separator;
 import org.mastodon.app.ui.StyleElements.StyleElement;
 import org.mastodon.app.ui.StyleElements.StyleElementVisitor;
@@ -206,6 +210,22 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 							++c.gridy;
 						}
 					}
+
+					@Override
+					public void visit( final LabelElement label )
+					{
+						final JLabel lbl = linkedLabel( label );
+						if ( c.gridx != 0 )
+						{
+							c.gridx = 0;
+							++c.gridy;
+						}
+						c.gridwidth = 2;
+						editPanel.add( lbl, c );
+						++c.gridy;
+						c.gridwidth = 1;
+					};
+
 				} ) );
 
 		previewPanel.setBorder( new LineBorder( Color.LIGHT_GRAY, 1 ) );
@@ -253,6 +273,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 
 				separator(),
 
+				label( "Hierarchy graphs" ),
 				booleanElement( "hierarchy graph use curved lines", style::isHierarchyGraphCurvedLines,
 						style::hierarchyGraphCurvedLines ),
 				booleanElement( "fade future timepoints", style::isFadeFutureTimepoints, style::fadeFutureTimepoints )
