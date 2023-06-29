@@ -684,6 +684,8 @@ public class MastodonLauncher extends JFrame
 
 	private class LauncherDropTarget extends DropTarget
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public synchronized void drop( DropTargetDropEvent dropTargetDropEvent )
 		{

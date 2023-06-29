@@ -33,9 +33,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import net.miginfocom.swing.MigLayout;
 import org.mastodon.mamut.project.MamutProjectIO;
 import org.scijava.Context;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Demonstrate how Mastodon can still be started if the image data is missing.
@@ -44,6 +45,8 @@ import org.scijava.Context;
  */
 public class StartMastodonWithMissingImageDemo extends JFrame
 {
+	private static final long serialVersionUID = 1L;
+
 	private StartMastodonWithMissingImageDemo()
 	{
 		super( "Start Mastodon With Missing Image Demo" );
@@ -57,16 +60,16 @@ public class StartMastodonWithMissingImageDemo extends JFrame
 		addButton( "... with unknown host", "/org/mastodon/mamut/examples/tiny-unknown-url/remote-dataset.mastodon" );
 	}
 
-	private void addButton( String title, String resourceName )
+	private void addButton( final String title, final String resourceName )
 	{
-		JButton button = new JButton( title );
+		final JButton button = new JButton( title );
 		button.addActionListener( ignore -> openProjectFromResources( resourceName ) );
 		add( button, "grow" );
 	}
 
-	private void openProjectFromResources( String resourceName )
+	private void openProjectFromResources( final String resourceName )
 	{
-		String file = StartMastodonWithMissingImageDemo.class.getResource( resourceName ).getPath();
+		final String file = StartMastodonWithMissingImageDemo.class.getResource( resourceName ).getPath();
 		try
 		{
 			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
@@ -76,15 +79,15 @@ public class StartMastodonWithMissingImageDemo extends JFrame
 			win.setVisible( true );
 
 		}
-		catch ( Throwable e )
+		catch ( final Throwable e )
 		{
 			e.printStackTrace();
 		}
 	}
 
-	public static void main( String... args )
+	public static void main( final String... args )
 	{
-		JFrame frame = new StartMastodonWithMissingImageDemo();
+		final JFrame frame = new StartMastodonWithMissingImageDemo();
 		frame.pack();
 		frame.setVisible( true );
 		frame.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );

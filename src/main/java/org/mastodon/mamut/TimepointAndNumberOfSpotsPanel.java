@@ -22,6 +22,8 @@ import org.mastodon.model.TimepointModel;
  */
 public class TimepointAndNumberOfSpotsPanel extends JPanel
 {
+	private static final long serialVersionUID = 1L;
+
 	private final TimepointModel timepointModel;
 
 	private final Model model;
