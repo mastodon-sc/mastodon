@@ -1,11 +1,13 @@
 package org.mastodon.app.ui;
 
-import org.mastodon.mamut.model.Model;
-import org.mastodon.model.TimepointModel;
+import java.awt.BorderLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import org.mastodon.mamut.model.Model;
+import org.mastodon.model.TimepointModel;
 
 /**
  *  A component that displays the current timepoint and the number of spots
@@ -36,9 +38,11 @@ public class TimepointAndNumberOfSpotsPanel extends JPanel
 	 */
 	public TimepointAndNumberOfSpotsPanel( final TimepointModel timepointModel, final Model model )
 	{
+		setLayout( new BorderLayout() );
+		numberOfSpotsLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 		this.timepointModel = timepointModel;
 		this.model = model;
-		add( numberOfSpotsLabel );
+		add( numberOfSpotsLabel, BorderLayout.CENTER );
 		this.timepointModel.listeners().add( this::updateTimepointAndNumberOfSpotsLabel );
 		updateTimepointAndNumberOfSpotsLabel();
 	}

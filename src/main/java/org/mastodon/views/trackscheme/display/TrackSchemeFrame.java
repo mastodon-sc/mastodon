@@ -29,6 +29,7 @@
 package org.mastodon.views.trackscheme.display;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -90,6 +91,7 @@ public class TrackSchemeFrame extends ViewFrame
 		add( trackschemePanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
+		navigationLocksPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		settingsPanel.add( navigationLocksPanel );
 		settingsPanel.add( Box.createHorizontalGlue() );
 
