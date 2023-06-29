@@ -58,9 +58,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import bdv.viewer.RequestRepaint;
-import mpicbg.spim.data.SpimDataIOException;
-import mpicbg.spim.data.XmlKeys;
 import org.embl.mobie.io.ome.zarr.openers.OMEZarrS3Opener;
 import org.embl.mobie.io.util.S3Utils;
 import org.jdom2.Document;
@@ -101,6 +98,7 @@ import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
+import bdv.viewer.RequestRepaint;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.animate.MessageOverlayAnimator;
 import ij.IJ;
@@ -108,7 +106,9 @@ import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.SpimDataIOException;
 import mpicbg.spim.data.XmlIoSpimData;
+import mpicbg.spim.data.XmlKeys;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 
 public class ProjectManager
@@ -481,6 +481,7 @@ public class ProjectManager
 									windowManager.getDataDisplayStyleManager(),
 									windowManager.getRenderSettingsManager(),
 									windowManager.getFeatureColorModeManager(),
+									windowManager.getFeatureProjectionsManager(),
 									windowManager.getKeymapManager(),
 									windowManager.getPlugins(),
 									windowManager.getGlobalAppActions() );
@@ -575,7 +576,7 @@ public class ProjectManager
 		if ( project == null )
 			return;
 
-		File tmpDatasetXml = originalOrBackupDatasetXml( project );
+		final File tmpDatasetXml = originalOrBackupDatasetXml( project );
 
 		// update project root
 		project.setProjectRoot( projectRoot );
@@ -765,6 +766,7 @@ public class ProjectManager
 				windowManager.getDataDisplayStyleManager(),
 				windowManager.getRenderSettingsManager(),
 				windowManager.getFeatureColorModeManager(),
+				windowManager.getFeatureProjectionsManager(),
 				windowManager.getKeymapManager(),
 				windowManager.getPlugins(),
 				windowManager.getGlobalAppActions() );
@@ -986,7 +988,7 @@ public class ProjectManager
 				.shareKeyPressedEvents( windowManager.getKeyPressedManager() )
 				.msgOverlay( new MessageOverlayAnimator( 1500, 0.005, 0.02 ) );
 
-		RequestRepaint requestRepaint = () -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint );
+		final RequestRepaint requestRepaint = () -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint );
 
 		// Is it based on ImagePlus?
 		if ( project instanceof MamutImagePlusProject )
@@ -996,7 +998,7 @@ public class ProjectManager
 		}
 
 		// Open dummy data string?
-		String spimDataXmlFilename = project.getDatasetXmlFile().getPath();
+		final String spimDataXmlFilename = project.getDatasetXmlFile().getPath();
 		if ( DummySpimData.isDummyString( spimDataXmlFilename ) )
 			return SharedBigDataViewerData.fromDummyFilename( spimDataXmlFilename, options, requestRepaint );
 
@@ -1009,46 +1011,46 @@ public class ProjectManager
 				requestRepaint );
 	}
 
-	private static SharedBigDataViewerData openDummyImageData( MamutProject project, ViewerOptions options,
-			RequestRepaint requestRepaint )
+	private static SharedBigDataViewerData openDummyImageData( final MamutProject project, final ViewerOptions options,
+			final RequestRepaint requestRepaint )
 	{
 		try
 		{
-			String backupDatasetXml = originalOrBackupDatasetXml( project ).getAbsolutePath();
+			final String backupDatasetXml = originalOrBackupDatasetXml( project ).getAbsolutePath();
 			return SharedBigDataViewerData.createDummyDataFromSpimDataXml( backupDatasetXml, options, requestRepaint );
 		}
-		catch ( Throwable e )
+		catch ( final Throwable e )
 		{
 			return simpleDummyData( project, options, requestRepaint );
 		}
 	}
 
-	private static SharedBigDataViewerData simpleDummyData( MamutProject project, ViewerOptions options,
-			RequestRepaint requestRepaint )
+	private static SharedBigDataViewerData simpleDummyData( final MamutProject project, final ViewerOptions options,
+			final RequestRepaint requestRepaint )
 	{
 		try (final MamutProject.ProjectReader reader = project.openForReading())
 		{
 			final Model model = new Model( "pixel", "frame" );
 			model.loadRaw( reader );
-			String requiredImageSizeAsString = requiredImageSizeAsString( model );
+			final String requiredImageSizeAsString = requiredImageSizeAsString( model );
 			return SharedBigDataViewerData.fromDummyFilename( requiredImageSizeAsString, options, requestRepaint );
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{
 			throw new RuntimeException( e );
 		}
 	}
 
-	private static String requiredImageSizeAsString( Model model )
+	private static String requiredImageSizeAsString( final Model model )
 	{
 		int time = 0;
 		double x = 0;
 		double y = 0;
 		double z = 0;
-		for ( Spot spot : model.getGraph().vertices() )
+		for ( final Spot spot : model.getGraph().vertices() )
 		{
 			time = Math.max( time, spot.getTimepoint() );
-			double radius = Math.sqrt( spot.getBoundingSphereRadiusSquared() );
+			final double radius = Math.sqrt( spot.getBoundingSphereRadiusSquared() );
 			x = Math.max( x, spot.getDoublePosition( 0 ) + radius );
 			y = Math.max( y, spot.getDoublePosition( 1 ) + radius );
 			z = Math.max( z, spot.getDoublePosition( 2 ) + radius );
@@ -1060,33 +1062,33 @@ public class ProjectManager
 				time + 1 );
 	}
 
-	private static long roundUp( double x )
+	private static long roundUp( final double x )
 	{
 		return ( long ) Math.ceil( x );
 	}
 
-	private static File originalOrBackupDatasetXml( MamutProject project )
+	private static File originalOrBackupDatasetXml( final MamutProject project )
 	{
 		try
 		{
-			File datasetXml = project.getDatasetXmlFile();
+			final File datasetXml = project.getDatasetXmlFile();
 			if ( datasetXml.exists() )
 				return datasetXml;
 			else
 				return copyBackupDatasetXmlToTmpFile( project );
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{
 			return null;
 		}
 	}
 
-	private static File copyBackupDatasetXmlToTmpFile( MamutProject project ) throws IOException
+	private static File copyBackupDatasetXmlToTmpFile( final MamutProject project ) throws IOException
 	{
 		try (final MamutProject.ProjectReader reader = project.openForReading();
 				final InputStream is = reader.getBackupDatasetXmlInputStream())
 		{
-			File tmp = File.createTempFile( "mastodon-dataset-xml-backup", ".xml" );
+			final File tmp = File.createTempFile( "mastodon-dataset-xml-backup", ".xml" );
 			tmp.deleteOnExit();
 			Files.copy( is, tmp.toPath(), StandardCopyOption.REPLACE_EXISTING );
 			return tmp;
@@ -1105,7 +1107,7 @@ public class ProjectManager
 		{
 			Files.copy( tmpDatasetXml.toPath(), out );
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{
 			System.err.println( "Could not create backup of the dataset.xml file. Reason: '" + e.getMessage() + "'." );
 		}
@@ -1115,11 +1117,11 @@ public class ProjectManager
 	 * Show an dialog the explains to the user why the image data could not been
 	 * loaded, and offers to open Mastodon with dummy image data.
 	 */
-	private static boolean getUserPermissionToOpenDummyData( MamutProject project, Exception e )
+	private static boolean getUserPermissionToOpenDummyData( final MamutProject project, final Exception e )
 	{
-		String problemDescription = getProblemDescription( project, e );
+		final String problemDescription = getProblemDescription( project, e );
 		System.err.println( problemDescription );
-		String title = "Problem Opening Mastodon Project";
+		final String title = "Problem Opening Mastodon Project";
 		String message = "";
 		message += "Mastodon could not find the images associated with this project.\n";
 		message += "\n";
@@ -1133,15 +1135,15 @@ public class ProjectManager
 		message += "In the Mastodon menu select: File -> Fix Image Path.\n";
 		message += "\n";
 		message += "How would you like to continue?";
-		String[] options = { "Open With Dummy Images", "Cancel" };
-		int dialogResult = JOptionPane.showOptionDialog( null, message, title, JOptionPane.YES_NO_OPTION,
+		final String[] options = { "Open With Dummy Images", "Cancel" };
+		final int dialogResult = JOptionPane.showOptionDialog( null, message, title, JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE, null, options, null );
 		return dialogResult == JOptionPane.YES_OPTION;
 	}
 
-	private static String getProblemDescription( MamutProject project, Exception e )
+	private static String getProblemDescription( final MamutProject project, final Exception e )
 	{
-		File datasetXml = project.getDatasetXmlFile();
+		final File datasetXml = project.getDatasetXmlFile();
 		if ( !datasetXml.exists() )
 			return "The image data XML was not found:\n" + datasetXml;
 		final Throwable cause = e.getCause();

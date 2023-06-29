@@ -29,6 +29,7 @@
 package org.mastodon.mamut;
 
 import org.mastodon.app.MastodonAppModel;
+import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -76,6 +77,8 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final Listeners.List< CloseListener > closeListeners = new Listeners.List<>();
 
+	private final MamutFeatureProjectionsManager featureProjectionsManager;
+
 	public MamutAppModel(
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,
@@ -84,6 +87,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 			final DataDisplayStyleManager dataDisplayStyleManager,
 			final RenderSettingsManager renderSettingsManager,
 			final FeatureColorModeManager featureColorModeManager,
+			final MamutFeatureProjectionsManager featureProjectionsManager,
 			final KeymapManager keymapManager,
 			final MamutPlugins plugins,
 			final Actions globalActions )
@@ -103,6 +107,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		this.dataDisplayStyleManager = dataDisplayStyleManager;
 		this.renderSettingsManager = renderSettingsManager;
 		this.featureColorModeManager = featureColorModeManager;
+		this.featureProjectionsManager = featureProjectionsManager;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 		this.branchGraphSync =
@@ -134,6 +139,11 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public FeatureColorModeManager getFeatureColorModeManager()
 	{
 		return featureColorModeManager;
+	}
+
+	public MamutFeatureProjectionsManager getFeatureProjectionsManager()
+	{
+		return featureProjectionsManager;
 	}
 
 	public BoundingSphereRadiusStatistics getRadiusStats()

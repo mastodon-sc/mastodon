@@ -1024,6 +1024,11 @@ public class WindowManager
 		return featureColorModeManager;
 	}
 
+	MamutFeatureProjectionsManager getFeatureProjectionsManager()
+	{
+		return featureProjectionsManager;
+	}
+
 	KeymapManager getKeymapManager()
 	{
 		return keymapManager;
