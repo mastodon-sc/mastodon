@@ -50,7 +50,6 @@ import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.app.ui.BranchGraphSyncButton;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
-import org.mastodon.app.ui.TimepointAndNumberOfSpotsPanel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;

@@ -1,4 +1,4 @@
-package org.mastodon.app.ui;
+package org.mastodon.mamut;
 
 import java.awt.BorderLayout;
 
