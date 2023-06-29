@@ -29,6 +29,7 @@
 package org.mastodon.ui.context;
 
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -73,7 +74,9 @@ public class ContextChooserPanel< V > extends JPanel implements ContextChooser.U
 	{
 		super( new FlowLayout( FlowLayout.LEADING ) );
 		this.contextChooser = contextChooser;
+		final Font font = getFont().deriveFont( getFont().getSize2D() - 2f );
 		comboBox = new JComboBox<>();
+		comboBox.setFont( font );
 		comboBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -84,7 +87,9 @@ public class ContextChooserPanel< V > extends JPanel implements ContextChooser.U
 				contextChooser.choose( entry.getProvider() );
 			}
 		} );
-		add( new JLabel( "context:" ) );
+		final JLabel lbl = new JLabel( "context:" );
+		lbl.setFont( font );
+		add( lbl );
 		add( comboBox );
 		contextChooser.updateListeners().add( this );
 	}
