@@ -173,9 +173,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 			final JComponent cancelFocusTarget )
 	{
 		searchPanel = new JPanel();
-		searchPanel.setMinimumSize( new Dimension( 26, 25 ) );
 		searchPanel.setMaximumSize( new Dimension( 310, 25 ) );
-		searchPanel.setPreferredSize( new Dimension( 220, 25 ) );
 		final GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 25, 122, 50 };
 		gridBagLayout.rowHeights = new int[] { 25 };

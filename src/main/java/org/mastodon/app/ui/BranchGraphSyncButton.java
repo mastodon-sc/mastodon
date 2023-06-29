@@ -52,7 +52,7 @@ public class BranchGraphSyncButton extends JPanel
 		l.branchGraphSyncChanged();
 		btn.addActionListener( e -> new Thread( () -> model.sync(), "Branch-graph synchronizer" ).start() );
 		add( btn );
-		btn.setText( "<html>Regen.<br>branch-graph</html>" );
-		btn.setFont( new Font( "arial", Font.PLAIN, 8 ) );
+		btn.setText( "Regen" );
+		btn.setFont( new Font( "arial", Font.PLAIN, 10 ) );
 	}
 }

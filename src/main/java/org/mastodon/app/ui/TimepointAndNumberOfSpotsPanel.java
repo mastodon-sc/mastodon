@@ -10,12 +10,13 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.model.TimepointModel;
 
 /**
- *  A component that displays the current timepoint and the number of spots
- *  in the current timepoint.
- *  <p>
- *  It registers itself to the given {@link TimepointModel} and thus updates according it.
- *  <p>
- *  Extends {@link javax.swing.JPanel}
+ * A component that displays the current timepoint and the number of spots in
+ * the current timepoint.
+ * <p>
+ * It registers itself to the given {@link TimepointModel} and thus updates
+ * according it.
+ * <p>
+ * Extends {@link javax.swing.JPanel}
  *
  * @author Stefan Hahmann
  */
@@ -28,8 +29,9 @@ public class TimepointAndNumberOfSpotsPanel extends JPanel
 	private final JLabel numberOfSpotsLabel = new JLabel();
 
 	/**
-	 * Creates a new component that displays the current timepoint and the number of spots at the current timepoint.
-	 * Registers itself as a listener to the timepoint model.
+	 * Creates a new component that displays the current timepoint and the
+	 * number of spots at the current timepoint. Registers itself as a listener
+	 * to the timepoint model.
 	 *
 	 * @param timepointModel
 	 *            the timepoint model to listen to
@@ -49,7 +51,10 @@ public class TimepointAndNumberOfSpotsPanel extends JPanel
 
 	private void updateTimepointAndNumberOfSpotsLabel()
 	{
-		SwingUtilities.invokeLater( () -> numberOfSpotsLabel.setText( "timepoint: " + timepointModel.getTimepoint() + "   spots: "
-				+ model.getSpatioTemporalIndex().getSpatialIndex( timepointModel.getTimepoint() ).size() ) );
+		SwingUtilities.invokeLater( () -> numberOfSpotsLabel.setText(
+				"t: "
+						+ timepointModel.getTimepoint()
+						+ "   spots: "
+						+ model.getSpatioTemporalIndex().getSpatialIndex( timepointModel.getTimepoint() ).size() ) );
 	}
 }

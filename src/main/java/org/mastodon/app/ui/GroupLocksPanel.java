@@ -31,16 +31,17 @@ package org.mastodon.app.ui;
 import static org.mastodon.grouping.GroupManager.NO_GROUP;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
+
 import org.mastodon.grouping.GroupChangeListener;
 import org.mastodon.grouping.GroupHandle;
 
@@ -67,7 +68,8 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 
 	public GroupLocksPanel( final GroupHandle groupHandle )
 	{
-		super( new FlowLayout( FlowLayout.LEADING ) );
+		super();
+		setLayout( new BoxLayout( this, BoxLayout.LINE_AXIS ) );
 		this.groupHandle = groupHandle;
 		this.buttons = new ArrayList<>();
 		final int numGroups = groupHandle.getNumGroups();
@@ -78,7 +80,9 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 			final JToggleButton button =
 					new JToggleButton( "" + ( i + 1 ), isActive ? LOCK_ICON : UNLOCK_ICON, isActive );
 			button.setFont( FONT );
-			button.setPreferredSize( new Dimension( 60, 20 ) );
+			button.setPreferredSize( new Dimension( 50, 20 ) );
+			button.setMinimumSize( new Dimension( 50, 20 ) );
+			button.setMaximumSize( new Dimension( 50, 20 ) );
 			button.setHorizontalAlignment( SwingConstants.LEFT );
 			button.setOpaque( false );
 			button.setContentAreaFilled( false );
