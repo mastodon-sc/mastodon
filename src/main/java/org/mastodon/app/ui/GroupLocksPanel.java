@@ -80,9 +80,7 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 			final JToggleButton button =
 					new JToggleButton( "" + ( i + 1 ), isActive ? LOCK_ICON : UNLOCK_ICON, isActive );
 			button.setFont( FONT );
-			button.setPreferredSize( new Dimension( 50, 20 ) );
-			button.setMinimumSize( new Dimension( 50, 20 ) );
-			button.setMaximumSize( new Dimension( 50, 20 ) );
+			button.setPreferredSize( new Dimension( 60, 20 ) );
 			button.setHorizontalAlignment( SwingConstants.LEFT );
 			button.setOpaque( false );
 			button.setContentAreaFilled( false );
