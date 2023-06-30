@@ -39,6 +39,7 @@ import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.TRACKSCHEME_TRANSFORM_KEY;
 
+import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,6 @@ import javax.swing.SwingUtilities;
 import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
-import org.mastodon.app.ui.TimepointAndNumberOfSpotsPanel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.mamut.model.Link;
@@ -156,7 +156,7 @@ public class MamutViewTrackScheme
 
 		final RootsModel< TrackSchemeVertex > rootsModel = new DefaultRootsModel<>( model.getGraph(), viewGraph );
 
-		FadingModelAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > fadingModelAdapter =
+		final FadingModelAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > fadingModelAdapter =
 				new FadingModelAdapter<>( null, viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
@@ -211,11 +211,13 @@ public class MamutViewTrackScheme
 				frame.getTrackschemePanel() );
 
 		// Timepoint and number of spots.
-		TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model );
+		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model );
+		timepointAndNumberOfSpotsPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
 				focusModel, frame.getTrackschemePanel() );
+		searchPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		frame.getSettingsPanel().add( searchPanel );
 
 		// TODO Let the user choose between the two selection/focus modes.
