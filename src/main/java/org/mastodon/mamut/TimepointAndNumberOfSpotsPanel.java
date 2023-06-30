@@ -54,7 +54,7 @@ public class TimepointAndNumberOfSpotsPanel extends JPanel
 	private void updateTimepointAndNumberOfSpotsLabel()
 	{
 		SwingUtilities.invokeLater( () -> numberOfSpotsLabel.setText(
-				"t: "
+				"timepoint: "
 						+ timepointModel.getTimepoint()
 						+ "   spots: "
 						+ model.getSpatioTemporalIndex().getSpatialIndex( timepointModel.getTimepoint() ).size() ) );
