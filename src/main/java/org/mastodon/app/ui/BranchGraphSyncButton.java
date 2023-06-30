@@ -52,7 +52,8 @@ public class BranchGraphSyncButton extends JPanel
 		l.branchGraphSyncChanged();
 		btn.addActionListener( e -> new Thread( () -> model.sync(), "Branch-graph synchronizer" ).start() );
 		add( btn );
-		btn.setText( "Regen" );
+		btn.setText( "Regenerate" );
+		btn.setToolTipText( "Updates the view by regenerating the branch graph from the current model graph." );
 		btn.setFont( new Font( "arial", Font.PLAIN, 10 ) );
 	}
 }
