@@ -1,0 +1,85 @@
+package org.mastodon.util;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Test;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.model.tag.TagSetStructure;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class TagSetUtilsTest
+{
+
+	private final static String tagSetName = "testTagSet";
+
+	private final static String tagLabel0 = "tag0";
+
+	private final static String tagLabel1 = "tag1";
+
+	private final static String tagLabel2 = "tag2";
+
+	private final static Color tagColor0 = Color.red;
+
+	private final static Color tagColor1 = Color.green;
+
+	private final static Color tagColor2 = Color.blue;
+
+	private final static Collection< Pair< String, Integer > > tagsAndColors = initTagsAndColors();
+
+	private static Collection< Pair< String, Integer > > initTagsAndColors()
+	{
+		Collection< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
+		tagsAndColors.add( Pair.of( tagLabel0, tagColor0.getRGB() ) );
+		tagsAndColors.add( Pair.of( tagLabel1, tagColor1.getRGB() ) );
+		tagsAndColors.add( Pair.of( tagLabel2, tagColor2.getRGB() ) );
+		return tagsAndColors;
+	}
+
+	@Test
+	public void testAddNewTagSetToModel()
+	{
+		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
+
+		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName, tagsAndColors );
+
+		TagSetStructure.TagSet tagSet = exampleGraph1.getModel().getTagSetModel().getTagSetStructure().getTagSets().get( 0 );
+
+		assertEquals( tagSetName, tagSet.getName() );
+		assertEquals( tagsAndColors.size(), tagSet.getTags().size() );
+		assertEquals( tagLabel0, tagSet.getTags().get( 0 ).label() );
+		assertEquals( tagLabel1, tagSet.getTags().get( 1 ).label() );
+		assertEquals( tagLabel2, tagSet.getTags().get( 2 ).label() );
+		assertEquals( tagColor0.getRGB(), tagSet.getTags().get( 0 ).color() );
+		assertEquals( tagColor1.getRGB(), tagSet.getTags().get( 1 ).color() );
+		assertEquals( tagColor2.getRGB(), tagSet.getTags().get( 2 ).color() );
+	}
+
+	@Test
+	public void tagSpotAndLinks()
+	{
+		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
+		Model model = exampleGraph2.getModel();
+
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), tagSetName, tagsAndColors );
+
+		TagSetStructure.Tag tag0 = tagSet.getTags().get( 0 );
+		TagSetUtils.tagSpotAndLinks( exampleGraph2.getModel(), exampleGraph2.spot0, tagSet, tag0 );
+		TagSetUtils.tagSpotAndLinks( exampleGraph2.getModel(), exampleGraph2.spot2, tagSet, tag0 );
+
+		Collection< Spot > taggedSpots = model.getTagSetModel().getVertexTags().getTaggedWith( tag0 );
+
+		assertEquals( 2, taggedSpots.size() );
+		assertTrue( taggedSpots.contains( exampleGraph2.spot0 ) );
+		assertTrue( taggedSpots.contains( exampleGraph2.spot2 ) );
+		// 3 links are tagged: spot0 -> spot1, spot2 -> spot3, spot2 -> spot11
+		assertEquals( 3, model.getTagSetModel().getEdgeTags().getTaggedWith( tag0 ).size() );
+	}
+}
