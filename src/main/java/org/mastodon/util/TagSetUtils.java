@@ -11,7 +11,6 @@ import org.mastodon.model.tag.TagSetStructure;
 import java.util.Collection;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 /**
  * Collection of utilities related to manipulating {@link org.mastodon.model.tag.TagSetStructure.TagSet}s.
@@ -51,20 +50,48 @@ public class TagSetUtils
 	}
 
 	/**
-	 * Assigns the specified {@code tag} to the given {@code spot} and all of its outgoing edges.
-	 * @param model Model that contains the graph and the tag data structures.
-	 * @param spot The spot, that specifies the branch to be tagged.
-	 *             Doesn't need to be the branch start or branch end.
-	 *             It can be any spot on the branch.   
-	 * @param tagSet The {@link TagSetStructure.TagSet} the tag belongs to.
-	 * @param tag The tag to assign to the branch.
+	 * Assigns the specified {@code tag} to the given {@code spot}.
 	 */
-	public static void tagSpotAndLinks( Model model, Spot spot, TagSetStructure.TagSet tagSet, TagSetStructure.Tag tag )
+	public static void tagSpot( Model model, TagSetStructure.TagSet tagSet, TagSetStructure.Tag tag, Spot spot )
+	{
+		model.getTagSetModel().getVertexTags().tags( tagSet ).set( spot, tag );
+	}
+
+	/**
+	 * Assigns the specified {@code tag} to the given {@code spot} and all of its outgoing edges.
+	 */
+	public static void tagSpotAndOutgoingEdges( Model model, TagSetStructure.TagSet tagSet, TagSetStructure.Tag tag, Spot spot )
+	{
+		tagSpot( model, tagSet, tag, spot );
+		tagLinks( model, tagSet, tag, spot.outgoingEdges() );
+	}
+
+	/**
+	 * Assigns the specified {@code tag} to the given {@code spot} and all of its incoming edges.
+	 */
+	public static void tagSpotAndIncomingEdges( Model model, Spot spot, TagSetStructure.TagSet tagSet, TagSetStructure.Tag tag )
+	{
+		tagSpot( model, tagSet, tag, spot );
+		tagLinks( model, tagSet, tag, spot.incomingEdges() );
+	}
+
+	/**
+	 * Assigns the specified {@code tag} to the given {@code spots}.
+	 */
+	public static void tagSpots( Model model, TagSetStructure.TagSet tagSet, TagSetStructure.Tag tag, Iterable< Spot > spots )
 	{
 		ObjTagMap< Spot, TagSetStructure.Tag > vertexTags = model.getTagSetModel().getVertexTags().tags( tagSet );
+		for ( Spot spot : spots )
+			vertexTags.set( spot, tag );
+	}
+
+	/**
+	 * Assigns the specified {@code tag} to the given {@code links}.
+	 */
+	public static void tagLinks( Model model, TagSetStructure.TagSet tagSet, TagSetStructure.Tag tag, Iterable< Link > links )
+	{
 		ObjTagMap< Link, TagSetStructure.Tag > edgeTags = model.getTagSetModel().getEdgeTags().tags( tagSet );
-		vertexTags.set( spot, tag );
-		for ( Link link : spot.outgoingEdges() )
+		for ( Link link : links )
 			edgeTags.set( link, tag );
 	}
 
@@ -155,23 +182,22 @@ public class TagSetUtils
 	}
 
 	/**
-	 * Returns a map of all tags in the given tag set, indexed by their label.
-	 */
-	public static Map< String, TagSetStructure.Tag > tagSetAsMap( TagSetStructure.TagSet tagSet )
-	{
-		return tagSet.getTags().stream()
-				.collect( Collectors.toMap( TagSetStructure.Tag::label, tag -> tag ) );
-	}
-
-	/**
 	 * @return the first tag set that matches the given name.
 	 * @throws NoSuchElementException if the tagset was not found.
 	 */
-	public static TagSetStructure.TagSet findTagSet( TagSetModel< Spot, Link > tagsModel, String name )
+	public static TagSetStructure.TagSet findTagSet( Model model, String name )
 	{
-		for ( TagSetStructure.TagSet tagSet : tagsModel.getTagSetStructure().getTagSets() )
+		for ( TagSetStructure.TagSet tagSet : model.getTagSetModel().getTagSetStructure().getTagSets() )
 			if ( name.equals( tagSet.getName() ) )
 				return tagSet;
 		throw new NoSuchElementException( "Did not find a tag set with the given name: " + name );
+	}
+
+	public static TagSetStructure.Tag findTag( TagSetStructure.TagSet tagSet, String tagLabel )
+	{
+		for ( TagSetStructure.Tag tag : tagSet.getTags() )
+			if ( tagLabel.equals( tag.label() ) )
+				return tag;
+		throw new NoSuchElementException( "Did not find a tag with the given label: " + tagLabel );
 	}
 }

@@ -63,7 +63,7 @@ public class TagSetUtilsTest
 	}
 
 	@Test
-	public void tagSpotAndLinks()
+	public void tagSpotAndOutgoingEdges()
 	{
 		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 		Model model = exampleGraph2.getModel();
@@ -71,8 +71,8 @@ public class TagSetUtilsTest
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), tagSetName, tagsAndColors );
 
 		TagSetStructure.Tag tag0 = tagSet.getTags().get( 0 );
-		TagSetUtils.tagSpotAndLinks( exampleGraph2.getModel(), exampleGraph2.spot0, tagSet, tag0 );
-		TagSetUtils.tagSpotAndLinks( exampleGraph2.getModel(), exampleGraph2.spot2, tagSet, tag0 );
+		TagSetUtils.tagSpotAndOutgoingEdges( exampleGraph2.getModel(), tagSet, tag0, exampleGraph2.spot0 );
+		TagSetUtils.tagSpotAndOutgoingEdges( exampleGraph2.getModel(), tagSet, tag0, exampleGraph2.spot2 );
 
 		Collection< Spot > taggedSpots = model.getTagSetModel().getVertexTags().getTaggedWith( tag0 );
 
