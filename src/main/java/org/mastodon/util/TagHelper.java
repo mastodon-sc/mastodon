@@ -13,6 +13,8 @@ import org.mastodon.model.tag.TagSetStructure;
 /**
  * Class that makes tagging of spots and links easier.
  * An instance of this class represents a tag in a tag set.
+ * @see TagSetStructure.TagSet
+ * @see TagSetStructure.Tag
  */
 public class TagHelper
 {
