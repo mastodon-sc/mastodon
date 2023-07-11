@@ -40,12 +40,12 @@ public class TagSetUtils
 	{
 		TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
 		TagSetStructure original = tagSetModel.getTagSetStructure();
-		TagSetStructure newTss = new TagSetStructure();
-		newTss.set( original );
-		TagSetStructure.TagSet newTagSet = newTss.createTagSet( name );
+		TagSetStructure replacement = new TagSetStructure();
+		replacement.set( original );
+		TagSetStructure.TagSet newTagSet = replacement.createTagSet( name );
 		for ( Map.Entry< String, Integer > tag : tagsAndColors )
 			newTagSet.createTag( tag.getKey(), tag.getValue() );
-		tagSetModel.setTagSetStructure( newTss );
+		tagSetModel.setTagSetStructure( replacement );
 		return newTagSet;
 	}
 
