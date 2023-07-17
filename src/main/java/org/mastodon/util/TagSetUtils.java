@@ -27,7 +27,46 @@ public class TagSetUtils
 	}
 
 	/**
-	 * Add a new tag set to the given model.
+	 * Help creating a visible color value by adding
+	 * a (full opacity) alpha channel.
+	 * @param rgbAsBottom24bits The encoded RGB triplet.
+	 * @return The int value of the RGB color, ready to use
+	 *         with {@link org.mastodon.model.tag.TagSetStructure.Tag}.
+	 */
+	public static int rgbToValidColor(final int rgbAsBottom24bits) {
+		return 0xFF000000 | rgbAsBottom24bits;
+	}
+
+	/**
+	 * Help creating a visible color value by adding
+	 * a (full opacity) alpha channel.
+	 * @param r 0-255 valued red channel.
+	 * @param g 0-255 valued green channel.
+	 * @param b 0-255 valued blue channel.
+	 * @return The int value of the RGB color, ready to use
+	 *         with {@link org.mastodon.model.tag.TagSetStructure.Tag}.
+	 */
+	public static int rgbToValidColor(final int r, final int g, final int b) {
+		return 0xFF000000 | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
+	}
+
+	/**
+	 * Help creating a fully-described color value.
+	 * @param r 0-255 valued red channel.
+	 * @param g 0-255 valued green channel.
+	 * @param b 0-255 valued blue channel.
+	 * @param alpha 0-255 valued opacity (alpha) channel,
+	 *              0 - fully transparent, 255 - fully opaque.
+	 * @return The int value of the RGB color, ready to use
+	 *         with {@link org.mastodon.model.tag.TagSetStructure.Tag}.
+	 */
+	public static int rgbaToValidColor(final int r, final int g, final int b, final int alpha) {
+		return ((alpha & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
+	}
+
+	/**
+	 * Add a new tag set to the given model. The color values could be created, e.g.,
+	 * with the {@link TagSetUtils#rgbToValidColor(int, int, int)}.
 	 * @param model The model that will contain the new tag set.
 	 * @param name The name of the new tag set.
 	 * @param tagsAndColors The list of labels and colors for the new tags. This
