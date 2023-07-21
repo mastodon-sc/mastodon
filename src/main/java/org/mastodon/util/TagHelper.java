@@ -1,6 +1,8 @@
 package org.mastodon.util;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.mastodon.mamut.model.Link;
@@ -31,11 +33,15 @@ public class TagHelper
 
 	public TagHelper( Model model, TagSetStructure.TagSet tagSet, TagSetStructure.Tag tag )
 	{
-		this.model = model;
-		this.tagSet = tagSet;
-		this.tag = tag;
+		this.model = Objects.requireNonNull( model );
+		this.tagSet = Objects.requireNonNull( tagSet );
+		this.tag = Objects.requireNonNull( tag );
+		if ( !tagSet.getTags().contains( tag ) )
+			throw new NoSuchElementException( "Tag " + tag + " does not belong to tag set " + tagSet );
 		this.vertexTags = model.getTagSetModel().getVertexTags().tags( tagSet );
 		this.edgeTags = model.getTagSetModel().getEdgeTags().tags( tagSet );
+		if ( vertexTags == null || edgeTags == null )
+			throw new NoSuchElementException( "Tag set " + tagSet + " is not registered in the model." );
 	}
 
 	public TagHelper( Model model, TagSetStructure.TagSet tagSet, String tagLabel )
