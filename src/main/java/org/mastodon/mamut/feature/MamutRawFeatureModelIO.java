@@ -49,6 +49,8 @@ import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.mamut.feature.branch.BranchFeatureSerializer;
+import org.mastodon.mamut.io.project.MamutProject.ProjectReader;
+import org.mastodon.mamut.io.project.MamutProject.ProjectWriter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -56,8 +58,6 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.mamut.project.MamutProject.ProjectReader;
-import org.mastodon.mamut.project.MamutProject.ProjectWriter;
 import org.scijava.Context;
 
 public class MamutRawFeatureModelIO

@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 
 public class MamutProjectIOTest
 {

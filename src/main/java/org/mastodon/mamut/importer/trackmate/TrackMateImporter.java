@@ -85,11 +85,11 @@ import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.importer.ModelImporter;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 

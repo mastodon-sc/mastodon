@@ -37,9 +37,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelUtils;
-import org.mastodon.mamut.project.MamutProjectIO;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;

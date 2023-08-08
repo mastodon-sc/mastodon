@@ -57,12 +57,12 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.mamut.importer.trackmate.TrackMateImportedLinkFeatures;
 import org.mastodon.mamut.importer.trackmate.TrackMateImportedSpotFeatures;
 import org.mastodon.mamut.importer.trackmate.TrackMateImportedSpotFeatures.Spec;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.project.MamutProject;
 import org.scijava.Context;
 
 public class TrackMateImporterTest

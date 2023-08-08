@@ -26,50 +26,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.project;
+package org.mastodon.mamut.io.project;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
-import ij.ImagePlus;
-import ij.io.FileInfo;
-
-/**
- * For Mamut projects that are based on an ImagePlus instead of a BDV file.
- * Ultimately, the imp will have to be converted, but this subclass offers the
- * means for Mastodon to play with an ImagePlus opened in Fiji in the meantime.
- */
-public class MamutImagePlusProject extends MamutProject
+public class ReadZip implements Closeable
 {
+	private final ZipFile zipFile;
 
-	private final ImagePlus imp;
-
-	public MamutImagePlusProject( final ImagePlus imp )
+	public ReadZip( final String fn ) throws IOException
 	{
-		super( null, getImagePath( imp ) );
-		this.imp = imp;
+		this( new File( fn ) );
 	}
 
-	public ImagePlus getImagePlus()
+	public ReadZip( final File f ) throws IOException
 	{
-		return imp;
+		zipFile = new ZipFile( f );
 	}
 
-	private static File getImagePath( final ImagePlus imp )
+	@Override
+	public void close() throws IOException
 	{
-		final FileInfo fileInfo = imp.getOriginalFileInfo();
-		String imageFileName;
-		String imageFolder;
-		if ( null != fileInfo )
-		{
-			imageFileName = fileInfo.fileName;
-			imageFolder = fileInfo.directory;
-		}
-		else
-		{
-			imageFileName = imp.getShortTitle();
-			imageFolder = "";
-		}
-		return new File( imageFolder, imageFileName );
+		zipFile.close();
 	}
 
+	public InputStream getInputStream( final String fn ) throws IOException
+	{
+		final InputStream is = zipFile.getInputStream( new ZipEntry( fn ) );
+		if ( is != null )
+			return is;
+
+		throw new FileNotFoundException( "Entry \"" + fn + "\" not found in \"" + zipFile.getName() + "\"" );
+	}
+
+	public Collection< String > listFile( final String fn )
+	{
+		return Collections.list( zipFile.entries() )
+				.stream()
+				.filter( e -> e.getName().startsWith( fn + "/" ) )
+				.map( e -> e.getName() )
+				.map( s -> s.replace( fn + "/", "" ) )
+				.collect( Collectors.toList() );
+	}
 }

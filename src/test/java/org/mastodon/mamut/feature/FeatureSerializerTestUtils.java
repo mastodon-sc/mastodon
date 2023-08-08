@@ -5,10 +5,10 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.io.RawGraphIO;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.project.MamutProject;
 import org.scijava.Context;
 
 import java.io.File;

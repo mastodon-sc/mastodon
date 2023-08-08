@@ -63,11 +63,11 @@ import org.mastodon.graph.algorithm.ConnectedComponents;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
+import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.project.MamutProject;
-import org.mastodon.mamut.project.MamutProjectIO;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
 
