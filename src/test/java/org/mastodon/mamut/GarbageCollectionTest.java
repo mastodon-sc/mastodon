@@ -36,9 +36,9 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import org.junit.Test;
+import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.project.MamutProject;
-import org.mastodon.mamut.project.MamutProjectIO;
 import org.mastodon.util.GarbageCollectionUtils;
 import org.scijava.Context;
 

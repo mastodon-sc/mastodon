@@ -44,10 +44,10 @@ import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.TrackSizeFeature;
 import org.mastodon.mamut.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
+import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelUtils;
-import org.mastodon.mamut.project.MamutProject;
-import org.mastodon.mamut.project.MamutProjectIO;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;

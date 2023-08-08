@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.project;
+package org.mastodon.mamut.io.project;
 
 import java.io.File;
 import java.io.IOException;

@@ -47,10 +47,10 @@ import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.graph.Graph;
 import org.mastodon.mamut.importer.ModelImporter;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.project.MamutProject;
 
 import Jama.Matrix;
 import bdv.spimdata.SpimDataMinimal;

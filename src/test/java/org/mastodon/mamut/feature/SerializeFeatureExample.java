@@ -40,10 +40,10 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelUtils;
-import org.mastodon.mamut.project.MamutProject;
-import org.mastodon.mamut.project.MamutProjectIO;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;

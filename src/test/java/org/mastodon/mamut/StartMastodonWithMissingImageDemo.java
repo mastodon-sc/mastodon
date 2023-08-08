@@ -33,7 +33,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import org.mastodon.mamut.project.MamutProjectIO;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.scijava.Context;
 
 import net.miginfocom.swing.MigLayout;
