@@ -38,11 +38,13 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.mastodon.io.IOUtils;
 
 import mpicbg.spim.data.XmlHelpers;
 
 public class MamutProjectIO
 {
+
 	public static final String MAMUTPROJECT_TAG = "MamutProject";
 
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_NAME = "version";
@@ -55,17 +57,17 @@ public class MamutProjectIO
 
 	private static final String TIME_UNITS_TAG = "TimeUnits";
 
-	public void save( final MamutProject project, final MamutProject.ProjectWriter writer ) throws IOException
+	public static final void save( final MamutProject project, final MamutProject.ProjectWriter writer ) throws IOException
 	{
 		final Document doc = new Document( toXml( project ) );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
-		mkdirs( project.getProjectRoot().getParentFile().getAbsolutePath() );
+		IOUtils.mkdirs( project.getProjectRoot().getParentFile().getAbsolutePath() );
 		final OutputStream os = writer.getProjectXmlOutputStream();
 		xout.output( doc, os );
 		os.close();
 	}
 
-	public MamutProject load( final String projectPath ) throws IOException
+	public static final MamutProject load( final String projectPath ) throws IOException
 	{
 		final MamutProject project = new MamutProject( projectPath );
 
@@ -89,7 +91,7 @@ public class MamutProjectIO
 		return project;
 	}
 
-	public Element toXml( final MamutProject project )
+	public static final Element toXml( final MamutProject project )
 	{
 		final Element root = new Element( MAMUTPROJECT_TAG );
 		root.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
@@ -100,7 +102,7 @@ public class MamutProjectIO
 		return root;
 	}
 
-	public void fromXml( final MamutProject project, final Element root )
+	public static final void fromXml( final MamutProject project, final Element root )
 	{
 		project.setDatasetXmlFile( getDatasetPathFromXml( project, root ) );
 		final boolean datasetXmlPathRelative = XmlHelpers.isPathRelative( root, SPIMDATAFILE_TAG );
@@ -111,7 +113,7 @@ public class MamutProjectIO
 		project.setTimeUnits( timeUnits );
 	}
 
-	private File getDatasetPathFromXml( MamutProject project, Element root )
+	private static final File getDatasetPathFromXml( final MamutProject project, final Element root )
 	{
 		File datasetXml = XmlHelpers.loadPath( root, SPIMDATAFILE_TAG, project.getProjectRoot() );
 		datasetXml = new File( datasetXml.getPath().replace( "\\", "/" ) );
@@ -119,18 +121,12 @@ public class MamutProjectIO
 		return datasetXml;
 	}
 
-	public static boolean mkdirs( final String fileName )
-	{
-		final File dir = new File( fileName );
-		return dir == null ? false : dir.mkdirs();
-	}
-
 	public static void main( final String[] args )
 	{
 		final String projectFolder = "samples/mamutproject";
 		try
 		{
-			final MamutProject mamutProject = new MamutProjectIO().load( projectFolder );
+			final MamutProject mamutProject = MamutProjectIO.load( projectFolder );
 			System.out.println( mamutProject );
 		}
 		catch ( final IOException e )
