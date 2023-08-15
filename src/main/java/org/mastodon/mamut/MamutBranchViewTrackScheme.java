@@ -35,8 +35,8 @@ import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TRACKSCHEME_TRANSFORM_KEY;
+import static org.mastodon.mamut.MamutView.FRAME_POSITION_KEY;
+import static org.mastodon.mamut.MamutViewTrackScheme.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -187,7 +187,7 @@ public class MamutBranchViewTrackScheme
 			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
 
 		// Timepoint and number of spots.
-		TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel =
+		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel =
 				new TimepointAndNumberOfSpotsPanel( this.timepointModel, model );
 		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
@@ -371,13 +371,13 @@ public class MamutBranchViewTrackScheme
 					{
 
 						@Override
-						public String getFirstLabel( BranchSpot branchSpot )
+						public String getFirstLabel( final BranchSpot branchSpot )
 						{
 							return branchSpot.getFirstLabel();
 						}
 
 						@Override
-						public int getFirstTimePoint( BranchSpot branchSpot )
+						public int getFirstTimePoint( final BranchSpot branchSpot )
 						{
 							return branchSpot.getFirstTimePoint();
 						}
@@ -389,12 +389,12 @@ public class MamutBranchViewTrackScheme
 	}
 
 
-	ColoringModel getColoringModel()
+	public ColoringModel getColoringModel()
 	{
 		return coloringModel;
 	}
 
-	ColorBarOverlay getColorBarOverlay()
+	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
 	}

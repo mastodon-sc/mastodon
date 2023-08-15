@@ -57,6 +57,29 @@ public class MamutProjectIO
 
 	private static final String TIME_UNITS_TAG = "TimeUnits";
 
+	/**
+	 * Returns a new project object for a new empty project operating on the
+	 * image dataset specified by the BDV file.
+	 * 
+	 * @param datasetXmlFile
+	 *            the path to the BDV file (the XML file).
+	 * @return a new {@link MamutProject}.
+	 */
+	public static final MamutProject emptyProject( final File datasetXmlFile )
+	{
+		return new MamutProject( null, datasetXmlFile );
+	}
+
+	/**
+	 * Saves the project description via the specified project writer.
+	 * 
+	 * @param project
+	 *            the project to save.
+	 * @param writer
+	 *            the project writer.
+	 * @throws IOException
+	 *             if an error occurs while writing the project description.
+	 */
 	public static final void save( final MamutProject project, final MamutProject.ProjectWriter writer ) throws IOException
 	{
 		final Document doc = new Document( toXml( project ) );
@@ -67,6 +90,16 @@ public class MamutProjectIO
 		os.close();
 	}
 
+	/**
+	 * Load a Mamut project from a <code>.mastodon</code> file.
+	 * 
+	 * @param projectPath
+	 *            the path to the <code>.mastodon</code> file.
+	 * @return a new {@link MamutProject} pointing to the <code>.mastodon</code>
+	 *         file.
+	 * @throws IOException
+	 *             if an error occurs while reading the project file.
+	 */
 	public static final MamutProject load( final String projectPath ) throws IOException
 	{
 		final MamutProject project = new MamutProject( projectPath );
@@ -91,6 +124,21 @@ public class MamutProjectIO
 		return project;
 	}
 
+	/**
+	 * Serializes the specified project to a XML element.
+	 * <p>
+	 * The serialized fields are:
+	 * <ul>
+	 * <li>the path to the dataset XML file.
+	 * <li>whether the path above is relative.
+	 * <li>the space physical units.
+	 * <li>the time physical units.
+	 * </ul>
+	 * 
+	 * @param project
+	 *            the project to serialize.
+	 * @return a new XML element.
+	 */
 	public static final Element toXml( final MamutProject project )
 	{
 		final Element root = new Element( MAMUTPROJECT_TAG );
@@ -102,6 +150,22 @@ public class MamutProjectIO
 		return root;
 	}
 
+	/**
+	 * Deserializes some fields of the Mamut project from an XML element.
+	 * <p>
+	 * The deserialized fields are:
+	 * <ul>
+	 * <li>the path to the dataset XML file.
+	 * <li>whether the path above is relative.
+	 * <li>the space physical units.
+	 * <li>the time physical units.
+	 * </ul>
+	 * 
+	 * @param project
+	 *            the project.
+	 * @param root
+	 *            the XML element.
+	 */
 	public static final void fromXml( final MamutProject project, final Element root )
 	{
 		project.setDatasetXmlFile( getDatasetPathFromXml( project, root ) );

@@ -76,9 +76,9 @@ import org.mastodon.mamut.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
 import org.mastodon.mamut.io.project.MamutProject;
-import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.io.project.MamutProject.ProjectReader;
 import org.mastodon.mamut.io.project.MamutProject.ProjectWriter;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
@@ -181,8 +181,6 @@ public class ProjectManager
 		}
 	}
 
-	private final WindowManager windowManager;
-
 	private final TgmmImportDialog tgmmImportDialog;
 
 	private final SimiImportDialog simiImportDialog;
@@ -209,10 +207,8 @@ public class ProjectManager
 
 	private final AbstractNamedAction exportMamutAction;
 
-	public ProjectManager( final WindowManager windowManager )
+	public ProjectManager()
 	{
-		this.windowManager = windowManager;
-
 		tgmmImportDialog = new TgmmImportDialog( null );
 		simiImportDialog = new SimiImportDialog( null );
 
@@ -274,7 +270,7 @@ public class ProjectManager
 
 		try
 		{
-			open( new MamutProject( null, file ) );
+			open( MamutProjectIO.emptyProject( file ) );
 		}
 		catch ( final IOException | SpimDataException e )
 		{
@@ -350,7 +346,7 @@ public class ProjectManager
 		try
 		{
 			xmlIoSpimData.save( spimData, file.getAbsolutePath() );
-			open( new MamutProject( null, file ) );
+			open( MamutProjectIO.emptyProject( file ) );
 		}
 		catch ( final IOException | SpimDataException e )
 		{
@@ -381,7 +377,7 @@ public class ProjectManager
 		try
 		{
 			proposedProjectRoot = file;
-			final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
+			final MamutProject project = MamutProjectIO.load( file.getAbsolutePath() );
 			openWithDialog( project );
 		}
 		catch ( final IOException | SpimDataException e )
@@ -865,11 +861,6 @@ public class ProjectManager
 		{
 			e.printStackTrace();
 		}
-	}
-
-	public MamutProject getProject()
-	{
-		return project;
 	}
 
 	private static final String EXT_DOT_MASTODON = ".mastodon";

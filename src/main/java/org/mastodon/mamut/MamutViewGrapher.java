@@ -35,15 +35,6 @@ import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.GRAPHER_TRANSFORM_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,6 +87,13 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 
 public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge >
 {
+
+	/**
+	 * Key for the transform in a Grapher view. Value is a Grapher
+	 * ScreenTransform instance.
+	 */
+	public static final String GRAPHER_TRANSFORM_KEY = "GrapherTransform";
+
 	private final ContextChooser< Spot > contextChooser;
 
 	/**
@@ -324,22 +322,22 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		dataDisplayPanel.getDisplay().requestFocusInWindow();
 	}
 
-	ContextChooser< Spot > getContextChooser()
+	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
 	}
 
-	DataDisplayPanel< Spot, Link > getDataDisplayPanel()
+	public DataDisplayPanel< Spot, Link > getDataDisplayPanel()
 	{
 		return dataDisplayPanel;
 	}
 
-	ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
+	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
 
-	ColorBarOverlay getColorBarOverlay()
+	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorbarOverlay;
 	}

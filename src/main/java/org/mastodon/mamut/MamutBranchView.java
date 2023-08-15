@@ -37,7 +37,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 
-import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
@@ -94,6 +93,12 @@ public class MamutBranchView<
 		E extends Edge< V > >
 		implements IMastodonFrameView, IMastodonView
 {
+
+	/**
+	 * Key that specifies settings specific to the branch-graph view in a common
+	 * view. Values are <code>Map<String, Object></code>.
+	 */
+	public static final String BRANCH_GRAPH = "BranchGraph";
 
 	protected final MamutAppModel appModel;
 

@@ -35,6 +35,7 @@ import java.util.Locale;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -64,12 +65,14 @@ public class MaMuTImporterExample
 
 	private static void importFromMaMuTAndSave( final File mamutFile, final File targetMastodonFile )
 	{
-		final WindowManager windowManager = new WindowManager( new Context() );
+		final Context context = new Context();
+		final WindowManager windowManager = new WindowManager( context );
 		try
 		{
 			final TrackMateImporter importer = new TrackMateImporter( mamutFile );
 			windowManager.getProjectManager().open( importer.createProject() );
-			importer.readModel( windowManager.getAppModel().getModel(), windowManager.getFeatureSpecsService() );
+			final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
+			importer.readModel( windowManager.getAppModel().getModel(), featureSpecsService );
 		}
 		catch ( final IOException | SpimDataException e )
 		{

@@ -216,6 +216,7 @@ public class MastodonAppModel<
 	/**
 	 * Actions that should be available in all views.
 	 *
+	 * 
 	 * @return the application actions.
 	 */
 	public Actions getAppActions()
@@ -226,6 +227,11 @@ public class MastodonAppModel<
 	/**
 	 * Actions that are always available, even if no {@link MastodonAppModel}
 	 * currently exists.
+	 * 
+	 * TODO: naming, this should be named appActions and the AppModel.appActions
+	 * should become modelActions?
+	 * 
+	 * TODO: or rename AppModel --> ProjectModel, then projectActions?
 	 *
 	 * @return the global actions.
 	 */

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
@@ -66,9 +67,6 @@ public class MamutTestPlugin implements MamutPlugin
 			descriptions.add( ACTION_1, ACTION_1_KEYS, "Test Plugin Action" );
 		}
 	}
-
-	@SuppressWarnings( "unused" )
-	private MamutPluginAppModel appModel;
 
 	private static Map< String, String > menuTexts = new HashMap<>();
 
@@ -109,8 +107,6 @@ public class MamutTestPlugin implements MamutPlugin
 	}
 
 	@Override
-	public void setAppPluginModel( final MamutPluginAppModel appModel )
-	{
-		this.appModel = appModel;
-	}
+	public void setAppPluginModel( final MamutAppModel appModel )
+	{}
 }

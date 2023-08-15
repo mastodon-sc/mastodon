@@ -56,11 +56,7 @@ import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.plugin.MamutPlugin;
-import org.mastodon.mamut.plugin.MamutPluginAppModel;
-import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.model.tag.ui.TagSetDialog;
-import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
@@ -81,11 +77,8 @@ import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Context;
-import org.scijava.InstantiableException;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -111,95 +104,34 @@ public class WindowManager
 {
 
 	public static final String NEW_BDV_VIEW = "new bdv view";
-
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
-
 	public static final String NEW_TABLE_VIEW = "new full table view";
-
 	public static final String NEW_SELECTION_TABLE_VIEW = "new selection table view";
-
 	public static final String NEW_GRAPHER_VIEW = "new grapher view";
-
 	public static final String PREFERENCES_DIALOG = "Preferences";
-
 	public static final String TAGSETS_DIALOG = "edit tag sets";
-
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
-
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
-
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
-
 	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
-
 	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
-
 	static final String[] NEW_GRAPHER_VIEW_KEYS = new String[] { "not mapped" };
-
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
-
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
-
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
-
 	static final String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
 
 	static final String NEW_BRANCH_BDV_VIEW = "new branch bdv view";
-
 	static final String NEW_BRANCH_TRACKSCHEME_VIEW = "new branch trackscheme view";
-
 	static final String NEW_HIERARCHY_TRACKSCHEME_VIEW = "new hierarchy trackscheme view";
 
 	static final String[] NEW_BRANCH_BDV_VIEW_KEYS = new String[] { "not mapped" };
-
 	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
-
 	static final String[] NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 
 	public static final String DOCUMENTATION_URL = "https://mastodon.readthedocs.io/en/latest/";
-
-	/*
-	 * Command descriptions for all provided commands
-	 */
-	@Plugin( type = CommandDescriptionProvider.class )
-	public static class Descriptions extends CommandDescriptionProvider
-	{
-		public Descriptions()
-		{
-			super( KeyConfigContexts.MASTODON );
-		}
-
-		@Override
-		public void getCommandDescriptions( final CommandDescriptions descriptions )
-		{
-			descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open a new BigDataViewer view." );
-			descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open a new TrackScheme view." );
-			descriptions.add( NEW_TABLE_VIEW, NEW_TABLE_VIEW_KEYS, "Open a new table view. "
-					+ "The table displays the full data." );
-			descriptions.add( NEW_SELECTION_TABLE_VIEW, NEW_SELECTION_TABLE_VIEW_KEYS,
-					"Open a new selection table view. "
-							+ "The table only displays the current selection and "
-							+ "is updated as the selection changes." );
-			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
-			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
-			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS,
-					"Show the feature computation dialog." );
-			descriptions.add( NEW_BRANCH_BDV_VIEW, NEW_BRANCH_BDV_VIEW_KEYS, "Open a new branch BigDataViewer view." );
-			descriptions.add( NEW_BRANCH_TRACKSCHEME_VIEW, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS,
-					"Open a new branch TrackScheme view." );
-			descriptions.add( NEW_HIERARCHY_TRACKSCHEME_VIEW, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS,
-					"Open a new hierarchy TrackScheme view." );
-			descriptions.add( OPEN_ONLINE_DOCUMENTATION, OPEN_ONLINE_DOCUMENTATION_KEYS,
-					"Open the online documentation in a web browser." );
-			descriptions.add( NEW_GRAPHER_VIEW, NEW_GRAPHER_VIEW_KEYS, "Open a new Grapher view." );
-		}
-	}
-
-	private final Context context;
-
-	private final MamutPlugins plugins;
 
 	/** All currently open BigDataViewer windows. */
 	private final List< MamutViewBdv > bdvWindows = new ArrayList<>();
@@ -207,7 +139,9 @@ public class WindowManager
 	/** All currently open branch TrackScheme windows. */
 	private final List< MamutBranchViewBdv > bbdvWindows = new ArrayList<>();
 
-	/** The {@link ContextProvider}s of all currently open BigDataViewer windows. */
+	/**
+	 * The {@link ContextProvider}s of all currently open BigDataViewer windows.
+	 */
 	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
 
 	/** All currently open TrackScheme windows. */
@@ -236,8 +170,6 @@ public class WindowManager
 
 	private final KeymapManager keymapManager;
 
-	private final Actions globalAppActions;
-
 	private final AbstractNamedAction newBdvViewAction;
 
 	private final AbstractNamedAction newTrackSchemeViewAction;
@@ -258,11 +190,9 @@ public class WindowManager
 
 	private final AbstractNamedAction featureComputationAction;
 
-	private MamutAppModel appModel;
+	private final TagSetDialog tagSetDialog;
 
-	private TagSetDialog tagSetDialog;
-
-	private JDialog featureComputationDialog;
+	private final JDialog featureComputationDialog;
 
 	final ProjectManager projectManager;
 
@@ -270,30 +200,28 @@ public class WindowManager
 
 	private final PreferencesDialog settings;
 
+	private final MamutAppModel appModel;
+
 	/**
 	 * Creates a new, empty WindowManager instance using the specified context.
 	 * 
 	 * @param context
 	 *            the context to use. Cannot be <code>null</code>.
+	 * @param globalActions
 	 */
-	public WindowManager( final Context context )
+	public WindowManager( final MamutAppModel appModel )
 	{
-		this.context = context;
-
-		keyPressedManager = new KeyPressedManager();
-		trackSchemeStyleManager = new TrackSchemeStyleManager();
-		dataDisplayStyleManager = new DataDisplayStyleManager();
-		renderSettingsManager = new RenderSettingsManager();
-		featureColorModeManager = new FeatureColorModeManager();
-		featureProjectionsManager = new MamutFeatureProjectionsManager(
-				context.getService( FeatureSpecsService.class ),
-				featureColorModeManager );
-		keymapManager = new KeymapManager();
+		this.appModel = appModel;
+		this.keyPressedManager = new KeyPressedManager();
+		this.trackSchemeStyleManager = new TrackSchemeStyleManager();
+		this.dataDisplayStyleManager = new DataDisplayStyleManager();
+		this.renderSettingsManager = new RenderSettingsManager();
+		this.featureColorModeManager = new FeatureColorModeManager();
+		final Context context = appModel.getContext();
+		this.featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
+		this.keymapManager = new KeymapManager();
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
-
-		plugins = new MamutPlugins( keymap );
-		discoverPlugins();
 
 		final CommandDescriptions descriptions = buildCommandDescriptions();
 		final Consumer< Keymap > augmentInputTriggerConfig =
@@ -301,35 +229,22 @@ public class WindowManager
 		keymapManager.getUserStyles().forEach( augmentInputTriggerConfig );
 		keymapManager.getBuiltinStyles().forEach( augmentInputTriggerConfig );
 
-		// TODO: naming, this should be named appActions and the
-		// AppModel.appActions should become modelActions?
-		// TODO: or rename AppModel --> ProjectModel, then projectActions?
-		globalAppActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
-		keymap.updateListeners().add( () -> {
-			globalAppActions.updateKeyConfig( keymap.getConfig() );
-			if ( appModel != null )
-				appModel.getAppActions().updateKeyConfig( keymap.getConfig() );
-		} );
+		final Actions globalAppActions = appModel.getAppActions();
 
-		projectManager = new ProjectManager( this );
+		this.projectManager = new ProjectManager();
 		projectManager.install( globalAppActions );
 
-		newBdvViewAction =
-				new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
-		newTrackSchemeViewAction =
-				new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
-		newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
-		newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
-		newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
-		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
-		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
-		newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
-		newBranchTrackSchemeViewAction =
-				new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
-		newHierarchyTrackSchemeViewAction =
-				new RunnableAction( NEW_HIERARCHY_TRACKSCHEME_VIEW, this::createHierarchyTrackScheme );
-		final RunnableAction openOnlineDocumentation =
-				new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
+		this.newBdvViewAction = new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
+		this.newTrackSchemeViewAction = new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
+		this.newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
+		this.newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
+		this.newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
+		this.editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
+		this.featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
+		this.newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
+		this.newBranchTrackSchemeViewAction = new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
+		this.newHierarchyTrackSchemeViewAction = new RunnableAction( NEW_HIERARCHY_TRACKSCHEME_VIEW, this::createHierarchyTrackScheme );
+		final RunnableAction openOnlineDocumentation = new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
@@ -343,7 +258,7 @@ public class WindowManager
 		globalAppActions.namedAction( newHierarchyTrackSchemeViewAction, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
-		settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		this.settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", dataDisplayStyleManager ) );
@@ -355,82 +270,16 @@ public class WindowManager
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
-		updateEnabledActions();
-
-		bdvViewCreatedListeners = new Listeners.SynchronizedList<>();
-	}
-
-	private void discoverPlugins()
-	{
-		if ( context == null )
-			return;
-
-		final PluginService pluginService = context.getService( PluginService.class );
-		final List< PluginInfo< MamutPlugin > > infos = pluginService.getPluginsOfType( MamutPlugin.class );
-		for ( final PluginInfo< MamutPlugin > info : infos )
-		{
-			try
-			{
-				final MamutPlugin plugin = info.createInstance();
-				context.inject( plugin );
-				plugins.register( plugin );
-			}
-			catch ( final InstantiableException e )
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void updateEnabledActions()
-	{
-		newBdvViewAction.setEnabled( appModel != null );
-		newTrackSchemeViewAction.setEnabled( appModel != null );
-		newTableViewAction.setEnabled( appModel != null );
-		newSelectionTableViewAction.setEnabled( appModel != null );
-		newGrapherViewAction.setEnabled( appModel != null );
-		newBranchBdvViewAction.setEnabled( appModel != null );
-		newBranchTrackSchemeViewAction.setEnabled( appModel != null );
-		newHierarchyTrackSchemeViewAction.setEnabled( appModel != null );
-		editTagSetsAction.setEnabled( appModel != null );
-		featureComputationAction.setEnabled( appModel != null );
-	}
-
-	void setAppModel( final MamutAppModel appModel )
-	{
-		closeAllWindows();
-		if ( this.appModel != null )
-			this.appModel.close();
-
-		this.appModel = appModel;
-		if ( appModel == null )
-		{
-			tagSetDialog.dispose();
-			tagSetDialog = null;
-			featureComputationDialog.dispose();
-			featureComputationDialog = null;
-			featureProjectionsManager.setModel( null, 1 );
-			updateEnabledActions();
-			return;
-		}
+		this.bdvViewCreatedListeners = new Listeners.SynchronizedList<>();
 
 		final Model model = appModel.getModel();
-		UndoActions.install( appModel.getAppActions(), model );
-		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(),
-				model.getGraph(), appModel.getSelectionModel(), model );
-		MamutActions.install( appModel.getAppActions(), appModel );
 
-		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap,
 				new String[] { KeyConfigContexts.MASTODON } );
 		tagSetDialog.setIconImages( TAGS_ICON );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
-
-		updateEnabledActions();
-
-		plugins.setAppPluginModel( new MamutPluginAppModel( appModel, this ) );
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
@@ -636,15 +485,11 @@ public class WindowManager
 	 */
 	public MamutViewBdv createBigDataViewer( final Map< String, Object > guiState )
 	{
-		if ( appModel != null )
-		{
-			final MamutViewBdv view = new MamutViewBdv( appModel, guiState );
-			view.getFrame().setIconImages( BDV_VIEW_ICON );
-			addBdvWindow( view );
-			bdvViewCreatedListeners.list.forEach( l -> l.bdvViewCreated( view ) );
-			return view;
-		}
-		return null;
+		final MamutViewBdv view = new MamutViewBdv( appModel, guiState );
+		view.getFrame().setIconImages( BDV_VIEW_ICON );
+		addBdvWindow( view );
+		bdvViewCreatedListeners.list.forEach( l -> l.bdvViewCreated( view ) );
+		return view;
 	}
 
 	/**
@@ -765,7 +610,7 @@ public class WindowManager
 	public MamutViewTable createTable( final boolean selectionOnly )
 	{
 		final Map< String, Object > guiState = Collections.singletonMap(
-				MamutViewStateSerialization.TABLE_SELECTION_ONLY, Boolean.valueOf( selectionOnly ) );
+				MamutViewTable.TABLE_SELECTION_ONLY, Boolean.valueOf( selectionOnly ) );
 		return createTable( guiState );
 	}
 
@@ -994,8 +839,8 @@ public class WindowManager
 	/**
 	 * This method is called when the MainWindow is closed.
 	 */
-	public void dispose() {
-		setAppModel( null );
+	public void dispose()
+	{
 		settings.dispose();
 	}
 
@@ -1034,35 +879,9 @@ public class WindowManager
 		return keymapManager;
 	}
 
-	// TODO: make package private
-	public MamutAppModel getAppModel()
-	{
-		return appModel;
-	}
-
 	public PreferencesDialog getPreferencesDialog()
 	{
 		return settings;
-	}
-
-	Actions getGlobalAppActions()
-	{
-		return globalAppActions;
-	}
-
-	MamutPlugins getPlugins()
-	{
-		return plugins;
-	}
-
-	public Context getContext()
-	{
-		return context;
-	}
-
-	public FeatureSpecsService getFeatureSpecsService()
-	{
-		return context.getService( FeatureSpecsService.class );
 	}
 
 	/**
@@ -1089,14 +908,14 @@ public class WindowManager
 	private CommandDescriptions buildCommandDescriptions()
 	{
 		final CommandDescriptionsBuilder builder = new CommandDescriptionsBuilder();
-		context.inject( builder );
+		appModel.getContext().inject( builder );
 		builder.discoverProviders();
 		return builder.build();
 	}
 
 	/**
-	 * Classes that implement {@link BdvViewCreatedListener} get a notification when
-	 * a new {@link MamutViewBdv} instance is created.
+	 * Classes that implement {@link BdvViewCreatedListener} get a notification
+	 * when a new {@link MamutViewBdv} instance is created.
 	 */
 	public interface BdvViewCreatedListener
 	{
@@ -1106,5 +925,42 @@ public class WindowManager
 	public Listeners< BdvViewCreatedListener > bdvViewCreatedListeners()
 	{
 		return bdvViewCreatedListeners;
+	}
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = CommandDescriptionProvider.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open a new BigDataViewer view." );
+			descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open a new TrackScheme view." );
+			descriptions.add( NEW_TABLE_VIEW, NEW_TABLE_VIEW_KEYS, "Open a new table view. "
+					+ "The table displays the full data." );
+			descriptions.add( NEW_SELECTION_TABLE_VIEW, NEW_SELECTION_TABLE_VIEW_KEYS,
+					"Open a new selection table view. "
+							+ "The table only displays the current selection and "
+							+ "is updated as the selection changes." );
+			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
+			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
+			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS,
+					"Show the feature computation dialog." );
+			descriptions.add( NEW_BRANCH_BDV_VIEW, NEW_BRANCH_BDV_VIEW_KEYS, "Open a new branch BigDataViewer view." );
+			descriptions.add( NEW_BRANCH_TRACKSCHEME_VIEW, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS,
+					"Open a new branch TrackScheme view." );
+			descriptions.add( NEW_HIERARCHY_TRACKSCHEME_VIEW, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS,
+					"Open a new hierarchy TrackScheme view." );
+			descriptions.add( OPEN_ONLINE_DOCUMENTATION, OPEN_ONLINE_DOCUMENTATION_KEYS,
+					"Open the online documentation in a web browser." );
+			descriptions.add( NEW_GRAPHER_VIEW, NEW_GRAPHER_VIEW_KEYS, "Open a new Grapher view." );
+		}
 	}
 }
