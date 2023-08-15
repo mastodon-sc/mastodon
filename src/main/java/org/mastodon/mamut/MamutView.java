@@ -28,15 +28,6 @@
  */
 package org.mastodon.mamut;
 
-import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.COLORBAR_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
-
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +69,64 @@ import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vertex< E >, E extends Edge< V > >
 		extends MastodonFrameView< MamutAppModel, VG, Spot, Link, V, E >
 {
+
+	/**
+	 * Key that specifies whether the colorbar is visible.
+	 */
+	public static final String COLORBAR_VISIBLE_KEY = "ColorbarVisible";
+
+	/**
+	 * Key that specifies the colorbar position. Values are {@link Position}
+	 * enum values.
+	 */
+	public static final String COLORBAR_POSITION_KEY = "ColorbarPosition";
+
+	/**
+	 * Key that specifies the name of the feature color mode to use for coloring
+	 * scheme based on feature color modes. A non-<code>null</code> value means
+	 * the coloring scheme is based on feature values.
+	 *
+	 * @see #NO_COLORING_KEY
+	 * @see #TAG_SET_KEY
+	 */
+	public static final String FEATURE_COLOR_MODE_KEY = "FeatureColorMode";
+
+	/**
+	 * Key that specifies whether we do not use a special coloring scheme on the
+	 * view. If <code>true</code>, then we do not use a special coloring scheme.
+	 *
+	 * @see #TAG_SET_KEY
+	 * @see #FEATURE_COLOR_MODE_KEY
+	 */
+	public static final String NO_COLORING_KEY = "NoColoring";
+
+	/**
+	 * Key that specifies the name of the tag-set to use for coloring scheme
+	 * based on tag-sets. A non-<code>null</code> value means the coloring
+	 * scheme is based on tag-sets.
+	 *
+	 * @see #NO_COLORING_KEY
+	 * @see #FEATURE_COLOR_MODE_KEY
+	 */
+	public static final String TAG_SET_KEY = "TagSet";
+
+	/**
+	 * Key to the parameter that stores the frame position for
+	 * {@link MastodonFrameView}s. Value is an <code>int[]</code> array of 4
+	 * elements: x, y, width and height.
+	 */
+	public static final String FRAME_POSITION_KEY = "FramePosition";
+
+	/**
+	 * Key that specifies whether the settings panel is visible or not.
+	 */
+	public static final String SETTINGS_PANEL_VISIBLE_KEY = "SettingsPanelVisible";
+
+	/**
+	 * Key to the lock group id. Value is an int.
+	 */
+	public static final String GROUP_HANDLE_ID_KEY = "LockGroupId";
+
 	public MamutView( final MamutAppModel appModel, final VG viewGraph, final String[] keyConfigContexts )
 	{
 		super( appModel, viewGraph, keyConfigContexts );

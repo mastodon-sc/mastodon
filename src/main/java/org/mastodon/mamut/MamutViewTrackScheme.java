@@ -35,9 +35,6 @@ import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.awt.Component;
 import java.util.HashMap;
@@ -89,6 +86,13 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 public class MamutViewTrackScheme
 		extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
 {
+
+	/**
+	 * Key for the transform in a TrackScheme view. Value is a
+	 * {@link ScreenTransform} instance.
+	 */
+	public static final String TRACKSCHEME_TRANSFORM_KEY = "TrackSchemeTransform";
+
 	private final ContextChooser< Spot > contextChooser;
 
 	/**
@@ -297,12 +301,12 @@ public class MamutViewTrackScheme
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 	}
 
-	ContextChooser< Spot > getContextChooser()
+	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
 	}
 
-	ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
+	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
@@ -312,12 +316,12 @@ public class MamutViewTrackScheme
 	 *
 	 * @return the {@link TrackSchemePanel}.
 	 */
-	TrackSchemePanel getTrackschemePanel()
+	public TrackSchemePanel getTrackschemePanel()
 	{
 		return ( ( TrackSchemeFrame ) getFrame() ).getTrackschemePanel();
 	}
 
-	ColorBarOverlay getColorBarOverlay()
+	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
 	}

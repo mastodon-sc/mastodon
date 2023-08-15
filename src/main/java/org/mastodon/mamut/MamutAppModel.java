@@ -28,22 +28,27 @@
  */
 package org.mastodon.mamut;
 
+import java.util.List;
+
 import org.mastodon.app.MastodonAppModel;
-import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
+import org.mastodon.app.plugin.MastodonAppPluginModel;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
+import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPlugins;
-import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
-import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
-import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
-import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
+import org.scijava.Context;
+import org.scijava.InstantiableException;
 import org.scijava.listeners.Listeners;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -53,21 +58,13 @@ import org.scijava.ui.behaviour.util.Actions;
  *
  * @author Jean-Yves Tinevez
  */
-public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
+public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > implements MastodonAppPluginModel
 {
 	private static final int NUM_GROUPS = 3;
 
 	private final BoundingSphereRadiusStatistics radiusStats;
 
 	private final SharedBigDataViewerData sharedBdvData;
-
-	private final TrackSchemeStyleManager trackSchemeStyleManager;
-
-	private final DataDisplayStyleManager dataDisplayStyleManager;
-
-	private final RenderSettingsManager renderSettingsManager;
-
-	private final FeatureColorModeManager featureColorModeManager;
 
 	private final int minTimepoint;
 
@@ -77,41 +74,39 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final Listeners.List< CloseListener > closeListeners = new Listeners.List<>();
 
-	private final MamutFeatureProjectionsManager featureProjectionsManager;
+	private final WindowManager windowManager;
+
+	private final Context context;
 
 	public MamutAppModel(
+			final Context context,
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,
 			final KeyPressedManager keyPressedManager,
-			final TrackSchemeStyleManager trackSchemeStyleManager,
-			final DataDisplayStyleManager dataDisplayStyleManager,
-			final RenderSettingsManager renderSettingsManager,
-			final FeatureColorModeManager featureColorModeManager,
-			final MamutFeatureProjectionsManager featureProjectionsManager,
-			final KeymapManager keymapManager,
-			final MamutPlugins plugins,
-			final Actions globalActions )
+			final KeymapManager keymapManager )
 	{
 		super(
 				NUM_GROUPS,
 				model,
 				keyPressedManager,
 				keymapManager,
-				plugins,
-				globalActions,
+				new MamutPlugins( keymapManager.getForwardDefaultKeymap() ),
+				new Actions( keymapManager.getForwardDefaultKeymap().getConfig(), KeyConfigContexts.MASTODON ),
 				new String[] { KeyConfigContexts.MASTODON } );
 
+		this.context = context;
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
-		this.trackSchemeStyleManager = trackSchemeStyleManager;
-		this.dataDisplayStyleManager = dataDisplayStyleManager;
-		this.renderSettingsManager = renderSettingsManager;
-		this.featureColorModeManager = featureColorModeManager;
-		this.featureProjectionsManager = featureProjectionsManager;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
-		this.branchGraphSync =
-				new BranchGraphSynchronizer( model.getBranchGraph(), model.getGraph().getLock().readLock() );
+
+		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
+		keymap.updateListeners().add( () -> {
+			getGlobalActions().updateKeyConfig( keymap.getConfig() );
+			getAppActions().updateKeyConfig( keymap.getConfig() );
+		} );
+
+		this.branchGraphSync = new BranchGraphSynchronizer( model.getBranchGraph(), model.getGraph().getLock().readLock() );
 		model.getGraph().addGraphChangeListener( branchGraphSync );
 		/*
 		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
@@ -119,31 +114,28 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		 * it would be confusing to have different labels in TrackScheme. If
 		 * this is changed in the future, then probably only in the model files.
 		 */
+
+		// WindowManager.
+		this.windowManager = new WindowManager( this );
+
+		// Plugins.
+		discoverPlugins();
+
+
+		// Install common actions.
+		UndoActions.install( getAppActions(), model );
+		SelectionActions.install( getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), getSelectionModel(), model );
+		MamutActions.install( getAppActions(), this );
 	}
 
-	public DataDisplayStyleManager getDataDisplayStyleManager()
+	public WindowManager getWindowManager()
 	{
-		return dataDisplayStyleManager;
+		return windowManager;
 	}
 
-	public TrackSchemeStyleManager getTrackSchemeStyleManager()
+	public Context getContext()
 	{
-		return trackSchemeStyleManager;
-	}
-
-	public RenderSettingsManager getRenderSettingsManager()
-	{
-		return renderSettingsManager;
-	}
-
-	public FeatureColorModeManager getFeatureColorModeManager()
-	{
-		return featureColorModeManager;
-	}
-
-	public MamutFeatureProjectionsManager getFeatureProjectionsManager()
-	{
-		return featureProjectionsManager;
+		return context;
 	}
 
 	public BoundingSphereRadiusStatistics getRadiusStats()
@@ -182,5 +174,29 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public Listeners< CloseListener > projectClosedListeners()
 	{
 		return closeListeners;
+	}
+
+	private void discoverPlugins()
+	{
+		if ( context == null )
+			return;
+
+		final PluginService pluginService = context.getService( PluginService.class );
+		final List< PluginInfo< MamutPlugin > > infos = pluginService.getPluginsOfType( MamutPlugin.class );
+		final MamutPlugins plugins = ( MamutPlugins ) getPlugins();
+		for ( final PluginInfo< MamutPlugin > info : infos )
+		{
+			try
+			{
+				final MamutPlugin plugin = info.createInstance();
+				context.inject( plugin );
+				plugins.register( plugin );
+			}
+			catch ( final InstantiableException e )
+			{
+				e.printStackTrace();
+			}
+		}
+		plugins.setAppPluginModel( this );
 	}
 }

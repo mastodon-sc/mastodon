@@ -36,8 +36,6 @@ import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutViewStateSerialization.BDV_STATE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.BDV_TRANSFORM_KEY;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,11 +97,28 @@ import bdv.viewer.NavigationActions;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
+import bdv.viewer.ViewerState;
 import net.imglib2.realtransform.AffineTransform3D;
 
 public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >,
 		OverlayEdgeWrapper< Spot, Link > >
 {
+
+	/**
+	 * Key for the {@link ViewerState} in a BDV view. Value is a XML
+	 * {@link Element} serialized from the state.
+	 *
+	 * @see ViewerPanelMamut#stateToXml()
+	 * @see ViewerPanelMamut#stateFromXml(Element)
+	 */
+	public static final String BDV_STATE_KEY = "BdvState";
+
+	/**
+	 * Key for the transform in a BDV view. Value is an
+	 * {@link AffineTransform3D} instance.
+	 */
+	public static final String BDV_TRANSFORM_KEY = "BdvTransform";
+
 	// TODO
 	private static int bdvName = 1;
 
@@ -351,12 +366,12 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				coloring );
 	}
 
-	ContextProvider< Spot > getContextProvider()
+	public ContextProvider< Spot > getContextProvider()
 	{
 		return contextProvider;
 	}
 
-	ViewerPanel getViewerPanelMamut()
+	public ViewerPanel getViewerPanelMamut()
 	{
 		return viewer;
 	}
@@ -366,12 +381,12 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		viewer.requestRepaint();
 	}
 
-	ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
+	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
 
-	ColorBarOverlay getColorBarOverlay()
+	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
 	}

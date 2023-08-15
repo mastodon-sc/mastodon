@@ -53,6 +53,7 @@ import javax.swing.SwingUtilities;
 
 import org.jdom2.JDOMException;
 import org.mastodon.app.MastodonIcons;
+import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.ProjectManager;
 import org.mastodon.mamut.WindowManager;
@@ -598,7 +599,8 @@ public class MastodonLauncher extends JFrame
 				final TrackMateImporter importer = new TrackMateImporter( file );
 				final WindowManager windowManager = createWindowManager();
 				windowManager.getProjectManager().open( importer.createProject() );
-				importer.readModel( windowManager.getAppModel().getModel(), windowManager.getFeatureSpecsService() );
+				final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
+				importer.readModel( windowManager.getAppModel().getModel(), featureSpecsService );
 				new MainWindow( windowManager ).setVisible( true );
 				dispose();
 			}
@@ -631,8 +633,8 @@ public class MastodonLauncher extends JFrame
 					{
 						// Use the the most recent opened location as initial
 						// location for the file chooser
-						Iterator<String> iterator = RecentProjectsPanel.recentProjects.iterator();
-						String previousPath = iterator.hasNext() ? iterator.next() : null;
+						final Iterator<String> iterator = RecentProjectsPanel.recentProjects.iterator();
+						final String previousPath = iterator.hasNext() ? iterator.next() : null;
 						// We have to use the JFileChooser to open folders.
 						file = FileChooser.chooseFile(
 								true,
@@ -687,20 +689,21 @@ public class MastodonLauncher extends JFrame
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public synchronized void drop( DropTargetDropEvent dropTargetDropEvent )
+		public synchronized void drop( final DropTargetDropEvent dropTargetDropEvent )
 		{
 			try
 			{
 				dropTargetDropEvent.acceptDrop( DnDConstants.ACTION_COPY );
 				@SuppressWarnings( "unchecked" )
+				final
 				List< File > droppedFiles = ( List< File > ) dropTargetDropEvent.getTransferable().getTransferData( DataFlavor.javaFileListFlavor );
-				for ( File file : droppedFiles )
+				for ( final File file : droppedFiles )
 				{
 					// process files
 					loadMastodonProject( file.getAbsolutePath() );
 				}
 			}
-			catch ( Exception e )
+			catch ( final Exception e )
 			{
 				e.printStackTrace( System.err );
 			}

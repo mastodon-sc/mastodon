@@ -36,8 +36,8 @@ import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutViewStateSerialization.BDV_STATE_KEY;
-import static org.mastodon.mamut.MamutViewStateSerialization.BDV_TRANSFORM_KEY;
+import static org.mastodon.mamut.MamutViewBdv.BDV_STATE_KEY;
+import static org.mastodon.mamut.MamutViewBdv.BDV_TRANSFORM_KEY;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -280,17 +280,17 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		viewerFrame.setVisible( true );
 	}
 
-	ColoringModel getColoringModel()
+	public ColoringModel getColoringModel()
 	{
 		return coloringModel;
 	}
 
-	ColorBarOverlay getColorBarOverlay()
+	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
 	}
 
-	ViewerPanel getViewerPanelMamut()
+	public ViewerPanel getViewerPanelMamut()
 	{
 		return viewer;
 	}

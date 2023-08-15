@@ -30,15 +30,11 @@ package org.mastodon.mamut;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.mamut.MamutBranchView.BRANCH_GRAPH;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutViewStateSerialization.BRANCH_GRAPH;
-import static org.mastodon.mamut.MamutViewStateSerialization.TABLE_DISPLAYED;
-import static org.mastodon.mamut.MamutViewStateSerialization.TABLE_ELEMENT;
-import static org.mastodon.mamut.MamutViewStateSerialization.TABLE_SELECTION_ONLY;
-import static org.mastodon.mamut.MamutViewStateSerialization.TABLE_VISIBLE_POS;
 
 import java.awt.Point;
 import java.util.Collections;
@@ -96,6 +92,57 @@ import bdv.BigDataViewerActions;
 
 public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link >, Spot, Link >
 {
+
+	/**
+	 * Key that specifies whether a table only display the selection or the
+	 * whole model. Boolean instance.
+	 */
+	public static final String TABLE_SELECTION_ONLY = "TableSelectionOnly";
+
+	/**
+	 * Key that specifies whether a table is currently showing the vertex table.
+	 * If <code>false</code>, then the edge table is displayed.
+	 */
+	public static final String TABLE_DISPLAYING_VERTEX_TABLE = "TableVertexTableDisplayed";
+
+	/**
+	 * Key that specifies what table is currently showing in the table view.
+	 * Values are <code>String</code> that points to a tab name in the tabbed
+	 * pane.
+	 */
+	public static final String TABLE_DISPLAYED = "TableDisplayed";
+
+	/**
+	 * Key to the parameter that stores the vertex table displayed rectangle.
+	 * Value is and <code>int[]</code> array of 4 elements: x, y, width and
+	 * height.
+	 */
+	public static final String TABLE_VERTEX_TABLE_VISIBLE_POS = "TableVertexTableVisibleRect";
+
+	/**
+	 * Key to the parameter that stores the table displayed position. Value is
+	 * and <code>int[]</code> array of 2 elements: x, y.
+	 */
+	public static final String TABLE_VISIBLE_POS = "TableVisibleRect";
+
+	/**
+	 * Key to the parameter that stores the GUI states of multiple tables. Value
+	 * is a <code>List<Map<String, Object>></code>.
+	 */
+	public static final String TABLE_ELEMENT = "Tables";
+
+	/**
+	 * Key to the parameter that stores the table name in a table GUI state.
+	 * Value is a <code>String</code>.
+	 */
+	public static final String TABLE_NAME = "TableName";
+
+	/**
+	 * Key to the parameter that stores the edge table displayed rectangle.
+	 * Value is and <code>int[]</code> array of 4 elements: x, y, width and
+	 * height.
+	 */
+	public static final String TABLE_EDGE_TABLE_VISIBLE_POS = "TableEdgeTableVisibleRect";
 
 	public static String csvExportPath = null;
 
@@ -377,7 +424,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	}
 
 	@SuppressWarnings( "unchecked" )
-	ContextChooser< Spot > getContextChooser()
+	public ContextChooser< Spot > getContextChooser()
 	{
 		/*
 		 * We configured the table creator so that only the first table pair,
@@ -390,17 +437,17 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	 * De/serialization related methods.
 	 */
 
-	ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
+	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
 
-	ColoringModel getBranchColoringModel()
+	public ColoringModel getBranchColoringModel()
 	{
 		return branchColoringModel;
 	}
 
-	boolean isSelectionTable()
+	public boolean isSelectionTable()
 	{
 		return selectionTable;
 	}
