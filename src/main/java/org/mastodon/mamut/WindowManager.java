@@ -217,9 +217,12 @@ public class WindowManager
 		this.featureColorModeManager = new FeatureColorModeManager();
 		final Context context = appModel.getContext();
 		this.featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
+		final Model model = appModel.getModel();
+		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 		this.keymapManager = new KeymapManager();
-
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
+		// TODO: still needed?
+		this.bdvViewCreatedListeners = new Listeners.SynchronizedList<>();
 
 		final CommandDescriptions descriptions = buildCommandDescriptions();
 		final Consumer< Keymap > augmentInputTriggerConfig =
@@ -227,7 +230,9 @@ public class WindowManager
 		keymapManager.getUserStyles().forEach( augmentInputTriggerConfig );
 		keymapManager.getBuiltinStyles().forEach( augmentInputTriggerConfig );
 
-		final Actions globalAppActions = appModel.getAppActions();
+		/*
+		 * Actions to create views.
+		 */
 
 		this.newBdvViewAction = new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
 		this.newTrackSchemeViewAction = new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
@@ -241,17 +246,18 @@ public class WindowManager
 		this.newHierarchyTrackSchemeViewAction = new RunnableAction( NEW_HIERARCHY_TRACKSCHEME_VIEW, this::createHierarchyTrackScheme );
 		final RunnableAction openOnlineDocumentation = new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
 
-		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
-		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
-		globalAppActions.namedAction( newTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
-		globalAppActions.namedAction( newSelectionTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
-		globalAppActions.namedAction( newGrapherViewAction, NEW_GRAPHER_VIEW_KEYS );
-		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
-		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
-		globalAppActions.namedAction( newBranchBdvViewAction, NEW_BRANCH_BDV_VIEW_KEYS );
-		globalAppActions.namedAction( newBranchTrackSchemeViewAction, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS );
-		globalAppActions.namedAction( newHierarchyTrackSchemeViewAction, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS );
-		globalAppActions.namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
+		final Actions projectActions = appModel.getProjectActions();
+		projectActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
+		projectActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
+		projectActions.namedAction( newTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
+		projectActions.namedAction( newSelectionTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
+		projectActions.namedAction( newGrapherViewAction, NEW_GRAPHER_VIEW_KEYS );
+		projectActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
+		projectActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
+		projectActions.namedAction( newBranchBdvViewAction, NEW_BRANCH_BDV_VIEW_KEYS );
+		projectActions.namedAction( newBranchTrackSchemeViewAction, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS );
+		projectActions.namedAction( newHierarchyTrackSchemeViewAction, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS );
+		projectActions.namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
 		this.settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
@@ -263,18 +269,15 @@ public class WindowManager
 		settings.pack();
 
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
-		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
+		projectActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
-		this.bdvViewCreatedListeners = new Listeners.SynchronizedList<>();
 
-		final Model model = appModel.getModel();
 
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap,
 				new String[] { KeyConfigContexts.MASTODON } );
 		tagSetDialog.setIconImages( TAGS_ICON );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
-		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )

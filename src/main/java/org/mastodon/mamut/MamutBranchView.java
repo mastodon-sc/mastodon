@@ -203,11 +203,11 @@ public class MamutBranchView<
 		} );
 		this.frame = frame;
 
-		final Actions globalActions = appModel.getGlobalActions();
-		if ( globalActions != null )
+		final Actions projectActions = appModel.getProjectActions();
+		if ( projectActions != null )
 		{
-			frame.getKeybindings().addActionMap( "global", new WrappedActionMap( globalActions.getActionMap() ) );
-			frame.getKeybindings().addInputMap( "global", new WrappedInputMap( globalActions.getInputMap() ) );
+			frame.getKeybindings().addActionMap( "project", new WrappedActionMap( projectActions.getActionMap() ) );
+			frame.getKeybindings().addInputMap( "project", new WrappedInputMap( projectActions.getInputMap() ) );
 		}
 
 		final Actions pluginActions = appModel.getPlugins().getPluginActions();
@@ -217,9 +217,9 @@ public class MamutBranchView<
 			frame.getKeybindings().addInputMap( "plugin", new WrappedInputMap( pluginActions.getInputMap() ) );
 		}
 
-		final Actions appActions = appModel.getAppActions();
-		frame.getKeybindings().addActionMap( "app", new WrappedActionMap( appActions.getActionMap() ) );
-		frame.getKeybindings().addInputMap( "app", new WrappedInputMap( appActions.getInputMap() ) );
+		final Actions modelActions = appModel.getModelActions();
+		frame.getKeybindings().addActionMap( "model", new WrappedActionMap( modelActions.getActionMap() ) );
+		frame.getKeybindings().addInputMap( "model", new WrappedInputMap( modelActions.getInputMap() ) );
 
 		final Keymap keymap = appModel.getKeymap();
 

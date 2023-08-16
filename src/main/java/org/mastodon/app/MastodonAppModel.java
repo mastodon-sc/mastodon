@@ -96,13 +96,13 @@ public class MastodonAppModel<
 	/**
 	 * Actions that should be available in all views.
 	 */
-	private final Actions appActions;
+	private final Actions modelActions;
 
 	/**
 	 * Actions that are always available, even if no {@link MastodonAppModel}
 	 * currently exists.
 	 */
-	private final Actions globalActions;
+	private final Actions projectActions;
 
 	/**
 	 * Instantiate a new Mastodon-app model.
@@ -134,7 +134,7 @@ public class MastodonAppModel<
 	{
 		this.model = model;
 		this.plugins = plugins;
-		this.globalActions = globalActions;
+		this.projectActions = globalActions;
 
 		final ListenableReadOnlyGraph< V, E > graph = model.getGraph();
 		final GraphIdBimap< V, E > idmap = model.getGraphIdBimap();
@@ -160,7 +160,7 @@ public class MastodonAppModel<
 		this.keyConfigContexts = keyConfigContexts;
 
 		final InputTriggerConfig keyconf = keymapManager.getForwardDefaultKeymap().getConfig();
-		this.appActions = new Actions( keyconf, keyConfigContexts );
+		this.modelActions = new Actions( keyconf, keyConfigContexts );
 	}
 
 	public M getModel()
@@ -214,29 +214,28 @@ public class MastodonAppModel<
 	}
 
 	/**
-	 * Actions that should be available in all views.
-	 *
+	 * Actions that operates on the whole data model and are available in all
+	 * views of the data.
+	 * <p>
+	 * For instance undo/redo, select all, etc.
 	 * 
-	 * @return the application actions.
+	 * @return the model actions.
 	 */
-	public Actions getAppActions()
+	public Actions getModelActions()
 	{
-		return appActions;
+		return modelActions;
 	}
 
 	/**
-	 * Actions that are always available, even if no {@link MastodonAppModel}
-	 * currently exists.
-	 * 
-	 * TODO: naming, this should be named appActions and the AppModel.appActions
-	 * should become modelActions?
-	 * 
-	 * TODO: or rename AppModel --> ProjectModel, then projectActions?
+	 * Actions that operates on the app or whole project.
+	 * <p>
+	 * For instance, saving, importing, creating a new view, showing the
+	 * preference window, etc.
 	 *
-	 * @return the global actions.
+	 * @return the project actions.
 	 */
-	public Actions getGlobalActions()
+	public Actions getProjectActions()
 	{
-		return globalActions;
+		return projectActions;
 	}
 }
