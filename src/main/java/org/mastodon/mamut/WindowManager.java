@@ -79,7 +79,6 @@ import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage
 import org.scijava.Context;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -111,8 +110,8 @@ public class WindowManager
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
-
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
+
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
@@ -155,8 +154,6 @@ public class WindowManager
 	/** All currently open Grapher windows. */
 	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
 
-	private final KeyPressedManager keyPressedManager;
-
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
 
 	private final DataDisplayStyleManager dataDisplayStyleManager;
@@ -166,8 +163,6 @@ public class WindowManager
 	private final FeatureColorModeManager featureColorModeManager;
 
 	private final MamutFeatureProjectionsManager featureProjectionsManager;
-
-	private final KeymapManager keymapManager;
 
 	private final TagSetDialog tagSetDialog;
 
@@ -189,7 +184,6 @@ public class WindowManager
 	public WindowManager( final MamutAppModel appModel )
 	{
 		this.appModel = appModel;
-		this.keyPressedManager = new KeyPressedManager();
 		this.trackSchemeStyleManager = new TrackSchemeStyleManager();
 		this.dataDisplayStyleManager = new DataDisplayStyleManager();
 		this.renderSettingsManager = new RenderSettingsManager();
@@ -198,7 +192,7 @@ public class WindowManager
 		this.featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		final Model model = appModel.getModel();
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
-		this.keymapManager = new KeymapManager();
+		final KeymapManager keymapManager = appModel.getKeymapManager();
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		// TODO: still needed?
 		this.bdvViewCreatedListeners = new Listeners.SynchronizedList<>();
@@ -249,8 +243,6 @@ public class WindowManager
 
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		projectActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
-
-
 
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap,
 				new String[] { KeyConfigContexts.MASTODON } );
@@ -513,14 +505,10 @@ public class WindowManager
 	 */
 	public MamutViewTrackScheme createTrackScheme( final Map< String, Object > guiState )
 	{
-		if ( appModel != null )
-		{
-			final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel, guiState );
-			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
-			addTsWindow( view );
-			return view;
-		}
-		return null;
+		final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel, guiState );
+		view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+		addTsWindow( view );
+		return view;
 	}
 
 	/**
@@ -562,14 +550,10 @@ public class WindowManager
 	 */
 	public MamutViewTable createTable( final Map< String, Object > guiState )
 	{
-		if ( appModel != null )
-		{
-			final MamutViewTable view = new MamutViewTable( appModel, guiState );
-			view.getFrame().setIconImages( TABLE_VIEW_ICON );
-			addTableWindow( view );
-			return view;
-		}
-		return null;
+		final MamutViewTable view = new MamutViewTable( appModel, guiState );
+		view.getFrame().setIconImages( TABLE_VIEW_ICON );
+		addTableWindow( view );
+		return view;
 	}
 
 	/**
@@ -636,14 +620,10 @@ public class WindowManager
 	 */
 	public MamutViewGrapher createGrapher( final Map< String, Object > guiState )
 	{
-		if ( appModel != null )
-		{
-			final MamutViewGrapher view = new MamutViewGrapher( appModel, guiState );
-			view.getFrame().setIconImages( FEATURES_ICON );
-			addGrapherWindow( view );
-			return view;
-		}
-		return null;
+		final MamutViewGrapher view = new MamutViewGrapher( appModel, guiState );
+		view.getFrame().setIconImages( FEATURES_ICON );
+		addGrapherWindow( view );
+		return view;
 	}
 
 	/**
@@ -665,14 +645,10 @@ public class WindowManager
 	 */
 	public MamutBranchViewBdv createBranchBigDataViewer( final Map< String, Object > guiState )
 	{
-		if ( appModel != null )
-		{
-			final MamutBranchViewBdv view = new MamutBranchViewBdv( appModel, guiState );
-			view.getFrame().setIconImages( BDV_VIEW_ICON );
-			addBBdvWindow( view );
-			return view;
-		}
-		return null;
+		final MamutBranchViewBdv view = new MamutBranchViewBdv( appModel, guiState );
+		view.getFrame().setIconImages( BDV_VIEW_ICON );
+		addBBdvWindow( view );
+		return view;
 	}
 
 	/**
@@ -694,14 +670,10 @@ public class WindowManager
 	 */
 	public MamutBranchViewTrackScheme createBranchTrackScheme( final Map< String, Object > guiState )
 	{
-		if ( appModel != null )
-		{
-			final MamutBranchViewTrackScheme view = new MamutBranchViewTrackScheme( appModel, guiState );
-			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
-			addBTsWindow( view );
-			return view;
-		}
-		return null;
+		final MamutBranchViewTrackScheme view = new MamutBranchViewTrackScheme( appModel, guiState );
+		view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+		addBTsWindow( view );
+		return view;
 	}
 
 	/**
@@ -723,15 +695,11 @@ public class WindowManager
 	 */
 	public MamutBranchViewTrackScheme createHierarchyTrackScheme( final Map< String, Object > guiState )
 	{
-		if ( appModel != null )
-		{
-			final MamutBranchViewTrackSchemeHierarchy view =
-					new MamutBranchViewTrackSchemeHierarchy( appModel, guiState );
-			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
-			addBTsWindow( view );
-			return view;
-		}
-		return null;
+		final MamutBranchViewTrackSchemeHierarchy view =
+				new MamutBranchViewTrackSchemeHierarchy( appModel, guiState );
+		view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+		addBTsWindow( view );
+		return view;
 	}
 
 	/**
@@ -756,10 +724,7 @@ public class WindowManager
 	 */
 	public void editTagSets()
 	{
-		if ( appModel != null )
-		{
-			tagSetDialog.setVisible( true );
-		}
+		tagSetDialog.setVisible( true );
 	}
 
 	/**
@@ -767,10 +732,7 @@ public class WindowManager
 	 */
 	public void computeFeatures()
 	{
-		if ( appModel != null )
-		{
-			featureComputationDialog.setVisible( true );
-		}
+		featureComputationDialog.setVisible( true );
 	}
 
 	/**
@@ -821,11 +783,6 @@ public class WindowManager
 		settings.dispose();
 	}
 
-	KeyPressedManager getKeyPressedManager()
-	{
-		return keyPressedManager;
-	}
-
 	TrackSchemeStyleManager getTrackSchemeStyleManager()
 	{
 		return trackSchemeStyleManager;
@@ -849,11 +806,6 @@ public class WindowManager
 	MamutFeatureProjectionsManager getFeatureProjectionsManager()
 	{
 		return featureProjectionsManager;
-	}
-
-	KeymapManager getKeymapManager()
-	{
-		return keymapManager;
 	}
 
 	public PreferencesDialog getPreferencesDialog()
