@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature;
+package org.mastodon.mamut;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -38,7 +38,9 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.mamut.feature.SpotCenterIntensityFeature;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
@@ -54,17 +56,16 @@ public class MamutPlayground
 	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
 		final Context context = new Context();
-		final MamutProject project = new MamutProjectIO().load( "../TrackMate3/samples/mamutproject.mastodon" );
-		final WindowManager windowManager = new WindowManager( context );
-		windowManager.getProjectManager().openWithDialog( project );
-		final Model model = windowManager.getAppModel().getModel();
+		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
+		final MamutAppModel appModel = ProjectLoader.open( project, context );
+		final Model model = appModel.getModel();
 
 		System.out.println( "\n\n\n___________________________________\nData loaded.\n" );
 
 		final MamutFeatureComputerService featureComputerService =
 				MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =
 				featureComputerService.compute( SpotCenterIntensityFeature.SPEC );
 

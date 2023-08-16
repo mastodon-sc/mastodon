@@ -46,16 +46,16 @@ public class MamutProjectIOTest
 	}
 
 	@Test
-	public void testPorjectWithLinuxPath() throws IOException
+	public void testProjectWithLinuxPath() throws IOException
 	{
 		testCanFindDatasetXmlFile( "/org/mastodon/mamut/examples/tiny-os/tiny-project-linux.mastodon" );
 	}
 
-	private void testCanFindDatasetXmlFile( String resource ) throws IOException
+	private void testCanFindDatasetXmlFile( final String resource ) throws IOException
 	{
 		final String projectFile = MamutProjectIOTest.class.getResource( resource ).getPath();
-		MamutProject project = new MamutProjectIO().load( projectFile );
-		File datasetXmlFile = project.getDatasetXmlFile();
+		final MamutProject project = MamutProjectIO.load( projectFile );
+		final File datasetXmlFile = project.getDatasetXmlFile();
 		assertTrue( datasetXmlFile.exists() );
 	}
 }

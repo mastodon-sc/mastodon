@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import org.junit.Test;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.ModelGraph;
@@ -79,7 +80,7 @@ public class GarbageCollectionTest
 				GraphicsEnvironment.isHeadless() );
 
 		try( Context context = new Context() ) {
-			WeakReference< ModelGraph > modelGraph = openAndCloseMastodon( context );
+			final WeakReference< ModelGraph > modelGraph = openAndCloseMastodon( context );
 			GarbageCollectionUtils.triggerGarbageCollection();
 			assertNull( "The garbage collection failed to clean ModelGraph.", modelGraph.get() );
 		}
@@ -89,16 +90,17 @@ public class GarbageCollectionTest
 	 * Open a Mastodon project with all different windows and close it.
 	 * Return a weak reference to the ModelGraph.
 	 */
-	static WeakReference< ModelGraph > openAndCloseMastodon( Context context )
+	static WeakReference< ModelGraph > openAndCloseMastodon( final Context context )
 	{
 		try
 		{
-			WindowManager windowManager = new WindowManager( context );
-			MamutProject project = new MamutProjectIO().load( exampleProject );
-			windowManager.getProjectManager().open( project, false, true );
-			ModelGraph modelGraph = windowManager.getAppModel().getModel().getGraph();
-			MainWindow mainWindow = new MainWindow( windowManager );
+			final MamutProject project = MamutProjectIO.load( exampleProject );
+			final MamutAppModel appModel = ProjectLoader.open( project, context );
+			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
+
+			final ModelGraph modelGraph = appModel.getModel().getGraph();
+			final WindowManager windowManager = appModel.getWindowManager();
 			windowManager.createTrackScheme();
 			windowManager.createBranchTrackScheme();
 			windowManager.createHierarchyTrackScheme();
@@ -108,7 +110,7 @@ public class GarbageCollectionTest
 			windowManager.createTable( false );
 			windowManager.createTable( true );
 			windowManager.editTagSets();
-			mainWindow.close( windowManager, windowManager.getGlobalAppActions().getActionMap().get( ProjectManager.SAVE_PROJECT ), null );
+			mainWindow.close();
 			return new WeakReference<>( modelGraph );
 		}
 		catch ( IOException | SpimDataException e )

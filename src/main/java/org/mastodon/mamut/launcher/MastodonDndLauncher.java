@@ -28,20 +28,21 @@
  */
 package org.mastodon.mamut.launcher;
 
-import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.WindowManager;
-import org.mastodon.mamut.io.project.MamutProject;
-import org.mastodon.mamut.io.project.MamutProjectIO;
-import org.scijava.io.IOPlugin;
-import org.scijava.io.AbstractIOPlugin;
-import org.scijava.io.location.FileLocation;
-import org.scijava.io.location.Location;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.log.LogService;
-
 import java.io.IOException;
 import java.util.ArrayList;
+
+import org.mastodon.mamut.MainWindow;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
+import org.scijava.io.AbstractIOPlugin;
+import org.scijava.io.IOPlugin;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 @Plugin( type = IOPlugin.class )
 public class MastodonDndLauncher extends AbstractIOPlugin< Object >
@@ -51,7 +52,7 @@ public class MastodonDndLauncher extends AbstractIOPlugin< Object >
 	private LogService logService;
 
 	@Override
-	public boolean supportsOpen( Location source )
+	public boolean supportsOpen( final Location source )
 	{
 		final String sourcePath = source.getURI().getPath();
 		logService.debug( "MastodonDndLauncher was questioned: " + sourcePath );
@@ -62,32 +63,27 @@ public class MastodonDndLauncher extends AbstractIOPlugin< Object >
 	}
 
 	@Override
-	public Object open( Location source ) throws IOException
+	public Object open( final Location source ) throws IOException
 	{
 		logService.debug( "MastodonDndLauncher was asked to open: " + source.getURI().getPath() );
 		final FileLocation fsource = source instanceof FileLocation ? ( FileLocation ) source : null;
 		if ( fsource == null )
-			return null; //NB: shouldn't happen... (in theory)
+			return null; // NB: shouldn't happen... (in theory)
 
 		final String projectPath = fsource.getFile().getAbsolutePath();
 
-		//make sure that the menus appear on top of the screen
-		//to look natively in the Apple world
+		// make sure that the menus appear on top of the screen
+		// to look natively in the Apple world
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-
-		//start up "the main object behind the scenes" -- the WindowManager,
-		final WindowManager windowManager = new WindowManager( getContext() );
 
 		try
 		{
-			final MamutProject project = new MamutProjectIO().load( projectPath );
-			windowManager.getProjectManager().openWithDialog( project );
-
-			//start up the main/central Mastodon window
-			final MainWindow mainWindow = new MainWindow( windowManager );
+			final MamutProject project = MamutProjectIO.load( projectPath );
+			final MamutAppModel appModel = ProjectLoader.openWithDialog( project, getContext(), null );
+			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 		}
-		catch ( Exception e )
+		catch ( final Exception e )
 		{
 			logService.error( "Error reading Mastodon project file: " + projectPath );
 			logService.error( "Error was: " + e.getMessage() );
@@ -96,7 +92,7 @@ public class MastodonDndLauncher extends AbstractIOPlugin< Object >
 		return FAKE_INPUT;
 	}
 
-	//the "innocent" product of the (hypothetical) file reading...
+	// the "innocent" product of the (hypothetical) file reading...
 	private static final Object FAKE_INPUT = new ArrayList<>( 0 );
 
 	@Override

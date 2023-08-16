@@ -194,8 +194,6 @@ public class WindowManager
 
 	private final JDialog featureComputationDialog;
 
-	final ProjectManager projectManager;
-
 	private final Listeners.List< BdvViewCreatedListener > bdvViewCreatedListeners;
 
 	private final PreferencesDialog settings;
@@ -230,9 +228,6 @@ public class WindowManager
 		keymapManager.getBuiltinStyles().forEach( augmentInputTriggerConfig );
 
 		final Actions globalAppActions = appModel.getAppActions();
-
-		this.projectManager = new ProjectManager();
-		projectManager.install( globalAppActions );
 
 		this.newBdvViewAction = new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
 		this.newTrackSchemeViewAction = new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
@@ -892,17 +887,6 @@ public class WindowManager
 	public List< MamutViewBdv > getBdvWindows()
 	{
 		return bdvWindows;
-	}
-
-	/**
-	 * Exposes the {@link ProjectManager} of this window manager, that handles
-	 * project files.
-	 *
-	 * @return the project manager.
-	 */
-	public ProjectManager getProjectManager()
-	{
-		return projectManager;
 	}
 
 	private CommandDescriptions buildCommandDescriptions()

@@ -35,6 +35,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.scijava.Context;
@@ -45,8 +46,8 @@ public class CloseListenerTest
 {
 
 	/**
-	 * Test if {@link CloseListener} is called, when a Mastodon project
-	 * is closed.
+	 * Test if {@link CloseListener} is called, when a Mastodon project is
+	 * closed.
 	 */
 	@Test
 	public void testCloseListeners() throws IOException, SpimDataException
@@ -55,23 +56,22 @@ public class CloseListenerTest
 		try (Context context = new Context())
 		{
 			// setup
-			WindowManager windowManager = openTinyProject( context );
-			MamutAppModel appModel = windowManager.getAppModel();
+			final MamutAppModel appModel = openTinyProject( context );
 			final int[] counter = new int[] { 0 };
 			appModel.projectClosedListeners().add( () -> counter[ 0 ]++ );
 			// process
-			windowManager.setAppModel( null ); // NB: This is the current way to close a Mastodon project. It could maybe use some refactoring.
+			appModel.close();
+
 			// test
 			assertEquals( 1, counter[ 0 ] );
 		}
 	}
 
-	private static WindowManager openTinyProject( Context context ) throws IOException, SpimDataException
+	private static MamutAppModel openTinyProject( final Context context ) throws IOException, SpimDataException
 	{
-		String tinyProjectFile = CloseListenerTest.class.getResource( "/org/mastodon/mamut/examples/tiny/tiny-project.mastodon" ).getFile();
-		WindowManager windowManager = new WindowManager( context );
-		MamutProject project = new MamutProjectIO().load( tinyProjectFile );
-		windowManager.getProjectManager().open( project, false, true );
-		return windowManager;
+		final String tinyProjectFile = CloseListenerTest.class.getResource( "/org/mastodon/mamut/examples/tiny/tiny-project.mastodon" ).getFile();
+		final MamutProject project = MamutProjectIO.load( tinyProjectFile );
+		final MamutAppModel appModel = ProjectLoader.open( project, context );
+		return appModel;
 	}
 }

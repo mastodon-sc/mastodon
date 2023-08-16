@@ -37,6 +37,7 @@ import javax.swing.ActionMap;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
 import org.mastodon.views.bdv.export.RecordMovieDialog;
@@ -53,15 +54,15 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 
 	static
 	{
-		menuTexts.put( ProjectManager.CREATE_PROJECT, "New Project" );
-		menuTexts.put( ProjectManager.CREATE_PROJECT_FROM_URL, "New Project From URL" );
-		menuTexts.put( ProjectManager.LOAD_PROJECT, "Load Project" );
-		menuTexts.put( ProjectManager.SAVE_PROJECT, "Save Project" );
-		menuTexts.put( ProjectManager.SAVE_PROJECT_AS, "Save Project As..." );
-		menuTexts.put( ProjectManager.IMPORT_TGMM, "Import TGMM tracks" );
-		menuTexts.put( ProjectManager.IMPORT_SIMI, "Import Simi BioCell tracks" );
-		menuTexts.put( ProjectManager.IMPORT_MAMUT, "Import MaMuT project" );
-		menuTexts.put( ProjectManager.EXPORT_MAMUT, "Export MaMuT project" );
+		menuTexts.put( ProjectActions.CREATE_PROJECT, "New Project" );
+		menuTexts.put( ProjectActions.CREATE_PROJECT_FROM_URL, "New Project From URL" );
+		menuTexts.put( ProjectActions.LOAD_PROJECT, "Load Project" );
+		menuTexts.put( ProjectActions.SAVE_PROJECT, "Save Project" );
+		menuTexts.put( ProjectActions.SAVE_PROJECT_AS, "Save Project As..." );
+		menuTexts.put( ProjectActions.IMPORT_TGMM, "Import TGMM tracks" );
+		menuTexts.put( ProjectActions.IMPORT_SIMI, "Import Simi BioCell tracks" );
+		menuTexts.put( ProjectActions.IMPORT_MAMUT, "Import MaMuT project" );
+		menuTexts.put( ProjectActions.EXPORT_MAMUT, "Export MaMuT project" );
 
 		menuTexts.put( WindowManager.OPEN_ONLINE_DOCUMENTATION, "Open online documentation" );
 

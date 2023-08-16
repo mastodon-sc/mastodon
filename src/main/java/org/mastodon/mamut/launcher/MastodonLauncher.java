@@ -45,7 +45,6 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntUnaryOperator;
 
-import javax.swing.ActionMap;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -55,13 +54,13 @@ import org.jdom2.JDOMException;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.ProjectManager;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.importer.simi.SimiImporter;
 import org.mastodon.mamut.importer.simi.SimiImporter.LabelFunction;
 import org.mastodon.mamut.importer.tgmm.TgmmImporter;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
-import org.mastodon.mamut.io.project.MamutImagePlusProject;
+import org.mastodon.mamut.io.ProjectCreator;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
@@ -142,10 +141,11 @@ public class MastodonLauncher extends JFrame
 			{
 				// Create new blank project from BDV file.
 				final File bdvFile = new File( gui.importSimiBioCellPanel.textAreaBDVFile.getText() );
-				final WindowManager windowManager = createWindowManager();
-				windowManager.getProjectManager().open( new MamutProject( null, bdvFile ) );
-				final Model model = windowManager.getAppModel().getModel();
-				final AbstractSpimData< ? > spimData = windowManager.getAppModel().getSharedBdvData().getSpimData();
+				final MamutProject project = MamutProjectIO.fromBdvFile( bdvFile );
+				final MamutAppModel appModel = ProjectLoader.open( project, context );
+
+				final Model model = appModel.getModel();
+				final AbstractSpimData< ? > spimData = appModel.getSharedBdvData().getSpimData();
 
 				final String sbdFilename = gui.importSimiBioCellPanel.textAreaSimiFile.getText();
 				final int setupIndex = gui.importSimiBioCellPanel.setupComboBox.getSelectedIndex();
@@ -199,7 +199,7 @@ public class MastodonLauncher extends JFrame
 				final boolean interpolateMissingSpots = gui.importSimiBioCellPanel.interpolateCheckBox.isSelected();
 				SimiImporter.read( sbdFilename, frameToTimepointFunction, labelFunction, positionFunction, radius,
 						interpolateMissingSpots, model );
-				new MainWindow( windowManager ).setVisible( true );
+				new MainWindow( appModel ).setVisible( true );
 				dispose();
 			}
 			catch ( final IOException e )
@@ -245,10 +245,11 @@ public class MastodonLauncher extends JFrame
 
 				// Create new blank project from BDV file.
 				final File bdvFile = new File( gui.importTGMMPanel.textAreaBDVFile.getText() );
-				final WindowManager windowManager = createWindowManager();
-				windowManager.getProjectManager().open( new MamutProject( null, bdvFile ) );
-				final Model model = windowManager.getAppModel().getModel();
-				final AbstractSpimData< ? > spimData = windowManager.getAppModel().getSharedBdvData().getSpimData();
+				final MamutProject project = MamutProjectIO.fromBdvFile( bdvFile );
+				final MamutAppModel appModel = ProjectLoader.open( project, context );
+
+				final Model model = appModel.getModel();
+				final AbstractSpimData< ? > spimData = appModel.getSharedBdvData().getSpimData();
 
 				// Read setup id.
 				final ViewRegistrations viewRegistrations = spimData.getViewRegistrations();
@@ -276,7 +277,7 @@ public class MastodonLauncher extends JFrame
 							viewRegistrations, setupID, nSigmas, model );
 
 				// Success? We move on.
-				new MainWindow( windowManager ).setVisible( true );
+				new MainWindow( appModel ).setVisible( true );
 				dispose();
 			}
 			catch ( final ParseException e )
@@ -350,12 +351,11 @@ public class MastodonLauncher extends JFrame
 			new Thread( () -> {
 				try
 				{
-					final WindowManager windowManager = createWindowManager();
-					windowManager.getProjectManager().open( new MamutProject( null, file ) );
-					new MainWindow( windowManager ).setVisible( true );
+					final MamutAppModel appModel = ProjectCreator.createProjectFromBdvFile( file, context, gui );
+					new MainWindow( appModel ).setVisible( true );
 					dispose();
 				}
-				catch ( IOException | SpimDataException e )
+				catch ( final SpimDataException e )
 				{
 					gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
 							LauncherUtil.toMessage( e ) + "</html>" );
@@ -385,8 +385,9 @@ public class MastodonLauncher extends JFrame
 			new Thread( () -> {
 				try
 				{
-					final WindowManager windowManager = createWindowManager();
-					final MainWindow mainWindow = new MainWindow( windowManager );
+					final MamutProject project = MamutProjectIO.fromImagePlus( imp );
+					final MamutAppModel appModel = ProjectLoader.open( project, context );
+					final MainWindow mainWindow = new MainWindow( appModel );
 
 					/*
 					 * Action when user closes source image plus.
@@ -417,10 +418,7 @@ public class MastodonLauncher extends JFrame
 										MastodonIcons.MASTODON_ICON_MEDIUM );
 								if ( val == JOptionPane.YES_OPTION )
 								{
-									final ActionMap actionMap =
-											windowManager.getAppModel().getAppActions().getActionMap();
-									final boolean hasBeenClosed = mainWindow.close( windowManager,
-											actionMap.get( ProjectManager.SAVE_PROJECT ), e );
+									final boolean hasBeenClosed = mainWindow.close();
 									if ( hasBeenClosed )
 										window.close();
 								}
@@ -450,7 +448,6 @@ public class MastodonLauncher extends JFrame
 								MastodonIcons.MASTODON_ICON_MEDIUM );
 					}
 
-					windowManager.getProjectManager().open( new MamutImagePlusProject( imp ) );
 					mainWindow.setVisible( true );
 					dispose();
 				}
@@ -497,6 +494,9 @@ public class MastodonLauncher extends JFrame
 		gui.showPanel( LauncherGUI.WELCOME_PANEL_KEY );
 	}
 
+	/*
+	 * TODO: Rework using the ProjectCreator methods.
+	 */
 	private void createProjectFromURL()
 	{
 		final String filepath = gui.openRemoteURLPanel.taFileSave.getText();
@@ -550,16 +550,17 @@ public class MastodonLauncher extends JFrame
 				/*
 				 * Open it as a new Mastodon project.
 				 */
-				final WindowManager windowManager = createWindowManager();
-				windowManager.getProjectManager().open( new MamutProject( null, file ) );
-				new MainWindow( windowManager ).setVisible( true );
-				dispose();
+				final MamutProject project = MamutProjectIO.fromBdvFile( file );
+				final MamutAppModel appModel = ProjectLoader.open( project, context );
+				new MainWindow( appModel ).setVisible( true );
 
 				/*
 				 * We update the list of recent projects here so that only
 				 * projects that were successfully opened are added to the list.
 				 */
 				RecentProjectsPanel.recentProjects.add( file.getAbsolutePath() );
+
+				dispose();
 			}
 			catch ( IOException | SpimDataException e )
 			{
@@ -597,11 +598,12 @@ public class MastodonLauncher extends JFrame
 			{
 
 				final TrackMateImporter importer = new TrackMateImporter( file );
-				final WindowManager windowManager = createWindowManager();
-				windowManager.getProjectManager().open( importer.createProject() );
+				final MamutProject project = importer.createProject();
+				final MamutAppModel appModel = ProjectLoader.open( project, context );
+
 				final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
-				importer.readModel( windowManager.getAppModel().getModel(), featureSpecsService );
-				new MainWindow( windowManager ).setVisible( true );
+				importer.readModel( appModel.getModel(), featureSpecsService );
+				new MainWindow( appModel ).setVisible( true );
 				dispose();
 			}
 			catch ( final IOException | SpimDataException e )
@@ -625,7 +627,6 @@ public class MastodonLauncher extends JFrame
 			try
 			{
 				gui.clearLog();
-				final WindowManager windowManager = createWindowManager();
 				SwingUtilities.invokeLater( () -> {
 
 					final File file;
@@ -654,10 +655,10 @@ public class MastodonLauncher extends JFrame
 
 					try
 					{
-						final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
-						windowManager.getProjectManager().openWithDialog( project );
+						final MamutProject project = MamutProjectIO.load( file.getAbsolutePath() );
+						final MamutAppModel appModel = ProjectLoader.open( project, context );
 
-						new MainWindow( windowManager ).setVisible( true );
+						new MainWindow( appModel ).setVisible( true );
 						dispose();
 						/*
 						 * We update the list of recent projects here so that
@@ -677,11 +678,6 @@ public class MastodonLauncher extends JFrame
 				disabler.reenable();
 			}
 		} ).start();
-	}
-
-	private WindowManager createWindowManager()
-	{
-		return new WindowManager( context );
 	}
 
 	private class LauncherDropTarget extends DropTarget

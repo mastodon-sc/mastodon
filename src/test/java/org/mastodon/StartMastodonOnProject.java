@@ -28,16 +28,20 @@
  */
 package org.mastodon;
 
+import java.io.IOException;
+
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import mpicbg.spim.data.SpimDataException;
+
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.scijava.Context;
 
-import java.io.IOException;
+import mpicbg.spim.data.SpimDataException;
 
 /**
  * Starts Mastodon on a given project file.
@@ -45,28 +49,34 @@ import java.io.IOException;
 public class StartMastodonOnProject
 {
 
-	public static void main( String... args )
+	public static void main( final String... args )
 	{
-		try
-		{
-			String projectPath = fileOpenDialog();
-			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-			final WindowManager windowManager = new WindowManager( new Context() );
-			windowManager.getProjectManager().open( new MamutProjectIO().load( projectPath ) );
-			final MainWindow win = new MainWindow( windowManager );
-			win.setVisible( true );
-			win.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+		final String projectPath = fileOpenDialog();
+		launch( projectPath );
+	}
 
-		}
-		catch ( IOException | SpimDataException e )
-		{
-			e.printStackTrace();
-		}
+	public static void launch( final String projectPath )
+	{
+		SwingUtilities.invokeLater( () -> {
+
+			try
+			{
+				System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+				final MamutAppModel appModel = ProjectLoader.open( MamutProjectIO.load( projectPath ), new Context() );
+				final MainWindow win = new MainWindow( appModel );
+				win.setVisible( true );
+				win.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+			}
+			catch ( IOException | SpimDataException e )
+			{
+				e.printStackTrace();
+			}
+		} );
 	}
 
 	private static String fileOpenDialog()
 	{
-		JFileChooser fileChooser = new JFileChooser( "Open Mastodon Project" );
+		final JFileChooser fileChooser = new JFileChooser( "Open Mastodon Project" );
 		fileChooser.setFileFilter( new FileNameExtensionFilter( "Mastodon Project (*.mastodon)", "mastodon" ) );
 		fileChooser.showOpenDialog( null );
 		return fileChooser.getSelectedFile().getAbsolutePath();

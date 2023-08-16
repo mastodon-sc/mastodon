@@ -36,8 +36,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
+import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelUtils;
@@ -49,13 +51,13 @@ public class MaMuTImporterExample
 {
 
 	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException, UnsupportedLookAndFeelException
+			IllegalAccessException, UnsupportedLookAndFeelException, IOException, SpimDataException
 	{
 		Locale.setDefault( Locale.ROOT );
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
-		final File mamutFile = new File( "D:/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo-mamut.xml" );
-		//		final File mamutFile = new File( "/Users/tinevez/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo-mamut.xml" );
+//		final File mamutFile = new File( "D:/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo-mamut.xml" );
+		final File mamutFile = new File( "/Users/tinevez/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo-mamut.xml" );
 		final File targetMastodonFile = new File( "samples/trackmateimported.mastodon" );
 
 		importFromMaMuTAndSave( mamutFile, targetMastodonFile );
@@ -63,45 +65,21 @@ public class MaMuTImporterExample
 		reloadAfterSave( targetMastodonFile );
 	}
 
-	private static void importFromMaMuTAndSave( final File mamutFile, final File targetMastodonFile )
+	private static void importFromMaMuTAndSave( final File mamutFile, final File targetMastodonFile ) throws IOException, SpimDataException
 	{
 		final Context context = new Context();
-		final WindowManager windowManager = new WindowManager( context );
-		try
-		{
-			final TrackMateImporter importer = new TrackMateImporter( mamutFile );
-			windowManager.getProjectManager().open( importer.createProject() );
-			final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
-			importer.readModel( windowManager.getAppModel().getModel(), featureSpecsService );
-		}
-		catch ( final IOException | SpimDataException e )
-		{
-			e.printStackTrace();
-		}
-
-		try
-		{
-			windowManager.getProjectManager().saveProject( targetMastodonFile );
-		}
-		catch ( final IOException e )
-		{
-			e.printStackTrace();
-		}
+		final TrackMateImporter importer = new TrackMateImporter( mamutFile );
+		final MamutAppModel appModel = ProjectLoader.open( importer.createProject(), context );
+		final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
+		importer.readModel( appModel.getModel(), featureSpecsService );
+		ProjectSaver.saveProject( targetMastodonFile, appModel );
 	}
 
-	private static void reloadAfterSave( final File targetMastodonFile )
+	private static void reloadAfterSave( final File targetMastodonFile ) throws IOException, SpimDataException
 	{
-		final WindowManager windowManager = new WindowManager( new Context() );
-		try
-		{
-			windowManager.getProjectManager().open( new MamutProjectIO().load( targetMastodonFile.getAbsolutePath() ) );
-			final Model model = windowManager.getAppModel().getModel();
-			System.out.println( "After reloading the saved MaMuT import:" );
-			System.out.println( ModelUtils.dump( model, 5 ) );
-		}
-		catch ( final IOException | SpimDataException e )
-		{
-			e.printStackTrace();
-		}
+		final MamutAppModel appModel = ProjectLoader.open( MamutProjectIO.load( targetMastodonFile.getAbsolutePath() ), new Context() );
+		final Model model = appModel.getModel();
+		System.out.println( "After reloading the saved MaMuT import:" );
+		System.out.println( ModelUtils.dump( model, 5 ) );
 	}
 }

@@ -156,7 +156,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	{
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
-		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
+		final FeatureColorModeManager featureColorModeManager = appModel.getWindowManager().getFeatureColorModeManager();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel =
 				new ColoringModelMain<>( tagSetModel, featureColorModeManager, featureModel, branchGraph );

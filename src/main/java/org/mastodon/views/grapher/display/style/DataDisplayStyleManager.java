@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mastodon.ui.util.FileChooser;
+import org.mastodon.io.IOUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import bdv.ui.settings.style.AbstractStyleManager;
@@ -155,7 +155,7 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 	{
 		try
 		{
-			FileChooser.mkdirs( filename );
+			IOUtils.mkdirs( filename );
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = DataDisplayStyleIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();

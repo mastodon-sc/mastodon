@@ -38,6 +38,7 @@ import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
@@ -58,22 +59,23 @@ public class MastodonUtils
 
 	private static final boolean LOG_STACK_TRACE = false;
 
-	private MastodonUtils() {
+	private MastodonUtils()
+	{
 		// prevent from instantiation
 	}
 
-	static Model openMastodonModel( Context context, String projectPath )
+	static Model openMastodonModel( final Context context, final String projectPath )
 	{
 		try
 		{
-			MamutProject project = new MamutProjectIO().load( projectPath );
+			final MamutProject project = MamutProjectIO.load( projectPath );
 			final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
 			final boolean isNewProject = project.getProjectRoot() == null;
 			if ( !isNewProject )
 			{
 				try (final MamutProject.ProjectReader reader = project.openForReading())
 				{
-					final RawGraphIO.FileIdToGraphMap<Spot, Link> idmap = model.loadRaw( reader );
+					final RawGraphIO.FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
 					// Load features.
 					MamutRawFeatureModelIO.deserialize( context, model, idmap, reader );
 				}
@@ -84,83 +86,86 @@ public class MastodonUtils
 			}
 			return model;
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{
 			throw new RuntimeException( e );
 		}
 	}
 
-	public static WindowManager showGui(String projectPath) {
-		try {
-			final WindowManager windowManager = new WindowManager( new Context() );
-			windowManager.getProjectManager().open( new MamutProjectIO().load( projectPath ) );
-			final MainWindow mainWindow = new MainWindow(windowManager);
+	public static WindowManager showGui( final String projectPath )
+	{
+		try
+		{
+			final MamutAppModel appModel = ProjectLoader.open( MamutProjectIO.load( projectPath ), new Context() );
+			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 			mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-			return windowManager;
-		} catch (IOException | SpimDataException e) {
-			throw new RuntimeException(e);
+			return appModel.getWindowManager();
+		}
+		catch ( IOException | SpimDataException e )
+		{
+			throw new RuntimeException( e );
 		}
 	}
 
-	public static void logMastodonEvents( MamutAppModel appModel )
+	public static void logMastodonEvents( final MamutAppModel appModel )
 	{
-		GroupHandle groupHandle = appModel.getGroupManager().createGroupHandle();
+		final GroupHandle groupHandle = appModel.getGroupManager().createGroupHandle();
 		groupHandle.setGroupId( 0 );
 		logNavigationHandle( groupHandle.getModel( appModel.NAVIGATION ) );
-		logTimePointModel(groupHandle.getModel( appModel.TIMEPOINT ) );
-		logFocusModel(appModel);
-		logTagSetModel(appModel);
+		logTimePointModel( groupHandle.getModel( appModel.TIMEPOINT ) );
+		logFocusModel( appModel );
+		logTagSetModel( appModel );
 	}
 
-	private static void logFocusModel( MamutAppModel appModel )
+	private static void logFocusModel( final MamutAppModel appModel )
 	{
-		FocusModel<Spot, Link> focusModel = appModel.getFocusModel();
-		ModelGraph graph = appModel.getModel().getGraph();
-		focusModel.listeners().add(() -> {
-			Spot ref = graph.vertexRef();
-			Spot focusedSpot = focusModel.getFocusedVertex( ref );
+		final FocusModel< Spot, Link > focusModel = appModel.getFocusModel();
+		final ModelGraph graph = appModel.getModel().getGraph();
+		focusModel.listeners().add( () -> {
+			final Spot ref = graph.vertexRef();
+			final Spot focusedSpot = focusModel.getFocusedVertex( ref );
 			log( "FocusModel: focused vertex: " + focusedSpot );
 			graph.releaseRef( ref );
-		});
+		} );
 	}
 
-	private static void logNavigationHandle( NavigationHandler<Spot, Link> navigationHandler )
+	private static void logNavigationHandle( final NavigationHandler< Spot, Link > navigationHandler )
 	{
-		navigationHandler.listeners().add( new NavigationListener<Spot, Link>()
+		navigationHandler.listeners().add( new NavigationListener< Spot, Link >()
 		{
 			@Override
-			public void navigateToVertex( Spot vertex )
+			public void navigateToVertex( final Spot vertex )
 			{
 				log( "NavigationHandler: navigate to vertex " + vertex );
 			}
 
 			@Override
-			public void navigateToEdge( Link edge )
+			public void navigateToEdge( final Link edge )
 			{
 				log( "NavigationHandler: navigate to edge " + edge );
 			}
 		} );
 	}
 
-	private static void logTimePointModel( TimepointModel model )
+	private static void logTimePointModel( final TimepointModel model )
 	{
 		model.listeners().add( () -> log( "Time point changed: (to " + model.getTimepoint() + ")" ) );
 	}
 
-	private static void logTagSetModel( MamutAppModel appModel )
+	private static void logTagSetModel( final MamutAppModel appModel )
 	{
 		// TODO
-		Model model = appModel.getModel();
-		TagSetModel<Spot, Link> tagSetModel = model.getTagSetModel();
+		final Model model = appModel.getModel();
+		final TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
 		tagSetModel.listeners().add( () -> log( "tag set changed" ) );
 	}
 
-	private static void log( String text )
+	private static void log( final String text )
 	{
 		System.out.println( text + " " + Thread.currentThread().getName() );
-		if( LOG_STACK_TRACE )
-			for ( StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace() )
+		if ( LOG_STACK_TRACE )
+			for ( final StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace() )
 				System.out.println( "   " + stackTraceElement );
 	}
 }

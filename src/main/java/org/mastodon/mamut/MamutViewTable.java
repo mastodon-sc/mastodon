@@ -329,7 +329,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	{
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
-		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
+		final FeatureColorModeManager featureColorModeManager = appModel.getWindowManager().getFeatureColorModeManager();
 		final ColoringModelBranchGraph< ?, ? > coloringModel =
 				new ColoringModelBranchGraph<>( tagSetModel, featureColorModeManager, featureModel );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );

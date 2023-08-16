@@ -3,7 +3,8 @@ package org.mastodon.mamut.tags;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -22,10 +23,8 @@ public class PlayingWithTagsExample
 	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
 
-		final WindowManager wm = new WindowManager( new Context() );
-		wm.getProjectManager().open( new MamutProjectIO().load( "/Users/tinevez/Development/MastodonWS/mastodon/samples/drosophila_crop.mastodon" ) );
-
-		final Model model = wm.getAppModel().getModel();
+		final MamutAppModel appModel = ProjectLoader.open( MamutProjectIO.load( "/Users/tinevez/Development/MastodonWS/mastodon/samples/drosophila_crop.mastodon" ), new Context() );
+		final Model model = appModel.getModel();
 		final TagSetModel< Spot, Link > tsm = model.getTagSetModel();
 
 		/*

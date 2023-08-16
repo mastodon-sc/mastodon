@@ -290,7 +290,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		viewer.timePointListeners().add( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
-		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultStyle();
+		final RenderSettings renderSettings = appModel.getWindowManager().getRenderSettingsManager().getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
 		final UpdateListener updateListener = () -> {
 			viewer.repaint();
@@ -344,7 +344,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		// Restore colorbar state.
 		restoreColorbarState( colorBarOverlay, guiState );
 		viewer.getDisplay().overlays().add( colorBarOverlay );
-
 	}
 
 	protected OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
