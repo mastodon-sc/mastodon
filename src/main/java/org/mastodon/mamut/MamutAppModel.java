@@ -110,12 +110,12 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		keymap.updateListeners().add( () -> {
-			getGlobalActions().updateKeyConfig( keymap.getConfig() );
-			getAppActions().updateKeyConfig( keymap.getConfig() );
+			getProjectActions().updateKeyConfig( keymap.getConfig() );
+			getModelActions().updateKeyConfig( keymap.getConfig() );
 		} );
 
 		// Register save / export actions
-		ProjectActions.installAppActions( getAppActions(), this, null );
+		ProjectActions.installAppActions( getModelActions(), this, null );
 
 		this.branchGraphSync = new BranchGraphSynchronizer( model.getBranchGraph(), model.getGraph().getLock().readLock() );
 		model.getGraph().addGraphChangeListener( branchGraphSync );
@@ -138,9 +138,9 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 		discoverPlugins();
 
 		// Install common actions.
-		UndoActions.install( getAppActions(), model );
-		SelectionActions.install( getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), getSelectionModel(), model );
-		MamutActions.install( getAppActions(), this );
+		UndoActions.install( getModelActions(), model );
+		SelectionActions.install( getModelActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), getSelectionModel(), model );
+		MamutActions.install( getModelActions(), this );
 	}
 
 	public WindowManager getWindowManager()

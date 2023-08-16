@@ -89,31 +89,31 @@ public class MainWindow extends JFrame
 		setLocationRelativeTo( null );
 
 		// Re-register save actions, this time using this frame as parent component.
-		ProjectActions.installAppActions( appModel.getAppActions(), appModel, this );
+		ProjectActions.installAppActions( appModel.getProjectActions(), appModel, this );
 
-		final ActionMap actionMap = appModel.getAppActions().getActionMap();
-
-		final JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setLayout( new MigLayout() );
 
 		// Views:
+		final JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setLayout( new MigLayout() );
+		final ActionMap projectActionMap = appModel.getProjectActions().getActionMap();
+
 		final JLabel viewsLabel = new JLabel( "Views:" );
 		viewsLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( viewsLabel, "span, wrap" );
 
-		final JButton tableButton = new JButton( actionMap.get( WindowManager.NEW_TABLE_VIEW ) );
+		final JButton tableButton = new JButton( projectActionMap.get( WindowManager.NEW_TABLE_VIEW ) );
 		prepareButton( tableButton, "table", TABLE_ICON_MEDIUM );
 		buttonsPanel.add( tableButton, "grow" );
 
-		final JButton bdvButton = new JButton( actionMap.get( WindowManager.NEW_BDV_VIEW ) );
+		final JButton bdvButton = new JButton( projectActionMap.get( WindowManager.NEW_BDV_VIEW ) );
 		prepareButton( bdvButton, "bdv", BDV_ICON_MEDIUM );
 		buttonsPanel.add( bdvButton, "grow, wrap" );
 
-		final JButton selectionTableButton = new JButton( actionMap.get( WindowManager.NEW_SELECTION_TABLE_VIEW ) );
+		final JButton selectionTableButton = new JButton( projectActionMap.get( WindowManager.NEW_SELECTION_TABLE_VIEW ) );
 		prepareButton( selectionTableButton, "selection table", TABLE_ICON_MEDIUM );
 		buttonsPanel.add( selectionTableButton, "grow" );
 
-		final JButton trackschemeButton = new JButton( actionMap.get( WindowManager.NEW_TRACKSCHEME_VIEW ) );
+		final JButton trackschemeButton = new JButton( projectActionMap.get( WindowManager.NEW_TRACKSCHEME_VIEW ) );
 		prepareButton( trackschemeButton, "trackscheme", TRACKSCHEME_ICON_MEDIUM );
 		buttonsPanel.add( trackschemeButton, "grow, wrap" );
 
@@ -124,15 +124,15 @@ public class MainWindow extends JFrame
 		processingLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( processingLabel, "span, wrap" );
 
-		final JButton grapherButton = new JButton( actionMap.get( WindowManager.NEW_GRAPHER_VIEW ) );
+		final JButton grapherButton = new JButton( projectActionMap.get( WindowManager.NEW_GRAPHER_VIEW ) );
 		prepareButton( grapherButton, "grapher", FEATURES_ICON_MEDIUM );
 		buttonsPanel.add( grapherButton, "grow" );
 
-		final JButton featureComputationButton = new JButton( actionMap.get( WindowManager.COMPUTE_FEATURE_DIALOG ) );
+		final JButton featureComputationButton = new JButton( projectActionMap.get( WindowManager.COMPUTE_FEATURE_DIALOG ) );
 		prepareButton( featureComputationButton, "compute features", FEATURES_ICON_MEDIUM );
 		buttonsPanel.add( featureComputationButton, "grow, wrap" );
 
-		final JButton editTagSetsButton = new JButton( actionMap.get( WindowManager.TAGSETS_DIALOG ) );
+		final JButton editTagSetsButton = new JButton( projectActionMap.get( WindowManager.TAGSETS_DIALOG ) );
 		prepareButton( editTagSetsButton, "configure tags", TAGS_ICON_MEDIUM );
 		buttonsPanel.add( editTagSetsButton, "grow, wrap" );
 
@@ -143,11 +143,11 @@ public class MainWindow extends JFrame
 		ioLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( ioLabel, "span, wrap" );
 
-		final JButton saveProjectButton = new JButton( actionMap.get( ProjectActions.SAVE_PROJECT ) );
+		final JButton saveProjectButton = new JButton( projectActionMap.get( ProjectActions.SAVE_PROJECT ) );
 		prepareButton( saveProjectButton, "save", SAVE_ICON_MEDIUM );
 		buttonsPanel.add( saveProjectButton, "grow" );
 
-		final JButton loadProjectButton = new JButton( actionMap.get( ProjectActions.SAVE_PROJECT_AS ) );
+		final JButton loadProjectButton = new JButton( projectActionMap.get( ProjectActions.SAVE_PROJECT_AS ) );
 		prepareButton( loadProjectButton, "save as...", SAVE_AS_ICON_MEDIUM );
 		buttonsPanel.add( loadProjectButton, "grow, wrap" );
 
@@ -178,7 +178,7 @@ public class MainWindow extends JFrame
 		final Keymap keymap = appModel.getKeymapManager().getForwardDefaultKeymap();
 		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
-		addMenus( menu, actionMap );
+		addMenus( menu, projectActionMap );
 		appModel.getPlugins().addMenus( menu );
 
 		setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
@@ -205,7 +205,7 @@ public class MainWindow extends JFrame
 	 */
 	public boolean close()
 	{
-		final Action saveAction = appModel.getAppActions().getActionMap().get( ProjectActions.SAVE_PROJECT );
+		final Action saveAction = appModel.getModelActions().getActionMap().get( ProjectActions.SAVE_PROJECT );
 		if ( appModel.getModel().isSavePoint() )
 		{
 			appModel.close();
