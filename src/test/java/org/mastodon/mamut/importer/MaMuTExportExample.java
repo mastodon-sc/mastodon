@@ -39,11 +39,12 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.TrackSizeFeature;
 import org.mastodon.mamut.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
@@ -61,22 +62,21 @@ public class MaMuTExportExample
 		 * 1. Load a regular Mastodon project.
 		 */
 
-		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
-		final WindowManager windowManager = new WindowManager( new Context() );
-		windowManager.getProjectManager().open( project );
-		final Model model = windowManager.getAppModel().getModel();
+		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
+		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
+		final Model model = appModel.getModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		/*
 		 * 1.1a. Compute all features.
 		 */
 
-		final Context context = windowManager.getContext();
+		final Context context = appModel.getContext();
 		final MamutFeatureComputerService featureComputerService =
 				MamutFeatureComputerService.newInstance( context );
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
 		System.out.println( "Computing all discovered features: " + featureKeys );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute( featureKeys );
 		System.out.println( "Done." );
@@ -132,7 +132,7 @@ public class MaMuTExportExample
 		 */
 
 		featureComputerService.setModel( importedModel );
-		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
 		System.out.println( "Computing feature: " + TrackSizeFeature.SPEC );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 =
 				featureComputerService.compute( Collections.singleton( TrackSizeFeature.SPEC ) );

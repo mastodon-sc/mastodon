@@ -28,12 +28,14 @@
  */
 package org.mastodon.mamut;
 
-import java.io.File;
+import static org.mastodon.io.IOUtils.mkdirs;
+
 import java.io.IOException;
 import java.util.List;
 
 import org.mastodon.app.ui.CloseWindowActions;
 import org.mastodon.app.ui.MastodonFrameViewActions;
+import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
@@ -57,19 +59,16 @@ import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
+import bdv.ui.keymap.Keymap;
+
 public class DumpInputConfig
 {
-	static boolean mkdirs( final String fileName )
-	{
-		final File dir = new File( fileName ).getParentFile();
-		return dir != null && dir.mkdirs();
-	}
 
-	public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException
+	public static void writeToYaml( final String fileName, final Keymap keymap ) throws IOException
 	{
 		mkdirs( fileName );
 		final List< InputTriggerDescription > descriptions =
-				new InputTriggerDescriptionsBuilder( wm.getAppModel().getKeymap().getConfig() ).getDescriptions();
+				new InputTriggerDescriptionsBuilder( keymap.getConfig() ).getDescriptions();
 		YamlConfigIO.write( descriptions, fileName );
 	}
 
@@ -88,7 +87,7 @@ public class DumpInputConfig
 		context.inject( builder );
 
 		builder.addManually( new CloseWindowActions.Descriptions(), KeyConfigContexts.MASTODON );
-		builder.addManually( new ProjectManager.Descriptions(), KeyConfigContexts.MASTODON );
+		builder.addManually( new ProjectActions.Descriptions(), KeyConfigContexts.MASTODON );
 		builder.addManually( new UndoActions.Descriptions(), KeyConfigContexts.MASTODON );
 		builder.addManually( new SelectionActions.Descriptions(), KeyConfigContexts.MASTODON );
 		builder.addManually( new WindowManager.Descriptions(), KeyConfigContexts.MASTODON );

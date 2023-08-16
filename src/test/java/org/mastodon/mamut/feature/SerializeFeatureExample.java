@@ -39,7 +39,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
@@ -59,17 +61,16 @@ public class SerializeFeatureExample
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
 		// Load project.
-		final WindowManager windowManager = new WindowManager( new Context() );
-		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
-		windowManager.getProjectManager().open( project );
-		final Model model = windowManager.getAppModel().getModel();
+		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
+		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
+		final Model model = appModel.getModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		// Compute features.
 		final MamutFeatureComputerService featureComputerService =
-				MamutFeatureComputerService.newInstance( windowManager.getContext() );
+				MamutFeatureComputerService.newInstance( appModel.getContext() );
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
 		System.out.println( "\nComputing features..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =
@@ -82,13 +83,14 @@ public class SerializeFeatureExample
 		final File targetFile = new File( "samples/featureserialized.mastodon" );
 
 		System.out.println( "\nResaving." );
-		windowManager.getProjectManager().saveProject( targetFile );
+		ProjectSaver.saveProject( targetFile, appModel );
 		System.out.println( "Done." );
 
 		System.out.println( "\nReloading." );
-		windowManager.getProjectManager().open( new MamutProjectIO().load( targetFile.getAbsolutePath() ) );
+		final MamutProject project2 = MamutProjectIO.load( targetFile.getAbsolutePath() );
+		final MamutAppModel appModel2 = ProjectLoader.open( project2, appModel.getContext() );
 		System.out.println( "Done." );
 
-		System.out.println( "\n" + ModelUtils.dump( windowManager.getAppModel().getModel(), 4 ) );
+		System.out.println( "\n" + ModelUtils.dump( appModel2.getModel(), 4 ) );
 	}
 }

@@ -31,7 +31,8 @@ package org.mastodon.mamut.feature;
 import java.io.IOException;
 
 import org.jdom2.JDOMException;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
@@ -50,17 +51,15 @@ public class SpotIntensityBenchmark
 		 * 1. Load a regular Mastodon project.
 		 */
 
-		final MamutProject project = new MamutProjectIO()
-				.load( "/Users/tinevez/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo.mastodon" );
-		final WindowManager windowManager = new WindowManager( new Context() );
-		windowManager.getProjectManager().open( project );
-		final Model model = windowManager.getAppModel().getModel();
+		final MamutProject project = MamutProjectIO.load( "/Users/tinevez/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo.mastodon" );
+		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
+		final Model model = appModel.getModel();
 
 		// Just keep the 1st time-point, or else....
 		System.out.println( "Removing all time-points but the first one." );
 		model.getSpatioTemporalIndex().getSpatialIndex( 0 );
-		final int minTimepoint = windowManager.getAppModel().getMinTimepoint();
-		final int maxTimepoint = windowManager.getAppModel().getMaxTimepoint();
+		final int minTimepoint = appModel.getMinTimepoint();
+		final int maxTimepoint = appModel.getMaxTimepoint();
 		for ( int t = minTimepoint + 1; t < maxTimepoint; t++ )
 		{
 			for ( final Spot spot : model.getSpatioTemporalIndex().getSpatialIndex( t ) )
@@ -72,16 +71,16 @@ public class SpotIntensityBenchmark
 		 * 1.1a. Compute spot intensity feature for all.
 		 */
 
-		final Context context = windowManager.getContext();
+		final Context context = appModel.getContext();
 		final MamutFeatureComputerService featureComputerService =
 				MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
 		System.out.println( "Computing spot intensity..." );
 		for ( int i = 0; i < 5; i++ )
 		{
 			final StopWatch stopWatch = StopWatch.createAndStart();
-			featureComputerService.compute( SpotCenterIntensityFeature.SPEC );
+			featureComputerService.compute( true, SpotCenterIntensityFeature.SPEC );
 			stopWatch.stop();
 			System.out.println( String.format( "Done in %.2f s.", stopWatch.nanoTime() / 1e9 ) );
 		}

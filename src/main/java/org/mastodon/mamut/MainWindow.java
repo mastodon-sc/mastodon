@@ -45,7 +45,6 @@ import static org.mastodon.mamut.MamutMenuBuilder.windowMenu;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -65,6 +64,7 @@ import javax.swing.WindowConstants;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
 
@@ -78,14 +78,20 @@ public class MainWindow extends JFrame
 
 	private final ViewMenu menu;
 
-	public MainWindow( final WindowManager windowManager )
+	private final MamutAppModel appModel;
+
+	public MainWindow( final MamutAppModel appModel )
 	{
 		super( "Mastodon" );
+		this.appModel = appModel;
 		setIconImages( MASTODON_ICON );
 		setLocationByPlatform( true );
 		setLocationRelativeTo( null );
 
-		final ActionMap actionMap = windowManager.getGlobalAppActions().getActionMap();
+		// Re-register save actions, this time using this frame as parent component.
+		ProjectActions.installAppActions( appModel.getAppActions(), appModel, this );
+
+		final ActionMap actionMap = appModel.getAppActions().getActionMap();
 
 		final JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout( new MigLayout() );
@@ -137,11 +143,11 @@ public class MainWindow extends JFrame
 		ioLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( ioLabel, "span, wrap" );
 
-		final JButton saveProjectButton = new JButton( actionMap.get( ProjectManager.SAVE_PROJECT ) );
+		final JButton saveProjectButton = new JButton( actionMap.get( ProjectActions.SAVE_PROJECT ) );
 		prepareButton( saveProjectButton, "save", SAVE_ICON_MEDIUM );
 		buttonsPanel.add( saveProjectButton, "grow" );
 
-		final JButton loadProjectButton = new JButton( actionMap.get( ProjectManager.SAVE_PROJECT_AS ) );
+		final JButton loadProjectButton = new JButton( actionMap.get( ProjectActions.SAVE_PROJECT_AS ) );
 		prepareButton( loadProjectButton, "save as...", SAVE_AS_ICON_MEDIUM );
 		buttonsPanel.add( loadProjectButton, "grow, wrap" );
 
@@ -169,11 +175,11 @@ public class MainWindow extends JFrame
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
-		final Keymap keymap = windowManager.getKeymapManager().getForwardDefaultKeymap();
+		final Keymap keymap = appModel.getKeymapManager().getForwardDefaultKeymap();
 		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, actionMap );
-		windowManager.getPlugins().addMenus( menu );
+		appModel.getPlugins().addMenus( menu );
 
 		setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		addWindowListener( new WindowAdapter()
@@ -181,7 +187,7 @@ public class MainWindow extends JFrame
 			@Override
 			public void windowClosing( final WindowEvent e )
 			{
-				close( windowManager, actionMap.get( ProjectManager.SAVE_PROJECT ), e );
+				close();
 			}
 		} );
 
@@ -195,20 +201,14 @@ public class MainWindow extends JFrame
 	 * Returns <code>true</code> if Mastodon has been closed, or
 	 * <code>false</code> if the user canceled closing.
 	 * 
-	 * @param windowManager
-	 *            the Mastodon window manager controlled in this windown.
-	 * @param saveAction
-	 *            the action that saves the Mastodon file.
-	 * @param trigger
-	 *            the event that triggered this action.
 	 * @return <code>true</code> if the Mastodon instance has been closed.
 	 */
-	public boolean close( final WindowManager windowManager, final Action saveAction, final WindowEvent trigger )
+	public boolean close()
 	{
-		if ( windowManager != null && windowManager.getAppModel() == null
-				|| windowManager.getAppModel().getModel().isSavePoint() )
+		final Action saveAction = appModel.getAppActions().getActionMap().get( ProjectActions.SAVE_PROJECT );
+		if ( appModel.getModel().isSavePoint() )
 		{
-			windowManager.dispose();
+			appModel.close();
 			dispose();
 			return true;
 		}
@@ -236,13 +236,11 @@ public class MainWindow extends JFrame
 			return false;
 
 		case JOptionPane.YES_OPTION:
-			saveAction
-					.actionPerformed( new ActionEvent( trigger.getSource(), trigger.getID(), trigger.paramString() ) );
+			saveAction.actionPerformed( null );
 			// Fall trough to closing.
 
 		case JOptionPane.NO_OPTION:
-			if ( windowManager != null )
-				windowManager.dispose();
+			appModel.close();
 			dispose();
 		}
 		return true;
@@ -262,16 +260,16 @@ public class MainWindow extends JFrame
 	{
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
-						//						item( ProjectManager.CREATE_PROJECT ),
-						//						item( ProjectManager.CREATE_PROJECT_FROM_URL ),
-						//						item( ProjectManager.LOAD_PROJECT ),
-						item( ProjectManager.SAVE_PROJECT ),
-						item( ProjectManager.SAVE_PROJECT_AS ),
+						// item( ProjectActions.CREATE_PROJECT ),
+						// item( ProjectActions.CREATE_PROJECT_FROM_URL ),
+						// item( ProjectActions.LOAD_PROJECT ),
+						item( ProjectActions.SAVE_PROJECT ),
+						item( ProjectActions.SAVE_PROJECT_AS ),
 						separator(),
-						//						item( ProjectManager.IMPORT_TGMM ),
-						//						item( ProjectManager.IMPORT_SIMI ),
-						//						item( ProjectManager.IMPORT_MAMUT ),
-						//						item( ProjectManager.EXPORT_MAMUT ),
+						// item( ProjectActions.IMPORT_TGMM ),
+						// item( ProjectActions.IMPORT_SIMI ),
+						// item( ProjectActions.IMPORT_MAMUT ),
+						// item( ProjectActions.EXPORT_MAMUT ),
 						//						separator(),
 						item( WindowManager.PREFERENCES_DIALOG ),
 						separator(),

@@ -39,7 +39,8 @@ import javax.swing.SwingUtilities;
 public class GarbageCollectionUtils
 {
 
-	private GarbageCollectionUtils() {
+	private GarbageCollectionUtils()
+	{
 		// prevent from instantiation
 	}
 
@@ -65,19 +66,19 @@ public class GarbageCollectionUtils
 		// (This will trigger GC.)
 		try
 		{
-			List< byte[] > memory = new ArrayList<>();
+			final List< byte[] > memory = new ArrayList<>();
 			while ( true )
 				memory.add( new byte[ 100 * 1024 * 1024 ] ); // add 100MB
 		}
-		catch ( OutOfMemoryError e )
+		catch ( final OutOfMemoryError e )
 		{
 			// continue
 		}
 	}
 
 	/**
-	 * The Swing UI framework easily causes memory leaks.
-	 * This is a workaround for one those memory leaks.
+	 * The Swing UI framework easily causes memory leaks. This is a workaround
+	 * for one those memory leaks.
 	 * <p>
 	 * The BufferStrategyPaintManager would keep a reference to the latest
 	 * painted window. So in order to allow other windows to be garbage
@@ -87,9 +88,12 @@ public class GarbageCollectionUtils
 	 */
 	private static void workAroundSwingMemoryLeak()
 	{
-		JFrame dummy = new JFrame() {
+		final JFrame dummy = new JFrame()
+		{
+			private static final long serialVersionUID = 1L;
+
 			@Override
-			public void paint( Graphics g )
+			public void paint( final Graphics g )
 			{
 				super.paint( g );
 				SwingUtilities.invokeLater( this::dispose );

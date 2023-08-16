@@ -43,7 +43,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
@@ -62,17 +64,16 @@ public class RawDeserializationExample
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
 		// Load project.
-		final WindowManager windowManager = new WindowManager( new Context() );
-		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
-		windowManager.getProjectManager().open( project );
-		final Model model = windowManager.getAppModel().getModel();
+		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
+		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
+		final Model model = appModel.getModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		// Compute features.
 		final MamutFeatureComputerService featureComputerService =
-				MamutFeatureComputerService.newInstance( windowManager.getContext() );
+				MamutFeatureComputerService.newInstance( appModel.getContext() );
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
 		System.out.println( "\nComputing features..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =
@@ -85,7 +86,7 @@ public class RawDeserializationExample
 		final File targetFile = new File( "samples/featureserialized-folder" );
 		targetFile.mkdir();
 		System.out.println( "\nResaving in a project folder." );
-		windowManager.getProjectManager().saveProject( targetFile );
+		ProjectSaver.saveProject( targetFile, appModel );
 		System.out.println( "Done." );
 		System.out.println( "----------------------------------\n\n" );
 

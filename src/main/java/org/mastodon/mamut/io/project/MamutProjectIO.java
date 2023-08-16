@@ -40,6 +40,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mastodon.io.IOUtils;
 
+import ij.ImagePlus;
 import mpicbg.spim.data.XmlHelpers;
 
 public class MamutProjectIO
@@ -65,9 +66,22 @@ public class MamutProjectIO
 	 *            the path to the BDV file (the XML file).
 	 * @return a new {@link MamutProject}.
 	 */
-	public static final MamutProject emptyProject( final File datasetXmlFile )
+	public static final MamutProject fromBdvFile( final File datasetXmlFile )
 	{
 		return new MamutProject( null, datasetXmlFile );
+	}
+
+	/**
+	 * Returns a new project object for a new empty project operating on the
+	 * image data in the specified {@link ImagePlus}.
+	 * 
+	 * @param imp
+	 *            the image.
+	 * @return a new {@link MamutProject}.
+	 */
+	public static MamutImagePlusProject fromImagePlus( final ImagePlus imp )
+	{
+		return new MamutImagePlusProject( imp );
 	}
 
 	/**

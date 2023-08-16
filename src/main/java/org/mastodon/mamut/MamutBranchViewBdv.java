@@ -268,7 +268,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
 		// Render settings.
-		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultStyle();
+		final RenderSettings renderSettings = appModel.getWindowManager().getRenderSettingsManager().getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
 		final UpdateListener updateListener = () -> viewer.repaint();
 		renderSettings.updateListeners().add( updateListener );

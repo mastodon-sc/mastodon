@@ -66,7 +66,6 @@ import bdv.tools.transformation.ManualTransformation;
 import bdv.viewer.BasicViewerState;
 import bdv.viewer.ConverterSetups;
 import bdv.viewer.DisplayMode;
-import bdv.viewer.RequestRepaint;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
@@ -93,6 +92,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 
+@SuppressWarnings( "deprecation" )
 public class SharedBigDataViewerData
 {
 	private final ArrayList< SourceAndConverter< ? > > sources;
@@ -129,9 +129,7 @@ public class SharedBigDataViewerData
 			final ConverterSetups setups,
 			final SetupAssignments setupAssignments,
 			final CacheControl cache,
-			final int numTimepoints,
-			final ViewerOptions options,
-			final RequestRepaint requestRepaint )
+			final int numTimepoints )
 	{
 		this.spimData = spimData;
 		this.sources = sources;
@@ -140,8 +138,9 @@ public class SharedBigDataViewerData
 		this.cache = cache;
 		this.numTimepoints = numTimepoints;
 
-		this.inputTriggerConfig = ( options.values.getInputTriggerConfig() != null )
-				? options.values.getInputTriggerConfig()
+		final ViewerOptions lvo = new ViewerOptions();
+		this.inputTriggerConfig = ( lvo.values.getInputTriggerConfig() != null )
+				? lvo.values.getInputTriggerConfig()
 				: new InputTriggerConfig();
 
 		this.manualTransformation = new ManualTransformation( sources );
@@ -149,7 +148,7 @@ public class SharedBigDataViewerData
 		this.bookmarks = new Bookmarks();
 
 		this.is2D = computeIs2D();
-		this.options = options
+		this.options = lvo
 				.inputTriggerConfig( inputTriggerConfig )
 				.transformEventHandlerFactory( is2D
 						? TransformEventHandler2D::new
@@ -328,23 +327,16 @@ public class SharedBigDataViewerData
 		return true;
 	}
 
-	public static SharedBigDataViewerData fromSpimDataXmlFile(
-			final String spimDataXmlFilename,
-			final ViewerOptions viewerOptions,
-			final RequestRepaint requestRepaint ) throws SpimDataException
+	public static SharedBigDataViewerData fromSpimDataXmlFile( final String spimDataXmlFilename ) throws SpimDataException
 	{
 		final AbstractSpimData< ? > spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
-		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
+		return fromSpimData( spimDataXmlFilename, spimData );
 	}
 
-	public static
-			SharedBigDataViewerData fromDummyFilename(
-					final String spimDataXmlFilename,
-					final ViewerOptions viewerOptions,
-					final RequestRepaint requestRepaint )
+	public static SharedBigDataViewerData fromDummyFilename( final String spimDataXmlFilename )
 	{
 		final AbstractSpimData< ? > spimData = DummySpimData.tryCreate( spimDataXmlFilename );
-		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
+		return fromSpimData( spimDataXmlFilename, spimData );
 	}
 
 	/**
@@ -355,20 +347,15 @@ public class SharedBigDataViewerData
 	 * 
 	 * @return a "dummy" {@link SharedBigDataViewerData} object.
 	 */
-	public static SharedBigDataViewerData createDummyDataFromSpimDataXml(
-			final String spimDataXmlFilename,
-			final ViewerOptions viewerOptions,
-			final RequestRepaint requestRepaint ) throws SpimDataException
+	public static SharedBigDataViewerData createDummyDataFromSpimDataXml( final String spimDataXmlFilename ) throws SpimDataException
 	{
 		final AbstractSpimData< ? > spimData = DummySpimData.fromSpimDataXml( spimDataXmlFilename );
-		return formSpimData( spimDataXmlFilename, spimData, viewerOptions, requestRepaint );
+		return fromSpimData( spimDataXmlFilename, spimData );
 	}
 
-	private static SharedBigDataViewerData formSpimData(
+	private static SharedBigDataViewerData fromSpimData(
 			final String spimDataXmlFilename,
-			final AbstractSpimData< ? > spimData,
-			final ViewerOptions viewerOptions,
-			final RequestRepaint requestRepaint )
+			final AbstractSpimData< ? > spimData )
 	{
 		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
 		final int numTimepoints = seq.getTimePoints().size();
@@ -398,9 +385,7 @@ public class SharedBigDataViewerData
 				setups,
 				setupAssignments,
 				cache,
-				numTimepoints,
-				viewerOptions,
-				requestRepaint );
+				numTimepoints );
 
 		if ( !sbdv.tryLoadSettings( spimDataXmlFilename ) )
 		{
@@ -417,10 +402,7 @@ public class SharedBigDataViewerData
 	 * FROM IMAGEPLUS.
 	 */
 
-	public static SharedBigDataViewerData fromImagePlus(
-			final ImagePlus imp,
-			final ViewerOptions viewerOptions,
-			final RequestRepaint requestRepaint )
+	public static SharedBigDataViewerData fromImagePlus( final ImagePlus imp )
 	{
 		// check the image type
 		switch ( imp.getType() )
@@ -549,9 +531,7 @@ public class SharedBigDataViewerData
 				css,
 				setupAssignments,
 				cache,
-				numTimepoints,
-				viewerOptions,
-				requestRepaint );
+				numTimepoints );
 
 		// File info
 		final FileInfo fileInfo = imp.getOriginalFileInfo();

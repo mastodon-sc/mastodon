@@ -126,7 +126,7 @@ public class MamutBranchViewTrackScheme
 		// TrackScheme options.
 		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter =
 				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
-		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
+		final TrackSchemeStyle forwardDefaultStyle = appModel.getWindowManager().getTrackSchemeStyleManager().getForwardDefaultStyle();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.trackSchemeOverlayFactory( overlayFactory )
 				.lineageTreeLayoutFactory( lineageTreeLayoutFactory )

@@ -68,7 +68,7 @@ public class FeatureColorModeConfigPageDemo
 					featureProjectionsManager,
 					"Spot", "Link" ) );
 
-			final MamutProject project = new MamutProjectIO().load( "samples/drosophila_crop.mastodon" );
+			final MamutProject project = MamutProjectIO.load( "samples/drosophila_crop.mastodon" );
 			final Model model = new Model();
 			model.loadRaw( project.openForReading() );
 			featureProjectionsManager.setModel( model, 3 );

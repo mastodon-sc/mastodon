@@ -144,7 +144,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		 * Show the frame
 		 */
 
-		final DataDisplayStyle forwardDefaultStyle = appModel.getDataDisplayStyleManager().getForwardDefaultStyle();
+		final DataDisplayStyle forwardDefaultStyle = appModel.getWindowManager().getDataDisplayStyleManager().getForwardDefaultStyle();
 		coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final DataDisplayOptions options = DataDisplayOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )

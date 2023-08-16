@@ -243,7 +243,7 @@ public class MamutBranchView<
 			final Runnable refresh )
 	{
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
-		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
+		final FeatureColorModeManager featureColorModeManager = appModel.getWindowManager().getFeatureColorModeManager();
 		final ColoringModelBranchGraph< ?, ? > coloringModel =
 				new ColoringModelBranchGraph<>( tagSetModel, featureColorModeManager, featureModel );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );

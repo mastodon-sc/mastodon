@@ -32,6 +32,8 @@ import java.util.List;
 
 import org.mastodon.app.MastodonAppModel;
 import org.mastodon.app.plugin.MastodonAppPluginModel;
+import org.mastodon.mamut.io.ProjectActions;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -51,6 +53,8 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
+
+import bdv.viewer.animate.MessageOverlayAnimator;
 
 /**
  * Data class that stores the data model and the application model of the MaMuT
@@ -78,12 +82,15 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 
 	private final Context context;
 
+	private final MamutProject project;
+
 	public MamutAppModel(
 			final Context context,
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,
 			final KeyPressedManager keyPressedManager,
-			final KeymapManager keymapManager )
+			final KeymapManager keymapManager,
+			final MamutProject project )
 	{
 		super(
 				NUM_GROUPS,
@@ -95,6 +102,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 				new String[] { KeyConfigContexts.MASTODON } );
 
 		this.context = context;
+		this.project = project;
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
 		this.minTimepoint = 0;
@@ -105,6 +113,9 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 			getGlobalActions().updateKeyConfig( keymap.getConfig() );
 			getAppActions().updateKeyConfig( keymap.getConfig() );
 		} );
+
+		// Register save / export actions
+		ProjectActions.installAppActions( getAppActions(), this, null );
 
 		this.branchGraphSync = new BranchGraphSynchronizer( model.getBranchGraph(), model.getGraph().getLock().readLock() );
 		model.getGraph().addGraphChangeListener( branchGraphSync );
@@ -118,9 +129,13 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 		// WindowManager.
 		this.windowManager = new WindowManager( this );
 
+		// Update sharedBdvData
+		sharedBdvData.getOptions()
+				.shareKeyPressedEvents( keyPressedManager )
+				.msgOverlay( new MessageOverlayAnimator( 1500, 0.005, 0.02 ) );
+
 		// Plugins.
 		discoverPlugins();
-
 
 		// Install common actions.
 		UndoActions.install( getAppActions(), model );
@@ -166,6 +181,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 	public void close()
 	{
 		closeListeners.list.forEach( CloseListener::close );
+		windowManager.closeAllWindows();
 	}
 
 	/**
@@ -198,5 +214,10 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 			}
 		}
 		plugins.setAppPluginModel( this );
+	}
+
+	public MamutProject getProject()
+	{
+		return project;
 	}
 }

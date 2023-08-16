@@ -272,18 +272,4 @@ public class FileChooser
 		final String OS = System.getProperty( "os.name", "generic" ).toLowerCase( Locale.ENGLISH );
 		return ( OS.indexOf( "mac" ) >= 0 ) || ( OS.indexOf( "darwin" ) >= 0 );
 	}
-
-	/**
-	 * Possible creates the whole directories needed to save a file with the
-	 * specified path.
-	 * 
-	 * @param path
-	 *            the path.
-	 * @return <code>true</code> if folders have actually been created.
-	 */
-	public static boolean mkdirs( final String path )
-	{
-		final File dir = new File( path ).getParentFile();
-		return dir == null ? false : dir.mkdirs();
-	}
 }
