@@ -80,7 +80,6 @@ import org.scijava.Context;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
-import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -170,26 +169,6 @@ public class WindowManager
 
 	private final KeymapManager keymapManager;
 
-	private final AbstractNamedAction newBdvViewAction;
-
-	private final AbstractNamedAction newTrackSchemeViewAction;
-
-	private final AbstractNamedAction newHierarchyTrackSchemeViewAction;
-
-	private final AbstractNamedAction newTableViewAction;
-
-	private final AbstractNamedAction newSelectionTableViewAction;
-
-	private final AbstractNamedAction newGrapherViewAction;
-
-	private final AbstractNamedAction newBranchBdvViewAction;
-
-	private final AbstractNamedAction newBranchTrackSchemeViewAction;
-
-	private final AbstractNamedAction editTagSetsAction;
-
-	private final AbstractNamedAction featureComputationAction;
-
 	private final TagSetDialog tagSetDialog;
 
 	private final JDialog featureComputationDialog;
@@ -234,16 +213,16 @@ public class WindowManager
 		 * Actions to create views.
 		 */
 
-		this.newBdvViewAction = new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
-		this.newTrackSchemeViewAction = new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
-		this.newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
-		this.newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
-		this.newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
-		this.editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
-		this.featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
-		this.newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
-		this.newBranchTrackSchemeViewAction = new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
-		this.newHierarchyTrackSchemeViewAction = new RunnableAction( NEW_HIERARCHY_TRACKSCHEME_VIEW, this::createHierarchyTrackScheme );
+		final RunnableActionPair newBdvViewAction = new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
+		final RunnableActionPair newTrackSchemeViewAction = new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
+		final RunnableAction newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
+		final RunnableAction newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
+		final RunnableAction newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
+		final RunnableAction editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
+		final RunnableAction featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
+		final RunnableAction newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
+		final RunnableAction newBranchTrackSchemeViewAction = new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
+		final RunnableAction newHierarchyTrackSchemeViewAction = new RunnableAction( NEW_HIERARCHY_TRACKSCHEME_VIEW, this::createHierarchyTrackScheme );
 		final RunnableAction openOnlineDocumentation = new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
 
 		final Actions projectActions = appModel.getProjectActions();
