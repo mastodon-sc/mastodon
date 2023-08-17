@@ -318,9 +318,7 @@ public class ProjectSaver
 		final Element root = new Element( "Settings" );
 		final SharedBigDataViewerData sbdv = appModel.getSharedBdvData();
 		root.addContent( sbdv.getManualTransformation().toXml() );
-		@SuppressWarnings( "deprecation" )
-		final Element setupAssignmentsXml = sbdv.getSetupAssignments().toXml();
-		root.addContent( setupAssignmentsXml );
+		root.addContent( sbdv.toXmlSetupAssignments() );
 		root.addContent( sbdv.getBookmarks().toXml() );
 		final Document doc = new Document( root );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );

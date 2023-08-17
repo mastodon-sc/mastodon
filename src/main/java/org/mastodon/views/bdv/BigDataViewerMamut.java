@@ -28,8 +28,6 @@
  */
 package org.mastodon.views.bdv;
 
-import bdv.ui.splitpanel.SplitPanel;
-import bdv.viewer.ViewerPanel;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,9 +37,9 @@ import javax.swing.filechooser.FileFilter;
 
 import org.mastodon.grouping.GroupHandle;
 
-import bdv.tools.VisibilityAndGroupingDialog;
 import bdv.tools.bookmarks.BookmarksEditor;
-import bdv.tools.brightness.BrightnessDialog;
+import bdv.ui.splitpanel.SplitPanel;
+import bdv.viewer.ViewerPanel;
 
 public class BigDataViewerMamut
 {
@@ -50,10 +48,6 @@ public class BigDataViewerMamut
 	private final ViewerPanel viewer;
 
 	private final SplitPanel splitPanel;
-
-	private final BrightnessDialog brightnessDialog;
-
-	private final VisibilityAndGroupingDialog visibilityAndGroupingDialog;
 
 	private final BookmarksEditor bookmarkEditor;
 
@@ -119,9 +113,6 @@ public class BigDataViewerMamut
 
 		bookmarkEditor = new BookmarksEditor( viewer, viewerFrame.getKeybindings(), shared.getBookmarks() );
 		bookmarkEditor.setInputMapsToBlock( Arrays.asList( "all" ) );
-
-		brightnessDialog = shared.getBrightnessDialog();
-		visibilityAndGroupingDialog = new VisibilityAndGroupingDialog( viewerFrame, viewer.getVisibilityAndGrouping() );
 	}
 
 	public ViewerPanel getViewer()
@@ -132,16 +123,6 @@ public class BigDataViewerMamut
 	public ViewerFrameMamut getViewerFrame()
 	{
 		return viewerFrame;
-	}
-
-	public BrightnessDialog getBrightnessDialog()
-	{
-		return brightnessDialog;
-	}
-
-	public VisibilityAndGroupingDialog getVisibilityAndGroupingDialog()
-	{
-		return visibilityAndGroupingDialog;
 	}
 
 	public BookmarksEditor getBookmarksEditor()
@@ -191,7 +172,6 @@ public class BigDataViewerMamut
 			try
 			{
 				shared.loadSettings( file.getCanonicalPath(), viewer );
-				visibilityAndGroupingDialog.update();
 				viewer.repaint();
 			}
 			catch ( final Exception e )

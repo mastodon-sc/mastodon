@@ -58,11 +58,9 @@ import bdv.spimdata.WrapBasicImgLoader;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.tools.InitializeViewerState;
 import bdv.tools.bookmarks.Bookmarks;
-import bdv.tools.brightness.BrightnessDialog;
 import bdv.tools.brightness.ConverterSetup;
-import bdv.tools.brightness.MinMaxGroup;
-import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.ManualTransformation;
+import bdv.util.Bounds;
 import bdv.viewer.BasicViewerState;
 import bdv.viewer.ConverterSetups;
 import bdv.viewer.DisplayMode;
@@ -77,6 +75,7 @@ import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.process.LUT;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.XmlHelpers;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicImgLoader;
@@ -92,18 +91,11 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 
-@SuppressWarnings( "deprecation" )
 public class SharedBigDataViewerData
 {
 	private final ArrayList< SourceAndConverter< ? > > sources;
 
 	private final ConverterSetups setups;
-
-	// TODO: Remove
-	private final SetupAssignments setupAssignments;
-
-	// TODO: Remove
-	private BrightnessDialog brightnessDialog;
 
 	private final ManualTransformation manualTransformation;
 
@@ -127,14 +119,12 @@ public class SharedBigDataViewerData
 			final AbstractSpimData< ? > spimData,
 			final ArrayList< SourceAndConverter< ? > > sources,
 			final ConverterSetups setups,
-			final SetupAssignments setupAssignments,
 			final CacheControl cache,
 			final int numTimepoints )
 	{
 		this.spimData = spimData;
 		this.sources = sources;
 		this.setups = setups;
-		this.setupAssignments = setupAssignments;
 		this.cache = cache;
 		this.numTimepoints = numTimepoints;
 
@@ -210,7 +200,7 @@ public class SharedBigDataViewerData
 		final Element root = doc.getRootElement();
 		if ( viewer != null )
 			viewer.stateFromXml( root );
-		setupAssignments.restoreFromXml( root );
+		restoreFromXmlSetupAssignments( root );
 		manualTransformation.restoreFromXml( root );
 		bookmarks.restoreFromXml( root );
 	}
@@ -219,12 +209,112 @@ public class SharedBigDataViewerData
 	{
 		final Element root = new Element( "Settings" );
 		root.addContent( viewer.stateToXml() );
-		root.addContent( setupAssignments.toXml() );
+		root.addContent( toXmlSetupAssignments() );
 		root.addContent( manualTransformation.toXml() );
 		root.addContent( bookmarks.toXml() );
 		final Document doc = new Document( root );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
 		xout.output( doc, new FileWriter( xmlFilename ) );
+	}
+
+	/**
+	 * Creates an {@link Element} containing suitable information for the
+	 * <code>SetupAssignments</code> part of the serialization of the BDV
+	 * settings.
+	 * 
+	 * @return a new {@link Element}.
+	 */
+	public Element toXmlSetupAssignments()
+	{
+		final Element elem = new Element( "SetupAssignments" );
+
+		final Element elemConverterSetups = new Element( "ConverterSetups" );
+		for ( int i = 0; i < sources.size(); ++i )
+		{
+			final SourceAndConverter< ? > source = sources.get( i );
+			final ConverterSetup setup = setups.getConverterSetup( source );
+			final Element elemConverterSetup = new Element( "ConverterSetup" );
+			elemConverterSetup.addContent( XmlHelpers.intElement( "id", setup.getSetupId() ) );
+			elemConverterSetup.addContent( XmlHelpers.doubleElement( "min", setup.getDisplayRangeMin() ) );
+			elemConverterSetup.addContent( XmlHelpers.doubleElement( "max", setup.getDisplayRangeMax() ) );
+			elemConverterSetup.addContent( XmlHelpers.intElement( "color", setup.getColor().get() ) );
+			elemConverterSetup.addContent( XmlHelpers.intElement( "groupId", i ) );
+			elemConverterSetups.addContent( elemConverterSetup );
+		}
+		elem.addContent( elemConverterSetups );
+
+		// Can't save MinMaxGroups without calling to deprecated methods.
+		// Put a dummy list instead copying single source for now.
+		final Element elemMinMaxGroups = new Element( "MinMaxGroups" );
+		for ( int i = 0; i < sources.size(); ++i )
+		{
+			final SourceAndConverter< ? > source = sources.get( i );
+			final ConverterSetup setup = setups.getConverterSetup( source );
+			final Bounds bounds = setups.getBounds().getBounds( setup );
+			final Element elemMinMaxGroup = new Element( "MinMaxGroup" );
+			elemMinMaxGroup.addContent( XmlHelpers.intElement( "id", i ) );
+			elemMinMaxGroup.addContent( XmlHelpers.doubleElement( "fullRangeMin", bounds.getMinBound() ) );
+			elemMinMaxGroup.addContent( XmlHelpers.doubleElement( "fullRangeMax", bounds.getMaxBound() ) );
+			elemMinMaxGroup.addContent( XmlHelpers.doubleElement( "rangeMin", bounds.getMinBound() ) );
+			elemMinMaxGroup.addContent( XmlHelpers.doubleElement( "rangeMax", bounds.getMaxBound() ) );
+			elemMinMaxGroup.addContent( XmlHelpers.doubleElement( "currentMin", setup.getDisplayRangeMin() ) );
+			elemMinMaxGroup.addContent( XmlHelpers.doubleElement( "currentMax", setup.getDisplayRangeMax() ) );
+			elemMinMaxGroups.addContent( elemMinMaxGroup );
+		}
+		elem.addContent( elemMinMaxGroups );
+
+		return elem;
+	}
+
+	private void restoreFromXmlSetupAssignments( final Element parent )
+	{
+		final Element elemSetupAssignments = parent.getChild( "SetupAssignments" );
+		if ( elemSetupAssignments == null )
+			return;
+		final Element elemConverterSetups = elemSetupAssignments.getChild( "ConverterSetups" );
+		final List< Element > converterSetupNodes = elemConverterSetups.getChildren( "ConverterSetup" );
+		if ( converterSetupNodes.size() != sources.size() )
+			throw new IllegalArgumentException();
+
+		final Element elemMinMaxGroups = elemSetupAssignments.getChild( "MinMaxGroups" );
+		final List< Element > minMaxGroupNodes = elemMinMaxGroups.getChildren( "MinMaxGroup" );
+		for ( final Element elem : minMaxGroupNodes )
+		{
+			final int id = Integer.parseInt( elem.getChildText( "id" ) );
+//			final double fullRangeMin = Double.parseDouble( elem.getChildText( "fullRangeMin" ) );
+//			final double fullRangeMax = Double.parseDouble( elem.getChildText( "fullRangeMax" ) );
+			final double rangeMin = Double.parseDouble( elem.getChildText( "rangeMin" ) );
+			final double rangeMax = Double.parseDouble( elem.getChildText( "rangeMax" ) );
+//			final double currentMin = Double.parseDouble( elem.getChildText( "currentMin" ) );
+//			final double currentMax = Double.parseDouble( elem.getChildText( "currentMax" ) );
+
+			final SourceAndConverter< ? > source = sources.get( id );
+			final ConverterSetup setup = setups.getConverterSetup( source );
+			setups.getBounds().setBounds( setup, new Bounds( rangeMin, rangeMax ) );
+		}
+
+		for ( final Element elem : converterSetupNodes )
+		{
+			final int id = Integer.parseInt( elem.getChildText( "id" ) );
+			final double min = Double.parseDouble( elem.getChildText( "min" ) );
+			final double max = Double.parseDouble( elem.getChildText( "max" ) );
+			final int color = Integer.parseInt( elem.getChildText( "color" ) );
+//			final int groupId = Integer.parseInt( elem.getChildText( "groupId" ) );
+			final ConverterSetup setup = getSetupById( id );
+			setup.setDisplayRange( min, max );
+			setup.setColor( new ARGBType( color ) );
+		}
+	}
+
+	private ConverterSetup getSetupById( final int id )
+	{
+		for ( final SourceAndConverter< ? > source : sources )
+		{
+			final ConverterSetup setup = setups.getConverterSetup( source );
+			if ( setup.getSetupId() == id )
+				return setup;
+		}
+		return null;
 	}
 
 	public AbstractSpimData< ? > getSpimData()
@@ -252,12 +342,6 @@ public class SharedBigDataViewerData
 		return setups;
 	}
 
-	@Deprecated
-	public SetupAssignments getSetupAssignments()
-	{
-		return setupAssignments;
-	}
-
 	public int getNumTimepoints()
 	{
 		return numTimepoints;
@@ -276,15 +360,6 @@ public class SharedBigDataViewerData
 	public ManualTransformation getManualTransformation()
 	{
 		return manualTransformation;
-	}
-
-	@Deprecated
-	public synchronized BrightnessDialog getBrightnessDialog()
-	{
-		if ( brightnessDialog == null )
-			brightnessDialog = new BrightnessDialog( null, setupAssignments );
-
-		return brightnessDialog;
 	}
 
 	public File getProposedSettingsFile()
@@ -369,21 +444,12 @@ public class SharedBigDataViewerData
 		for ( int i = 0; i < sources.size(); ++i )
 			setups.put( sources.get( i ), converterSetups.get( i ) );
 
-		final SetupAssignments setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
-		if ( setupAssignments.getMinMaxGroups().size() > 0 )
-		{
-			final MinMaxGroup group = setupAssignments.getMinMaxGroups().get( 0 );
-			for ( final ConverterSetup setup : setupAssignments.getConverterSetups() )
-				setupAssignments.moveSetupToGroup( setup, group );
-		}
-
 		WrapBasicImgLoader.removeWrapperIfPresent( spimData );
 
 		final SharedBigDataViewerData sbdv = new SharedBigDataViewerData(
 				spimData,
 				sources,
 				setups,
-				setupAssignments,
 				cache,
 				numTimepoints );
 
@@ -523,13 +589,10 @@ public class SharedBigDataViewerData
 		for ( int i = 0; i < sources.size(); i++ )
 			css.put( sources.get( i ), converterSetups.get( i ) );
 
-		final SetupAssignments setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
-
 		final SharedBigDataViewerData sbdv = new SharedBigDataViewerData(
 				spimData,
 				sources,
 				css,
-				setupAssignments,
 				cache,
 				numTimepoints );
 
@@ -557,12 +620,6 @@ public class SharedBigDataViewerData
 			transferChannelSettings( channelOffset, imp, state, css );
 			channelOffset += imp.getNChannels();
 			state.setDisplayMode( numActiveChannels > 1 ? DisplayMode.FUSED : DisplayMode.SINGLE );
-			if ( setupAssignments.getMinMaxGroups().size() > 0 )
-			{
-				final MinMaxGroup group = setupAssignments.getMinMaxGroups().get( 0 );
-				for ( final ConverterSetup setup : setupAssignments.getConverterSetups() )
-					setupAssignments.moveSetupToGroup( setup, group );
-			}
 		}
 
 		return sbdv;
@@ -634,5 +691,4 @@ public class SharedBigDataViewerData
 			}
 		}
 	}
-
 }
