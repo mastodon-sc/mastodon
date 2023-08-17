@@ -26,14 +26,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.importer.simi;
+package org.mastodon.mamut.io.importer.simi;
 
-import static org.mastodon.mamut.importer.simi.SimiImporter.ExpectedNumTokens.atleast;
-import static org.mastodon.mamut.importer.simi.SimiImporter.ExpectedNumTokens.exactly;
-import static org.mastodon.mamut.importer.simi.SimiImporter.LineType.EOF;
-import static org.mastodon.mamut.importer.simi.SimiImporter.LineType.HEADER;
-import static org.mastodon.mamut.importer.simi.SimiImporter.LineType.NORMAL;
-import static org.mastodon.mamut.importer.simi.SimiImporter.LineType.SEPARATOR;
+import static org.mastodon.mamut.io.importer.simi.SimiImporter.ExpectedNumTokens.atleast;
+import static org.mastodon.mamut.io.importer.simi.SimiImporter.ExpectedNumTokens.exactly;
+import static org.mastodon.mamut.io.importer.simi.SimiImporter.LineType.EOF;
+import static org.mastodon.mamut.io.importer.simi.SimiImporter.LineType.HEADER;
+import static org.mastodon.mamut.io.importer.simi.SimiImporter.LineType.NORMAL;
+import static org.mastodon.mamut.io.importer.simi.SimiImporter.LineType.SEPARATOR;
 
 import java.io.Closeable;
 import java.io.File;
@@ -49,7 +49,7 @@ import java.util.function.BiFunction;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Stream;
 
-import org.mastodon.mamut.importer.ModelImporter;
+import org.mastodon.mamut.io.importer.ModelImporter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.importer.trackmate;
+package org.mastodon.mamut.io.importer.trackmate;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;

@@ -28,7 +28,7 @@
  */
 package org.mastodon.graph.revised;
 
-import org.mastodon.mamut.importer.ModelImporter;
+import org.mastodon.mamut.io.importer.ModelImporter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;

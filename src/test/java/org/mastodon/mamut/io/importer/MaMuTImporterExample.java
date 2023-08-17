@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.importer;
+package org.mastodon.mamut.io.importer;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,9 +37,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.ProjectSaver;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelUtils;

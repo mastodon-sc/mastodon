@@ -27,8 +27,6 @@
  * #L%
  */
 /**
- * SimiBioCell importer.
- * <p>
- * @see <a href="http://www.simi.com/en/products/cell-research/simi-biocell.html">http://www.simi.com/en/products/cell-research/simi-biocell.html</a>
+ * Importer for various file formats in Mastodon.
  */
-package org.mastodon.mamut.importer.simi;
+package org.mastodon.mamut.io.importer;
