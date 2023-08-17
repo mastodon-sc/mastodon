@@ -88,6 +88,7 @@ import org.mastodon.views.trackscheme.display.TrackSchemeOverlay;
 import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOverlayFactory;
 import org.mastodon.views.trackscheme.display.TrackSchemeZoom;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 
@@ -124,9 +125,9 @@ public class MamutBranchViewTrackScheme
 				new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		// TrackScheme options.
-		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter =
-				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
-		final TrackSchemeStyle forwardDefaultStyle = appModel.getWindowManager().getTrackSchemeStyleManager().getForwardDefaultStyle();
+		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+		final TrackSchemeStyleManager trackSchemeStyleManager = appModel.getWindowManager().getManager( TrackSchemeStyleManager.class );
+		final TrackSchemeStyle forwardDefaultStyle = trackSchemeStyleManager.getForwardDefaultStyle();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.trackSchemeOverlayFactory( overlayFactory )
 				.lineageTreeLayoutFactory( lineageTreeLayoutFactory )
