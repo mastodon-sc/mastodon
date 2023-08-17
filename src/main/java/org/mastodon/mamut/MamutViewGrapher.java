@@ -112,12 +112,12 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 
 	private final ColorBarOverlay colorbarOverlay;
 
-	public MamutViewGrapher( final MamutAppModel appModel )
+	public MamutViewGrapher( final ProjectModel appModel )
 	{
 		this( appModel, new HashMap<>() );
 	}
 
-	public MamutViewGrapher( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutViewGrapher( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel,
 				new DataGraph< Spot, Link >(

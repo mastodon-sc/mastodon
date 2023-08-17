@@ -57,7 +57,7 @@ public class MamutPlayground
 	{
 		final Context context = new Context();
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final MamutAppModel appModel = ProjectLoader.open( project, context );
+		final ProjectModel appModel = ProjectLoader.open( project, context );
 		final Model model = appModel.getModel();
 
 		System.out.println( "\n\n\n___________________________________\nData loaded.\n" );

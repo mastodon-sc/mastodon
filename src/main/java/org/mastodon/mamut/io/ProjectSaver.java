@@ -27,7 +27,7 @@ import org.jdom2.output.XMLOutputter;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
@@ -64,7 +64,7 @@ public class ProjectSaver
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
 	 */
-	public static synchronized void saveProjectAs( final MamutAppModel appModel, final Component parentComponent )
+	public static synchronized void saveProjectAs( final ProjectModel appModel, final Component parentComponent )
 	{
 		final MamutProject project = appModel.getProject();
 		final String projectRoot = getProposedProjectRoot( project );
@@ -186,7 +186,7 @@ public class ProjectSaver
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
 	 */
-	public static void saveProject( final MamutAppModel appModel, final Component parentComponent )
+	public static void saveProject( final ProjectModel appModel, final Component parentComponent )
 	{
 		try
 		{
@@ -215,7 +215,7 @@ public class ProjectSaver
 	 * @throws IOException
 	 *             if there is an error writing to the file.
 	 */
-	public static synchronized void saveProject( final File saveTo, final MamutAppModel appModel ) throws IOException
+	public static synchronized void saveProject( final File saveTo, final ProjectModel appModel ) throws IOException
 	{
 		// Current project.
 		final MamutProject project = appModel.getProject();
@@ -300,7 +300,7 @@ public class ProjectSaver
 				: fn;
 	}
 
-	private static void saveAndReopenImagePlusProject( final MamutAppModel appModel, final Component parentComponent ) throws IOException
+	private static void saveAndReopenImagePlusProject( final ProjectModel appModel, final Component parentComponent ) throws IOException
 	{
 		final MamutImagePlusProject project = ( MamutImagePlusProject ) appModel.getProject();
 
@@ -356,7 +356,7 @@ public class ProjectSaver
 		final Model model = appModel.getModel();
 		final KeyPressedManager keyPressedManager = new KeyPressedManager();
 		final KeymapManager keymapManager = new KeymapManager();
-		final MamutAppModel nmam = new MamutAppModel( context, model, sbdv, keyPressedManager, keymapManager, np );
+		final ProjectModel nmam = new ProjectModel( context, model, sbdv, keyPressedManager, keymapManager, np );
 
 		// Close the old one.
 		appModel.close();

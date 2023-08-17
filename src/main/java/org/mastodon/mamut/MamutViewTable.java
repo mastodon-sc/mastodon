@@ -154,13 +154,13 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	private final boolean selectionTable;
 
-	public MamutViewTable( final MamutAppModel appModel, final boolean selectionOnly )
+	public MamutViewTable( final ProjectModel appModel, final boolean selectionOnly )
 	{
 		this( appModel, Collections.singletonMap(
 				TABLE_SELECTION_ONLY, Boolean.valueOf( selectionOnly ) ) );
 	}
 
-	public MamutViewTable( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutViewTable( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel, createViewGraph( appModel ), CONTEXTS );
 
@@ -321,7 +321,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	}
 
 	private static final ColoringModel registerBranchColoring(
-			final MamutAppModel appModel,
+			final ProjectModel appModel,
 			final GraphColorGeneratorAdapter< BranchSpot, BranchLink, BranchSpot, BranchLink > colorGeneratorAdapter,
 			final JMenuHandle menuHandle,
 			final Runnable refresh,
@@ -364,7 +364,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return coloringModel;
 	}
 
-	private static TagSetModel< BranchSpot, BranchLink > branchTagSetModel( final MamutAppModel appModel )
+	private static TagSetModel< BranchSpot, BranchLink > branchTagSetModel( final ProjectModel appModel )
 	{
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
@@ -374,7 +374,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return branchGraphTagSetModel;
 	}
 
-	private static NavigationHandler< BranchSpot, BranchLink > branchGraphNavigation( final MamutAppModel appModel,
+	private static NavigationHandler< BranchSpot, BranchLink > branchGraphNavigation( final ProjectModel appModel,
 			final NavigationHandler< Spot, Link > navigationHandler )
 	{
 		final ModelGraph graph = appModel.getModel().getGraph();
@@ -385,7 +385,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return branchGraphNavigation;
 	}
 
-	private static HighlightModel< BranchSpot, BranchLink > branchHighlightModel( final MamutAppModel appModel )
+	private static HighlightModel< BranchSpot, BranchLink > branchHighlightModel( final ProjectModel appModel )
 	{
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
@@ -395,7 +395,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return branchHighlightModel;
 	}
 
-	private static FocusModel< BranchSpot, BranchLink > branchFocusfocusModel( final MamutAppModel appModel )
+	private static FocusModel< BranchSpot, BranchLink > branchFocusfocusModel( final ProjectModel appModel )
 	{
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
@@ -405,7 +405,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return branchFocusfocusModel;
 	}
 
-	private static SelectionModel< BranchSpot, BranchLink > branchSelectionModel( final MamutAppModel appModel )
+	private static SelectionModel< BranchSpot, BranchLink > branchSelectionModel( final ProjectModel appModel )
 	{
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
@@ -456,7 +456,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	 * Functions.
 	 */
 
-	private static ViewGraph< Spot, Link, Spot, Link > createViewGraph( final MamutAppModel appModel )
+	private static ViewGraph< Spot, Link, Spot, Link > createViewGraph( final ProjectModel appModel )
 	{
 		return IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() );
 	}

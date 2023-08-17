@@ -54,7 +54,7 @@ import org.jdom2.JDOMException;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.importer.simi.SimiImporter;
 import org.mastodon.mamut.importer.simi.SimiImporter.LabelFunction;
 import org.mastodon.mamut.importer.tgmm.TgmmImporter;
@@ -142,7 +142,7 @@ public class MastodonLauncher extends JFrame
 				// Create new blank project from BDV file.
 				final File bdvFile = new File( gui.importSimiBioCellPanel.textAreaBDVFile.getText() );
 				final MamutProject project = MamutProjectIO.fromBdvFile( bdvFile );
-				final MamutAppModel appModel = ProjectLoader.open( project, context );
+				final ProjectModel appModel = ProjectLoader.open( project, context );
 
 				final Model model = appModel.getModel();
 				final AbstractSpimData< ? > spimData = appModel.getSharedBdvData().getSpimData();
@@ -246,7 +246,7 @@ public class MastodonLauncher extends JFrame
 				// Create new blank project from BDV file.
 				final File bdvFile = new File( gui.importTGMMPanel.textAreaBDVFile.getText() );
 				final MamutProject project = MamutProjectIO.fromBdvFile( bdvFile );
-				final MamutAppModel appModel = ProjectLoader.open( project, context );
+				final ProjectModel appModel = ProjectLoader.open( project, context );
 
 				final Model model = appModel.getModel();
 				final AbstractSpimData< ? > spimData = appModel.getSharedBdvData().getSpimData();
@@ -351,7 +351,7 @@ public class MastodonLauncher extends JFrame
 			new Thread( () -> {
 				try
 				{
-					final MamutAppModel appModel = ProjectCreator.createProjectFromBdvFile( file, context, gui );
+					final ProjectModel appModel = ProjectCreator.createProjectFromBdvFile( file, context, gui );
 					new MainWindow( appModel ).setVisible( true );
 					dispose();
 				}
@@ -386,7 +386,7 @@ public class MastodonLauncher extends JFrame
 				try
 				{
 					final MamutProject project = MamutProjectIO.fromImagePlus( imp );
-					final MamutAppModel appModel = ProjectLoader.open( project, context );
+					final ProjectModel appModel = ProjectLoader.open( project, context );
 					final MainWindow mainWindow = new MainWindow( appModel );
 
 					/*
@@ -551,7 +551,7 @@ public class MastodonLauncher extends JFrame
 				 * Open it as a new Mastodon project.
 				 */
 				final MamutProject project = MamutProjectIO.fromBdvFile( file );
-				final MamutAppModel appModel = ProjectLoader.open( project, context );
+				final ProjectModel appModel = ProjectLoader.open( project, context );
 				new MainWindow( appModel ).setVisible( true );
 
 				/*
@@ -599,7 +599,7 @@ public class MastodonLauncher extends JFrame
 
 				final TrackMateImporter importer = new TrackMateImporter( file );
 				final MamutProject project = importer.createProject();
-				final MamutAppModel appModel = ProjectLoader.open( project, context );
+				final ProjectModel appModel = ProjectLoader.open( project, context );
 
 				final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
 				importer.readModel( appModel.getModel(), featureSpecsService );
@@ -656,7 +656,7 @@ public class MastodonLauncher extends JFrame
 					try
 					{
 						final MamutProject project = MamutProjectIO.load( file.getAbsolutePath() );
-						final MamutAppModel appModel = ProjectLoader.open( project, context );
+						final ProjectModel appModel = ProjectLoader.open( project, context );
 
 						new MainWindow( appModel ).setVisible( true );
 						dispose();

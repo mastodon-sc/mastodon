@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.ui.util.FileChooser;
@@ -22,7 +22,7 @@ import org.mastodon.ui.util.XmlFileFilter;
 public class ProjectExporter
 {
 
-	public static synchronized void exportMamut( final MamutAppModel appModel, final Component parentComponent )
+	public static synchronized void exportMamut( final ProjectModel appModel, final Component parentComponent )
 	{
 		final MamutProject project = appModel.getProject();
 		final String filename = getProprosedMamutExportFileName( project );

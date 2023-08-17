@@ -36,7 +36,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.ProjectSaver;
@@ -69,7 +69,7 @@ public class MaMuTImporterExample
 	{
 		final Context context = new Context();
 		final TrackMateImporter importer = new TrackMateImporter( mamutFile );
-		final MamutAppModel appModel = ProjectLoader.open( importer.createProject(), context );
+		final ProjectModel appModel = ProjectLoader.open( importer.createProject(), context );
 		final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
 		importer.readModel( appModel.getModel(), featureSpecsService );
 		ProjectSaver.saveProject( targetMastodonFile, appModel );
@@ -77,7 +77,7 @@ public class MaMuTImporterExample
 
 	private static void reloadAfterSave( final File targetMastodonFile ) throws IOException, SpimDataException
 	{
-		final MamutAppModel appModel = ProjectLoader.open( MamutProjectIO.load( targetMastodonFile.getAbsolutePath() ), new Context() );
+		final ProjectModel appModel = ProjectLoader.open( MamutProjectIO.load( targetMastodonFile.getAbsolutePath() ), new Context() );
 		final Model model = appModel.getModel();
 		System.out.println( "After reloading the saved MaMuT import:" );
 		System.out.println( ModelUtils.dump( model, 5 ) );

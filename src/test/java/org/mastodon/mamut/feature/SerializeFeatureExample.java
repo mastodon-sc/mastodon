@@ -39,7 +39,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
@@ -62,7 +62,7 @@ public class SerializeFeatureExample
 
 		// Load project.
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
+		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
 		final Model model = appModel.getModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
@@ -88,7 +88,7 @@ public class SerializeFeatureExample
 
 		System.out.println( "\nReloading." );
 		final MamutProject project2 = MamutProjectIO.load( targetFile.getAbsolutePath() );
-		final MamutAppModel appModel2 = ProjectLoader.open( project2, appModel.getContext() );
+		final ProjectModel appModel2 = ProjectLoader.open( project2, appModel.getContext() );
 		System.out.println( "Done." );
 
 		System.out.println( "\n" + ModelUtils.dump( appModel2.getModel(), 4 ) );

@@ -109,12 +109,12 @@ public class MamutViewTrackScheme
 
 	private final ColorBarOverlay colorBarOverlay;
 
-	public MamutViewTrackScheme( final MamutAppModel appModel )
+	public MamutViewTrackScheme( final ProjectModel appModel )
 	{
 		this( appModel, new HashMap<>() );
 	}
 
-	public MamutViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutViewTrackScheme( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel,
 				new TrackSchemeGraph<>(

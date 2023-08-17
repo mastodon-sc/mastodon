@@ -67,7 +67,7 @@ import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 
 public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vertex< E >, E extends Edge< V > >
-		extends MastodonFrameView< MamutAppModel, VG, Spot, Link, V, E >
+		extends MastodonFrameView< ProjectModel, VG, Spot, Link, V, E >
 {
 
 	/**
@@ -127,7 +127,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 */
 	public static final String GROUP_HANDLE_ID_KEY = "LockGroupId";
 
-	public MamutView( final MamutAppModel appModel, final VG viewGraph, final String[] keyConfigContexts )
+	public MamutView( final ProjectModel appModel, final VG viewGraph, final String[] keyConfigContexts )
 	{
 		super( appModel, viewGraph, keyConfigContexts );
 	}

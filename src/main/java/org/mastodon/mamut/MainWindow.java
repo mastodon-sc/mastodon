@@ -78,9 +78,9 @@ public class MainWindow extends JFrame
 
 	private final ViewMenu menu;
 
-	private final MamutAppModel appModel;
+	private final ProjectModel appModel;
 
-	public MainWindow( final MamutAppModel appModel )
+	public MainWindow( final ProjectModel appModel )
 	{
 		super( "Mastodon" );
 		this.appModel = appModel;

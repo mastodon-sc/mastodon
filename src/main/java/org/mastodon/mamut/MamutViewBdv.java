@@ -136,12 +136,12 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 	private final ColorBarOverlay colorBarOverlay;
 
-	public MamutViewBdv( final MamutAppModel appModel )
+	public MamutViewBdv( final ProjectModel appModel )
 	{
 		this( appModel, new HashMap<>() );
 	}
 
-	public MamutViewBdv( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutViewBdv( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel,
 				new OverlayGraphWrapper<>(

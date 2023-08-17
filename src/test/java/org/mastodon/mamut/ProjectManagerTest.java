@@ -98,7 +98,7 @@ public class ProjectManagerTest
 			throws IOException, SpimDataException
 	{
 		final MamutProject project = MamutProjectIO.load( open.toFile().getAbsolutePath() );
-		final MamutAppModel appModel = ProjectLoader.open( project, context, false, true );
+		final ProjectModel appModel = ProjectLoader.open( project, context, false, true );
 		ProjectSaver.saveProject( save.toFile(), appModel );
 	}
 

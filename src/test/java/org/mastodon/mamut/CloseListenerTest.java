@@ -56,7 +56,7 @@ public class CloseListenerTest
 		try (Context context = new Context())
 		{
 			// setup
-			final MamutAppModel appModel = openTinyProject( context );
+			final ProjectModel appModel = openTinyProject( context );
 			final int[] counter = new int[] { 0 };
 			appModel.projectClosedListeners().add( () -> counter[ 0 ]++ );
 			// process
@@ -67,11 +67,11 @@ public class CloseListenerTest
 		}
 	}
 
-	private static MamutAppModel openTinyProject( final Context context ) throws IOException, SpimDataException
+	private static ProjectModel openTinyProject( final Context context ) throws IOException, SpimDataException
 	{
 		final String tinyProjectFile = CloseListenerTest.class.getResource( "/org/mastodon/mamut/examples/tiny/tiny-project.mastodon" ).getFile();
 		final MamutProject project = MamutProjectIO.load( tinyProjectFile );
-		final MamutAppModel appModel = ProjectLoader.open( project, context );
+		final ProjectModel appModel = ProjectLoader.open( project, context );
 		return appModel;
 	}
 }

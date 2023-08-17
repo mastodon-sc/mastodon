@@ -57,12 +57,12 @@ import org.scijava.ui.behaviour.util.Actions;
 import bdv.viewer.animate.MessageOverlayAnimator;
 
 /**
- * Data class that stores the data model and the application model of the MaMuT
+ * Data class that stores the data model and the application model of the Mamut
  * application.
  *
  * @author Jean-Yves Tinevez
  */
-public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > implements MastodonAppPluginModel
+public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implements MastodonAppPluginModel
 {
 	private static final int NUM_GROUPS = 3;
 
@@ -84,7 +84,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link > impleme
 
 	private final MamutProject project;
 
-	public MamutAppModel(
+	public ProjectModel(
 			final Context context,
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,

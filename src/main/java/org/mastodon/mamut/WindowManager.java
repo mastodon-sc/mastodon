@@ -172,7 +172,7 @@ public class WindowManager
 
 	private final PreferencesDialog settings;
 
-	private final MamutAppModel appModel;
+	private final ProjectModel appModel;
 
 	/**
 	 * Creates a new, empty WindowManager instance using the specified context.
@@ -181,7 +181,7 @@ public class WindowManager
 	 *            the context to use. Cannot be <code>null</code>.
 	 * @param globalActions
 	 */
-	public WindowManager( final MamutAppModel appModel )
+	public WindowManager( final ProjectModel appModel )
 	{
 		this.appModel = appModel;
 		this.trackSchemeStyleManager = new TrackSchemeStyleManager();

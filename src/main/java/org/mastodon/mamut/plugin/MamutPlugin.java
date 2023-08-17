@@ -29,7 +29,7 @@
 package org.mastodon.mamut.plugin;
 
 import org.mastodon.app.plugin.MastodonPlugin;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 
-public interface MamutPlugin extends MastodonPlugin< MamutAppModel >
+public interface MamutPlugin extends MastodonPlugin< ProjectModel >
 {}

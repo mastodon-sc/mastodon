@@ -100,7 +100,7 @@ public class MamutBranchView<
 	 */
 	public static final String BRANCH_GRAPH = "BranchGraph";
 
-	protected final MamutAppModel appModel;
+	protected final ProjectModel appModel;
 
 	protected ViewFrame frame;
 
@@ -132,7 +132,7 @@ public class MamutBranchView<
 
 	protected final TagSetModel< BranchSpot, BranchLink > tagSetModel;
 
-	public MamutBranchView( final MamutAppModel appModel, final VG viewGraph, final String[] keyConfigContexts )
+	public MamutBranchView( final ProjectModel appModel, final VG viewGraph, final String[] keyConfigContexts )
 	{
 		this.appModel = appModel;
 		this.viewGraph = viewGraph;
@@ -359,7 +359,7 @@ public class MamutBranchView<
 		return groupHandle;
 	}
 
-	private static TagSetModel< BranchSpot, BranchLink > branchTagSetModel( final MamutAppModel appModel )
+	private static TagSetModel< BranchSpot, BranchLink > branchTagSetModel( final ProjectModel appModel )
 	{
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();

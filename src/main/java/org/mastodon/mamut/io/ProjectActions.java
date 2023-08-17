@@ -3,7 +3,7 @@ package org.mastodon.mamut.io;
 import java.awt.Component;
 import java.awt.Frame;
 
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -56,7 +56,7 @@ public class ProjectActions
 		actions.namedAction( importMamutAction, IMPORT_MAMUT_KEYS );
 	}
 
-	public static void installAppActions( final Actions actions, final MamutAppModel appModel, final Frame parentComponent )
+	public static void installAppActions( final Actions actions, final ProjectModel appModel, final Frame parentComponent )
 	{
 		final RunnableAction saveProjectAction = new RunnableAction( SAVE_PROJECT, () -> ProjectSaver.saveProject( appModel, parentComponent ) );
 		final RunnableAction saveProjectAsAction = new RunnableAction( SAVE_PROJECT_AS, () -> ProjectSaver.saveProjectAs( appModel, parentComponent ) );
