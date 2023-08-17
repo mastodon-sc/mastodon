@@ -137,9 +137,7 @@ public class WindowManager
 	/** All currently open branch TrackScheme windows. */
 	private final List< MamutBranchViewBdv > bbdvWindows = new ArrayList<>();
 
-	/**
-	 * The {@link ContextProvider}s of all currently open BigDataViewer windows.
-	 */
+	/** The {@link ContextProvider}s of all currently open BigDataViewer windows. */
 	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
 
 	/** All currently open TrackScheme windows. */
@@ -154,15 +152,8 @@ public class WindowManager
 	/** All currently open Grapher windows. */
 	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
 
-	private final TrackSchemeStyleManager trackSchemeStyleManager;
-
-	private final DataDisplayStyleManager dataDisplayStyleManager;
-
-	private final RenderSettingsManager renderSettingsManager;
-
-	private final FeatureColorModeManager featureColorModeManager;
-
-	private final MamutFeatureProjectionsManager featureProjectionsManager;
+	/** Stores the various managers used to manage view styles, features, etc. */
+	private final Map< Class< ? >, Object > managers = new HashMap<>();
 
 	private final TagSetDialog tagSetDialog;
 
@@ -184,14 +175,21 @@ public class WindowManager
 	public WindowManager( final ProjectModel appModel )
 	{
 		this.appModel = appModel;
-		this.trackSchemeStyleManager = new TrackSchemeStyleManager();
-		this.dataDisplayStyleManager = new DataDisplayStyleManager();
-		this.renderSettingsManager = new RenderSettingsManager();
-		this.featureColorModeManager = new FeatureColorModeManager();
 		final Context context = appModel.getContext();
-		this.featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		final Model model = appModel.getModel();
+
+		/*
+		 * Create and store managers.
+		 */
+
+		managers.put( TrackSchemeStyleManager.class, new TrackSchemeStyleManager() );
+		managers.put( DataDisplayStyleManager.class, new DataDisplayStyleManager() );
+		managers.put( RenderSettingsManager.class, new RenderSettingsManager() );
+		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
+		managers.put( FeatureColorModeManager.class,  featureColorModeManager);
+		final MamutFeatureProjectionsManager featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
+		managers.put( MamutFeatureProjectionsManager.class, featureProjectionsManager );
 		final KeymapManager keymapManager = appModel.getKeymapManager();
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		// TODO: still needed?
@@ -233,9 +231,9 @@ public class WindowManager
 		projectActions.namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
 		this.settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
-		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
-		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
-		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", dataDisplayStyleManager ) );
+		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", getManager( TrackSchemeStyleManager.class ) ) );
+		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", getManager( RenderSettingsManager.class ) ) );
+		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", getManager( DataDisplayStyleManager.class ) ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
 		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager,
 				featureProjectionsManager, "Spot", "Link" ) );
@@ -249,6 +247,24 @@ public class WindowManager
 		tagSetDialog.setIconImages( TAGS_ICON );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
+	}
+
+	/**
+	 * Returns the manager object of the specified class used in this window
+	 * manager, or <code>null</code> if a manager of the specified class does
+	 * not exist.
+	 * 
+	 * @param <T>
+	 *            the manager type.
+	 * @param klass
+	 *            the manager class.
+	 * @return the manager instance or <code>null</code>.
+	 */
+	public < T > T getManager( final Class< T > klass )
+	{
+		@SuppressWarnings( "unchecked" )
+		final T manager = ( T ) managers.get( klass );
+		return manager;
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
@@ -781,31 +797,6 @@ public class WindowManager
 	public void dispose()
 	{
 		settings.dispose();
-	}
-
-	TrackSchemeStyleManager getTrackSchemeStyleManager()
-	{
-		return trackSchemeStyleManager;
-	}
-
-	public DataDisplayStyleManager getDataDisplayStyleManager()
-	{
-		return dataDisplayStyleManager;
-	}
-
-	RenderSettingsManager getRenderSettingsManager()
-	{
-		return renderSettingsManager;
-	}
-
-	FeatureColorModeManager getFeatureColorModeManager()
-	{
-		return featureColorModeManager;
-	}
-
-	MamutFeatureProjectionsManager getFeatureProjectionsManager()
-	{
-		return featureProjectionsManager;
 	}
 
 	public PreferencesDialog getPreferencesDialog()

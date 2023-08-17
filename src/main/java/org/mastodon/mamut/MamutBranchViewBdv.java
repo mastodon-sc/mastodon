@@ -80,6 +80,7 @@ import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.OverlayNavigation;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings.UpdateListener;
+import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
@@ -268,7 +269,8 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
 		// Render settings.
-		final RenderSettings renderSettings = appModel.getWindowManager().getRenderSettingsManager().getForwardDefaultStyle();
+		final RenderSettingsManager renderSettingsManager = appModel.getWindowManager().getManager( RenderSettingsManager.class );
+		final RenderSettings renderSettings = renderSettingsManager.getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
 		final UpdateListener updateListener = () -> viewer.repaint();
 		renderSettings.updateListeners().add( updateListener );

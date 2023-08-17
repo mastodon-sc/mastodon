@@ -80,6 +80,7 @@ import org.mastodon.views.grapher.display.FeatureGraphConfig.GraphDataItemsSourc
 import org.mastodon.views.grapher.display.FeatureSpecPair;
 import org.mastodon.views.grapher.display.OffsetAxes;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
+import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
@@ -144,7 +145,8 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		 * Show the frame
 		 */
 
-		final DataDisplayStyle forwardDefaultStyle = appModel.getWindowManager().getDataDisplayStyleManager().getForwardDefaultStyle();
+		final DataDisplayStyleManager dataDisplayStyleManager = appModel.getWindowManager().getManager( DataDisplayStyleManager.class );
+		final DataDisplayStyle forwardDefaultStyle = dataDisplayStyleManager.getForwardDefaultStyle();
 		coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final DataDisplayOptions options = DataDisplayOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )

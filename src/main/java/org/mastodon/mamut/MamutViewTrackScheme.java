@@ -81,6 +81,7 @@ import org.mastodon.views.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 import org.mastodon.views.trackscheme.display.TrackSchemeZoom;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
 public class MamutViewTrackScheme
@@ -136,7 +137,8 @@ public class MamutViewTrackScheme
 		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeStyle forwardDefaultStyle = appModel.getWindowManager().getTrackSchemeStyleManager().getForwardDefaultStyle();
+		final TrackSchemeStyleManager trackSchemeStyleManager = appModel.getWindowManager().getManager( TrackSchemeStyleManager.class );
+		final TrackSchemeStyle forwardDefaultStyle = trackSchemeStyleManager.getForwardDefaultStyle();
 		coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
