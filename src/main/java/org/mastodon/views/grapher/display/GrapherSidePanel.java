@@ -59,8 +59,8 @@ import org.mastodon.feature.Multiplicity;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.project.MamutProject;
-import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.io.project.MamutProject.ProjectReader;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
@@ -400,7 +400,7 @@ public class GrapherSidePanel extends JPanel
 		final Model model = new Model();
 		try
 		{
-			final MamutProject project = new MamutProjectIO().load( "samples/drosophila_crop.mastodon" );
+			final MamutProject project = MamutProjectIO.load( "samples/drosophila_crop.mastodon" );
 			final ProjectReader reader = project.openForReading();
 
 			final FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
