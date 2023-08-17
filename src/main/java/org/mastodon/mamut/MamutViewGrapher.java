@@ -65,6 +65,7 @@ import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.grapher.datagraph.DataContextListener;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
@@ -86,7 +87,7 @@ import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
-public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge >
+public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge > implements HasContextChooser< Spot >
 {
 
 	/**
@@ -324,6 +325,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		dataDisplayPanel.getDisplay().requestFocusInWindow();
 	}
 
+	@Override
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
