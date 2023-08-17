@@ -47,7 +47,6 @@ import org.jdom2.Element;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
-import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -176,7 +175,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		 * We have to build the coloring menu handles now. But the other actions
 		 * need to be included in the menus later, after they have been
 		 * installed (otherwise they won't be active). To keep the future menu
-		 * order, we build an empty menu but already with all su-bmenus in
+		 * order, we build an empty menu but already with all sub-menus in
 		 * order.
 		 */
 		final JMenuHandle menuHandle = new JMenuHandle();
@@ -189,8 +188,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				viewMenu(
 						colorMenu( menuHandle ),
 						colorbarMenu( colorbarMenuHandle ) ),
-				editMenu(),
-				ViewMenuBuilder.menu( "Settings" ) );
+				editMenu() );
 
 		// The view panel.
 		viewer = bdv.getViewer();
@@ -331,10 +329,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
 						separator(),
-						tagSetMenu( tagSetMenuHandle ) ),
-				ViewMenuBuilder.menu( "Settings",
-						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
-						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
+						tagSetMenu( tagSetMenuHandle ) ) );
 		appModel.getPlugins().addMenus( menu );
 
 		registerTagSetMenu( tagSetMenuHandle,

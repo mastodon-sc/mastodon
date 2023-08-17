@@ -49,7 +49,6 @@ import org.jdom2.Element;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
-import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
@@ -158,10 +157,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
 						separator(),
-						tagSetMenu( tagSetMenuHandle ) ),
-				ViewMenuBuilder.menu( "Settings",
-						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
-						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
+						tagSetMenu( tagSetMenuHandle ) ) );
 		appModel.getPlugins().addMenus( menu );
 
 		// Register coloring and tag-sets.
