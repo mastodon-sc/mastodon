@@ -51,7 +51,6 @@ import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
-import org.scijava.service.AbstractService;
 
 public class MamutFeatureComputation
 {
