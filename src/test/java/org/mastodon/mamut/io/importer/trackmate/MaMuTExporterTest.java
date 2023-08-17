@@ -63,7 +63,6 @@ import org.mastodon.graph.algorithm.ConnectedComponents;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
-import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
