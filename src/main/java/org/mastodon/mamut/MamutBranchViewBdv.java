@@ -209,7 +209,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 
 		viewer.getDisplay().overlays().add( tracksOverlay );
 		viewer.renderTransformListeners().add( tracksOverlay );
-		viewer.addTimePointListener( tracksOverlay );
+		viewer.timePointListeners().add( tracksOverlay );
 
 		// Core graph.
 		final Model model = appModel.getModel();
@@ -264,7 +264,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		// Time-point listener.
-		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
+		viewer.timePointListeners().add( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
 		// Render settings.
