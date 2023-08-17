@@ -59,6 +59,29 @@ public class ProjectLoader
 	/**
 	 * Opens a project. The GUI state is not restored.
 	 * 
+	 * @param mastodonFile
+	 *            path to a Mastodon file.
+	 * @param context
+	 *            the current context.
+	 * @return the loaded {@link ProjectModel}.
+	 * @throws IOException
+	 *             if the project points to a regular image file for image data,
+	 *             and that file cannot be opened properly, or if there is a
+	 *             problem loading the model data, or if there is a problem
+	 *             reading the GUI state.
+	 * @throws SpimDataException
+	 *             if the project points to a BDV file for image data, and that
+	 *             BDV cannot be opened properly.
+	 */
+	public static ProjectModel open( final String mastodonFile, final Context context ) throws IOException, SpimDataException
+	{
+		final MamutProject project = MamutProjectIO.load( mastodonFile );
+		return open( project, context, false, false );
+	}
+
+	/**
+	 * Opens a project. The GUI state is not restored.
+	 * 
 	 * @param project
 	 *            the object describing the project on disk.
 	 * @param context
@@ -76,6 +99,35 @@ public class ProjectLoader
 	public static ProjectModel open( final MamutProject project, final Context context ) throws IOException, SpimDataException
 	{
 		return open( project, context, false, false );
+	}
+
+	/**
+	 * Opens a specified project.
+	 * 
+	 * @param mastodonFile
+	 *            path to a Mastodon file.
+	 * @param context
+	 *            the current context.
+	 * @param restoreGUIState
+	 *            if <code>true</code>, the GUI state will be restored.
+	 * @param authorizeSubstituteDummyData
+	 *            if <code>true</code>, and if the image data cannot be loaded,
+	 *            a dummy image data will be substituted. In that case a
+	 *            {@link SpimDataException} is never thrown.
+	 * @return the loaded {@link ProjectModel}.
+	 * @throws IOException
+	 *             if the project points to a regular image file for image data,
+	 *             and that file cannot be opened properly, or if there is a
+	 *             problem loading the model data, or if there is a problem
+	 *             reading the GUI state.
+	 * @throws SpimDataException
+	 *             if the project points to a BDV file for image data, and that
+	 *             BDV cannot be opened properly.
+	 */
+	public static ProjectModel open( final String mastodonFile, final Context context, final boolean restoreGUIState, final boolean authorizeSubstituteDummyData ) throws IOException, SpimDataException
+	{
+		final MamutProject project = MamutProjectIO.load( mastodonFile );
+		return open( project, context, restoreGUIState, authorizeSubstituteDummyData );
 	}
 
 	/**
@@ -176,7 +228,38 @@ public class ProjectLoader
 	}
 
 	/**
-	 * Opens a project interactively.
+	 * Opens a project interactively from a specified Mastodon file.
+	 * <p>
+	 * If the image data cannot be loaded a dialog shows up telling the user
+	 * about the problem, and offering to start Mastodon on substituted dummy
+	 * image data. If the user declines, a {@link SpimDataException} is thrown.
+	 * <p>
+	 * The GUI state is restored.
+	 * 
+	 * @param mastodonFile
+	 *            path to a Mastodon file
+	 * @param context
+	 *            the current context.
+	 * 
+	 * @return the loaded {@link ProjectModel}.
+	 * @throws IOException
+	 *             if the project points to a regular image file for image data,
+	 *             and that file cannot be opened properly, or if there is a
+	 *             problem loading the model data, or if there is a problem
+	 *             reading the GUI state.
+	 * @throws SpimDataException
+	 *             if the project points to a BDV file that cannot be opened,
+	 *             and the user declined to substitute a dummy dataset.
+	 */
+	public static synchronized ProjectModel openWithDialog( final String mastodonFile, final Context context ) throws IOException, SpimDataException
+	{
+		final MamutProject project = MamutProjectIO.load( mastodonFile );
+		return openWithDialog( project, context );
+	}
+
+
+	/**
+	 * Opens a project interactively from a specified project object.
 	 * <p>
 	 * If the image data cannot be loaded a dialog shows up telling the user
 	 * about the problem, and offering to start Mastodon on substituted dummy
@@ -205,7 +288,40 @@ public class ProjectLoader
 	}
 
 	/**
-	 * Opens a project interactively.
+	 * Opens a project interactively from a Mastodon file.
+	 * <p>
+	 * If the image data cannot be loaded a dialog shows up telling the user
+	 * about the problem, and offering to start Mastodon on substituted dummy
+	 * image data.
+	 * <p>
+	 * The GUI state is restored.
+	 * 
+	 * @param mastodonFile
+	 *            path to a Mastodon file
+	 * @param context
+	 *            the current context.
+	 * @param parentComponent
+	 *            a component to use as parent to show dialogs during opening.
+	 *            Can be <code>null</code>.
+	 * @throws IOException
+	 *             if the project points to a regular image file for image data,
+	 *             and that file cannot be opened properly and the user declined
+	 *             to substitute dummy data; or if there is a problem loading
+	 *             the model data; or if there is a problem reading the GUI
+	 *             state.
+	 * @throws SpimDataException
+	 *             if the project points to a BDV file that cannot be opened,
+	 *             and the user declined to substitute a dummy dataset.
+	 * @return the loaded {@link ProjectModel}.
+	 */
+	public static synchronized ProjectModel openWithDialog( final String mastodonFile, final Context context, final Component parentComponent ) throws IOException, SpimDataException
+	{
+		final MamutProject project = MamutProjectIO.load( mastodonFile );
+		return openWithDialog( project, context, parentComponent );
+	}
+
+	/**
+	 * Opens a project interactively from a project object.
 	 * <p>
 	 * If the image data cannot be loaded a dialog shows up telling the user
 	 * about the problem, and offering to start Mastodon on substituted dummy
