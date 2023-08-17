@@ -92,8 +92,6 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 
 		menuTexts.put( BigDataViewerActions.LOAD_SETTINGS, "Load Bdv Settings" );
 		menuTexts.put( BigDataViewerActions.SAVE_SETTINGS, "Save Bdv Settings" );
-		menuTexts.put( BigDataViewerActions.BRIGHTNESS_SETTINGS, "Brightness & Color" );
-		menuTexts.put( BigDataViewerActions.VISIBILITY_AND_GROUPING, "Visibility & Grouping" );
 
 		menuTexts.put( RecordMovieDialog.RECORD_MOVIE_DIALOG, "Record BDV movie" );
 		menuTexts.put( RecordMaxProjectionMovieDialog.RECORD_MIP_MOVIE_DIALOG, "Record BDV max projection movie" );
