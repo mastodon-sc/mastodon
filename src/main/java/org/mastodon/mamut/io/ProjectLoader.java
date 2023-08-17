@@ -358,6 +358,10 @@ public class ProjectLoader
 	 */
 	public static final void loadGUI( final MamutProject project, final WindowManager windowManager ) throws IOException
 	{
+		final boolean isNewProject = project.getProjectRoot() == null;
+		if ( isNewProject )
+			return;
+
 		try (final MamutProject.ProjectReader reader = project.openForReading())
 		{
 			try
