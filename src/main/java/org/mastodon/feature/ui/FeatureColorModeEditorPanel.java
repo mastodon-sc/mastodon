@@ -87,7 +87,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 			final String vertexName,
 			final String edgeName )
 	{
-		setPreferredSize( new Dimension( 400, 550 ) );
+		setPreferredSize( new Dimension( 550, 550 ) );
 		this.mode = mode;
 
 		final GridBagLayout layout = new GridBagLayout();
