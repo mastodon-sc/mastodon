@@ -56,7 +56,7 @@ import org.scijava.service.AbstractService;
 public class MamutFeatureComputation
 {
 
-	public static final JDialog getDialog( final MamutAppModel appModel, final Context context )
+	public static final JDialog getDialog( final ProjectModel appModel, final Context context )
 	{
 		// Prepare services.
 		final MamutFeatureComputerService computerService = MamutFeatureComputerService.newInstance( context );

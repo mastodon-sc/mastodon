@@ -10,7 +10,7 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.importer.simi.SimiImportDialog;
 import org.mastodon.mamut.importer.tgmm.TgmmImportDialog;
 import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
@@ -34,10 +34,10 @@ public class ProjectImporter
 	 *            a component used as parent for dialogs.
 	 * @param context
 	 *            the current context.
-	 * @return the loaded {@link MamutAppModel}, or <code>null</code> if the
+	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the
 	 *         user cancels loading or if there is a problem reading the data.
 	 */
-	public static synchronized MamutAppModel openMamutWithDialog( final Component parentComponent, final Context context )
+	public static synchronized ProjectModel openMamutWithDialog( final Component parentComponent, final Context context )
 	{
 		final File file = FileChooser.chooseFile(
 				parentComponent,
@@ -52,7 +52,7 @@ public class ProjectImporter
 		try
 		{
 			final TrackMateImporter importer = new TrackMateImporter( file );
-			final MamutAppModel appModel = ProjectLoader.openWithDialog( importer.createProject(), context, parentComponent );
+			final ProjectModel appModel = ProjectLoader.openWithDialog( importer.createProject(), context, parentComponent );
 			final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
 			importer.readModel( appModel.getModel(), featureSpecsService );
 			return appModel;
@@ -80,7 +80,7 @@ public class ProjectImporter
 	 * @param parentComponent
 	 *            a frame to use as parent for the dialog.
 	 */
-	public static synchronized void importSimiDataWithDialog( final MamutAppModel appModel, final Frame parentComponent )
+	public static synchronized void importSimiDataWithDialog( final ProjectModel appModel, final Frame parentComponent )
 	{
 		final SimiImportDialog simiImportDialog = new SimiImportDialog( parentComponent );
 		simiImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );
@@ -97,7 +97,7 @@ public class ProjectImporter
 	 * @param parentComponent
 	 *            a frame to use as parent for the dialog.
 	 */
-	public static synchronized void importTgmmDataWithDialog( final MamutAppModel appModel, final Frame parentComponent )
+	public static synchronized void importTgmmDataWithDialog( final ProjectModel appModel, final Frame parentComponent )
 	{
 		final TgmmImportDialog tgmmImportDialog = new TgmmImportDialog( parentComponent );
 		tgmmImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );

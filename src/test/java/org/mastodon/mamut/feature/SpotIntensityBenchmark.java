@@ -31,7 +31,7 @@ package org.mastodon.mamut.feature;
 import java.io.IOException;
 
 import org.jdom2.JDOMException;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -52,7 +52,7 @@ public class SpotIntensityBenchmark
 		 */
 
 		final MamutProject project = MamutProjectIO.load( "/Users/tinevez/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo.mastodon" );
-		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
+		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
 		final Model model = appModel.getModel();
 
 		// Just keep the 1st time-point, or else....

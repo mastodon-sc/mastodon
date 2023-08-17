@@ -95,7 +95,7 @@ public class GarbageCollectionTest
 		try
 		{
 			final MamutProject project = MamutProjectIO.load( exampleProject );
-			final MamutAppModel appModel = ProjectLoader.open( project, context );
+			final ProjectModel appModel = ProjectLoader.open( project, context );
 			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 

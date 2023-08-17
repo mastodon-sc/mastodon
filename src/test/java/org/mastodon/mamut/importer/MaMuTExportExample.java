@@ -39,7 +39,7 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.TrackSizeFeature;
 import org.mastodon.mamut.importer.trackmate.MamutExporter;
@@ -63,7 +63,7 @@ public class MaMuTExportExample
 		 */
 
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
+		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
 		final Model model = appModel.getModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 

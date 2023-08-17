@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
@@ -107,6 +107,6 @@ public class MamutTestPlugin implements MamutPlugin
 	}
 
 	@Override
-	public void setAppPluginModel( final MamutAppModel appModel )
+	public void setAppPluginModel( final ProjectModel appModel )
 	{}
 }

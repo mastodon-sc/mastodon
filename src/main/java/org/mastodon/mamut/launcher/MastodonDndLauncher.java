@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -79,7 +79,7 @@ public class MastodonDndLauncher extends AbstractIOPlugin< Object >
 		try
 		{
 			final MamutProject project = MamutProjectIO.load( projectPath );
-			final MamutAppModel appModel = ProjectLoader.openWithDialog( project, getContext(), null );
+			final ProjectModel appModel = ProjectLoader.openWithDialog( project, getContext(), null );
 			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 		}

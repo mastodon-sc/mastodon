@@ -61,12 +61,12 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 
 	private static final int MINIMUM_NUMBER_OF_HIERARCHY_LEVELS_SCROLLABLE = 30;
 
-	public MamutBranchViewTrackSchemeHierarchy( final MamutAppModel appModel )
+	public MamutBranchViewTrackSchemeHierarchy( final ProjectModel appModel )
 	{
 		this( appModel, new HashMap<>() );
 	}
 
-	public MamutBranchViewTrackSchemeHierarchy( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutBranchViewTrackSchemeHierarchy( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel, guiState, new BranchHierarchyTrackSchemeFactory(), new HierarchyTrackSchemeOverlayFactory(),
 				LineageTreeLayoutImp::new, new DefaultTimepointModel() );
@@ -111,7 +111,7 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 	{
 
 		@Override
-		public TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final MamutAppModel appModel )
+		public TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final ProjectModel appModel )
 		{
 			final Model model = appModel.getModel();
 			final ModelBranchGraph graph = model.getBranchGraph();

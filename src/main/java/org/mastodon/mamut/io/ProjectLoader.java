@@ -18,7 +18,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
@@ -63,7 +63,7 @@ public class ProjectLoader
 	 *            the object describing the project on disk.
 	 * @param context
 	 *            the current context.
-	 * @return the loaded {@link MamutAppModel}.
+	 * @return the loaded {@link ProjectModel}.
 	 * @throws IOException
 	 *             if the project points to a regular image file for image data,
 	 *             and that file cannot be opened properly, or if there is a
@@ -73,7 +73,7 @@ public class ProjectLoader
 	 *             if the project points to a BDV file for image data, and that
 	 *             BDV cannot be opened properly.
 	 */
-	public static MamutAppModel open( final MamutProject project, final Context context ) throws IOException, SpimDataException
+	public static ProjectModel open( final MamutProject project, final Context context ) throws IOException, SpimDataException
 	{
 		return open( project, context, false, false );
 	}
@@ -91,7 +91,7 @@ public class ProjectLoader
 	 *            if <code>true</code>, and if the image data cannot be loaded,
 	 *            a dummy image data will be substituted. In that case a
 	 *            {@link SpimDataException} is never thrown.
-	 * @return the loaded {@link MamutAppModel}.
+	 * @return the loaded {@link ProjectModel}.
 	 * @throws IOException
 	 *             if the project points to a regular image file for image data,
 	 *             and that file cannot be opened properly, or if there is a
@@ -101,13 +101,13 @@ public class ProjectLoader
 	 *             if the project points to a BDV file for image data, and that
 	 *             BDV cannot be opened properly.
 	 */
-	public static MamutAppModel open( final MamutProject project, final Context context, final boolean restoreGUIState, final boolean authorizeSubstituteDummyData ) throws IOException, SpimDataException
+	public static ProjectModel open( final MamutProject project, final Context context, final boolean restoreGUIState, final boolean authorizeSubstituteDummyData ) throws IOException, SpimDataException
 	{
 		final SharedBigDataViewerData imageData = loadImageData( project, authorizeSubstituteDummyData );
 		final Model model = loadModel( project, context );
 		final KeyPressedManager keyPressedManager = new KeyPressedManager();
 		final KeymapManager keymapManager = new KeymapManager();
-		final MamutAppModel appModel = new MamutAppModel( context, model, imageData, keyPressedManager, keymapManager, project );
+		final ProjectModel appModel = new ProjectModel( context, model, imageData, keyPressedManager, keymapManager, project );
 
 		if ( restoreGUIState )
 			loadGUI( project, appModel.getWindowManager() );
@@ -129,7 +129,7 @@ public class ProjectLoader
 	 * @param parentComponent
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
-	 * @return the loaded {@link MamutAppModel}.
+	 * @return the loaded {@link ProjectModel}.
 	 * @throws IOException
 	 *             if the project points to a regular image file for image data,
 	 *             and that file cannot be opened properly, or if there is a
@@ -139,7 +139,7 @@ public class ProjectLoader
 	 *             if the project points to a BDV file that cannot be opened,
 	 *             and the user declined to substitute a dummy dataset.
 	 */
-	public static final MamutAppModel openWithDialog( final Context context, final Component parentComponent )
+	public static final ProjectModel openWithDialog( final Context context, final Component parentComponent )
 	{
 		String fn = null;
 		if ( proposedProjectRoot != null )
@@ -189,7 +189,7 @@ public class ProjectLoader
 	 * @param context
 	 *            the current context.
 	 * 
-	 * @return the loaded {@link MamutAppModel}.
+	 * @return the loaded {@link ProjectModel}.
 	 * @throws IOException
 	 *             if the project points to a regular image file for image data,
 	 *             and that file cannot be opened properly, or if there is a
@@ -199,7 +199,7 @@ public class ProjectLoader
 	 *             if the project points to a BDV file that cannot be opened,
 	 *             and the user declined to substitute a dummy dataset.
 	 */
-	public static synchronized MamutAppModel openWithDialog( final MamutProject project, final Context context ) throws IOException, SpimDataException
+	public static synchronized ProjectModel openWithDialog( final MamutProject project, final Context context ) throws IOException, SpimDataException
 	{
 		return openWithDialog( project, context, null );
 	}
@@ -229,9 +229,9 @@ public class ProjectLoader
 	 * @throws SpimDataException
 	 *             if the project points to a BDV file that cannot be opened,
 	 *             and the user declined to substitute a dummy dataset.
-	 * @return the loaded {@link MamutAppModel}.
+	 * @return the loaded {@link ProjectModel}.
 	 */
-	public static synchronized MamutAppModel openWithDialog( final MamutProject project, final Context context, final Component parentComponent ) throws IOException, SpimDataException
+	public static synchronized ProjectModel openWithDialog( final MamutProject project, final Context context, final Component parentComponent ) throws IOException, SpimDataException
 	{
 		try
 		{

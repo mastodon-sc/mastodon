@@ -101,19 +101,19 @@ public class MamutBranchViewTrackScheme
 
 	private final ColoringModel coloringModel;
 
-	public MamutBranchViewTrackScheme( final MamutAppModel appModel )
+	public MamutBranchViewTrackScheme( final ProjectModel appModel )
 	{
 		this( appModel, new HashMap<>() );
 	}
 
-	public MamutBranchViewTrackScheme( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutBranchViewTrackScheme( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(),
 				LongEdgesLineageTreeLayout::new, null );
 	}
 
 	protected MamutBranchViewTrackScheme(
-			final MamutAppModel appModel,
+			final ProjectModel appModel,
 			final Map< String, Object > guiState,
 			final BranchTrackSchemeFactory trackSchemeGraphFactory,
 			final TrackSchemeOverlayFactory overlayFactory,
@@ -350,7 +350,7 @@ public class MamutBranchViewTrackScheme
 	 */
 	public static interface BranchTrackSchemeFactory
 	{
-		public TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final MamutAppModel appModel );
+		public TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final ProjectModel appModel );
 	}
 
 	/**
@@ -361,7 +361,7 @@ public class MamutBranchViewTrackScheme
 	{
 
 		@Override
-		public TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final MamutAppModel appModel )
+		public TrackSchemeGraph< BranchSpot, BranchLink > createViewGraph( final ProjectModel appModel )
 		{
 			final Model model = appModel.getModel();
 			final ModelBranchGraph graph = model.getBranchGraph();

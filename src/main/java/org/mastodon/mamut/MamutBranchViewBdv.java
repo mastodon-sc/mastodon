@@ -106,12 +106,12 @@ public class MamutBranchViewBdv extends MamutBranchView<
 
 	private final ColorBarOverlay colorBarOverlay;
 
-	public MamutBranchViewBdv( final MamutAppModel appModel )
+	public MamutBranchViewBdv( final ProjectModel appModel )
 	{
 		this( appModel, new HashMap<>() );
 	}
 
-	public MamutBranchViewBdv( final MamutAppModel appModel, final Map< String, Object > guiState )
+	public MamutBranchViewBdv( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel, createViewBranchGraph( appModel ), new String[] { KeyConfigContexts.BIGDATAVIEWER } );
 
@@ -295,7 +295,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		return viewer;
 	}
 
-	private static OverlayGraphWrapper< BranchSpot, BranchLink > createViewBranchGraph( final MamutAppModel appModel )
+	private static OverlayGraphWrapper< BranchSpot, BranchLink > createViewBranchGraph( final ProjectModel appModel )
 	{
 		// Model.
 		final Model model = appModel.getModel();

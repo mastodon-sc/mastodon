@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 
 import org.embl.mobie.io.ome.zarr.openers.OMEZarrS3Opener;
 import org.embl.mobie.io.util.S3Utils;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.ui.util.FileChooser;
@@ -44,11 +44,11 @@ public class ProjectCreator
 	 * @param parentComponent
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
-	 * @return a new {@link MamutAppModel} or <code>null</code> if the user
+	 * @return a new {@link ProjectModel} or <code>null</code> if the user
 	 *         clicked cancel, or if the BDV file is faulty and the user
 	 *         declined to substitute a dummy dataset.
 	 */
-	public static synchronized MamutAppModel createProjectWithDialog( final Context context, final Component parentComponent )
+	public static synchronized ProjectModel createProjectWithDialog( final Context context, final Component parentComponent )
 	{
 		final File file = FileChooser.chooseFile(
 				parentComponent,
@@ -88,12 +88,12 @@ public class ProjectCreator
 	 * @param parentComponent
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
-	 * @return a new {@link MamutAppModel}.
+	 * @return a new {@link ProjectModel}.
 	 * @throws SpimDataException
 	 *             if the BDV file that cannot be opened, and the user declined
 	 *             to substitute a dummy dataset.
 	 */
-	public static MamutAppModel createProjectFromBdvFile( final File file, final Context context, final Component parentComponent ) throws SpimDataException
+	public static ProjectModel createProjectFromBdvFile( final File file, final Context context, final Component parentComponent ) throws SpimDataException
 	{
 		final MamutProject project = MamutProjectIO.fromBdvFile( file );
 		try
@@ -121,10 +121,10 @@ public class ProjectCreator
 	 * @param parentComponent
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
-	 * @return a new {@link MamutAppModel} or <code>null</code> if the user
+	 * @return a new {@link ProjectModel} or <code>null</code> if the user
 	 *         clicked cancel, or if the image data cannot be accessed.
 	 */
-	public static synchronized MamutAppModel createProjectFromUrl( final Context context, final Component parentComponent )
+	public static synchronized ProjectModel createProjectFromUrl( final Context context, final Component parentComponent )
 	{
 		final String urlString = JOptionPane.showInputDialog( parentComponent, "Please input a url for image data" );
 		if ( urlString == null )

@@ -43,7 +43,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
@@ -65,7 +65,7 @@ public class RawDeserializationExample
 
 		// Load project.
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
+		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
 		final Model model = appModel.getModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 

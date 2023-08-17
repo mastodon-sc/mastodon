@@ -35,7 +35,7 @@ import javax.swing.WindowConstants;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.ProjectLoader;
@@ -96,7 +96,7 @@ public class MastodonUtils
 	{
 		try
 		{
-			final MamutAppModel appModel = ProjectLoader.open( MamutProjectIO.load( projectPath ), new Context() );
+			final ProjectModel appModel = ProjectLoader.open( MamutProjectIO.load( projectPath ), new Context() );
 			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 			mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
@@ -108,7 +108,7 @@ public class MastodonUtils
 		}
 	}
 
-	public static void logMastodonEvents( final MamutAppModel appModel )
+	public static void logMastodonEvents( final ProjectModel appModel )
 	{
 		final GroupHandle groupHandle = appModel.getGroupManager().createGroupHandle();
 		groupHandle.setGroupId( 0 );
@@ -118,7 +118,7 @@ public class MastodonUtils
 		logTagSetModel( appModel );
 	}
 
-	private static void logFocusModel( final MamutAppModel appModel )
+	private static void logFocusModel( final ProjectModel appModel )
 	{
 		final FocusModel< Spot, Link > focusModel = appModel.getFocusModel();
 		final ModelGraph graph = appModel.getModel().getGraph();
@@ -153,7 +153,7 @@ public class MastodonUtils
 		model.listeners().add( () -> log( "Time point changed: (to " + model.getTimepoint() + ")" ) );
 	}
 
-	private static void logTagSetModel( final MamutAppModel appModel )
+	private static void logTagSetModel( final ProjectModel appModel )
 	{
 		// TODO
 		final Model model = appModel.getModel();
