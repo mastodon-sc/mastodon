@@ -30,6 +30,7 @@ package org.mastodon.io.yaml;
 
 import java.util.Map;
 
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -37,6 +38,11 @@ import org.yaml.snakeyaml.representer.Representer;
 
 public class WorkaroundRepresenter extends Representer
 {
+	public WorkaroundRepresenter()
+	{
+		super( new DumperOptions() );
+	}
+
 	@Override
 	protected Node representSequence( final Tag tag, final Iterable< ? > sequence, final FlowStyle flowStyle )
 	{
