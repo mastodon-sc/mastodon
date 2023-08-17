@@ -21,6 +21,7 @@ import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.XmlFileFilter;
 import org.scijava.Context;
 
+import ij.ImagePlus;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
@@ -62,7 +63,7 @@ public class ProjectCreator
 
 		try
 		{
-			return createProjectFromBdvFile( file, context, parentComponent );
+			return createProjectFromBdvFileWithDialog( file, context, parentComponent );
 		}
 		catch ( final SpimDataException e )
 		{
@@ -93,7 +94,7 @@ public class ProjectCreator
 	 *             if the BDV file that cannot be opened, and the user declined
 	 *             to substitute a dummy dataset.
 	 */
-	public static ProjectModel createProjectFromBdvFile( final File file, final Context context, final Component parentComponent ) throws SpimDataException
+	public static ProjectModel createProjectFromBdvFileWithDialog( final File file, final Context context, final Component parentComponent ) throws SpimDataException
 	{
 		final MamutProject project = MamutProjectIO.fromBdvFile( file );
 		try
@@ -102,8 +103,33 @@ public class ProjectCreator
 		}
 		catch ( final IOException e )
 		{
-			// Should not happen because the data model and the GUI state are
-			// empty.
+			// Should not happen because the data model and the GUI state are empty.
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Creates a new project from a BDV/XML file.
+	 * 
+	 * @param file
+	 *            the BDV file.
+	 * @param context
+	 *            the current context.
+	 * @return a new {@link ProjectModel}.
+	 * @throws SpimDataException
+	 *             if the BDV file cannot be opened properly.
+	 */
+	public static ProjectModel createProjectFromBdvFile( final File file, final Context context ) throws SpimDataException
+	{
+		final MamutProject project = MamutProjectIO.fromBdvFile( file );
+		try
+		{
+			return ProjectLoader.open( project, context );
+		}
+		catch ( final IOException e )
+		{
+			// Should not happen because the data model and the GUI state are empty.
 			e.printStackTrace();
 		}
 		return null;
@@ -195,6 +221,30 @@ public class ProjectCreator
 		}
 		catch ( final IOException | SpimDataException e )
 		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Creates a new project from an {@link ImagePlus}.
+	 * 
+	 * @param imp
+	 *            the source image.
+	 * @param context
+	 *            the current context.
+	 * @return a new {@link ProjectModel}.
+	 */
+	public static ProjectModel createProjectFromImp( final ImagePlus imp, final Context context ) throws SpimDataException
+	{
+		final MamutProject project = MamutProjectIO.fromImagePlus( imp );
+		try
+		{
+			return ProjectLoader.open( project, context );
+		}
+		catch ( final IOException e )
+		{
+			// Should not happen because the data model and the GUI state are empty.
 			e.printStackTrace();
 		}
 		return null;

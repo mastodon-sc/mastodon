@@ -62,7 +62,6 @@ import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.ProjectCreator;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
-import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.ui.util.EverythingDisablerAndReenabler;
 import org.mastodon.ui.util.ExtensionFileFilter;
@@ -141,8 +140,7 @@ public class MastodonLauncher extends JFrame
 			{
 				// Create new blank project from BDV file.
 				final File bdvFile = new File( gui.importSimiBioCellPanel.textAreaBDVFile.getText() );
-				final MamutProject project = MamutProjectIO.fromBdvFile( bdvFile );
-				final ProjectModel appModel = ProjectLoader.open( project, context );
+				final ProjectModel appModel = ProjectCreator.createProjectFromBdvFileWithDialog( bdvFile, context, gui );
 
 				final Model model = appModel.getModel();
 				final AbstractSpimData< ? > spimData = appModel.getSharedBdvData().getSpimData();
@@ -245,8 +243,7 @@ public class MastodonLauncher extends JFrame
 
 				// Create new blank project from BDV file.
 				final File bdvFile = new File( gui.importTGMMPanel.textAreaBDVFile.getText() );
-				final MamutProject project = MamutProjectIO.fromBdvFile( bdvFile );
-				final ProjectModel appModel = ProjectLoader.open( project, context );
+				final ProjectModel appModel = ProjectCreator.createProjectFromBdvFileWithDialog( bdvFile, context, gui );
 
 				final Model model = appModel.getModel();
 				final AbstractSpimData< ? > spimData = appModel.getSharedBdvData().getSpimData();
@@ -351,7 +348,7 @@ public class MastodonLauncher extends JFrame
 			new Thread( () -> {
 				try
 				{
-					final ProjectModel appModel = ProjectCreator.createProjectFromBdvFile( file, context, gui );
+					final ProjectModel appModel = ProjectCreator.createProjectFromBdvFileWithDialog( file, context, gui );
 					new MainWindow( appModel ).setVisible( true );
 					dispose();
 				}
@@ -385,8 +382,7 @@ public class MastodonLauncher extends JFrame
 			new Thread( () -> {
 				try
 				{
-					final MamutProject project = MamutProjectIO.fromImagePlus( imp );
-					final ProjectModel appModel = ProjectLoader.open( project, context );
+					final ProjectModel appModel = ProjectCreator.createProjectFromImp( imp, context );
 					final MainWindow mainWindow = new MainWindow( appModel );
 
 					/*
@@ -451,7 +447,7 @@ public class MastodonLauncher extends JFrame
 					mainWindow.setVisible( true );
 					dispose();
 				}
-				catch ( IOException | SpimDataException e )
+				catch ( final SpimDataException e )
 				{
 					gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid image.<p>" +
 							LauncherUtil.toMessage( e ) + "</html>" );
@@ -494,9 +490,6 @@ public class MastodonLauncher extends JFrame
 		gui.showPanel( LauncherGUI.WELCOME_PANEL_KEY );
 	}
 
-	/*
-	 * TODO: Rework using the ProjectCreator methods.
-	 */
 	private void createProjectFromURL()
 	{
 		final String filepath = gui.openRemoteURLPanel.taFileSave.getText();
@@ -550,8 +543,7 @@ public class MastodonLauncher extends JFrame
 				/*
 				 * Open it as a new Mastodon project.
 				 */
-				final MamutProject project = MamutProjectIO.fromBdvFile( file );
-				final ProjectModel appModel = ProjectLoader.open( project, context );
+				final ProjectModel appModel = ProjectCreator.createProjectFromBdvFileWithDialog( file, context, gui );
 				new MainWindow( appModel ).setVisible( true );
 
 				/*
@@ -562,7 +554,7 @@ public class MastodonLauncher extends JFrame
 
 				dispose();
 			}
-			catch ( IOException | SpimDataException e )
+			catch ( final SpimDataException e )
 			{
 				gui.openRemoteURLPanel.log.setForeground( Color.RED );
 				gui.openRemoteURLPanel.log.setText( "<html>Problem creating project.<p>" +
@@ -655,9 +647,7 @@ public class MastodonLauncher extends JFrame
 
 					try
 					{
-						final MamutProject project = MamutProjectIO.load( file.getAbsolutePath() );
-						final ProjectModel appModel = ProjectLoader.open( project, context );
-
+						final ProjectModel appModel = ProjectLoader.open( file.getAbsolutePath(), context );
 						new MainWindow( appModel ).setVisible( true );
 						dispose();
 						/*
