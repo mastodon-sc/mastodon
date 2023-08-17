@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.swing.JDialog;
@@ -391,22 +392,30 @@ public class WindowManager
 	 * 
 	 * @param action
 	 *            the action to execute.
+	 * @param klass
+	 *            the view class.
 	 */
-	public < T extends MamutView< ?, ?, ? > > void forEachView( final Consumer< T > action, final Class< T > klass )
+	public < T extends MamutView< ?, ?, ? > > void forEachView( final Class< T > klass, final Consumer< T > action )
 	{
-		getViewList( klass ).forEach( action );
+		Optional.of( getViewList( klass ) )
+				.orElse( Collections.emptyList() )
+				.forEach( action );
 	}
 
 	/**
-	 * Executes the specified action for all the currently opened
-	 * Branch-TrackScheme views.
+	 * Executes the specified action for all the currently opened branch views
+	 * of the specified class.
 	 * 
 	 * @param action
 	 *            the action to execute.
+	 * @param klass
+	 *            the view class.
 	 */
-	public < T extends MamutBranchView< ?, ?, ? > > void forEachBranchView( final Consumer< T > action, final Class< T > klass )
+	public < T extends MamutBranchView< ?, ?, ? > > void forEachBranchView( final Class< T > klass, final Consumer< T > action )
 	{
-		getBranchViewList( klass ).forEach( action );
+		Optional.of( getBranchViewList( klass ) )
+				.orElse( Collections.emptyList() )
+				.forEach( action );
 	}
 
 	/**
