@@ -83,6 +83,7 @@ import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.table.TableViewActions;
 import org.mastodon.views.table.TableViewFrameBuilder;
@@ -90,7 +91,7 @@ import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
 
 import bdv.BigDataViewerActions;
 
-public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link >, Spot, Link >
+public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link >, Spot, Link > implements HasContextChooser< Spot >
 {
 
 	/**
@@ -423,6 +424,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return vf;
 	}
 
+	@Override
 	@SuppressWarnings( "unchecked" )
 	public ContextChooser< Spot > getContextChooser()
 	{

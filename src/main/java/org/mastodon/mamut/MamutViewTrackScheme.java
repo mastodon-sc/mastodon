@@ -66,6 +66,7 @@ import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeContextListener;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -86,6 +87,7 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 
 public class MamutViewTrackScheme
 		extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
+		implements HasContextChooser< Spot >
 {
 
 	/**
@@ -303,6 +305,7 @@ public class MamutViewTrackScheme
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 	}
 
+	@Override
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
