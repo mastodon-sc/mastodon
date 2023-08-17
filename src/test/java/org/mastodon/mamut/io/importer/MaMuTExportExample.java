@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.importer;
+package org.mastodon.mamut.io.importer;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,9 +42,9 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.TrackSizeFeature;
-import org.mastodon.mamut.importer.trackmate.MamutExporter;
-import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.importer.tgmm;
+package org.mastodon.mamut.io.importer.tgmm;
 
 import static mpicbg.spim.data.XmlHelpers.getDoubleArrayAttribute;
 import static mpicbg.spim.data.XmlHelpers.getDoubleAttribute;
@@ -46,7 +46,7 @@ import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.graph.Graph;
-import org.mastodon.mamut.importer.ModelImporter;
+import org.mastodon.mamut.io.importer.ModelImporter;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;

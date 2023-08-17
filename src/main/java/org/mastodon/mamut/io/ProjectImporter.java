@@ -11,9 +11,9 @@ import javax.swing.JOptionPane;
 
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.importer.simi.SimiImportDialog;
-import org.mastodon.mamut.importer.tgmm.TgmmImportDialog;
-import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
+import org.mastodon.mamut.io.importer.simi.SimiImportDialog;
+import org.mastodon.mamut.io.importer.tgmm.TgmmImportDialog;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImporter;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.XmlFileFilter;
 import org.scijava.Context;

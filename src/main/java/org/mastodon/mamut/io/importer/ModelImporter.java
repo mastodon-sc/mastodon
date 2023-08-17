@@ -26,35 +26,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.importer.trackmate;
+package org.mastodon.mamut.io.importer;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.model.AbstractModelImporter;
 
-import org.mastodon.collection.RefCollection;
-import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.io.FileIdToObjectMap;
-import org.mastodon.mamut.model.Spot;
-import org.scijava.plugin.Plugin;
-
-@Plugin( type = FeatureSerializer.class )
-public class TrackMateImportedSpotFeaturesSerializer
-		extends TrackMateImportedFeaturesSerializer< TrackMateImportedSpotFeatures, Spot >
+public class ModelImporter extends AbstractModelImporter< Model >
 {
+	private final Model model;
 
-	@Override
-	public FeatureSpec< TrackMateImportedSpotFeatures, Spot > getFeatureSpec()
+	protected ModelImporter( final Model model )
 	{
-		return new TrackMateImportedSpotFeatures.Spec();
+		super( model );
+		this.model = model;
 	}
 
 	@Override
-	public TrackMateImportedSpotFeatures deserialize( final FileIdToObjectMap< Spot > idmap,
-			final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	protected void startImport()
 	{
-		final TrackMateImportedSpotFeatures feature = new TrackMateImportedSpotFeatures();
-		deserializeInto( feature, idmap, pool, ois );
-		return feature;
+		super.startImport();
+		model.getTagSetModel().pauseListeners();
+		model.getTagSetModel().clear();
+	}
+
+	@Override
+	protected void finishImport()
+	{
+		model.getTagSetModel().resumeListeners();
+		super.finishImport();
 	}
 }

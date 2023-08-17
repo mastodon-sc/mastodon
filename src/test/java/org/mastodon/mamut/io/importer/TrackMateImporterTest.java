@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.importer;
+package org.mastodon.mamut.io.importer;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -54,11 +54,11 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
-import org.mastodon.mamut.importer.trackmate.TrackMateImportedLinkFeatures;
-import org.mastodon.mamut.importer.trackmate.TrackMateImportedSpotFeatures;
-import org.mastodon.mamut.importer.trackmate.TrackMateImportedSpotFeatures.Spec;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImportedLinkFeatures;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImportedSpotFeatures;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImporter;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImportedSpotFeatures.Spec;
 import org.mastodon.mamut.io.project.MamutProject;
-import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -242,7 +242,7 @@ public class TrackMateImporterTest
 			final Spec specSpots = new TrackMateImportedSpotFeatures.Spec();
 			assertTrue( "The feature model should contain the specs for TrackMateImportedSpotFeatures.",
 					specs.contains( specSpots ) );
-			final org.mastodon.mamut.importer.trackmate.TrackMateImportedLinkFeatures.Spec specLinks =
+			final org.mastodon.mamut.io.importer.trackmate.TrackMateImportedLinkFeatures.Spec specLinks =
 					new TrackMateImportedLinkFeatures.Spec();
 			assertTrue( "The feature model should contain the specs for TrackMateImportedLinkFeatures.",
 					specs.contains( specLinks ) );

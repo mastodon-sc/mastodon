@@ -11,7 +11,7 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.importer.trackmate.MamutExporter;
+import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.XmlFileFilter;

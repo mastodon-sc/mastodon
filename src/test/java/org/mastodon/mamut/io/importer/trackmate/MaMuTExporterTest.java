@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.importer.trackmate;
+package org.mastodon.mamut.io.importer.trackmate;
 
 import static fiji.plugin.trackmate.io.TmXmlKeys.IMAGE_ELEMENT_KEY;
 import static fiji.plugin.trackmate.io.TmXmlKeys.IMAGE_FILENAME_ATTRIBUTE_NAME;
@@ -63,6 +63,7 @@ import org.mastodon.graph.algorithm.ConnectedComponents;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
+import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;

@@ -26,10 +26,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-/**
- * Importer for TrackMate file format and export to MaMuT.
- * <p>
- * @see <a href="https://imagej.net/TrackMate"> https://imagej.net/TrackMate</a>
- * @see <a href="https://imagej.net/MaMuT"> https://imagej.net/MaMuT</a>
- */
-package org.mastodon.mamut.importer.trackmate;
+package org.mastodon.mamut.io.importer.trackmate;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+import org.mastodon.collection.RefCollection;
+import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.io.FeatureSerializer;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.mamut.model.Link;
+import org.scijava.plugin.Plugin;
+
+@Plugin( type = FeatureSerializer.class )
+public class TrackMateImportedLinkFeaturesSerializer
+		extends TrackMateImportedFeaturesSerializer< TrackMateImportedLinkFeatures, Link >
+{
+
+	@Override
+	public FeatureSpec< TrackMateImportedLinkFeatures, Link > getFeatureSpec()
+	{
+		return new TrackMateImportedLinkFeatures.Spec();
+	}
+
+	@Override
+	public TrackMateImportedLinkFeatures deserialize( final FileIdToObjectMap< Link > idmap,
+			final RefCollection< Link > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	{
+		final TrackMateImportedLinkFeatures feature = new TrackMateImportedLinkFeatures();
+		deserializeInto( feature, idmap, pool, ois );
+		return feature;
+	}
+}
