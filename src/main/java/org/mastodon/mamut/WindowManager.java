@@ -70,6 +70,7 @@ import org.mastodon.util.ToggleDialogAction;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextProvider;
+import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
 import org.mastodon.views.trackscheme.ScreenTransform;
@@ -110,8 +111,8 @@ public class WindowManager
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
-	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 
+	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
@@ -131,29 +132,21 @@ public class WindowManager
 
 	public static final String DOCUMENTATION_URL = "https://mastodon.readthedocs.io/en/latest/";
 
-	/** All currently open BigDataViewer windows. */
-	private final List< MamutViewBdv > bdvWindows = new ArrayList<>();
-
-	/** All currently open branch TrackScheme windows. */
-	private final List< MamutBranchViewBdv > bbdvWindows = new ArrayList<>();
-
-	/** The {@link ContextProvider}s of all currently open BigDataViewer windows. */
+	/**
+	 * The {@link ContextProvider}s of all currently open BigDataViewer windows.
+	 */
 	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
 
-	/** All currently open TrackScheme windows. */
-	private final List< MamutViewTrackScheme > tsWindows = new ArrayList<>();
-
-	/** All currently open branch TrackScheme windows. */
-	private final List< MamutBranchViewTrackScheme > btsWindows = new ArrayList<>();
-
-	/** All currently open Table windows. */
-	private final List< MamutViewTable > tableWindows = new ArrayList<>();
-
-	/** All currently open Grapher windows. */
-	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
-
-	/** Stores the various managers used to manage view styles, features, etc. */
+	/**
+	 * Stores the various managers used to manage view styles, features, etc.
+	 */
 	private final Map< Class< ? >, Object > managers = new HashMap<>();
+
+	/** Stores the different lists of mamut views currently opened. */
+	private final Map< Class< ? extends MamutView< ?, ?, ? > >, List< MamutView< ?, ?, ? > > > mamutViews = new HashMap<>();
+
+	/** Stores the different lists of mamut branch views currently opened. */
+	private final Map< Class< ? extends MamutBranchView< ?, ?, ? > >, List< MamutBranchView< ?, ?, ? > > > mamutBranchViews = new HashMap<>();
 
 	private final TagSetDialog tagSetDialog;
 
@@ -179,6 +172,28 @@ public class WindowManager
 		final Model model = appModel.getModel();
 
 		/*
+		 * Create and store window lists.
+		 */
+
+		@SuppressWarnings( "unchecked" )
+		final Class< MamutView< ?, ?, ? > >[] knownMamutViewTypes = new Class[] {
+				MamutViewBdv.class,
+				MamutViewTrackScheme.class,
+				MamutViewTable.class,
+				MamutViewGrapher.class
+		};
+		for ( final Class< MamutView< ?, ?, ? > > klass : knownMamutViewTypes )
+			mamutViews.put( klass, new ArrayList<>() );
+
+		@SuppressWarnings( "unchecked" )
+		final Class< MamutBranchView< ?, ?, ? > >[] knownMamutBranchViewTypes = new Class[] {
+				MamutBranchViewBdv.class,
+				MamutBranchViewTrackScheme.class,
+		};
+		for ( final Class< MamutBranchView< ?, ?, ? > > klass : knownMamutBranchViewTypes )
+			mamutBranchViews.put( klass, new ArrayList<>() );
+
+		/*
 		 * Create and store managers.
 		 */
 
@@ -186,7 +201,7 @@ public class WindowManager
 		managers.put( DataDisplayStyleManager.class, new DataDisplayStyleManager() );
 		managers.put( RenderSettingsManager.class, new RenderSettingsManager() );
 		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
-		managers.put( FeatureColorModeManager.class,  featureColorModeManager);
+		managers.put( FeatureColorModeManager.class, featureColorModeManager );
 		final MamutFeatureProjectionsManager featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 		managers.put( MamutFeatureProjectionsManager.class, featureProjectionsManager );
@@ -267,111 +282,119 @@ public class WindowManager
 		return manager;
 	}
 
+	/**
+	 * Returns the list of opened mamut views of the specified type, or
+	 * <code>null</code> if a view of this type is not registered.
+	 * 
+	 * @param <T>
+	 *            the view type, must extend {@link MamutView}.
+	 * @param klass
+	 *            the view class, must extend {@link MamutView}.
+	 * @return the list of view of specified class, or <code>null</code>.
+	 */
+	private < T extends MamutView< ?, ?, ? > > List< T > getViewList( final Class< T > klass )
+	{
+		@SuppressWarnings( "unchecked" )
+		final List< T > list = ( List< T > ) mamutViews.get( klass );
+		return list;
+	}
+
+	/**
+	 * Returns the list of opened mamut branch views of the specified type, or
+	 * <code>null</code> if a view of this type is not registered.
+	 * 
+	 * @param <T>
+	 *            the view type, must extend {@link MamutBranchView}.
+	 * @param klass
+	 *            the view class, must extend {@link MamutBranchView}.
+	 * @return the list of view of specified class, or <code>null</code>.
+	 */
+	private < T extends MamutBranchView< ?, ?, ? > > List< T > getBranchViewList( final Class< T > klass )
+	{
+		@SuppressWarnings( "unchecked" )
+		final List< T > list = ( List< T > ) mamutBranchViews.get( klass );
+		return list;
+	}
+
 	private synchronized void addBdvWindow( final MamutViewBdv w )
 	{
-		bdvWindows.add( w );
+		getViewList( MamutViewBdv.class ).add( w );
 		contextProviders.add( w.getContextProvider() );
-		for ( final MamutViewTrackScheme tsw : tsWindows )
-			tsw.getContextChooser().updateContextProviders( contextProviders );
-		for ( final MamutViewTable tw : tableWindows )
-			tw.getContextChooser().updateContextProviders( contextProviders );
-		for ( final MamutViewGrapher gw : grapherWindows )
-			gw.getContextChooser().updateContextProviders( contextProviders );
+		forEachView( v -> {
+			if ( v instanceof HasContextChooser )
+			{
+				@SuppressWarnings( "unchecked" )
+				final HasContextChooser< Spot > cc = ( HasContextChooser< Spot > ) v;
+				cc.getContextChooser().updateContextProviders( contextProviders );
+			}
+		} );
+
 		w.onClose( () -> {
-			bdvWindows.remove( w );
+			getViewList( MamutViewBdv.class ).remove( w );
 			contextProviders.remove( w.getContextProvider() );
-			for ( final MamutViewTrackScheme tsw : tsWindows )
-				tsw.getContextChooser().updateContextProviders( contextProviders );
-			for ( final MamutViewTable tw : tableWindows )
-				tw.getContextChooser().updateContextProviders( contextProviders );
+			forEachView( v -> {
+				if ( v instanceof HasContextChooser )
+				{
+					@SuppressWarnings( "unchecked" )
+					final HasContextChooser< Spot > cc = ( HasContextChooser< Spot > ) v;
+					cc.getContextChooser().updateContextProviders( contextProviders );
+				}
+			} );
 		} );
 	}
 
 	private synchronized void addBBdvWindow( final MamutBranchViewBdv w )
 	{
-		bbdvWindows.add( w );
-		w.onClose( () -> bbdvWindows.remove( w ) );
+		getBranchViewList( MamutBranchViewBdv.class ).add( w );
+		w.onClose( () -> getBranchViewList( MamutBranchViewBdv.class ).remove( w ) );
 	}
 
 	private synchronized void addTsWindow( final MamutViewTrackScheme w )
 	{
-		tsWindows.add( w );
+		getViewList( MamutViewTrackScheme.class ).add( w );
 		w.getContextChooser().updateContextProviders( contextProviders );
 		w.onClose( () -> {
-			tsWindows.remove( w );
+			getViewList( MamutViewTrackScheme.class ).remove( w );
 			w.getContextChooser().updateContextProviders( new ArrayList<>() );
 		} );
 	}
 
 	private synchronized void addBTsWindow( final MamutBranchViewTrackScheme w )
 	{
-		btsWindows.add( w );
-		w.onClose( () -> btsWindows.remove( w ) );
+		getBranchViewList( MamutBranchViewTrackScheme.class ).add( w );
+		w.onClose( () -> getBranchViewList( MamutBranchViewTrackScheme.class ).remove( w ) );
 	}
 
 	private synchronized void addTableWindow( final MamutViewTable table )
 	{
-		tableWindows.add( table );
+		getViewList( MamutViewTable.class ).add( table );
 		table.getContextChooser().updateContextProviders( contextProviders );
 		table.onClose( () -> {
-			tableWindows.remove( table );
+			getViewList( MamutViewTable.class ).remove( table );
 			table.getContextChooser().updateContextProviders( new ArrayList<>() );
 		} );
 	}
 
 	private synchronized void addGrapherWindow( final MamutViewGrapher grapher )
 	{
-		grapherWindows.add( grapher );
+		getViewList( MamutViewGrapher.class ).add( grapher );
 		grapher.getContextChooser().updateContextProviders( contextProviders );
 		grapher.onClose( () -> {
-			grapherWindows.remove( grapher );
+			getViewList( MamutViewGrapher.class ).remove( grapher );
 			grapher.getContextChooser().updateContextProviders( new ArrayList<>() );
 		} );
 	}
 
 	/**
-	 * Executes the specified action for all the currently opened BDV views.
+	 * Executes the specified action for all the currently opened mamut views of
+	 * the specified class.
 	 * 
 	 * @param action
 	 *            the action to execute.
 	 */
-	public void forEachBdvView( final Consumer< ? super MamutViewBdv > action )
+	public < T extends MamutView< ?, ?, ? > > void forEachView( final Consumer< T > action, final Class< T > klass )
 	{
-		bdvWindows.forEach( action );
-	}
-
-	/**
-	 * Executes the specified action for all the currently opened Table views.
-	 * 
-	 * @param action
-	 *            the action to execute.
-	 */
-	public void forEachTableView( final Consumer< ? super MamutViewTable > action )
-	{
-		tableWindows.forEach( action );
-	}
-
-	/**
-	 * Executes the specified action for all the currently opened Grapher views.
-	 * 
-	 * @param action
-	 *            the action to execute.
-	 */
-	public void forEachGrapherView( final Consumer< ? super MamutViewGrapher > action )
-	{
-		grapherWindows.forEach( action );
-	}
-
-	/**
-	 * Executes the specified action for all the currently opened TrackScheme
-	 * views.
-	 * 
-	 * @param action
-	 *            the action to execute.
-	 */
-	public void forEachTrackSchemeView( final Consumer< ? super MamutViewTrackScheme > action )
-	{
-		tsWindows.forEach( action );
+		getViewList( klass ).forEach( action );
 	}
 
 	/**
@@ -381,39 +404,24 @@ public class WindowManager
 	 * @param action
 	 *            the action to execute.
 	 */
-	public void forEachBranchTrackSchemeView( final Consumer< ? super MamutBranchViewTrackScheme > action )
+	public < T extends MamutBranchView< ?, ?, ? > > void forEachBranchView( final Consumer< T > action, final Class< T > klass )
 	{
-		btsWindows.forEach( action );
+		getBranchViewList( klass ).forEach( action );
 	}
 
 	/**
-	 * Executes the specified action for all the currently opened Branch-BDV
-	 * views.
-	 * 
-	 * @param action
-	 *            the action to execute.
-	 */
-	private void forEachBranchBdvView( final Consumer< ? super MamutBranchViewBdv > action )
-	{
-		bbdvWindows.forEach( action );
-	}
-
-	/**
-	 * Executes the specified action for all the currently opened views.
+	 * Executes the specified action for all the currently opened mamut views.
 	 * 
 	 * @param action
 	 *            the action to execute.
 	 */
 	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
 	{
-		forEachBdvView( action );
-		forEachTrackSchemeView( action );
-		forEachTableView( action );
-		forEachGrapherView( action );
+		mamutViews.forEach( ( k, l ) -> l.forEach( action ) );
 	}
 
 	/**
-	 * Executes the specified action for all the currently opened branch-graph
+	 * Executes the specified action for all the currently opened mamut branch
 	 * views.
 	 * 
 	 * @param action
@@ -421,8 +429,7 @@ public class WindowManager
 	 */
 	public void forEachBranchView( final Consumer< ? super MamutBranchView< ?, ?, ? > > action )
 	{
-		forEachBranchBdvView( action );
-		forEachBranchTrackSchemeView( action );
+		mamutBranchViews.forEach( ( k, l ) -> l.forEach( action ) );
 	}
 
 	/**
@@ -757,18 +764,8 @@ public class WindowManager
 	public void closeAllWindows()
 	{
 		final ArrayList< Window > windows = new ArrayList<>();
-		for ( final MamutViewBdv w : bdvWindows )
-			windows.add( w.getFrame() );
-		for ( final MamutBranchViewBdv w : bbdvWindows )
-			windows.add( w.getFrame() );
-		for ( final MamutViewTrackScheme w : tsWindows )
-			windows.add( w.getFrame() );
-		for ( final MamutBranchViewTrackScheme w : btsWindows )
-			windows.add( w.getFrame() );
-		for ( final MamutViewTable w : tableWindows )
-			windows.add( w.getFrame() );
-		for ( final MamutViewGrapher w : grapherWindows )
-			windows.add( w.getFrame() );
+		forEachView( v -> windows.add( v.getFrame() ) );
+		forEachBranchView( v -> windows.add( v.getFrame() ) );
 		windows.add( tagSetDialog );
 		windows.add( featureComputationDialog );
 
@@ -802,16 +799,6 @@ public class WindowManager
 	public PreferencesDialog getPreferencesDialog()
 	{
 		return settings;
-	}
-
-	/**
-	 * Exposes currently open BigDataViewer windows.
-	 *
-	 * @return a {@link List} of {@link MamutViewBdv}.
-	 */
-	public List< MamutViewBdv > getBdvWindows()
-	{
-		return bdvWindows;
 	}
 
 	private CommandDescriptions buildCommandDescriptions()
