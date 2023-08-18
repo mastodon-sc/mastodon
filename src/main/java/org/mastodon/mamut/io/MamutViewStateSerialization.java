@@ -59,8 +59,6 @@ import java.util.Map.Entry;
 import javax.swing.JViewport;
 
 import org.jdom2.Element;
-import org.mastodon.app.IMastodonView;
-import org.mastodon.app.ui.IMastodonFrameView;
 import org.mastodon.mamut.MamutBranchViewBdv;
 import org.mastodon.mamut.MamutBranchViewTrackScheme;
 import org.mastodon.mamut.MamutView;
@@ -73,6 +71,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.ColoringModel;
@@ -130,7 +129,7 @@ class MamutViewStateSerialization
 	 *            the GUI state to serialize.
 	 * @return a new XML element.
 	 */
-	static < V extends IMastodonFrameView & IMastodonView > Element toXml( final V view )
+	static < V extends MamutViewI > Element toXml( final V view )
 	{
 		final Map< String, Object > guiState = getGuiState( view );
 		final Element element = new Element( WINDOW_TAG );
@@ -233,7 +232,7 @@ class MamutViewStateSerialization
 	 *            the view.
 	 * @return a new {@link Map}.
 	 */
-	private static < V extends IMastodonFrameView & IMastodonView > Map< String, Object > getGuiState( final V view )
+	private static < V extends MamutViewI > Map< String, Object > getGuiState( final V view )
 	{
 		final Map< String, Object > guiState = new LinkedHashMap<>();
 

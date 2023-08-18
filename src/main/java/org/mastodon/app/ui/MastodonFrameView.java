@@ -75,7 +75,7 @@ public class MastodonFrameView<
 		V extends Vertex< E >,
 		E extends Edge< V > >
 		extends MastodonView< M, VG, MV, ME, V, E >
-		implements IMastodonFrameView
+		implements HasFrame
 {
 	protected ViewFrame frame;
 

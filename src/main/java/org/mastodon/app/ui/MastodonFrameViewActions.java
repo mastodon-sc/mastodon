@@ -72,7 +72,7 @@ public class MastodonFrameViewActions
 		}
 	}
 
-	private final IMastodonFrameView view;
+	private final HasFrame view;
 
 	private final ToggleSettingsPanelAction toggleSettingsPanelAction;
 
@@ -89,7 +89,7 @@ public class MastodonFrameViewActions
 	 */
 	public static void install(
 			final Actions actions,
-			final IMastodonFrameView view )
+			final HasFrame view )
 	{
 		final MastodonFrameViewActions ba = new MastodonFrameViewActions( view );
 
@@ -97,7 +97,7 @@ public class MastodonFrameViewActions
 		actions.namedAction( ba.closeWindowAction, CLOSE_WINDOW_KEYS );
 	}
 
-	private MastodonFrameViewActions( final IMastodonFrameView view )
+	private MastodonFrameViewActions( final HasFrame view )
 	{
 		this.view = view;
 		toggleSettingsPanelAction = new ToggleSettingsPanelAction( TOGGLE_SETTINGS_PANEL );
