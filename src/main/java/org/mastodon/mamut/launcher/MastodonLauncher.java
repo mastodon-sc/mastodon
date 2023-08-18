@@ -647,7 +647,7 @@ public class MastodonLauncher extends JFrame
 
 					try
 					{
-						final ProjectModel appModel = ProjectLoader.open( file.getAbsolutePath(), context );
+						final ProjectModel appModel = ProjectLoader.openWithDialog( file.getAbsolutePath(), context, this );
 						new MainWindow( appModel ).setVisible( true );
 						dispose();
 						/*
