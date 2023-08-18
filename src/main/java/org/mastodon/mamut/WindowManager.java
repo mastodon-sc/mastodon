@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut;
 
-import static org.mastodon.app.MastodonIcons.BDV_VIEW_ICON;
 import static org.mastodon.app.MastodonIcons.FEATURES_ICON;
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON;
@@ -57,6 +56,7 @@ import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
 import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
@@ -677,8 +677,7 @@ public class WindowManager
 	 */
 	public MamutBranchViewBdv createBranchBigDataViewer( final Map< String, Object > guiState )
 	{
-		final MamutBranchViewBdv view = new MamutBranchViewBdv( appModel, guiState );
-		view.getFrame().setIconImages( BDV_VIEW_ICON );
+		final MamutBranchViewBdv view = new MamutBranchViewBdvFactory().show( appModel, guiState );
 		addBBdvWindow( view );
 		return view;
 	}
