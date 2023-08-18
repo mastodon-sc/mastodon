@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
-import org.mastodon.mamut.MamutView;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.ColorBarOverlay;
@@ -28,7 +27,7 @@ import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 
-public abstract class AbstractMamutViewFactory< T extends MamutView< ?, ?, ? > > implements MamutViewFactory< T >
+public abstract class AbstractMamutViewFactory< T extends MamutViewI > implements MamutViewFactory< T >
 {
 
 	@Override
@@ -90,7 +89,7 @@ public abstract class AbstractMamutViewFactory< T extends MamutView< ?, ?, ? > >
 	 * @param guiState
 	 *            the map to store it to.
 	 */
-	private static void getColoringState( final MamutView< ?, ?, ? > view, final Map< String, Object > guiState )
+	private static void getColoringState( final MamutViewI view, final Map< String, Object > guiState )
 	{
 		if ( !( view instanceof HasColoringModel ) )
 			return;
@@ -105,7 +104,7 @@ public abstract class AbstractMamutViewFactory< T extends MamutView< ?, ?, ? > >
 				guiState.put( FEATURE_COLOR_MODE_KEY, coloringModel.getFeatureColorMode().getName() );
 	}
 
-	private static void getColorBarOverlayState( final MamutView< ?, ?, ? > view, final Map< String, Object > guiState )
+	private static void getColorBarOverlayState( final MamutViewI view, final Map< String, Object > guiState )
 	{
 		if ( !( view instanceof HasColorBarOverlay ) )
 			return;
@@ -119,7 +118,7 @@ public abstract class AbstractMamutViewFactory< T extends MamutView< ?, ?, ? > >
 	 * Restore GUI state utilities.
 	 */
 
-	private static void restoreColoringModel( final MamutView< ?, ?, ? > viewraw, final Map< String, Object > guiState )
+	private static void restoreColoringModel( final MamutViewI viewraw, final Map< String, Object > guiState )
 	{
 		if ( guiState == null || ( !( viewraw instanceof HasColoringModel ) ) )
 			return;
@@ -163,7 +162,7 @@ public abstract class AbstractMamutViewFactory< T extends MamutView< ?, ?, ? > >
 		}
 	}
 
-	private static void restoreColorbarState( final MamutView< ?, ?, ? > view, final Map< String, Object > guiState )
+	private static void restoreColorbarState( final MamutViewI view, final Map< String, Object > guiState )
 	{
 		if ( !( view instanceof HasColorBarOverlay ) )
 			return;
