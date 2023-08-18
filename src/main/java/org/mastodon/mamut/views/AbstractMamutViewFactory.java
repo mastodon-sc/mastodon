@@ -84,8 +84,8 @@ public abstract class AbstractMamutViewFactory< T extends MamutViewI > implement
 	/**
 	 * Reads the coloring state of a view and stores it into the specified map.
 	 * 
-	 * @param coloringModel
-	 *            the coloring model to read from.
+	 * @param view
+	 *            the view to get the coloring model from.
 	 * @param guiState
 	 *            the map to store it to.
 	 */
@@ -95,6 +95,19 @@ public abstract class AbstractMamutViewFactory< T extends MamutViewI > implement
 			return;
 
 		final ColoringModel coloringModel = ( ( HasColoringModel ) view ).getColoringModel();
+		getColoringState( coloringModel, guiState );
+	}
+
+	/**
+	 * Reads the coloring state and stores it into the specified map.
+	 * 
+	 * @param coloringModel
+	 *            the coloring model to read from.
+	 * @param guiState
+	 *            the map to store it to.
+	 */
+	protected static void getColoringState( final ColoringModel coloringModel, final Map< String, Object > guiState )
+	{
 		final boolean noColoring = coloringModel.noColoring();
 		guiState.put( NO_COLORING_KEY, noColoring );
 		if ( !noColoring )
@@ -124,7 +137,11 @@ public abstract class AbstractMamutViewFactory< T extends MamutViewI > implement
 			return;
 
 		final ColoringModel coloringModel = ( ( HasColoringModel ) viewraw ).getColoringModel();
+		restoreColoringModel( coloringModel, guiState );
+	}
 
+	protected static void restoreColoringModel( final ColoringModel coloringModel, final Map< String, Object > guiState )
+	{
 		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
 		if ( null != noColoring && noColoring )
 		{

@@ -29,7 +29,6 @@
 package org.mastodon.mamut;
 
 import static org.mastodon.app.MastodonIcons.FEATURES_ICON;
-import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON;
 
 import java.awt.Desktop;
@@ -55,9 +54,12 @@ import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
+import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory;
+import org.mastodon.mamut.views.table.MamutViewTableFactory;
 import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeFactory;
 import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeHierarchyFactory;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory;
@@ -498,12 +500,6 @@ public class WindowManager
 	 * The display settings are specified as a map of strings to objects. The
 	 * accepted key and value types are:
 	 * <ul>
-	 * <li><code>'TableSelectionOnly'</code> &rarr; a boolean specifying whether
-	 * the table to create will be a selection table of a full table. If
-	 * <code>true</code>, the table will only display the current content of the
-	 * selection, and will listen to its changes. If <code>false</code>, the
-	 * table will display the full graph content, listen to its changes, and
-	 * will be able to edit the selection.
 	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
 	 * elements: x, y, width and height.
 	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
@@ -528,10 +524,13 @@ public class WindowManager
 	 * @param guiState
 	 *            the map of settings.
 	 */
-	public MamutViewTable createTable( final Map< String, Object > guiState )
+	public MamutViewTable createTable( final boolean selectionOnly, final Map< String, Object > guiState )
 	{
-		final MamutViewTable view = new MamutViewTable( appModel, guiState );
-		view.getFrame().setIconImages( TABLE_VIEW_ICON );
+
+		final MamutViewFactory< ? > factory = selectionOnly
+				? new MamutViewSelectionTableFactory()
+				: new MamutViewTableFactory();
+		final MamutViewTable view = ( MamutViewTable ) factory.show( appModel, guiState );
 		addTableWindow( view );
 		return view;
 	}
@@ -550,9 +549,7 @@ public class WindowManager
 	 */
 	public MamutViewTable createTable( final boolean selectionOnly )
 	{
-		final Map< String, Object > guiState = Collections.singletonMap(
-				MamutViewTable.TABLE_SELECTION_ONLY, Boolean.valueOf( selectionOnly ) );
-		return createTable( guiState );
+		return createTable( selectionOnly, Collections.emptyMap() );
 	}
 
 	/**
