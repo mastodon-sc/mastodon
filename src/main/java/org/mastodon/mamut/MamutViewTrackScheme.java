@@ -37,8 +37,6 @@ import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import java.awt.Component;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
@@ -65,10 +63,11 @@ import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.HasColorBarOverlay;
+import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
-import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeContextListener;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
@@ -79,7 +78,6 @@ import org.mastodon.views.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions;
-import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 import org.mastodon.views.trackscheme.display.TrackSchemeZoom;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
@@ -87,14 +85,8 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 
 public class MamutViewTrackScheme
 		extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
-		implements HasContextChooser< Spot >
+		implements HasContextChooser< Spot >, HasColorBarOverlay, HasColoringModel
 {
-
-	/**
-	 * Key for the transform in a TrackScheme view. Value is a
-	 * {@link ScreenTransform} instance.
-	 */
-	public static final String TRACKSCHEME_TRANSFORM_KEY = "TrackSchemeTransform";
 
 	private final ContextChooser< Spot > contextChooser;
 
@@ -113,11 +105,6 @@ public class MamutViewTrackScheme
 	private final ColorBarOverlay colorBarOverlay;
 
 	public MamutViewTrackScheme( final ProjectModel appModel )
-	{
-		this( appModel, new HashMap<>() );
-	}
-
-	public MamutViewTrackScheme( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel,
 				new TrackSchemeGraph<>(
@@ -147,18 +134,6 @@ public class MamutViewTrackScheme
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
 
-		// Restore position
-		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
-		if ( null != pos && pos.length == 4 )
-			options
-					.x( pos[ 0 ] )
-					.y( pos[ 1 ] )
-					.width( pos[ 2 ] )
-					.height( pos[ 3 ] );
-
-		// Restore group handle.
-		restoreGroupHandle( groupHandle, guiState );
-
 		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel =
 				new AutoNavigateFocusModel<>( focusModel, navigationHandler, timepointModel );
 
@@ -181,15 +156,6 @@ public class MamutViewTrackScheme
 				contextChooser,
 				options );
 
-		// Restore settings panel visibility.
-		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
-		if ( null != settingsPanelVisible )
-			frame.setSettingsPanelVisible( settingsPanelVisible.booleanValue() );
-
-		// Default location.
-		if ( null == pos || pos.length != 4 )
-			frame.setLocationRelativeTo( null );
-
 		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
@@ -200,37 +166,28 @@ public class MamutViewTrackScheme
 
 		setFrame( frame );
 
-		// Transform.
-		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( TRACKSCHEME_TRANSFORM_KEY );
-		if ( null != tLoaded )
-			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
-
 		MastodonFrameViewActions.install( viewActions, this );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
-		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(), viewGraph, viewGraph.getLock(),
-				viewGraph, model );
+		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(), viewGraph, viewGraph.getLock(), viewGraph, model );
 		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(),
 				appModel.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(),
 				frame.getTrackschemePanel().getDisplay(), model );
-		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel,
-				frame.getTrackschemePanel() );
+		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
 
 		// Timepoint and number of spots.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model );
 		timepointAndNumberOfSpotsPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
-		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
-				focusModel, frame.getTrackschemePanel() );
+		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getTrackschemePanel() );
 		searchPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		frame.getSettingsPanel().add( searchPanel );
 
 		// TODO Let the user choose between the two selection/focus modes.
-		frame.getTrackschemePanel().getNavigationActions().install( viewActions,
-				TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
+		frame.getTrackschemePanel().getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
 		frame.getTrackschemePanel().getNavigationBehaviours().install( viewBehaviours );
 		frame.getTrackschemePanel().getTransformEventHandler().install( viewBehaviours );
 
@@ -289,15 +246,8 @@ public class MamutViewTrackScheme
 		model.getGraph().addVertexLabelListener(
 				v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
 
-		// Restore colorbar state.
-		restoreColorbarState( colorBarOverlay, guiState );
-
-		// Restore coloring.
-		restoreColoring( coloringModel, guiState );
-
 		frame.getTrackschemePanel().getDisplay().overlays().add( colorBarOverlay );
 
-		frame.setVisible( true );
 		frame.getTrackschemePanel().repaint();
 
 		// Give focus to the display so that it can receive key presses
@@ -306,26 +256,24 @@ public class MamutViewTrackScheme
 	}
 
 	@Override
+	public TrackSchemeFrame getFrame()
+	{
+		return ( TrackSchemeFrame ) super.getFrame();
+	}
+
+	@Override
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
 	}
 
+	@Override
 	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
 
-	/**
-	 * Exposes the {@link TrackSchemePanel} displayed in this view.
-	 *
-	 * @return the {@link TrackSchemePanel}.
-	 */
-	public TrackSchemePanel getTrackschemePanel()
-	{
-		return ( ( TrackSchemeFrame ) getFrame() ).getTrackschemePanel();
-	}
-
+	@Override
 	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;

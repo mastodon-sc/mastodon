@@ -28,6 +28,8 @@
  */
 package org.mastodon.views.trackscheme.display;
 
+import static org.mastodon.app.MastodonIcons.TRACKSCHEME_VIEW_ICON;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
@@ -122,6 +124,7 @@ public class TrackSchemeFrame extends ViewFrame
 		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addHandler( mouseAndKeyHandler );
 		setLocation( optional.values.getX(), optional.values.getY() );
+		setIconImages( TRACKSCHEME_VIEW_ICON );
 	}
 
 	public TrackSchemePanel getTrackschemePanel()
