@@ -10,6 +10,7 @@ import org.mastodon.mamut.views.MamutViewFactory;
 import org.scijava.plugin.Plugin;
 
 import bdv.tools.InitializeViewerState;
+import bdv.viewer.ViewerPanel;
 import bdv.viewer.ViewerState;
 import net.imglib2.realtransform.AffineTransform3D;
 
@@ -42,13 +43,7 @@ public class MamutViewBdvFactory extends AbstractMamutViewFactory< MamutViewBdv 
 	public Map< String, Object > getGuiState( final MamutViewBdv view )
 	{
 		final Map< String, Object > guiState = super.getGuiState( view );
-		// Viewer state.
-		final Element stateEl = view.getViewerPanelMamut().stateToXml();
-		guiState.put( BDV_STATE_KEY, stateEl );
-		// Transform.
-		final AffineTransform3D t = new AffineTransform3D();
-		view.getViewerPanelMamut().state().getViewerTransform( t );
-		guiState.put( BDV_TRANSFORM_KEY, t );
+		getBdvGuiState( view.getViewerPanelMamut(), guiState );
 		return guiState;
 	}
 
@@ -56,26 +51,31 @@ public class MamutViewBdvFactory extends AbstractMamutViewFactory< MamutViewBdv 
 	public void restoreGuiState( final MamutViewBdv view, final Map< String, Object > guiState )
 	{
 		super.restoreGuiState( view, guiState );
-		restoreBDVstate( view, guiState );
-		restoreBDVtransform( view, guiState );
+		restoreBdvGuiState( view.getViewerPanelMamut(), guiState );
 	}
 
-	private static void restoreBDVtransform( final MamutViewBdv view, final Map< String, Object > guiState )
+	static void getBdvGuiState( final ViewerPanel viewerPanel, final Map< String, Object > guiState )
+	{
+		// Viewer state.
+		final Element stateEl = viewerPanel.stateToXml();
+		guiState.put( BDV_STATE_KEY, stateEl );
+		// Transform.
+		final AffineTransform3D t = new AffineTransform3D();
+		viewerPanel.state().getViewerTransform( t );
+		guiState.put( BDV_TRANSFORM_KEY, t );
+	}
+
+	static void restoreBdvGuiState( final ViewerPanel viewerPanel, final Map< String, Object > guiState )
 	{
 		// Restore transform.
 		final AffineTransform3D tLoaded = ( AffineTransform3D ) guiState.get( BDV_TRANSFORM_KEY );
 		if ( null == tLoaded )
-			InitializeViewerState.initTransform( view.getViewerPanelMamut() );
+			InitializeViewerState.initTransform( viewerPanel );
 		else
-			view.getViewerPanelMamut().state().setViewerTransform( tLoaded );
-	}
-
-	private static void restoreBDVstate( final MamutViewBdv view, final Map< String, Object > guiState )
-	{
+			viewerPanel.state().setViewerTransform( tLoaded );
 		// Restore BDV state.
 		final Element stateEl = ( Element ) guiState.get( BDV_STATE_KEY );
 		if ( null != stateEl )
-			view.getViewerPanelMamut().stateFromXml( stateEl );
+			viewerPanel.stateFromXml( stateEl );
 	}
-
 }

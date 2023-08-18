@@ -2,11 +2,10 @@ package org.mastodon.mamut.views;
 
 import java.util.Map;
 
-import org.mastodon.mamut.MamutView;
 import org.mastodon.mamut.ProjectModel;
 import org.scijava.plugin.SciJavaPlugin;
 
-public interface MamutViewFactory< T extends MamutView< ?, ?, ? > > extends SciJavaPlugin
+public interface MamutViewFactory< T extends MamutViewI > extends SciJavaPlugin
 {
 
 	/**
