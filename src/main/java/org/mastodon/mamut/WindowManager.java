@@ -56,6 +56,7 @@ import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
 import org.mastodon.model.tag.ui.TagSetDialog;
@@ -145,10 +146,7 @@ public class WindowManager
 	private final Map< Class< ? >, Object > managers = new HashMap<>();
 
 	/** Stores the different lists of mamut views currently opened. */
-	private final Map< Class< ? extends MamutView< ?, ?, ? > >, List< MamutView< ?, ?, ? > > > mamutViews = new HashMap<>();
-
-	/** Stores the different lists of mamut branch views currently opened. */
-	private final Map< Class< ? extends MamutBranchView< ?, ?, ? > >, List< MamutBranchView< ?, ?, ? > > > mamutBranchViews = new HashMap<>();
+	private final Map< Class< ? extends MamutViewI >, List< MamutViewI > > mamutViews = new HashMap<>();
 
 	private final TagSetDialog tagSetDialog;
 
@@ -182,18 +180,12 @@ public class WindowManager
 				MamutViewBdv.class,
 				MamutViewTrackScheme.class,
 				MamutViewTable.class,
-				MamutViewGrapher.class
+				MamutViewGrapher.class,
+				MamutBranchViewBdv.class,
+				MamutBranchViewTrackScheme.class
 		};
 		for ( final Class< MamutView< ?, ?, ? > > klass : knownMamutViewTypes )
 			mamutViews.put( klass, new ArrayList<>() );
-
-		@SuppressWarnings( "unchecked" )
-		final Class< MamutBranchView< ?, ?, ? > >[] knownMamutBranchViewTypes = new Class[] {
-				MamutBranchViewBdv.class,
-				MamutBranchViewTrackScheme.class,
-		};
-		for ( final Class< MamutBranchView< ?, ?, ? > > klass : knownMamutBranchViewTypes )
-			mamutBranchViews.put( klass, new ArrayList<>() );
 
 		/*
 		 * Create and store managers.
@@ -289,32 +281,15 @@ public class WindowManager
 	 * <code>null</code> if a view of this type is not registered.
 	 * 
 	 * @param <T>
-	 *            the view type, must extend {@link MamutView}.
+	 *            the view type, must extend {@link MamutViewI}.
 	 * @param klass
-	 *            the view class, must extend {@link MamutView}.
+	 *            the view class, must extend {@link MamutViewI}.
 	 * @return the list of view of specified class, or <code>null</code>.
 	 */
-	private < T extends MamutView< ?, ?, ? > > List< T > getViewList( final Class< T > klass )
+	private < T extends MamutViewI > List< T > getViewList( final Class< T > klass )
 	{
 		@SuppressWarnings( "unchecked" )
 		final List< T > list = ( List< T > ) mamutViews.get( klass );
-		return list;
-	}
-
-	/**
-	 * Returns the list of opened mamut branch views of the specified type, or
-	 * <code>null</code> if a view of this type is not registered.
-	 * 
-	 * @param <T>
-	 *            the view type, must extend {@link MamutBranchView}.
-	 * @param klass
-	 *            the view class, must extend {@link MamutBranchView}.
-	 * @return the list of view of specified class, or <code>null</code>.
-	 */
-	private < T extends MamutBranchView< ?, ?, ? > > List< T > getBranchViewList( final Class< T > klass )
-	{
-		@SuppressWarnings( "unchecked" )
-		final List< T > list = ( List< T > ) mamutBranchViews.get( klass );
 		return list;
 	}
 
@@ -347,8 +322,8 @@ public class WindowManager
 
 	private synchronized void addBBdvWindow( final MamutBranchViewBdv w )
 	{
-		getBranchViewList( MamutBranchViewBdv.class ).add( w );
-		w.onClose( () -> getBranchViewList( MamutBranchViewBdv.class ).remove( w ) );
+		getViewList( MamutBranchViewBdv.class ).add( w );
+		w.onClose( () -> getViewList( MamutBranchViewBdv.class ).remove( w ) );
 	}
 
 	private synchronized void addTsWindow( final MamutViewTrackScheme w )
@@ -363,8 +338,8 @@ public class WindowManager
 
 	private synchronized void addBTsWindow( final MamutBranchViewTrackScheme w )
 	{
-		getBranchViewList( MamutBranchViewTrackScheme.class ).add( w );
-		w.onClose( () -> getBranchViewList( MamutBranchViewTrackScheme.class ).remove( w ) );
+		getViewList( MamutBranchViewTrackScheme.class ).add( w );
+		w.onClose( () -> getViewList( MamutBranchViewTrackScheme.class ).remove( w ) );
 	}
 
 	private synchronized void addTableWindow( final MamutViewTable table )
@@ -396,25 +371,9 @@ public class WindowManager
 	 * @param klass
 	 *            the view class.
 	 */
-	public < T extends MamutView< ?, ?, ? > > void forEachView( final Class< T > klass, final Consumer< T > action )
+	public < T extends MamutViewI > void forEachView( final Class< T > klass, final Consumer< T > action )
 	{
 		Optional.of( getViewList( klass ) )
-				.orElse( Collections.emptyList() )
-				.forEach( action );
-	}
-
-	/**
-	 * Executes the specified action for all the currently opened branch views
-	 * of the specified class.
-	 * 
-	 * @param action
-	 *            the action to execute.
-	 * @param klass
-	 *            the view class.
-	 */
-	public < T extends MamutBranchView< ?, ?, ? > > void forEachBranchView( final Class< T > klass, final Consumer< T > action )
-	{
-		Optional.of( getBranchViewList( klass ) )
 				.orElse( Collections.emptyList() )
 				.forEach( action );
 	}
@@ -425,21 +384,9 @@ public class WindowManager
 	 * @param action
 	 *            the action to execute.
 	 */
-	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
+	public void forEachView( final Consumer< ? super MamutViewI > action )
 	{
 		mamutViews.forEach( ( k, l ) -> l.forEach( action ) );
-	}
-
-	/**
-	 * Executes the specified action for all the currently opened mamut branch
-	 * views.
-	 * 
-	 * @param action
-	 *            the action to execute.
-	 */
-	public void forEachBranchView( final Consumer< ? super MamutBranchView< ?, ?, ? > > action )
-	{
-		mamutBranchViews.forEach( ( k, l ) -> l.forEach( action ) );
 	}
 
 	/**
@@ -773,7 +720,6 @@ public class WindowManager
 	{
 		final ArrayList< Window > windows = new ArrayList<>();
 		forEachView( v -> windows.add( v.getFrame() ) );
-		forEachBranchView( v -> windows.add( v.getFrame() ) );
 		windows.add( tagSetDialog );
 		windows.add( featureComputationDialog );
 
