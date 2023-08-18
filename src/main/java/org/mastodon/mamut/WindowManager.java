@@ -31,7 +31,6 @@ package org.mastodon.mamut;
 import static org.mastodon.app.MastodonIcons.FEATURES_ICON;
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON;
-import static org.mastodon.app.MastodonIcons.TRACKSCHEME_VIEW_ICON;
 
 import java.awt.Desktop;
 import java.awt.Window;
@@ -59,6 +58,9 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
+import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeFactory;
+import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeHierarchyFactory;
+import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory;
 import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
@@ -484,8 +486,7 @@ public class WindowManager
 	 */
 	public MamutViewTrackScheme createTrackScheme( final Map< String, Object > guiState )
 	{
-		final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel, guiState );
-		view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+		final MamutViewTrackScheme view = new MamutViewTrackSchemeFactory().show( appModel, guiState );
 		addTsWindow( view );
 		return view;
 	}
@@ -648,8 +649,7 @@ public class WindowManager
 	 */
 	public MamutBranchViewTrackScheme createBranchTrackScheme( final Map< String, Object > guiState )
 	{
-		final MamutBranchViewTrackScheme view = new MamutBranchViewTrackScheme( appModel, guiState );
-		view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+		final MamutBranchViewTrackScheme view = new MamutBranchViewTrackSchemeFactory().show( appModel, guiState );
 		addBTsWindow( view );
 		return view;
 	}
@@ -673,9 +673,7 @@ public class WindowManager
 	 */
 	public MamutBranchViewTrackScheme createHierarchyTrackScheme( final Map< String, Object > guiState )
 	{
-		final MamutBranchViewTrackSchemeHierarchy view =
-				new MamutBranchViewTrackSchemeHierarchy( appModel, guiState );
-		view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
+		final MamutBranchViewTrackSchemeHierarchy view = new MamutBranchViewTrackSchemeHierarchyFactory().show( appModel, guiState );
 		addBTsWindow( view );
 		return view;
 	}

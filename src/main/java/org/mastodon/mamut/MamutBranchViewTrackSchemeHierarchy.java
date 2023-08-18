@@ -28,10 +28,6 @@
  */
 package org.mastodon.mamut;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
@@ -63,12 +59,7 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 
 	public MamutBranchViewTrackSchemeHierarchy( final ProjectModel appModel )
 	{
-		this( appModel, new HashMap<>() );
-	}
-
-	public MamutBranchViewTrackSchemeHierarchy( final ProjectModel appModel, final Map< String, Object > guiState )
-	{
-		super( appModel, guiState, new BranchHierarchyTrackSchemeFactory(), new HierarchyTrackSchemeOverlayFactory(),
+		super( appModel, new BranchHierarchyTrackSchemeFactory(), new HierarchyTrackSchemeOverlayFactory(),
 				LineageTreeLayoutImp::new, new DefaultTimepointModel() );
 
 		// Window title.
@@ -146,7 +137,7 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 			}
 
 			@Override
-			public String getFirstLabel( BranchSpot branchSpot )
+			public String getFirstLabel( final BranchSpot branchSpot )
 			{
 				return branchSpot.getFirstLabel();
 			}
@@ -166,6 +157,4 @@ public class MamutBranchViewTrackSchemeHierarchy extends MamutBranchViewTrackSch
 					new PaintHierarchicalGraph(), options );
 		}
 	}
-
-
 }

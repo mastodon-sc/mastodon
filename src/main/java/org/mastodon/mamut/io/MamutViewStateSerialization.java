@@ -43,7 +43,7 @@ import static org.mastodon.mamut.MamutViewTable.TABLE_ELEMENT;
 import static org.mastodon.mamut.MamutViewTable.TABLE_NAME;
 import static org.mastodon.mamut.MamutViewTable.TABLE_SELECTION_ONLY;
 import static org.mastodon.mamut.MamutViewTable.TABLE_VISIBLE_POS;
-import static org.mastodon.mamut.MamutViewTrackScheme.TRACKSCHEME_TRANSFORM_KEY;
+import static org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -357,7 +357,7 @@ class MamutViewStateSerialization
 	 */
 	private static void getGuiStateTrackScheme( final MamutViewTrackScheme view, final Map< String, Object > guiState )
 	{
-		final TrackSchemePanel trackschemePanel = view.getTrackschemePanel();
+		final TrackSchemePanel trackschemePanel = view.getFrame().getTrackschemePanel();
 
 		// Edit position to reflect the fact that we store the TrackScheme panel
 		// width and height.

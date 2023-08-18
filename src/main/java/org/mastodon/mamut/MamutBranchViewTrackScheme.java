@@ -35,11 +35,7 @@ import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutView.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutViewTrackScheme.TRACKSCHEME_TRANSFORM_KEY;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.ActionMap;
@@ -69,10 +65,11 @@ import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.HasColorBarOverlay;
+import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
-import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
@@ -94,6 +91,7 @@ import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 
 public class MamutBranchViewTrackScheme
 		extends MamutBranchView< TrackSchemeGraph< BranchSpot, BranchLink >, TrackSchemeVertex, TrackSchemeEdge >
+		implements HasColoringModel, HasColorBarOverlay
 {
 
 	protected final FadingModelAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > fadingModelAdapter;
@@ -104,18 +102,12 @@ public class MamutBranchViewTrackScheme
 
 	public MamutBranchViewTrackScheme( final ProjectModel appModel )
 	{
-		this( appModel, new HashMap<>() );
-	}
-
-	public MamutBranchViewTrackScheme( final ProjectModel appModel, final Map< String, Object > guiState )
-	{
-		this( appModel, guiState, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(),
+		this( appModel, new BranchTimeTrackSchemeFactory(), new BranchTrackSchemeOverlayFactory(),
 				LongEdgesLineageTreeLayout::new, null );
 	}
 
 	protected MamutBranchViewTrackScheme(
 			final ProjectModel appModel,
-			final Map< String, Object > guiState,
 			final BranchTrackSchemeFactory trackSchemeGraphFactory,
 			final TrackSchemeOverlayFactory overlayFactory,
 			final LineageTreeLayout.LineageTreeLayoutFactory lineageTreeLayoutFactory,
@@ -137,18 +129,6 @@ public class MamutBranchViewTrackScheme
 		// Faded model adapter - initialized with a null FadeModel here. Subclasses may set the faded model of this adapter.
 		this.fadingModelAdapter = new FadingModelAdapter<>( null, vertexMap, edgeMap );
 		this.runOnClose.add( fadingModelAdapter::removeAllListeners );
-
-		// Restore position
-		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
-		if ( null != pos && pos.length == 4 )
-			options
-					.x( pos[ 0 ] )
-					.y( pos[ 1 ] )
-					.width( pos[ 2 ] )
-					.height( pos[ 3 ] );
-
-		// Restore group handle.
-		MamutView.restoreGroupHandle( groupHandle, guiState );
 
 		// Show TrackSchemeFrame.
 		final Model model = appModel.getModel();
@@ -172,20 +152,8 @@ public class MamutBranchViewTrackScheme
 		frame.setTitle( "TrackScheme Branch" );
 		setFrame( frame );
 
-		// Restore settings panel visibility.
-		MamutView.restoreSettingsPanelVisibility( frame, guiState );
-
-		// Default location.
-		if ( null == pos || pos.length != 4 )
-			frame.setLocationRelativeTo( null );
-
 		final TrackSchemeStyle.UpdateListener updateListener = () -> frame.getTrackschemePanel().repaint();
 		forwardDefaultStyle.updateListeners().add( updateListener );
-
-		// Transform.
-		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( TRACKSCHEME_TRANSFORM_KEY );
-		if ( null != tLoaded )
-			frame.getTrackschemePanel().getScreenTransform().set( tLoaded );
 
 		// Timepoint and number of spots.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel =
@@ -289,18 +257,10 @@ public class MamutBranchViewTrackScheme
 		model.getGraph().addVertexLabelListener(
 				v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
 
-		// Restore colorbar state.
-		MamutView.restoreColorbarState( colorBarOverlay, guiState );
-		frame.getTrackschemePanel().getDisplay().overlays().add( colorBarOverlay );
-
-		// Restore coloring.
-		MamutView.restoreColoring( coloringModel, guiState );
-
 		// Time range and display refresh.
 		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
 		frame.getTrackschemePanel().graphChanged();
 
-		frame.setVisible( true );
 		frame.getTrackschemePanel().repaint();
 
 		/*
@@ -317,9 +277,7 @@ public class MamutBranchViewTrackScheme
 		{
 			new Thread( () -> {
 				appModel.getBranchGraphSync().sync();
-				// Reset zoom only if we did not receive a transform.
-				if ( null == tLoaded )
-					frame.getTrackschemePanel().getTransformEventHandler().zoomOutFully();
+				frame.getTrackschemePanel().getTransformEventHandler().zoomOutFully();
 			} ).start();
 		}
 	}
@@ -390,11 +348,13 @@ public class MamutBranchViewTrackScheme
 	}
 
 
+	@Override
 	public ColoringModel getColoringModel()
 	{
 		return coloringModel;
 	}
 
+	@Override
 	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
