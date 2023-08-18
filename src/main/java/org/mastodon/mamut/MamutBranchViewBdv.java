@@ -62,6 +62,8 @@ import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.HasColorBarOverlay;
+import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.BigDataViewerMamut;
@@ -89,6 +91,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		OverlayGraphWrapper< BranchSpot, BranchLink >,
 		OverlayVertexWrapper< BranchSpot, BranchLink >,
 		OverlayEdgeWrapper< BranchSpot, BranchLink > >
+		implements HasColorBarOverlay, HasColoringModel
 {
 
 	private static int bdvName = 1;
@@ -237,11 +240,13 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		viewer.getDisplay().requestFocusInWindow();
 	}
 
+	@Override
 	public ColoringModel getColoringModel()
 	{
 		return coloringModel;
 	}
 
+	@Override
 	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
