@@ -28,18 +28,15 @@
  */
 package org.mastodon.mamut;
 
+import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutBranchView.BRANCH_GRAPH;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
-import java.awt.Point;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
@@ -79,71 +76,21 @@ import org.mastodon.ui.coloring.ColoringModelBranchGraph;
 import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
-import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.table.TableViewActions;
 import org.mastodon.views.table.TableViewFrameBuilder;
 import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
 
 import bdv.BigDataViewerActions;
 
-public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link >, Spot, Link > implements HasContextChooser< Spot >
+public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link >, Spot, Link >
+		implements HasContextChooser< Spot >, HasColoringModel
 {
-
-	/**
-	 * Key that specifies whether a table only display the selection or the
-	 * whole model. Boolean instance.
-	 */
-	public static final String TABLE_SELECTION_ONLY = "TableSelectionOnly";
-
-	/**
-	 * Key that specifies whether a table is currently showing the vertex table.
-	 * If <code>false</code>, then the edge table is displayed.
-	 */
-	public static final String TABLE_DISPLAYING_VERTEX_TABLE = "TableVertexTableDisplayed";
-
-	/**
-	 * Key that specifies what table is currently showing in the table view.
-	 * Values are <code>String</code> that points to a tab name in the tabbed
-	 * pane.
-	 */
-	public static final String TABLE_DISPLAYED = "TableDisplayed";
-
-	/**
-	 * Key to the parameter that stores the vertex table displayed rectangle.
-	 * Value is and <code>int[]</code> array of 4 elements: x, y, width and
-	 * height.
-	 */
-	public static final String TABLE_VERTEX_TABLE_VISIBLE_POS = "TableVertexTableVisibleRect";
-
-	/**
-	 * Key to the parameter that stores the table displayed position. Value is
-	 * and <code>int[]</code> array of 2 elements: x, y.
-	 */
-	public static final String TABLE_VISIBLE_POS = "TableVisibleRect";
-
-	/**
-	 * Key to the parameter that stores the GUI states of multiple tables. Value
-	 * is a <code>List<Map<String, Object>></code>.
-	 */
-	public static final String TABLE_ELEMENT = "Tables";
-
-	/**
-	 * Key to the parameter that stores the table name in a table GUI state.
-	 * Value is a <code>String</code>.
-	 */
-	public static final String TABLE_NAME = "TableName";
-
-	/**
-	 * Key to the parameter that stores the edge table displayed rectangle.
-	 * Value is and <code>int[]</code> array of 4 elements: x, y, width and
-	 * height.
-	 */
-	public static final String TABLE_EDGE_TABLE_VISIBLE_POS = "TableEdgeTableVisibleRect";
 
 	public static String csvExportPath = null;
 
@@ -153,15 +100,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	private final ColoringModel branchColoringModel;
 
-	private final boolean selectionTable;
-
-	public MamutViewTable( final ProjectModel appModel, final boolean selectionOnly )
-	{
-		this( appModel, Collections.singletonMap(
-				TABLE_SELECTION_ONLY, Boolean.valueOf( selectionOnly ) ) );
-	}
-
-	public MamutViewTable( final ProjectModel appModel, final Map< String, Object > guiState )
+	public MamutViewTable( final ProjectModel appModel, final boolean selectionTable )
 	{
 		super( appModel, createViewGraph( appModel ), CONTEXTS );
 
@@ -181,50 +120,39 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, BranchSpot, BranchLink > branchColoringAdapter =
 				new GraphColorGeneratorAdapter<>( viewBranchGraph.getVertexMap(), viewBranchGraph.getEdgeMap() );
 
-		// Selection table?
-		this.selectionTable = ( boolean ) guiState.getOrDefault( TABLE_SELECTION_ONLY, false );
-
 		// Create tables.
 		final TableViewFrameBuilder builder = new TableViewFrameBuilder();
 		final MyTableViewFrame frame = builder
 				.groupHandle( groupHandle )
 				.undo( model )
 				.addGraph( model.getGraph() )
-				.selectionModel( selectionModel )
-				.highlightModel( highlightModel )
-				.focusModel( focusModel )
-				.featureModel( featureModel )
-				.tagSetModel( tagSetModel )
-				.navigationHandler( navigationHandler )
-				.coloring( coloringAdapter )
-				.vertexLabelGetter( s -> s.getLabel() )
-				.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
-				.listenToContext( true )
-				.selectionTable( selectionTable )
-				.done()
+					.selectionModel( selectionModel )
+					.highlightModel( highlightModel )
+					.focusModel( focusModel )
+					.featureModel( featureModel )
+					.tagSetModel( tagSetModel )
+					.navigationHandler( navigationHandler )
+					.coloring( coloringAdapter )
+					.vertexLabelGetter( s -> s.getLabel() )
+					.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
+					.listenToContext( true )
+					.selectionTable( selectionTable )
+					.done()
 				.addGraph( model.getBranchGraph() )
-				.vertexLabelGetter( s -> s.getLabel() )
-				.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
-				.featureModel( featureModel )
-				.tagSetModel( branchTagSetModel( appModel ) )
-				.selectionModel( branchSelectionModel( appModel ) )
-				.highlightModel( branchHighlightModel( appModel ) )
-				.coloring( branchColoringAdapter )
-				.focusModel( branchFocusfocusModel( appModel ) )
-				.navigationHandler( branchGraphNavigation( appModel, navigationHandler ) )
-				.done()
+					.vertexLabelGetter( s -> s.getLabel() )
+					.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
+					.featureModel( featureModel )
+					.tagSetModel( branchTagSetModel( appModel ) )
+					.selectionModel( branchSelectionModel( appModel ) )
+					.highlightModel( branchHighlightModel( appModel ) )
+					.coloring( branchColoringAdapter )
+					.focusModel( branchFocusfocusModel( appModel ) )
+					.navigationHandler( branchGraphNavigation( appModel, navigationHandler ) )
+					.done()
 				.title( selectionTable ? "Selection table" : "Data table" )
 				.get();
 		setFrame( frame );
-
-		// Restore position.
-		restoreFramePosition( frame, guiState );
-
-		// Restore group handle.
-		restoreGroupHandle( groupHandle, guiState );
-
-		// Restore settings panel visibility.
-		restoreSettingsPanelVisibility( frame, guiState );
+		frame.setIconImages( TABLE_VIEW_ICON );
 
 		// Search panels.
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
@@ -273,14 +201,6 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		branchColoringModel = registerBranchColoring( appModel, branchColoringAdapter, colorBranchMenuHandle,
 				() -> frame.repaint(), runOnClose );
 
-		// Restore coloring.
-		restoreColoring( coloringModel, guiState );
-
-		// Restore branch-graph coloring.
-		@SuppressWarnings( "unchecked" )
-		final Map< String, Object > branchGraphGuiState = ( Map< String, Object > ) guiState.get( BRANCH_GRAPH );
-		restoreColoring( branchColoringModel, branchGraphGuiState );
-
 		/*
 		 * Register a listener to vertex label property changes, will update the
 		 * table-view when the label change.
@@ -289,36 +209,6 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		final PropertyChangeListener< Spot > labelChangedRefresher = v -> frame.repaint();
 		spotPool.labelProperty().propertyChangeListeners().add( labelChangedRefresher );
 		onClose( () -> spotPool.labelProperty().propertyChangeListeners().remove( labelChangedRefresher ) );
-
-		// Restore table visible rectangle and displayed table.
-		final String displayedTableName = ( String ) guiState.getOrDefault( TABLE_DISPLAYED, "TableSpot" );
-		final List< FeatureTagTablePanel< ? > > tables = frame.getTables();
-		final List< String > names = frame.getTableNames();
-		@SuppressWarnings( "unchecked" )
-		final List< Map< String, Object > > list =
-				( List< Map< String, Object > > ) guiState.getOrDefault( TABLE_ELEMENT, Collections.emptyList() );
-		for ( int i = 0; i < list.size(); i++ )
-		{
-			final String name = names.get( i );
-			if ( name.equals( displayedTableName ) )
-				frame.displayTable( name );
-
-			final Map< String, Object > tableGuiState = list.get( i );
-			final int[] viewPos = ( int[] ) tableGuiState.get( TABLE_VISIBLE_POS );
-			if ( viewPos != null )
-			{
-				final FeatureTagTablePanel< ? > table = tables.get( i );
-				table.getScrollPane().getViewport().setViewPosition( new Point(
-						viewPos[ 0 ],
-						viewPos[ 1 ] ) );
-			}
-		}
-
-		/*
-		 * Show table.
-		 */
-
-		frame.setVisible( true );
 	}
 
 	private static final ColoringModel registerBranchColoring(
@@ -439,6 +329,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	 * De/serialization related methods.
 	 */
 
+	@Override
 	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
@@ -447,11 +338,6 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	public ColoringModel getBranchColoringModel()
 	{
 		return branchColoringModel;
-	}
-
-	public boolean isSelectionTable()
-	{
-		return selectionTable;
 	}
 
 	/*

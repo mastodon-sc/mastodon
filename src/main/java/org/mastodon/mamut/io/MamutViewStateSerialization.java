@@ -38,11 +38,10 @@ import static org.mastodon.mamut.MamutView.NO_COLORING_KEY;
 import static org.mastodon.mamut.MamutView.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutView.TAG_SET_KEY;
 import static org.mastodon.mamut.MamutViewGrapher.GRAPHER_TRANSFORM_KEY;
-import static org.mastodon.mamut.MamutViewTable.TABLE_DISPLAYED;
-import static org.mastodon.mamut.MamutViewTable.TABLE_ELEMENT;
-import static org.mastodon.mamut.MamutViewTable.TABLE_NAME;
-import static org.mastodon.mamut.MamutViewTable.TABLE_SELECTION_ONLY;
-import static org.mastodon.mamut.MamutViewTable.TABLE_VISIBLE_POS;
+import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_DISPLAYED;
+import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_ELEMENT;
+import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_NAME;
+import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_VISIBLE_POS;
 import static org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.awt.GraphicsDevice;
@@ -300,9 +299,6 @@ class MamutViewStateSerialization
 	 */
 	private static void getGuiStateTable( final MamutViewTable view, final Map< String, Object > guiState )
 	{
-		// Selection table or not.
-		guiState.put( TABLE_SELECTION_ONLY, view.isSelectionTable() );
-
 		// Currently displayed table.
 		final FeatureTagTablePanel< ? > currentlyDisplayedTable = view.getFrame().getCurrentlyDisplayedTable();
 		String displayedTableName = "";
@@ -565,9 +561,10 @@ class MamutViewStateSerialization
 
 			case "MamutViewTable":
 			{
-				final MamutViewTable table = windowManager.createTable( guiState );
+				final boolean selectionOnly = false; // FIXME
+				final MamutViewTable table = windowManager.createTable( selectionOnly, guiState );
 
-				// Deal with context chooser.
+				// Deal with context chooser. // FIXME
 				final String desiredProvider = ( String ) guiState.get( CHOSEN_CONTEXT_PROVIDER_KEY );
 				if ( null != desiredProvider )
 					contextChosers.put( table.getContextChooser(), desiredProvider );
@@ -645,7 +642,6 @@ class MamutViewStateSerialization
 						arr[ 3 ], ( int ) arr[ 4 ], ( int ) arr[ 5 ] );
 				break;
 			}
-			case TABLE_SELECTION_ONLY:
 			case NO_COLORING_KEY:
 			case SETTINGS_PANEL_VISIBLE_KEY:
 			case COLORBAR_VISIBLE_KEY:
