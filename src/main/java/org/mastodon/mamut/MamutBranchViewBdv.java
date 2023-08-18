@@ -64,6 +64,7 @@ import org.mastodon.model.NavigationHandler;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
+import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -84,7 +85,6 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
-import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 
 import bdv.BigDataViewerActions;
 import bdv.tools.InitializeViewerState;

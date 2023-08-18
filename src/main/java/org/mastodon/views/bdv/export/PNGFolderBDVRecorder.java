@@ -34,8 +34,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
-import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 
 import bdv.export.ProgressWriter;
 import bdv.viewer.ViewerPanel;
