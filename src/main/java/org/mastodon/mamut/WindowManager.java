@@ -57,6 +57,7 @@ import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
 import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
@@ -486,8 +487,7 @@ public class WindowManager
 	 */
 	public MamutViewBdv createBigDataViewer( final Map< String, Object > guiState )
 	{
-		final MamutViewBdv view = new MamutViewBdv( appModel, guiState );
-		view.getFrame().setIconImages( BDV_VIEW_ICON );
+		final MamutViewBdv view = new MamutViewBdvFactory().show( appModel, guiState );
 		addBdvWindow( view );
 		bdvViewCreatedListeners.list.forEach( l -> l.bdvViewCreated( view ) );
 		return view;

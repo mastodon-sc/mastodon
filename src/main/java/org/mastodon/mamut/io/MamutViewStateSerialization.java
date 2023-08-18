@@ -37,8 +37,6 @@ import static org.mastodon.mamut.MamutView.GROUP_HANDLE_ID_KEY;
 import static org.mastodon.mamut.MamutView.NO_COLORING_KEY;
 import static org.mastodon.mamut.MamutView.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutView.TAG_SET_KEY;
-import static org.mastodon.mamut.MamutViewBdv.BDV_STATE_KEY;
-import static org.mastodon.mamut.MamutViewBdv.BDV_TRANSFORM_KEY;
 import static org.mastodon.mamut.MamutViewGrapher.GRAPHER_TRANSFORM_KEY;
 import static org.mastodon.mamut.MamutViewTable.TABLE_DISPLAYED;
 import static org.mastodon.mamut.MamutViewTable.TABLE_ELEMENT;
@@ -86,6 +84,7 @@ import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 
+import bdv.viewer.ViewerState;
 import mpicbg.spim.data.XmlHelpers;
 import net.imglib2.realtransform.AffineGet;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -95,6 +94,21 @@ import net.imglib2.realtransform.AffineTransform3D;
  */
 class MamutViewStateSerialization
 {
+
+	/**
+	 * Key for the {@link ViewerState} in a BDV view. Value is a XML
+	 * {@link Element} serialized from the state.
+	 *
+	 * @see ViewerPanelMamut#stateToXml()
+	 * @see ViewerPanelMamut#stateFromXml(Element)
+	 */
+	public static final String BDV_STATE_KEY = "BdvState";
+
+	/**
+	 * Key for the transform in a BDV view. Value is an
+	 * {@link AffineTransform3D} instance.
+	 */
+	public static final String BDV_TRANSFORM_KEY = "BdvTransform";
 
 	static final String WINDOW_TAG = "Window";
 

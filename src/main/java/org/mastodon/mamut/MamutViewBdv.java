@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut;
 
+import static org.mastodon.app.MastodonIcons.BDV_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
@@ -37,13 +38,9 @@ import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 
-import org.jdom2.Element;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
@@ -67,6 +64,8 @@ import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.HasColorBarOverlay;
+import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BdvContextProvider;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
@@ -89,35 +88,20 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.ContextProvider;
+import org.mastodon.views.context.HasContextProvider;
 
 import bdv.BigDataViewerActions;
-import bdv.tools.InitializeViewerState;
 import bdv.util.Affine3DHelpers;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
-import bdv.viewer.ViewerState;
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >,
-		OverlayEdgeWrapper< Spot, Link > >
+public class MamutViewBdv
+		extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
+		implements HasContextProvider, HasColoringModel, HasColorBarOverlay
 {
-
-	/**
-	 * Key for the {@link ViewerState} in a BDV view. Value is a XML
-	 * {@link Element} serialized from the state.
-	 *
-	 * @see ViewerPanelMamut#stateToXml()
-	 * @see ViewerPanelMamut#stateFromXml(Element)
-	 */
-	public static final String BDV_STATE_KEY = "BdvState";
-
-	/**
-	 * Key for the transform in a BDV view. Value is an
-	 * {@link AffineTransform3D} instance.
-	 */
-	public static final String BDV_TRANSFORM_KEY = "BdvTransform";
 
 	// TODO
 	private static int bdvName = 1;
@@ -138,11 +122,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 	public MamutViewBdv( final ProjectModel appModel )
 	{
-		this( appModel, new HashMap<>() );
-	}
-
-	public MamutViewBdv( final ProjectModel appModel, final Map< String, Object > guiState )
-	{
 		super( appModel,
 				new OverlayGraphWrapper<>(
 						appModel.getModel().getGraph(),
@@ -158,15 +137,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		final BigDataViewerMamut bdv = new BigDataViewerMamut( sharedBdvData, windowTitle, groupHandle );
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
-
-		// Restore position.
-		restoreFramePosition( frame, guiState );
-
-		// Restore group handle.
-		restoreGroupHandle( groupHandle, guiState );
-
-		// Restore settings panel visibility.
-		restoreSettingsPanelVisibility( frame, guiState );
+		frame.setIconImages( BDV_VIEW_ICON );
+		frame.setIconImages( BDV_VIEW_ICON );
 
 		MastodonFrameViewActions.install( viewActions, this );
 		BigDataViewerActionsMamut.install( viewActions, bdv );
@@ -201,18 +173,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				() -> viewer.getDisplay().repaint() );
 		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> viewer.getBackground() );
 		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> viewer.getDisplay().repaint() );
-
-		// Restore BDV state.
-		final Element stateEl = ( Element ) guiState.get( BDV_STATE_KEY );
-		if ( null != stateEl )
-			viewer.stateFromXml( stateEl );
-
-		// Restore transform.
-		final AffineTransform3D tLoaded = ( AffineTransform3D ) guiState.get( BDV_TRANSFORM_KEY );
-		if ( null == tLoaded )
-			InitializeViewerState.initTransform( viewer );
-		else
-			viewer.state().setViewerTransform( tLoaded );
 
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >,
 				OverlayEdgeWrapper< Spot, Link > > tracksOverlay = createRenderer(
@@ -302,11 +262,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		// Give focus to display so that it can receive key-presses immediately.
 		viewer.getDisplay().requestFocusInWindow();
 
-		// Notifies context provider that context changes when visibility mode
-		// changes.
+		// Notifies context provider that context changes when visibility mode changes.
 		tracksOverlay.getVisibilities().getVisibilityListeners().add( contextProvider::notifyContextChanged );
-
-		frame.setVisible( true );
 
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
@@ -334,13 +291,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> viewer.getDisplay().repaint() );
-
-		// Restore coloring.
-		restoreColoring( coloringModel, guiState );
-
-		// Restore colorbar state.
-		restoreColorbarState( colorBarOverlay, guiState );
-		viewer.getDisplay().overlays().add( colorBarOverlay );
 	}
 
 	protected OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
@@ -362,6 +312,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				coloring );
 	}
 
+	@Override
 	public ContextProvider< Spot > getContextProvider()
 	{
 		return contextProvider;
@@ -377,11 +328,13 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		viewer.requestRepaint();
 	}
 
+	@Override
 	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
 
+	@Override
 	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
