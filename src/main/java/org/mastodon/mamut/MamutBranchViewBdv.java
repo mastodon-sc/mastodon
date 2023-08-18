@@ -36,8 +36,8 @@ import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.MamutViewBdv.BDV_STATE_KEY;
-import static org.mastodon.mamut.MamutViewBdv.BDV_TRANSFORM_KEY;
+import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
+import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
 
 import java.util.HashMap;
 import java.util.Map;
