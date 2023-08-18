@@ -43,9 +43,7 @@ import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
-import org.mastodon.app.IMastodonView;
 import org.mastodon.app.ViewGraph;
-import org.mastodon.app.ui.IMastodonFrameView;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
@@ -59,6 +57,7 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
@@ -71,6 +70,7 @@ import org.mastodon.model.branch.BranchGraphTagSetAdapter;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColorBarOverlay;
+import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.ColoringMenu;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.ColoringModelBranchGraph;
@@ -78,7 +78,6 @@ import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
-import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.Keymap.UpdateListener;
@@ -91,7 +90,7 @@ public class MamutBranchView<
 		VG extends ViewGraph< BranchSpot, BranchLink, V, E >,
 		V extends Vertex< E >,
 		E extends Edge< V > >
-		implements IMastodonFrameView, IMastodonView
+		implements MamutViewI
 {
 
 	/**
