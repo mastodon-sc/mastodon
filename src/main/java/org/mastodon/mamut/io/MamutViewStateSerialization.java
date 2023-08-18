@@ -75,6 +75,8 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.ui.coloring.ColorBarOverlay;
+import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.views.context.ContextChooser;
@@ -82,8 +84,6 @@ import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.trackscheme.ScreenTransform;
-import org.mastodon.views.trackscheme.display.ColorBarOverlay;
-import org.mastodon.views.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 
 import mpicbg.spim.data.XmlHelpers;

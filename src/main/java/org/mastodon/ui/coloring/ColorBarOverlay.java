@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme.display;
+package org.mastodon.ui.coloring;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -36,8 +36,6 @@ import java.util.function.Supplier;
 
 import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
-import org.mastodon.ui.coloring.ColorMap;
-import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureProjectionId;
 

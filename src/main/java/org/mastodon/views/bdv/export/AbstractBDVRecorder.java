@@ -33,8 +33,8 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
-import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 
 import bdv.cache.CacheControl;
 import bdv.export.ProgressWriter;

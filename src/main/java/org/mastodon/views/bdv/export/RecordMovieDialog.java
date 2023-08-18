@@ -63,6 +63,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.mastodon.app.MastodonIcons;
+import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -73,7 +74,6 @@ import org.mastodon.ui.util.FileChooser.DialogType;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.mastodon.views.bdv.BigDataViewerMamut;
 import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
-import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.scijava.plugin.Plugin;
 import org.scijava.prefs.DefaultPrefService;
 import org.scijava.ui.behaviour.util.Actions;
