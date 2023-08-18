@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut;
 
+import static org.mastodon.app.MastodonIcons.BDV_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.branchColorMenu;
@@ -36,16 +37,10 @@ import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
-import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 
-import org.jdom2.Element;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
@@ -87,10 +82,8 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 
 import bdv.BigDataViewerActions;
-import bdv.tools.InitializeViewerState;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerPanel;
-import net.imglib2.realtransform.AffineTransform3D;
 
 public class MamutBranchViewBdv extends MamutBranchView<
 		OverlayGraphWrapper< BranchSpot, BranchLink >,
@@ -108,11 +101,6 @@ public class MamutBranchViewBdv extends MamutBranchView<
 
 	public MamutBranchViewBdv( final ProjectModel appModel )
 	{
-		this( appModel, new HashMap<>() );
-	}
-
-	public MamutBranchViewBdv( final ProjectModel appModel, final Map< String, Object > guiState )
-	{
 		super( appModel, createViewBranchGraph( appModel ), new String[] { KeyConfigContexts.BIGDATAVIEWER } );
 
 		// Image data.
@@ -123,16 +111,8 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		final BigDataViewerMamut bdv = new BigDataViewerMamut( sharedBdvData, windowTitle, groupHandle );
 		final ViewerFrameMamut viewerFrame = bdv.getViewerFrame();
 		setFrame( viewerFrame );
+		frame.setIconImages( BDV_VIEW_ICON );
 		viewer = bdv.getViewer();
-
-		// Restore position.
-		MamutView.restoreFramePosition( viewerFrame, guiState );
-
-		// Restore group handle.
-		MamutView.restoreGroupHandle( groupHandle, guiState );
-
-		// Restore settings panel visibility.
-		MamutView.restoreSettingsPanelVisibility( viewerFrame, guiState );
 
 		// Menus
 		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), appModel.getKeymap(), keyConfigContexts );
@@ -174,25 +154,6 @@ public class MamutBranchViewBdv extends MamutBranchView<
 
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> viewer.getDisplay().repaint() );
-
-		// Restore coloring.
-		MamutView.restoreColoring( coloringModel, guiState );
-
-		// Restore colorbar state.
-		MamutView.restoreColorbarState( colorBarOverlay, guiState );
-		viewer.getDisplay().overlays().add( colorBarOverlay );
-
-		// Restore BDV state.
-		final Element stateEl = ( Element ) guiState.get( BDV_STATE_KEY );
-		if ( null != stateEl )
-			viewer.stateFromXml( stateEl );
-
-		// Restore transform.
-		final AffineTransform3D tLoaded = ( AffineTransform3D ) guiState.get( BDV_TRANSFORM_KEY );
-		if ( null == tLoaded )
-			InitializeViewerState.initTransform( viewer );
-		else
-			viewer.state().setViewerTransform( tLoaded );
 
 		// Renderer.
 		final OverlayGraphRenderer< OverlayVertexWrapper< BranchSpot, BranchLink >,
@@ -274,8 +235,6 @@ public class MamutBranchViewBdv extends MamutBranchView<
 
 		// Give focus to display so that it can receive key-presses immediately.
 		viewer.getDisplay().requestFocusInWindow();
-
-		viewerFrame.setVisible( true );
 	}
 
 	public ColoringModel getColoringModel()
