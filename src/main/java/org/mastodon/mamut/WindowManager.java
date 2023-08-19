@@ -58,6 +58,7 @@ import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
+import org.mastodon.mamut.views.grapher.MamutViewGrapherFactory;
 import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory;
 import org.mastodon.mamut.views.table.MamutViewTableFactory;
 import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeFactory;
@@ -597,8 +598,7 @@ public class WindowManager
 	 */
 	public MamutViewGrapher createGrapher( final Map< String, Object > guiState )
 	{
-		final MamutViewGrapher view = new MamutViewGrapher( appModel, guiState );
-		view.getFrame().setIconImages( FEATURES_ICON );
+		final MamutViewGrapher view = new MamutViewGrapherFactory().show( appModel, guiState );
 		addGrapherWindow( view );
 		return view;
 	}

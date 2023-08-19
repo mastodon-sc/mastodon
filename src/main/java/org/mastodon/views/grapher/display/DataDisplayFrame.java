@@ -28,6 +28,8 @@
  */
 package org.mastodon.views.grapher.display;
 
+import static org.mastodon.app.MastodonIcons.FEATURES_ICON;
+
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -162,6 +164,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), dataDisplayPanel.getDisplay() );
 		dataDisplayPanel.getDisplay().addHandler( mouseAndKeyHandler );
 		setLocation( optional.values.getX(), optional.values.getY() );
+		setIconImages( FEATURES_ICON );
 	}
 
 	public DataDisplayPanel< V, E > getDataDisplayPanel()
