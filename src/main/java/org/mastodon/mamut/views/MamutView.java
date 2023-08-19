@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut;
+package org.mastodon.mamut.views;
 
 import java.awt.Window;
 import java.util.ArrayList;
@@ -46,13 +46,13 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
@@ -67,6 +67,16 @@ import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 
+/**
+ * Mother class for views that display the core graph.
+ * 
+ * @param <VG>
+ *            the type of the view graph used in this view.
+ * @param <V>
+ *            the type of vertices in the view graph.
+ * @param <E>
+ *            the type of edges in the view graph.
+ */
 public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vertex< E >, E extends Edge< V > >
 		extends MastodonFrameView< ProjectModel, VG, Spot, Link, V, E >
 		implements MamutViewI

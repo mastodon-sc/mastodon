@@ -2,7 +2,6 @@ package org.mastodon.mamut.views.bdv;
 
 import java.util.Map;
 
-import org.mastodon.mamut.MamutBranchViewBdv;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.AbstractMamutViewFactory;
 import org.mastodon.mamut.views.MamutViewFactory;
