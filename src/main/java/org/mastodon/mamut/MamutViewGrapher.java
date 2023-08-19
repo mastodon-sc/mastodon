@@ -36,11 +36,6 @@ import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 
@@ -56,15 +51,14 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.AutoNavigateFocusModel;
-import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
-import org.mastodon.ui.coloring.ColorBarOverlay.Position;
-import org.mastodon.ui.coloring.feature.FeatureColorMode;
+import org.mastodon.ui.coloring.HasColorBarOverlay;
+import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
@@ -73,7 +67,6 @@ import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
-import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
@@ -87,14 +80,8 @@ import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
-public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge > implements HasContextChooser< Spot >
+public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge > implements HasContextChooser< Spot >, HasColoringModel, HasColorBarOverlay
 {
-
-	/**
-	 * Key for the transform in a Grapher view. Value is a Grapher
-	 * ScreenTransform instance.
-	 */
-	public static final String GRAPHER_TRANSFORM_KEY = "GrapherTransform";
 
 	private final ContextChooser< Spot > contextChooser;
 
@@ -115,11 +102,6 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 	private final ColorBarOverlay colorbarOverlay;
 
 	public MamutViewGrapher( final ProjectModel appModel )
-	{
-		this( appModel, new HashMap<>() );
-	}
-
-	public MamutViewGrapher( final ProjectModel appModel, final Map< String, Object > guiState )
 	{
 		super( appModel,
 				new DataGraph< Spot, Link >(
@@ -180,26 +162,6 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				new FeatureGraphConfig( spvx, spvy, GraphDataItemsSource.TRACK_OF_SELECTION, true );
 		frame.getVertexSidePanel().setGraphConfig( gcv );
 
-		// Restore position
-		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
-		if ( null != pos && pos.length == 4 )
-			frame.setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
-		else
-		{
-			frame.setSize( options.values.getWidth(), options.values.getHeight() );
-			frame.setLocationRelativeTo( null );
-		}
-
-		// Restore group handle.
-		final Integer groupID = ( Integer ) guiState.get( GROUP_HANDLE_ID_KEY );
-		if ( null != groupID )
-			groupHandle.setGroupId( groupID.intValue() );
-
-		// Restore settings panel visibility.
-		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
-		if ( null != settingsPanelVisible )
-			frame.setSettingsPanelVisible( settingsPanelVisible.booleanValue() );
-
 		dataDisplayPanel.graphChanged();
 		contextListener.setContextListener( dataDisplayPanel );
 
@@ -208,11 +170,6 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		onClose( () -> forwardDefaultStyle.updateListeners().remove( updateListener ) );
 
 		setFrame( frame );
-
-		// Transform.
-		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( GRAPHER_TRANSFORM_KEY );
-		if ( null != tLoaded )
-			dataDisplayPanel.getScreenTransform().set( tLoaded );
 
 		MastodonFrameViewActions.install( viewActions, this );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
@@ -270,57 +227,12 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		final OffsetAxes offset = dataDisplayPanel.getOffsetAxes();
 		offset.listeners().add( ( w, h ) -> colorbarOverlay.setInsets( 15, w + 15, h + 15, 15 ) );
 		registerColorbarOverlay( colorbarOverlay, colorbarMenuHandle, () -> dataDisplayPanel.repaint() );
-
-		// Restore colorbar state.
-		final boolean colorbarVisible = ( boolean ) guiState.getOrDefault( COLORBAR_VISIBLE_KEY, false );
-		final Position colorbarPosition =
-				( Position ) guiState.getOrDefault( COLORBAR_POSITION_KEY, Position.BOTTOM_RIGHT );
-		colorbarOverlay.setVisible( colorbarVisible );
-		colorbarOverlay.setPosition( colorbarPosition );
+		dataDisplayPanel.getDisplay().overlays().add( colorbarOverlay );
 
 		// Listen to label changes.
 		model.getGraph().addVertexLabelListener( v -> dataDisplayPanel.entitiesAttributesChanged() );
 
-		// Restore coloring.
-		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
-		if ( null != noColoring && noColoring )
-		{
-			coloringModel.colorByNone();
-		}
-		else
-		{
-			final String tagSetName = ( String ) guiState.get( TAG_SET_KEY );
-			final String featureColorModeName = ( String ) guiState.get( FEATURE_COLOR_MODE_KEY );
-			if ( null != tagSetName )
-			{
-				for ( final TagSet tagSet : coloringModel.getTagSetStructure().getTagSets() )
-				{
-					if ( tagSet.getName().equals( tagSetName ) )
-					{
-						coloringModel.colorByTagSet( tagSet );
-						break;
-					}
-				}
-			}
-			else if ( null != featureColorModeName )
-			{
-				final List< FeatureColorMode > featureColorModes = new ArrayList<>();
-				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getBuiltinStyles() );
-				featureColorModes.addAll( coloringModel.getFeatureColorModeManager().getUserStyles() );
-				for ( final FeatureColorMode featureColorMode : featureColorModes )
-				{
-					if ( featureColorMode.getName().equals( featureColorModeName ) )
-					{
-						coloringModel.colorByFeature( featureColorMode );
-						break;
-					}
-				}
-			}
-		}
-		dataDisplayPanel.getDisplay().overlays().add( colorbarOverlay );
-
 		layout.layout();
-		frame.setVisible( true );
 		dataDisplayPanel.repaint();
 		dataDisplayPanel.getDisplay().requestFocusInWindow();
 	}
@@ -336,11 +248,13 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		return dataDisplayPanel;
 	}
 
+	@Override
 	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
 	{
 		return coloringModel;
 	}
 
+	@Override
 	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorbarOverlay;

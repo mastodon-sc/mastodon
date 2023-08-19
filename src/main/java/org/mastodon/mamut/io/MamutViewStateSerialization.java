@@ -37,7 +37,7 @@ import static org.mastodon.mamut.MamutView.GROUP_HANDLE_ID_KEY;
 import static org.mastodon.mamut.MamutView.NO_COLORING_KEY;
 import static org.mastodon.mamut.MamutView.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutView.TAG_SET_KEY;
-import static org.mastodon.mamut.MamutViewGrapher.GRAPHER_TRANSFORM_KEY;
+import static org.mastodon.mamut.views.grapher.MamutViewGrapherFactory.GRAPHER_TRANSFORM_KEY;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_DISPLAYED;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_ELEMENT;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_NAME;
