@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut;
+package org.mastodon.mamut.views.trackscheme;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
@@ -49,10 +49,16 @@ import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.GraphIdBimap;
+import org.mastodon.mamut.BranchGraphUndoActions;
+import org.mastodon.mamut.MainWindow;
+import org.mastodon.mamut.MamutMenuBuilder;
+import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.TimepointAndNumberOfSpotsPanel;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.mamut.views.MamutBranchView;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.BranchTrackSchemeRootsModel;
 import org.mastodon.model.FocusModel;

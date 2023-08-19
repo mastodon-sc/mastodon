@@ -3,7 +3,6 @@ package org.mastodon.mamut.views.bdv;
 import java.util.Map;
 
 import org.jdom2.Element;
-import org.mastodon.mamut.MamutViewBdv;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.AbstractMamutViewFactory;
 import org.mastodon.mamut.views.MamutViewFactory;

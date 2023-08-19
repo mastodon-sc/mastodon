@@ -1,4 +1,6 @@
-package org.mastodon.mamut;
+package org.mastodon.mamut.views.table;
+
+import org.mastodon.mamut.ProjectModel;
 
 public class MamutViewSelectionTable extends MamutViewTable
 {

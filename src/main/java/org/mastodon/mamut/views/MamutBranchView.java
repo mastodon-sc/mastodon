@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut;
+package org.mastodon.mamut.views;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -50,6 +50,7 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -57,7 +58,6 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
@@ -86,6 +86,16 @@ import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.WrappedActionMap;
 import org.scijava.ui.behaviour.util.WrappedInputMap;
 
+/**
+ * Mother class for views that display the branch graph of the model.
+ * 
+ * @param <VG>
+ *            the type of the branch <b>view</b> graph.
+ * @param <V>
+ *            the type of vertices in the view graph.
+ * @param <E>
+ *            the type of edges in the view graph.
+ */
 public class MamutBranchView<
 		VG extends ViewGraph< BranchSpot, BranchLink, V, E >,
 		V extends Vertex< E >,

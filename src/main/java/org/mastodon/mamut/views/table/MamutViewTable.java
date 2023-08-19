@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut;
+package org.mastodon.mamut.views.table;
 
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
@@ -50,6 +50,10 @@ import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.mamut.MainWindow;
+import org.mastodon.mamut.MamutMenuBuilder;
+import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.UndoActions;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -58,6 +62,7 @@ import org.mastodon.mamut.model.SpotPool;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.mamut.views.MamutView;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;

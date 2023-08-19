@@ -2,7 +2,6 @@ package org.mastodon.mamut.views.trackscheme;
 
 import java.util.Map;
 
-import org.mastodon.mamut.MamutViewTrackScheme;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.AbstractMamutViewFactory;
 import org.mastodon.views.trackscheme.ScreenTransform;

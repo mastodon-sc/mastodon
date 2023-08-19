@@ -1,13 +1,13 @@
 package org.mastodon.mamut.views;
 
-import static org.mastodon.mamut.MamutView.COLORBAR_POSITION_KEY;
-import static org.mastodon.mamut.MamutView.COLORBAR_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutView.FEATURE_COLOR_MODE_KEY;
-import static org.mastodon.mamut.MamutView.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.MamutView.GROUP_HANDLE_ID_KEY;
-import static org.mastodon.mamut.MamutView.NO_COLORING_KEY;
-import static org.mastodon.mamut.MamutView.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.mamut.MamutView.TAG_SET_KEY;
+import static org.mastodon.mamut.views.MamutView.COLORBAR_POSITION_KEY;
+import static org.mastodon.mamut.views.MamutView.COLORBAR_VISIBLE_KEY;
+import static org.mastodon.mamut.views.MamutView.FEATURE_COLOR_MODE_KEY;
+import static org.mastodon.mamut.views.MamutView.FRAME_POSITION_KEY;
+import static org.mastodon.mamut.views.MamutView.GROUP_HANDLE_ID_KEY;
+import static org.mastodon.mamut.views.MamutView.NO_COLORING_KEY;
+import static org.mastodon.mamut.views.MamutView.SETTINGS_PANEL_VISIBLE_KEY;
+import static org.mastodon.mamut.views.MamutView.TAG_SET_KEY;
 
 import java.awt.Rectangle;
 import java.awt.Window;

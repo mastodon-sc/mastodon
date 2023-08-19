@@ -1,6 +1,6 @@
 package org.mastodon.mamut.views.table;
 
-import static org.mastodon.mamut.MamutBranchView.BRANCH_GRAPH;
+import static org.mastodon.mamut.views.MamutBranchView.BRANCH_GRAPH;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -12,7 +12,6 @@ import java.util.Map;
 
 import javax.swing.JViewport;
 
-import org.mastodon.mamut.MamutViewTable;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.AbstractMamutViewFactory;
 import org.mastodon.mamut.views.MamutViewFactory;

@@ -1,7 +1,5 @@
 package org.mastodon.mamut.views.table;
 
-import org.mastodon.mamut.MamutViewSelectionTable;
-import org.mastodon.mamut.MamutViewTable;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.MamutViewFactory;
 import org.scijava.plugin.Plugin;

@@ -26,11 +26,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut;
+package org.mastodon.mamut.views.trackscheme;
 
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
