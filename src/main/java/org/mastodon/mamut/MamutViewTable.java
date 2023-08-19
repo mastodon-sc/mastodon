@@ -100,12 +100,17 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	private final ColoringModel branchColoringModel;
 
-	public MamutViewTable( final ProjectModel appModel, final boolean selectionTable )
+	public MamutViewTable( final ProjectModel projectModel )
 	{
-		super( appModel, createViewGraph( appModel ), CONTEXTS );
+		this( projectModel, false );
+	}
+
+	protected MamutViewTable( final ProjectModel projectModel, final boolean selectionTable )
+	{
+		super( projectModel, createViewGraph( projectModel ), CONTEXTS );
 
 		// Data model.
-		final Model model = appModel.getModel();
+		final Model model = projectModel.getModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 		final TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
 
@@ -142,12 +147,12 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 					.vertexLabelGetter( s -> s.getLabel() )
 					.vertexLabelSetter( ( s, label ) -> s.setLabel( label ) )
 					.featureModel( featureModel )
-					.tagSetModel( branchTagSetModel( appModel ) )
-					.selectionModel( branchSelectionModel( appModel ) )
-					.highlightModel( branchHighlightModel( appModel ) )
+					.tagSetModel( branchTagSetModel( projectModel ) )
+					.selectionModel( branchSelectionModel( projectModel ) )
+					.highlightModel( branchHighlightModel( projectModel ) )
 					.coloring( branchColoringAdapter )
-					.focusModel( branchFocusfocusModel( appModel ) )
-					.navigationHandler( branchGraphNavigation( appModel, navigationHandler ) )
+					.focusModel( branchFocusfocusModel( projectModel ) )
+					.navigationHandler( branchGraphNavigation( projectModel, navigationHandler ) )
 					.done()
 				.title( selectionTable ? "Selection table" : "Data table" )
 				.get();
@@ -164,7 +169,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		TableViewActions.install( viewActions, frame );
 
 		// Menus
-		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), appModel.getKeymap(), CONTEXTS );
+		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), projectModel.getKeymap(), CONTEXTS );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		final JMenuHandle colorMenuHandle = new JMenuHandle();
 		final JMenuHandle colorBranchMenuHandle = new JMenuHandle();
@@ -195,17 +200,17 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				ViewMenuBuilder.menu( "Settings",
 						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
 						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
-		appModel.getPlugins().addMenus( menu );
+		projectModel.getPlugins().addMenus( menu );
 
 		coloringModel = registerColoring( coloringAdapter, colorMenuHandle, () -> frame.repaint() );
-		branchColoringModel = registerBranchColoring( appModel, branchColoringAdapter, colorBranchMenuHandle,
+		branchColoringModel = registerBranchColoring( projectModel, branchColoringAdapter, colorBranchMenuHandle,
 				() -> frame.repaint(), runOnClose );
 
 		/*
 		 * Register a listener to vertex label property changes, will update the
 		 * table-view when the label change.
 		 */
-		final SpotPool spotPool = ( SpotPool ) appModel.getModel().getGraph().vertices().getRefPool();
+		final SpotPool spotPool = ( SpotPool ) projectModel.getModel().getGraph().vertices().getRefPool();
 		final PropertyChangeListener< Spot > labelChangedRefresher = v -> frame.repaint();
 		spotPool.labelProperty().propertyChangeListeners().add( labelChangedRefresher );
 		onClose( () -> spotPool.labelProperty().propertyChangeListeners().remove( labelChangedRefresher ) );
