@@ -1,5 +1,6 @@
 package org.mastodon.mamut.views.table;
 
+import org.mastodon.mamut.MamutViewSelectionTable;
 import org.mastodon.mamut.MamutViewTable;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.MamutViewFactory;
@@ -12,6 +13,6 @@ public class MamutViewSelectionTableFactory extends MamutViewTableFactory
 	@Override
 	public MamutViewTable create( final ProjectModel projectModel )
 	{
-		return new MamutViewTable( projectModel, true );
+		return new MamutViewSelectionTable( projectModel );
 	}
 }

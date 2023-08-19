@@ -73,7 +73,7 @@ public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTa
 	@Override
 	public MamutViewTable create( final ProjectModel projectModel )
 	{
-		return new MamutViewTable( projectModel, false );
+		return new MamutViewTable( projectModel );
 	}
 
 	@Override
