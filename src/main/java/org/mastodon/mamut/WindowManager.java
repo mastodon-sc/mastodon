@@ -47,33 +47,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import javax.swing.ActionMap;
 import javax.swing.JDialog;
 
+import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.views.MamutView;
 import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.MamutViewI;
-import org.mastodon.mamut.views.bdv.MamutBranchViewBdv;
-import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdv;
-import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
-import org.mastodon.mamut.views.grapher.MamutViewGrapher;
-import org.mastodon.mamut.views.grapher.MamutViewGrapherFactory;
-import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory;
-import org.mastodon.mamut.views.table.MamutViewTable;
-import org.mastodon.mamut.views.table.MamutViewTableFactory;
-import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackScheme;
-import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeFactory;
-import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeHierarchy;
-import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeHierarchyFactory;
-import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme;
-import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory;
 import org.mastodon.model.tag.ui.TagSetDialog;
-import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
@@ -82,26 +68,27 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
-import org.mastodon.util.RunnableActionPair;
 import org.mastodon.util.ToggleDialogAction;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.context.HasContextChooser;
+import org.mastodon.views.context.HasContextProvider;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
-import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Context;
+import org.scijava.InstantiableException;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
 import bdv.util.InvokeOnEDT;
-import bdv.viewer.ViewerPanel;
-import net.imglib2.realtransform.AffineTransform3D;
 
 /**
  * Main GUI class for the Mastodon Mamut application.
@@ -118,31 +105,18 @@ import net.imglib2.realtransform.AffineTransform3D;
 public class WindowManager
 {
 
-	public static final String NEW_BDV_VIEW = "new bdv view";
-	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
-	public static final String NEW_TABLE_VIEW = "new full table view";
-	public static final String NEW_SELECTION_TABLE_VIEW = "new selection table view";
-	public static final String NEW_GRAPHER_VIEW = "new grapher view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
 
-	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
-	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
-	static final String[] NEW_GRAPHER_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
 
-	static final String NEW_BRANCH_BDV_VIEW = "new branch bdv view";
-	static final String NEW_BRANCH_TRACKSCHEME_VIEW = "new branch trackscheme view";
-	static final String NEW_HIERARCHY_TRACKSCHEME_VIEW = "new hierarchy trackscheme view";
-
-	static final String[] NEW_BRANCH_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 
@@ -159,17 +133,19 @@ public class WindowManager
 	private final Map< Class< ? >, Object > managers = new HashMap<>();
 
 	/** Stores the different lists of mamut views currently opened. */
-	private final Map< Class< ? extends MamutViewI >, List< MamutViewI > > mamutViews = new HashMap<>();
+	private final Map< Class< ? extends MamutViewI >, List< MamutViewI > > openedViews = new HashMap<>();
+
+	private final Map< Class< ? extends MamutViewI >, Listeners.List< ViewCreatedListener< ? extends MamutViewI > > > creationListeners = new HashMap<>();
 
 	private final TagSetDialog tagSetDialog;
 
 	private final JDialog featureComputationDialog;
 
-	private final Listeners.List< BdvViewCreatedListener > bdvViewCreatedListeners;
-
 	private final PreferencesDialog settings;
 
 	private final ProjectModel appModel;
+
+	private final MamutViews mamutViews;
 
 	/**
 	 * Creates a new, empty WindowManager instance using the specified context.
@@ -183,27 +159,13 @@ public class WindowManager
 		this.appModel = appModel;
 		final Context context = appModel.getContext();
 		final Model model = appModel.getModel();
-
-		/*
-		 * Create and store window lists.
-		 */
-
-		@SuppressWarnings( "unchecked" )
-		final Class< MamutView< ?, ?, ? > >[] knownMamutViewTypes = new Class[] {
-				MamutViewBdv.class,
-				MamutViewTrackScheme.class,
-				MamutViewTable.class,
-				MamutViewGrapher.class,
-				MamutBranchViewBdv.class,
-				MamutBranchViewTrackScheme.class
-		};
-		for ( final Class< MamutView< ?, ?, ? > > klass : knownMamutViewTypes )
-			mamutViews.put( klass, new ArrayList<>() );
+		final KeymapManager keymapManager = appModel.getKeymapManager();
+		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
+		final Actions projectActions = appModel.getProjectActions();
 
 		/*
 		 * Create and store managers.
 		 */
-
 		managers.put( TrackSchemeStyleManager.class, new TrackSchemeStyleManager() );
 		managers.put( DataDisplayStyleManager.class, new DataDisplayStyleManager() );
 		managers.put( RenderSettingsManager.class, new RenderSettingsManager() );
@@ -212,46 +174,40 @@ public class WindowManager
 		final MamutFeatureProjectionsManager featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 		managers.put( MamutFeatureProjectionsManager.class, featureProjectionsManager );
-		final KeymapManager keymapManager = appModel.getKeymapManager();
-		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
-		// TODO: still needed?
-		this.bdvViewCreatedListeners = new Listeners.SynchronizedList<>();
 
+		/*
+		 * Discover and handle view factories
+		 */
+		this.mamutViews = discoverViewFactories();
+		// Build actions to create these views.
+		for ( final Class< ? extends MamutViewI > klass : mamutViews.getKeys() )
+		{
+			final MamutViewFactory< ? extends MamutViewI > factory = mamutViews.getFactory( klass );
+			final RunnableAction createViewAction = new RunnableAction( factory.getCommandName(), () -> createView( klass ) );
+			projectActions.namedAction( createViewAction, factory.getCommandKeys() );
+		}
+
+		/*
+		 * Discover and handle command descriptions.
+		 */
 		final CommandDescriptions descriptions = buildCommandDescriptions();
-		final Consumer< Keymap > augmentInputTriggerConfig =
-				k -> descriptions.augmentInputTriggerConfig( k.getConfig() );
+		final Consumer< Keymap > augmentInputTriggerConfig = k -> descriptions.augmentInputTriggerConfig( k.getConfig() );
 		keymapManager.getUserStyles().forEach( augmentInputTriggerConfig );
 		keymapManager.getBuiltinStyles().forEach( augmentInputTriggerConfig );
 
 		/*
-		 * Actions to create views.
+		 * Actions to create dialogs.
 		 */
-
-		final RunnableActionPair newBdvViewAction = new RunnableActionPair( NEW_BDV_VIEW, this::createBigDataViewer, this::createBranchBigDataViewer );
-		final RunnableActionPair newTrackSchemeViewAction = new RunnableActionPair( NEW_TRACKSCHEME_VIEW, this::createTrackScheme, this::createBranchTrackScheme );
-		final RunnableAction newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
-		final RunnableAction newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
-		final RunnableAction newGrapherViewAction = new RunnableAction( NEW_GRAPHER_VIEW, this::createGrapher );
 		final RunnableAction editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		final RunnableAction featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
-		final RunnableAction newBranchBdvViewAction = new RunnableAction( NEW_BRANCH_BDV_VIEW, this::createBranchBigDataViewer );
-		final RunnableAction newBranchTrackSchemeViewAction = new RunnableAction( NEW_BRANCH_TRACKSCHEME_VIEW, this::createBranchTrackScheme );
-		final RunnableAction newHierarchyTrackSchemeViewAction = new RunnableAction( NEW_HIERARCHY_TRACKSCHEME_VIEW, this::createHierarchyTrackScheme );
 		final RunnableAction openOnlineDocumentation = new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
-
-		final Actions projectActions = appModel.getProjectActions();
-		projectActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
-		projectActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
-		projectActions.namedAction( newTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
-		projectActions.namedAction( newSelectionTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
-		projectActions.namedAction( newGrapherViewAction, NEW_GRAPHER_VIEW_KEYS );
 		projectActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		projectActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
-		projectActions.namedAction( newBranchBdvViewAction, NEW_BRANCH_BDV_VIEW_KEYS );
-		projectActions.namedAction( newBranchTrackSchemeViewAction, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS );
-		projectActions.namedAction( newHierarchyTrackSchemeViewAction, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS );
 		projectActions.namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
+		/*
+		 * Preferences dialog.
+		 */
 		this.settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", getManager( TrackSchemeStyleManager.class ) ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", getManager( RenderSettingsManager.class ) ) );
@@ -260,15 +216,160 @@ public class WindowManager
 		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager,
 				featureProjectionsManager, "Spot", "Link" ) );
 		settings.pack();
-
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		projectActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
-		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap,
-				new String[] { KeyConfigContexts.MASTODON } );
+		/*
+		 * Tag-set and feature computation dialogs
+		 */
+		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		tagSetDialog.setIconImages( TAGS_ICON );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
+	}
+
+	/**
+	 * Creates, shows, registers and returns a view of the specified class with
+	 * default GUI state.
+	 * 
+	 * @param <T>
+	 *            the view type.
+	 * @param klass
+	 *            the view class.
+	 * @return a new instance of the view, that was shown.
+	 */
+	public < T extends MamutViewI > T createView( final Class< T > klass )
+	{
+		return createView( klass, Collections.emptyMap() );
+	}
+
+	/**
+	 * Creates, shows, registers and returns a view of the specified class, with
+	 * GUI state read from the specified map.
+	 * 
+	 * @param <T>
+	 *            the view type.
+	 * @param klass
+	 *            the view class.
+	 * @param guiState
+	 *            the GUI state map.
+	 * @return a new instance of the view, that was shown.
+	 */
+	public < T extends MamutViewI > T createView( final Class< T > klass, final Map< String, Object > guiState )
+	{
+		// Get the right factory.
+		final MamutViewFactory< T > factory = mamutViews.getFactory( klass );
+
+		// Create the view.
+		final T view = factory.create( appModel );
+
+		// Restore the view GUI state.
+		factory.restoreGuiState( view, guiState );
+
+		// Store the view for window manager.
+		openedViews.computeIfAbsent( klass, ( v ) -> new ArrayList<>() ).add( view );
+
+		// Does it has a context chooser?
+		if ( view instanceof HasContextChooser )
+		{
+			@SuppressWarnings( "unchecked" )
+			final ContextChooser< Spot > cc = ( ( HasContextChooser< Spot > ) view ).getContextChooser();
+			cc.updateContextProviders( contextProviders );
+		}
+
+		// Does it has a context provider?
+		if ( view instanceof HasContextProvider )
+		{
+			final ContextProvider< Spot > cp = ( ( HasContextProvider ) view ).getContextProvider();
+			contextProviders.add( cp );
+			// Notify context choosers.
+			forEachView( v -> {
+				if ( v instanceof HasContextChooser )
+				{
+					@SuppressWarnings( "unchecked" )
+					final HasContextChooser< Spot > cc = ( HasContextChooser< Spot > ) v;
+					cc.getContextChooser().updateContextProviders( contextProviders );
+				}
+			} );
+		}
+
+		// Register close listener.
+		view.onClose( () -> {
+			// Remove view from list of opened views.
+			getViewList( klass ).remove( view );
+
+			if ( view instanceof HasContextChooser )
+			{
+				// Remove context providers from it.
+				@SuppressWarnings( "unchecked" )
+				final ContextChooser< Spot > cc = ( ( HasContextChooser< Spot > ) view ).getContextChooser();
+				cc.updateContextProviders( new ArrayList<>() );
+			}
+
+			if ( view instanceof HasContextProvider )
+			{
+				// Remove it from the list of context providers.
+				final ContextProvider< Spot > cp = ( ( HasContextProvider ) view ).getContextProvider();
+				contextProviders.remove( cp );
+				// Notify context choosers.
+				forEachView( v -> {
+					if ( v instanceof HasContextChooser )
+					{
+						@SuppressWarnings( "unchecked" )
+						final HasContextChooser< Spot > cc = ( HasContextChooser< Spot > ) v;
+						cc.getContextChooser().updateContextProviders( contextProviders );
+					}
+				} );
+			}
+		} );
+
+		// Notify listeners that it has been created.
+		@SuppressWarnings( "rawtypes" )
+		final Listeners.List l1 = creationListeners.get( klass );
+		@SuppressWarnings( "unchecked" )
+		final Listeners.List< ViewCreatedListener< T > > list = l1;
+		if ( list != null )
+			list.list.forEach( l -> l.viewCreated( view ) );
+
+		// Finally, show it.
+		view.getFrame().setVisible( true );
+		return view;
+	}
+
+	/**
+	 * Adds the create view sub-menu 'Window' to the specified menu, using the specified action-map. 
+	 * @param menu the menu to add to.
+	 * @param actionMap the action map of the frame where the menu is.
+	 */
+	public void addWindowMenu( final ViewMenu menu, final ActionMap actionMap )
+	{
+		mamutViews.addWindowMenuTo( menu, actionMap );
+	}
+
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	private MamutViews discoverViewFactories()
+	{
+		final MamutViews mamutViews = new MamutViews();
+		final Context context = appModel.getContext();
+		if ( context != null )
+		{
+			final PluginService pluginService = context.getService( PluginService.class );
+			final List< PluginInfo< MamutViewFactory > > infos = pluginService.getPluginsOfType( MamutViewFactory.class );
+			for ( final PluginInfo< MamutViewFactory > info : infos )
+			{
+				try
+				{
+					final MamutViewFactory factory = info.createInstance();
+					context.inject( factory );
+					mamutViews.register( factory, appModel );
+				}
+				catch ( final InstantiableException e )
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return mamutViews;
 	}
 
 	/**
@@ -302,77 +403,8 @@ public class WindowManager
 	private < T extends MamutViewI > List< T > getViewList( final Class< T > klass )
 	{
 		@SuppressWarnings( "unchecked" )
-		final List< T > list = ( List< T > ) mamutViews.get( klass );
+		final List< T > list = ( List< T > ) openedViews.get( klass );
 		return list;
-	}
-
-	private synchronized void addBdvWindow( final MamutViewBdv w )
-	{
-		getViewList( MamutViewBdv.class ).add( w );
-		contextProviders.add( w.getContextProvider() );
-		forEachView( v -> {
-			if ( v instanceof HasContextChooser )
-			{
-				@SuppressWarnings( "unchecked" )
-				final HasContextChooser< Spot > cc = ( HasContextChooser< Spot > ) v;
-				cc.getContextChooser().updateContextProviders( contextProviders );
-			}
-		} );
-
-		w.onClose( () -> {
-			getViewList( MamutViewBdv.class ).remove( w );
-			contextProviders.remove( w.getContextProvider() );
-			forEachView( v -> {
-				if ( v instanceof HasContextChooser )
-				{
-					@SuppressWarnings( "unchecked" )
-					final HasContextChooser< Spot > cc = ( HasContextChooser< Spot > ) v;
-					cc.getContextChooser().updateContextProviders( contextProviders );
-				}
-			} );
-		} );
-	}
-
-	private synchronized void addBBdvWindow( final MamutBranchViewBdv w )
-	{
-		getViewList( MamutBranchViewBdv.class ).add( w );
-		w.onClose( () -> getViewList( MamutBranchViewBdv.class ).remove( w ) );
-	}
-
-	private synchronized void addTsWindow( final MamutViewTrackScheme w )
-	{
-		getViewList( MamutViewTrackScheme.class ).add( w );
-		w.getContextChooser().updateContextProviders( contextProviders );
-		w.onClose( () -> {
-			getViewList( MamutViewTrackScheme.class ).remove( w );
-			w.getContextChooser().updateContextProviders( new ArrayList<>() );
-		} );
-	}
-
-	private synchronized void addBTsWindow( final MamutBranchViewTrackScheme w )
-	{
-		getViewList( MamutBranchViewTrackScheme.class ).add( w );
-		w.onClose( () -> getViewList( MamutBranchViewTrackScheme.class ).remove( w ) );
-	}
-
-	private synchronized void addTableWindow( final MamutViewTable table )
-	{
-		getViewList( MamutViewTable.class ).add( table );
-		table.getContextChooser().updateContextProviders( contextProviders );
-		table.onClose( () -> {
-			getViewList( MamutViewTable.class ).remove( table );
-			table.getContextChooser().updateContextProviders( new ArrayList<>() );
-		} );
-	}
-
-	private synchronized void addGrapherWindow( final MamutViewGrapher grapher )
-	{
-		getViewList( MamutViewGrapher.class ).add( grapher );
-		grapher.getContextChooser().updateContextProviders( contextProviders );
-		grapher.onClose( () -> {
-			getViewList( MamutViewGrapher.class ).remove( grapher );
-			grapher.getContextChooser().updateContextProviders( new ArrayList<>() );
-		} );
 	}
 
 	/**
@@ -399,288 +431,7 @@ public class WindowManager
 	 */
 	public void forEachView( final Consumer< ? super MamutViewI > action )
 	{
-		mamutViews.forEach( ( k, l ) -> l.forEach( action ) );
-	}
-
-	/**
-	 * Creates and displays a new BDV view, with default display settings.
-	 */
-	public MamutViewBdv createBigDataViewer()
-	{
-		return createBigDataViewer( new HashMap<>() );
-	}
-
-	/**
-	 * Creates and displays a new BDV view, using a map to specify the display
-	 * settings.
-	 * <p>
-	 * The display settings are specified as a map of strings to objects. The
-	 * accepted key and value types are:
-	 * <ul>
-	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
-	 * elements: x, y, width and height.
-	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
-	 * group id.
-	 * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
-	 * whether the settings panel is visible on this view.
-	 * <li><code>'BdvState'</code> &rarr; a XML Element that specifies the BDV
-	 * window state. See {@link ViewerPanel#stateToXml()} and
-	 * {@link ViewerPanel#stateFromXml(org.jdom2.Element)} for more information.
-	 * <li><code>'BdvTransform'</code> &rarr; an {@link AffineTransform3D} that
-	 * specifies the view point.
-	 * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
-	 * feature or tag coloring will be ignored.
-	 * <li><code>'TagSet'</code> &rarr; a string specifying the name of the
-	 * tag-set to use for coloring. If not <code>null</code>, the coloring will
-	 * be done using the tag-set.
-	 * <li><code>'FeatureColorMode'</code> &rarr; a String specifying the name
-	 * of the feature color mode to use for coloring. If not <code>null</code>,
-	 * the coloring will be done using the feature color mode.
-	 * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether
-	 * the colorbar is visible for tag-set and feature-based coloring.
-	 * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying
-	 * the position of the colorbar.
-	 * </ul>
-	 * 
-	 * @param guiState
-	 *            the map of settings.
-	 */
-	public MamutViewBdv createBigDataViewer( final Map< String, Object > guiState )
-	{
-		final MamutViewBdv view = new MamutViewBdvFactory().show( appModel, guiState );
-		addBdvWindow( view );
-		bdvViewCreatedListeners.list.forEach( l -> l.bdvViewCreated( view ) );
-		return view;
-	}
-
-	/**
-	 * Creates and displays a new TrackScheme view, with default display
-	 * settings.
-	 */
-	public MamutViewTrackScheme createTrackScheme()
-	{
-		return createTrackScheme( new HashMap<>() );
-	}
-
-	/**
-	 * Creates and displays a new BDV view, using a map to specify the display
-	 * settings.
-	 * <p>
-	 * The display settings are specified as a map of strings to objects. The
-	 * accepted key and value types are:
-	 * <ul>
-	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
-	 * elements: x, y, width and height.
-	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
-	 * group id.
-	 * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
-	 * whether the settings panel is visible on this view.
-	 * <li><code>'TrackSchemeTransform'</code> &rarr; a {@link ScreenTransform}
-	 * that defines the starting view zone in TrackScheme.
-	 * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
-	 * feature or tag coloring will be ignored.
-	 * <li><code>'TagSet'</code> &rarr; a string specifying the name of the
-	 * tag-set to use for coloring. If not <code>null</code>, the coloring will
-	 * be done using the tag-set.
-	 * <li><code>'FeatureColorMode'</code> &rarr; a @link String specifying the
-	 * name of the feature color mode to use for coloring. If not
-	 * <code>null</code>, the coloring will be done using the feature color
-	 * mode.
-	 * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether
-	 * the colorbar is visible for tag-set and feature-based coloring.
-	 * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying
-	 * the position of the colorbar.
-	 * </ul>
-	 * 
-	 * @param guiState
-	 *            the map of settings.
-	 */
-	public MamutViewTrackScheme createTrackScheme( final Map< String, Object > guiState )
-	{
-		final MamutViewTrackScheme view = new MamutViewTrackSchemeFactory().show( appModel, guiState );
-		addTsWindow( view );
-		return view;
-	}
-
-	/**
-	 * Creates and displays a new Table or a Selection Table view, using a map
-	 * to specify the display settings.
-	 * <p>
-	 * The display settings are specified as a map of strings to objects. The
-	 * accepted key and value types are:
-	 * <ul>
-	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
-	 * elements: x, y, width and height.
-	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
-	 * group id.
-	 * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
-	 * whether the settings panel is visible on this view.
-	 * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
-	 * feature or tag coloring will be ignored.
-	 * <li><code>'TagSet'</code> &rarr; a string specifying the name of the
-	 * tag-set to use for coloring. If not <code>null</code>, the coloring will
-	 * be done using the tag-set.
-	 * <li><code>'FeatureColorMode'</code> &rarr; a @link String specifying the
-	 * name of the feature color mode to use for coloring. If not
-	 * <code>null</code>, the coloring will be done using the feature color
-	 * mode.
-	 * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether
-	 * the colorbar is visible for tag-set and feature-based coloring.
-	 * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying
-	 * the position of the colorbar.
-	 * </ul>
-	 * 
-	 * @param guiState
-	 *            the map of settings.
-	 */
-	public MamutViewTable createTable( final boolean selectionOnly, final Map< String, Object > guiState )
-	{
-
-		final MamutViewFactory< ? > factory = selectionOnly
-				? new MamutViewSelectionTableFactory()
-				: new MamutViewTableFactory();
-		final MamutViewTable view = ( MamutViewTable ) factory.show( appModel, guiState );
-		addTableWindow( view );
-		return view;
-	}
-
-	/**
-	 * Creates and display a new Table or Selection Table view with default
-	 * settings.
-	 *
-	 * @param selectionOnly
-	 *            if <code>true</code>, the table will only display the current
-	 *            content of the selection, and will listen to its changes. If
-	 *            <code>false</code>, the table will display the full graph
-	 *            content, listen to its changes, and will be able to edit the
-	 *            selection.
-	 * @return a new table view.
-	 */
-	public MamutViewTable createTable( final boolean selectionOnly )
-	{
-		return createTable( selectionOnly, Collections.emptyMap() );
-	}
-
-	/**
-	 * Creates and displays a new Grapher view, with default display settings.
-	 */
-	public MamutViewGrapher createGrapher()
-	{
-		return createGrapher( new HashMap<>() );
-	}
-
-	/**
-	 * Creates and displays a new Grapher view, using a map to specify the
-	 * display settings.
-	 * <p>
-	 * The display settings are specified as a map of strings to objects. The
-	 * accepted key and value types are:
-	 * <ul>
-	 * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
-	 * elements: x, y, width and height.
-	 * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
-	 * group id.
-	 * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
-	 * whether the settings panel is visible on this view.
-	 * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
-	 * feature or tag coloring will be ignored.
-	 * <li><code>'TagSet'</code> &rarr; a string specifying the name of the
-	 * tag-set to use for coloring. If not <code>null</code>, the coloring will
-	 * be done using the tag-set.
-	 * <li><code>'FeatureColorMode'</code> &rarr; a @link String specifying the
-	 * name of the feature color mode to use for coloring. If not
-	 * <code>null</code>, the coloring will be done using the feature color
-	 * mode.
-	 * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether
-	 * the colorbar is visible for tag-set and feature-based coloring.
-	 * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying
-	 * the position of the colorbar.
-	 * <li><code>'GrapherTransform'</code> &rarr; a
-	 * {@link org.mastodon.views.grapher.datagraph.ScreenTransform} specifying
-	 * the region to initially zoom on the XY plot.
-	 * 
-	 * </ul>
-	 * 
-	 * @param guiState
-	 *            the map of settings.
-	 */
-	public MamutViewGrapher createGrapher( final Map< String, Object > guiState )
-	{
-		final MamutViewGrapher view = new MamutViewGrapherFactory().show( appModel, guiState );
-		addGrapherWindow( view );
-		return view;
-	}
-
-	/**
-	 * Creates and displays a new Branch-BDV view, with default display
-	 * settings. The branch version of this view displays the branch graph.
-	 */
-	public MamutBranchViewBdv createBranchBigDataViewer()
-	{
-		return createBranchBigDataViewer( new HashMap<>() );
-	}
-
-	/**
-	 * Creates and displays a new Branch-BDV view, using a map to specify the
-	 * display settings.
-	 * 
-	 * @see #createBigDataViewer(Map)
-	 * @param guiState
-	 *            the settings map.
-	 */
-	public MamutBranchViewBdv createBranchBigDataViewer( final Map< String, Object > guiState )
-	{
-		final MamutBranchViewBdv view = new MamutBranchViewBdvFactory().show( appModel, guiState );
-		addBBdvWindow( view );
-		return view;
-	}
-
-	/**
-	 * Creates and displays a new Branch-TrackScheme view, with default display
-	 * settings. The branch version of this view displays the branch graph.
-	 */
-	public MamutBranchViewTrackScheme createBranchTrackScheme()
-	{
-		return createBranchTrackScheme( new HashMap<>() );
-	}
-
-	/**
-	 * Creates and displays a new Branch-TrackScheme view, using a map to
-	 * specify the display settings.
-	 * 
-	 * @see #createTrackScheme(Map)
-	 * @param guiState
-	 *            the settings map.
-	 */
-	public MamutBranchViewTrackScheme createBranchTrackScheme( final Map< String, Object > guiState )
-	{
-		final MamutBranchViewTrackScheme view = new MamutBranchViewTrackSchemeFactory().show( appModel, guiState );
-		addBTsWindow( view );
-		return view;
-	}
-
-	/**
-	 * Creates and displays a new Hierarchy-TrackScheme view, with default
-	 * display settings.
-	 */
-	public MamutBranchViewTrackScheme createHierarchyTrackScheme()
-	{
-		return createHierarchyTrackScheme( new HashMap<>() );
-	}
-
-	/**
-	 * Creates and displays a new Hierarchy-TrackScheme view, using a map to
-	 * specify the display settings.
-	 * 
-	 * @see #createTrackScheme(Map)
-	 * @param guiState
-	 *            the settings map.
-	 */
-	public MamutBranchViewTrackScheme createHierarchyTrackScheme( final Map< String, Object > guiState )
-	{
-		final MamutBranchViewTrackSchemeHierarchy view = new MamutBranchViewTrackSchemeHierarchyFactory().show( appModel, guiState );
-		addBTsWindow( view );
-		return view;
+		openedViews.forEach( ( k, l ) -> l.forEach( action ) );
 	}
 
 	/**
@@ -753,16 +504,41 @@ public class WindowManager
 		settings.dispose();
 	}
 
+	/**
+	 * Exposes the preferences dialog, in which configuration options are
+	 * listed.
+	 * 
+	 * @return the preferences dialog.
+	 */
 	public PreferencesDialog getPreferencesDialog()
 	{
 		return settings;
 	}
 
+	/**
+	 * Exposes the collection of view factories used to create views from this
+	 * window manager.
+	 * 
+	 * @return the view factories.
+	 */
+	public MamutViews getViewFactories()
+	{
+		return mamutViews;
+	}
+
+	/**
+	 * Discovers and build command descriptions. Manually add descriptions for
+	 * the views managed by {@link MamutViews}.
+	 * 
+	 * @return the command descriptions object.
+	 */
 	private CommandDescriptions buildCommandDescriptions()
 	{
 		final CommandDescriptionsBuilder builder = new CommandDescriptionsBuilder();
 		appModel.getContext().inject( builder );
 		builder.discoverProviders();
+		// Manually declare command descriptions.
+		builder.addManually( mamutViews.getCommandDescriptions(), KeyConfigContexts.MASTODON );
 		return builder.build();
 	}
 
@@ -770,14 +546,16 @@ public class WindowManager
 	 * Classes that implement {@link BdvViewCreatedListener} get a notification
 	 * when a new {@link MamutViewBdv} instance is created.
 	 */
-	public interface BdvViewCreatedListener
+	public interface ViewCreatedListener< T extends MamutViewI >
 	{
-		void bdvViewCreated( final MamutViewBdv view );
+		void viewCreated( final T view );
 	}
 
-	public Listeners< BdvViewCreatedListener > bdvViewCreatedListeners()
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	public < T extends MamutViewI > Listeners.List< ViewCreatedListener< T > > viewCreatedListeners( final Class< T > klass )
 	{
-		return bdvViewCreatedListeners;
+		final Listeners listeners = creationListeners.computeIfAbsent( klass, v -> new Listeners.SynchronizedList<>() );
+		return ( Listeners.List< ViewCreatedListener< T > > ) listeners;
 	}
 
 	/*
@@ -794,26 +572,10 @@ public class WindowManager
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open a new BigDataViewer view." );
-			descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open a new TrackScheme view." );
-			descriptions.add( NEW_TABLE_VIEW, NEW_TABLE_VIEW_KEYS, "Open a new table view. "
-					+ "The table displays the full data." );
-			descriptions.add( NEW_SELECTION_TABLE_VIEW, NEW_SELECTION_TABLE_VIEW_KEYS,
-					"Open a new selection table view. "
-							+ "The table only displays the current selection and "
-							+ "is updated as the selection changes." );
 			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
 			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
 			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS,
 					"Show the feature computation dialog." );
-			descriptions.add( NEW_BRANCH_BDV_VIEW, NEW_BRANCH_BDV_VIEW_KEYS, "Open a new branch BigDataViewer view." );
-			descriptions.add( NEW_BRANCH_TRACKSCHEME_VIEW, NEW_BRANCH_TRACKSCHEME_VIEW_KEYS,
-					"Open a new branch TrackScheme view." );
-			descriptions.add( NEW_HIERARCHY_TRACKSCHEME_VIEW, NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS,
-					"Open a new hierarchy TrackScheme view." );
-			descriptions.add( OPEN_ONLINE_DOCUMENTATION, OPEN_ONLINE_DOCUMENTATION_KEYS,
-					"Open the online documentation in a web browser." );
-			descriptions.add( NEW_GRAPHER_VIEW, NEW_GRAPHER_VIEW_KEYS, "Open a new Grapher view." );
 		}
 	}
 }

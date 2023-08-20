@@ -205,6 +205,7 @@ public class MamutViewTrackScheme
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 
 		MainWindow.addMenus( menu, actionMap );
+		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				viewMenu(
 						colorMenu( coloringMenuHandle ),

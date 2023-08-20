@@ -15,14 +15,44 @@ import javax.swing.JViewport;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.AbstractMamutViewFactory;
 import org.mastodon.mamut.views.MamutViewFactory;
+import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = MamutViewFactory.class )
+/**
+ * Factory to create and display Tables.
+ * <p>
+ * The GUI state is specified as a map of strings to objects. The accepted key
+ * and value types are:
+ * <ul>
+ * <li><code>'FramePosition'</code> &rarr; an <code>int[]</code> array of 4
+ * elements: x, y, width and height.
+ * <li><code>'LockGroupId'</code> &rarr; an integer that specifies the lock
+ * group id.
+ * <li><code>'SettingsPanelVisible'</code> &rarr; a boolean that specifies
+ * whether the settings panel is visible on this view.
+ * <li><code>'NoColoring'</code> &rarr; a boolean; if <code>true</code>, the
+ * feature or tag coloring will be ignored.
+ * <li><code>'TagSet'</code> &rarr; a string specifying the name of the tag-set
+ * to use for coloring. If not <code>null</code>, the coloring will be done
+ * using the tag-set.
+ * <li><code>'FeatureColorMode'</code> &rarr; a @link String specifying the name
+ * of the feature color mode to use for coloring. If not <code>null</code>, the
+ * coloring will be done using the feature color mode.
+ * <li><code>'ColorbarVisible'</code> &rarr; a boolean specifying whether the
+ * colorbar is visible for tag-set and feature-based coloring.
+ * <li><code>'ColorbarPosition'</code> &rarr; a {@link Position} specifying the
+ * position of the colorbar.
+ * </ul>
+ */
+@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 2 )
 public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTable >
 {
+
+	public static final String NEW_TABLE_VIEW = "new full table view";
 
 	/**
 	 * Key that specifies whether a table is currently showing the vertex table.
@@ -130,6 +160,11 @@ public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTa
 	public void restoreGuiState( final MamutViewTable view, final Map< String, Object > guiState )
 	{
 		super.restoreGuiState( view, guiState );
+		restoreGuiStateTable( view, guiState );
+	}
+
+	static final void restoreGuiStateTable( final MamutViewTable view, final Map< String, Object > guiState )
+	{
 		// Restore branch-graph coloring.
 		@SuppressWarnings( "unchecked" )
 		final Map< String, Object > branchGraphGuiState = ( Map< String, Object > ) guiState.getOrDefault( BRANCH_GRAPH, Collections.EMPTY_MAP );
@@ -159,5 +194,29 @@ public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTa
 						viewPos[ 1 ] ) );
 			}
 		}
+	}
+
+	@Override
+	public String getCommandName()
+	{
+		return NEW_TABLE_VIEW;
+	}
+
+	@Override
+	public String getCommandDescription()
+	{
+		return "Open a new table view.";
+	}
+
+	@Override
+	public String getCommandMenuText()
+	{
+		return "New Data table";
+	}
+
+	@Override
+	public Class< MamutViewTable > getViewClass()
+	{
+		return MamutViewTable.class;
 	}
 }

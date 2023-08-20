@@ -40,6 +40,14 @@ import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.views.bdv.MamutBranchViewBdv;
+import org.mastodon.mamut.views.bdv.MamutViewBdv;
+import org.mastodon.mamut.views.grapher.MamutViewGrapher;
+import org.mastodon.mamut.views.table.MamutViewSelectionTable;
+import org.mastodon.mamut.views.table.MamutViewTable;
+import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackScheme;
+import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeHierarchy;
+import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme;
 import org.mastodon.util.GarbageCollectionUtils;
 import org.scijava.Context;
 
@@ -90,6 +98,7 @@ public class GarbageCollectionTest
 	 * Open a Mastodon project with all different windows and close it.
 	 * Return a weak reference to the ModelGraph.
 	 */
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	static WeakReference< ModelGraph > openAndCloseMastodon( final Context context )
 	{
 		try
@@ -101,14 +110,18 @@ public class GarbageCollectionTest
 
 			final ModelGraph modelGraph = appModel.getModel().getGraph();
 			final WindowManager windowManager = appModel.getWindowManager();
-			windowManager.createTrackScheme();
-			windowManager.createBranchTrackScheme();
-			windowManager.createHierarchyTrackScheme();
-			windowManager.createBigDataViewer();
-			windowManager.createBranchBigDataViewer();
-			windowManager.createGrapher();
-			windowManager.createTable( false );
-			windowManager.createTable( true );
+			final Class[] viewClasses = new Class[] {
+					MamutViewTrackScheme.class,
+					MamutBranchViewTrackScheme.class,
+					MamutBranchViewTrackSchemeHierarchy.class,
+					MamutViewBdv.class,
+					MamutBranchViewBdv.class,
+					MamutViewGrapher.class,
+					MamutViewTable.class,
+					MamutViewSelectionTable.class
+			};
+			for ( final Class klass : viewClasses )
+				windowManager.createView( klass );
 			windowManager.editTagSets();
 			mainWindow.close();
 			return new WeakReference<>( modelGraph );
