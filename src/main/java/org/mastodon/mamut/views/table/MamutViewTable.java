@@ -180,6 +180,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		final JMenuHandle colorBranchMenuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		MainWindow.addMenus( menu, actionMap );
+		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),

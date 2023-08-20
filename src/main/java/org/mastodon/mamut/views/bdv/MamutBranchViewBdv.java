@@ -129,6 +129,7 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 		MainWindow.addMenus( menu, actionMap );
+		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),

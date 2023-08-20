@@ -102,8 +102,6 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 	 */
 	private final ColoringModelMain< Spot, Link, BranchSpot, BranchLink > coloringModel;
 
-	private final DataDisplayPanel< Spot, Link > dataDisplayPanel;
-
 	private final ColorBarOverlay colorbarOverlay;
 
 	public MamutViewGrapher( final ProjectModel appModel )
@@ -156,7 +154,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				groupHandle,
 				contextChooser,
 				options );
-		dataDisplayPanel = frame.getDataDisplayPanel();
+		final DataDisplayPanel< Spot, Link > dataDisplayPanel = frame.getDataDisplayPanel();
 
 		// If they are available, set some sensible defaults for the feature.
 		final FeatureSpecPair spvx = new FeatureSpecPair( SpotFrameFeature.SPEC,
@@ -203,6 +201,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 
 		MainWindow.addMenus( menu, actionMap );
+		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				viewMenu(
 						colorMenu( coloringMenuHandle ),
@@ -242,15 +241,17 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		dataDisplayPanel.getDisplay().requestFocusInWindow();
 	}
 
+	@SuppressWarnings( "unchecked" )
+	@Override
+	public DataDisplayFrame< Spot, Link > getFrame()
+	{
+		return ( DataDisplayFrame< Spot, Link > ) super.getFrame();
+	}
+
 	@Override
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
-	}
-
-	public DataDisplayPanel< Spot, Link > getDataDisplayPanel()
-	{
-		return dataDisplayPanel;
 	}
 
 	@Override

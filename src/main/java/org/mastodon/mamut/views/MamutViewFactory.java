@@ -56,4 +56,43 @@ public interface MamutViewFactory< T extends MamutViewI > extends SciJavaPlugin
 	 * @return a new map.
 	 */
 	public Map< String, Object > getGuiState( final T view );
+
+	/**
+	 * Returns the name of the command that will use this factory to create a
+	 * new view.
+	 * 
+	 * @return the command name.
+	 */
+	public String getCommandName();
+
+	/**
+	 * Returns the list of default keystrokes of the command.
+	 * 
+	 * @return the default keystrokes0
+	 */
+	public String[] getCommandKeys();
+
+	/**
+	 * Returns the description of the command.
+	 * 
+	 * @return the description.
+	 */
+	public String getCommandDescription();
+
+	/**
+	 * Returns the text of the command to appear in menus.
+	 * 
+	 * @return the menu text for the command.
+	 */
+	public String getCommandMenuText();
+
+	/**
+	 * Returns the class of the view created by this factory.
+	 * <p>
+	 * This class is used as key in several maps or to get the right factory
+	 * when deserializing GUI state.
+	 * 
+	 * @return the view class.
+	 */
+	public Class< T > getViewClass();
 }

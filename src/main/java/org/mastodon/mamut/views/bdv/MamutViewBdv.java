@@ -271,6 +271,7 @@ public class MamutViewBdv
 		tracksOverlay.getVisibilities().getVisibilityListeners().add( contextProvider::notifyContextChanged );
 
 		MainWindow.addMenus( menu, actionMap );
+		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),

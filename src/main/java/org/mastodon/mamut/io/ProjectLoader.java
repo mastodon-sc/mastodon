@@ -353,7 +353,7 @@ public class ProjectLoader
 		{
 			return open( project, context, true, false );
 		}
-		catch ( final SpimDataIOException | RuntimeException e )
+		catch ( final SpimDataIOException | UnknownHostException e )
 		{
 			if ( getUserPermissionToOpenDummyData( project, e, parentComponent ) )
 				return open( project, context, true, true );
@@ -501,7 +501,7 @@ public class ProjectLoader
 				if ( null == windowsEl )
 					return;
 
-				MamutViewStateSerialization.fromXml( windowsEl, windowManager );
+				MamutViewStateXMLSerialization.fromXml( windowsEl, windowManager );
 			}
 			catch ( final FileNotFoundException fnfe )
 			{

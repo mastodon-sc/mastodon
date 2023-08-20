@@ -50,12 +50,18 @@ public abstract class AbstractMamutViewFactory< T extends MamutViewI > implement
 	}
 
 	@Override
+	public String[] getCommandKeys()
+	{
+		// Default: not mapped.
+		return new String[] { "not mapped" };
+	}
+
+	@Override
 	public Map< String, Object > getGuiState( final T view )
 	{
 		final Map< String, Object > guiState = new LinkedHashMap<>();
 
-		// View type -> TODO change so that we can fish the right factory when
-		// deserializing.
+		// View type.
 		guiState.put( VIEW_TYPE_KEY, view.getClass().getSimpleName() );
 
 		// Frame position and size.

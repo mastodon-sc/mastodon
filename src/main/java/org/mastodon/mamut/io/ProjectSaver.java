@@ -27,6 +27,7 @@ import org.jdom2.output.XMLOutputter;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.mamut.MainWindow;
+import org.mastodon.mamut.MamutViews;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
@@ -37,6 +38,7 @@ import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
@@ -250,7 +252,15 @@ public class ProjectSaver
 		final Element guiRoot = new Element( GUI_TAG );
 		guiRoot.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
 		final Element windows = new Element( WINDOWS_TAG );
-		windowManager.forEachView( ( view ) -> windows.addContent( MamutViewStateSerialization.toXml( view ) ) );
+		final MamutViews viewFactories = windowManager.getViewFactories();
+		windowManager.forEachView( ( view ) -> {
+			@SuppressWarnings( "rawtypes" )
+			final MamutViewFactory factory = viewFactories.getFactory( view.getClass() );
+			@SuppressWarnings( "unchecked" )
+			final Element element = MamutViewStateXMLSerialization.toXml( factory.getGuiState( view ) );
+			windows.addContent( element );
+
+		} );
 		guiRoot.addContent( windows );
 		final Document doc = new Document( guiRoot );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
