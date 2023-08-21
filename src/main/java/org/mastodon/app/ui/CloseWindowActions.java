@@ -38,10 +38,11 @@ import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -59,7 +60,7 @@ public class CloseWindowActions
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
 		}
 
 		@Override

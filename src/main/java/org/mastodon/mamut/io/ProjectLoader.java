@@ -27,14 +27,12 @@ import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.mastodon.util.DummySpimData;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
-import org.scijava.ui.behaviour.KeyPressedManager;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -157,9 +155,7 @@ public class ProjectLoader
 	{
 		final SharedBigDataViewerData imageData = loadImageData( project, authorizeSubstituteDummyData );
 		final Model model = loadModel( project, context );
-		final KeyPressedManager keyPressedManager = new KeyPressedManager();
-		final KeymapManager keymapManager = new KeymapManager();
-		final ProjectModel appModel = new ProjectModel( context, model, imageData, keyPressedManager, keymapManager, project );
+		final ProjectModel appModel = ProjectModel.create( context, model, imageData, project );
 
 		if ( restoreGUIState )
 			loadGUI( project, appModel.getWindowManager() );

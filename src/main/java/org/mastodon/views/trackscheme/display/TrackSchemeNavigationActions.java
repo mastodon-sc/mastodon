@@ -30,16 +30,17 @@ package org.mastodon.views.trackscheme.display;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 
 /**
@@ -96,7 +97,7 @@ public class TrackSchemeNavigationActions
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

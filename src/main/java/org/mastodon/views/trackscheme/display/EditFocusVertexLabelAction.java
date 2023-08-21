@@ -43,9 +43,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.model.FocusModel;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.util.KeyConfigUtils;
 import org.mastodon.views.trackscheme.ScreenTransform;
@@ -53,6 +52,8 @@ import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -80,7 +81,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

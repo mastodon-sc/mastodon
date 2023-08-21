@@ -55,13 +55,14 @@ import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.util.NumberListeners;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.InputTriggerMap;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
@@ -96,7 +97,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

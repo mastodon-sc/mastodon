@@ -46,11 +46,12 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.ui.keymap.Keymap;
-import org.mastodon.ui.keymap.KeymapManager;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
+
+import bdv.ui.keymap.Keymap;
+import bdv.ui.keymap.KeymapManager;
 
 /**
  * Data class that stores the data model and the application model of a Mastodon
@@ -159,7 +160,7 @@ public class MastodonAppModel<
 		this.keymapManager = keymapManager;
 		this.keyConfigContexts = keyConfigContexts;
 
-		final InputTriggerConfig keyconf = keymapManager.getForwardDefaultKeymap().getConfig();
+		final InputTriggerConfig keyconf = keymapManager.getForwardSelectedKeymap().getConfig();
 		this.modelActions = new Actions( keyconf, keyConfigContexts );
 	}
 
@@ -190,7 +191,7 @@ public class MastodonAppModel<
 
 	public Keymap getKeymap()
 	{
-		return keymapManager.getForwardDefaultKeymap();
+		return keymapManager.getForwardSelectedKeymap();
 	}
 
 	public String[] getKeyConfigContexts()

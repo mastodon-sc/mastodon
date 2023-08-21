@@ -40,8 +40,6 @@ import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
-import org.mastodon.ui.keymap.CommandDescriptions;
-import org.mastodon.ui.keymap.CommandDescriptionsBuilder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.NavigationActionsDescriptions;
@@ -57,6 +55,8 @@ import org.mastodon.views.trackscheme.display.TrackSchemeNavigationBehaviours;
 import org.scijava.Context;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.ui.keymap.Keymap;

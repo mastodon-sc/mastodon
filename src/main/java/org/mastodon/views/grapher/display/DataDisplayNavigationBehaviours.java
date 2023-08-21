@@ -34,11 +34,10 @@ import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.collection.RefSet;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
@@ -49,6 +48,8 @@ import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
@@ -97,7 +98,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.GRAPHER );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.GRAPHER );
 		}
 
 		@Override

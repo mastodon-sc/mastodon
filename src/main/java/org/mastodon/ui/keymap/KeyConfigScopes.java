@@ -1,8 +1,8 @@
-/*-
+/*
  * #%L
- * Mastodon
+ * BigDataViewer core classes with minimal dependencies.
  * %%
- * Copyright (C) 2014 - 2022 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2012 - 2022 BigDataViewer developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,31 +28,17 @@
  */
 package org.mastodon.ui.keymap;
 
-import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
 
 /**
- * Implementations of this interface, annotated with {@code	@Plugin}, are
- * discovered for automatically adding actions/behaviours to a
- * {@link CommandDescriptions} map.
- * <p>
- * (This allows to discover Plugin shortcuts which cannot be hardwired into the
- * default keymap.)
- * 
- * TODO: remove and replace by the BDV equivalent.
+ * The CommandDescription scope used for actions and behaviours defined in the
+ * Mastodon apps.
  */
-public abstract class CommandDescriptionProvider implements SciJavaPlugin
+public interface KeyConfigScopes
 {
-	private final String[] expectedContexts;
-
-	protected CommandDescriptionProvider( final String... expectedContexts )
-	{
-		this.expectedContexts = expectedContexts;
-	}
-
-	public String[] getExpectedContexts()
-	{
-		return expectedContexts;
-	}
-
-	public abstract void getCommandDescriptions( final CommandDescriptions descriptions );
+	/**
+	 * The CommandDescription scope used for actions and behaviours defined in
+	 * Mastodon apps.
+	 */
+	CommandDescriptionProvider.Scope MASTODON = new CommandDescriptionProvider.Scope( "org.mastodon" );
 }

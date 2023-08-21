@@ -35,12 +35,13 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
@@ -73,7 +74,8 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
+			// TODO Grapher as well?
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

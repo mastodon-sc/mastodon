@@ -41,12 +41,13 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.model.AbstractSpot;
-import org.mastodon.ui.keymap.Keymap;
-import org.mastodon.ui.keymap.Keymap.UpdateListener;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.WrappedActionMap;
 import org.scijava.ui.behaviour.util.WrappedInputMap;
+
+import bdv.ui.keymap.Keymap;
+import bdv.ui.keymap.Keymap.UpdateListener;
 
 /**
  * A {@link MastodonView} that is displayed in a {@link ViewFrame} (instead of

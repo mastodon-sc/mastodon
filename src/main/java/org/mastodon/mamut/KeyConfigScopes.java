@@ -1,8 +1,8 @@
-/*-
+/*
  * #%L
- * Mastodon
+ * BigDataViewer core classes with minimal dependencies.
  * %%
- * Copyright (C) 2014 - 2022 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2012 - 2022 BigDataViewer developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,36 +26,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.ui.keymap;
+package org.mastodon.mamut;
+
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
 
 /**
- * Constants that specify to what context an action or a behaviour applies.
+ * The CommandDescription scope used for actions and behaviours defined in the
+ * Mamut app of Mastodon.
  */
-public interface KeyConfigContexts
+public interface KeyConfigScopes
 {
 	/**
-	 * The action or behaviour applies to the whole app.
+	 * The CommandDescription scope used for actions and behaviours defined in
+	 * the Mamut app of Mastodon.
 	 */
-	String MASTODON = "mastodon";
-
-	/**
-	 * The action or behaviour applies to the TrackScheme views.
-	 */
-	String TRACKSCHEME = "trackscheme";
-
-	/**
-	 * The action or behaviour applies to the BDV views.
-	 */
-	String BIGDATAVIEWER = "bdv";
-
-	/**
-	 * The action or behaviour applies to the table views.
-	 */
-	String TABLE = "table";
-
-	/**
-	 * The action or behaviour applies to the grapher views.
-	 */
-	String GRAPHER = "grapher";
-
+	CommandDescriptionProvider.Scope MAMUT = new CommandDescriptionProvider.Scope( "org.mastodon.mamut" );
 }

@@ -31,8 +31,7 @@ package org.mastodon.views.trackscheme.display;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.LineageTreeLayout.LayoutListener;
@@ -44,6 +43,8 @@ import org.mastodon.views.trackscheme.display.animate.InterpolateScreenTransform
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
@@ -83,7 +84,7 @@ public class InertialScreenTransformEventHandler
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

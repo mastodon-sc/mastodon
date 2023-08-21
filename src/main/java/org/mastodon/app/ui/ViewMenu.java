@@ -43,12 +43,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.MenuElement;
 
-import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.util.HasSelectedState;
 import org.mastodon.util.MastodonDebugSettings;
 import org.scijava.ui.behaviour.InputTrigger;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
+
+import bdv.ui.keymap.Keymap;
 
 public class ViewMenu
 {

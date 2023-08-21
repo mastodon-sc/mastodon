@@ -30,7 +30,8 @@ package org.mastodon.mamut.plugin;
 
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.ui.keymap.Keymap;
+
+import bdv.ui.keymap.Keymap;
 
 public class MamutPlugins extends MastodonPlugins< MamutPlugin, ProjectModel >
 {

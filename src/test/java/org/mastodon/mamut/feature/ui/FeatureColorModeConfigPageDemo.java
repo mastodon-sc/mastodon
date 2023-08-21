@@ -41,8 +41,9 @@ import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.ui.keymap.Keymap;
 import org.scijava.Context;
+
+import bdv.ui.keymap.Keymap;
 
 public class FeatureColorModeConfigPageDemo
 {
