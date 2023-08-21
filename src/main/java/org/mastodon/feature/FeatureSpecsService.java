@@ -34,9 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.scijava.plugin.Parameter;
+import org.mastodon.app.plugin.PluginUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 
@@ -46,8 +45,6 @@ import org.scijava.service.SciJavaService;
 @Plugin( type = FeatureSpecsService.class )
 public class FeatureSpecsService extends AbstractService implements SciJavaService
 {
-	@Parameter
-	private PluginService pluginService;
 
 	private final List< FeatureSpec< ?, ? > > specs = new ArrayList<>();
 
@@ -78,8 +75,7 @@ public class FeatureSpecsService extends AbstractService implements SciJavaServi
 	 */
 	private void discover()
 	{
-		for ( final FeatureSpec< ?, ? > spec : pluginService.createInstancesOfType( FeatureSpec.class ) )
-			add( spec );
+		PluginUtils.forEachDiscoveredPlugin( FeatureSpec.class, this::add, getContext() );
 	}
 
 	/**

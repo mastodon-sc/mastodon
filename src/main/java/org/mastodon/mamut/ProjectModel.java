@@ -28,10 +28,11 @@
  */
 package org.mastodon.mamut;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import org.mastodon.app.MastodonAppModel;
 import org.mastodon.app.plugin.MastodonAppPluginModel;
+import org.mastodon.app.plugin.PluginUtils;
 import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
@@ -47,10 +48,7 @@ import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
-import org.scijava.InstantiableException;
 import org.scijava.listeners.Listeners;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -197,23 +195,12 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 		if ( context == null )
 			return;
 
-		final PluginService pluginService = context.getService( PluginService.class );
-		final List< PluginInfo< MamutPlugin > > infos = pluginService.getPluginsOfType( MamutPlugin.class );
 		final MamutPlugins plugins = ( MamutPlugins ) getPlugins();
-		for ( final PluginInfo< MamutPlugin > info : infos )
-		{
-			try
-			{
-				final MamutPlugin plugin = info.createInstance();
-				context.inject( plugin );
-				plugins.register( plugin );
-			}
-			catch ( final InstantiableException e )
-			{
-				e.printStackTrace();
-			}
-		}
-		plugins.setAppPluginModel( this );
+		final Consumer< MamutPlugin > registerAction = ( mp ) -> {
+			mp.setAppPluginModel( this );
+			plugins.register( mp );
+		};
+		PluginUtils.forEachDiscoveredPlugin( MamutPlugin.class, registerAction, context );
 	}
 
 	public MamutProject getProject()
