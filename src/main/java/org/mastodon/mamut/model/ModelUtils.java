@@ -48,11 +48,31 @@ import org.mastodon.mamut.feature.SpotTrackIDFeature;
 public class ModelUtils
 {
 
+	/**
+	 * Returns a string representation of the specified model content as two
+	 * text table.
+	 * <p>
+	 * The full model is printed.
+	 * 
+	 * @param model
+	 *            the model.
+	 * @return a String representation of the model.
+	 */
 	public static final String dump( final Model model )
 	{
 		return dump( model, Long.MAX_VALUE );
 	}
 
+	/**
+	 * Returns a string representation of the specified model content as two
+	 * text table.
+	 * <p>
+	 * The printed content is limited to the specified number of lines.
+	 * 
+	 * @param model
+	 *            the model.
+	 * @return a String representation of the model.
+	 */
 	public static final String dump( final Model model, final long maxLines )
 	{
 		final String spaceUnits = Optional.ofNullable( model.getSpaceUnits() ).orElse( "" );
