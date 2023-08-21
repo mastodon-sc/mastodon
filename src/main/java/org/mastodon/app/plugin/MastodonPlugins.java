@@ -79,12 +79,6 @@ public class MastodonPlugins< PL extends MastodonPlugin< M >, M extends Mastodon
 		}
 	}
 
-	public void setAppPluginModel( final M model )
-	{
-		for ( final PL plugin : plugins )
-			plugin.setAppPluginModel( model );
-	}
-
 	public void addMenus( final ViewMenu menu )
 	{
 		addMenus( menu, pluginActions.getActionMap() );
