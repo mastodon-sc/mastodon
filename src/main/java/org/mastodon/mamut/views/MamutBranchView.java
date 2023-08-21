@@ -79,12 +79,13 @@ import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.ui.keymap.Keymap;
-import org.mastodon.ui.keymap.Keymap.UpdateListener;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.WrappedActionMap;
 import org.scijava.ui.behaviour.util.WrappedInputMap;
+
+import bdv.ui.keymap.Keymap;
+import bdv.ui.keymap.Keymap.UpdateListener;
 
 /**
  * Mother class for views that display the branch graph of the model.

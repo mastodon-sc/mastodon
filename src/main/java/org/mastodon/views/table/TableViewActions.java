@@ -35,13 +35,14 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -216,7 +217,7 @@ public class TableViewActions
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TABLE );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TABLE );
 		}
 
 		@Override

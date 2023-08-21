@@ -39,14 +39,12 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory;
-import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.mastodon.util.BDVImagePlusExporter;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
-import org.scijava.ui.behaviour.KeyPressedManager;
 
 import ij.gui.ImageWindow;
 
@@ -361,9 +359,7 @@ public class ProjectSaver
 		// And now the weird part: we reopen the project we just created.
 		final Context context = appModel.getContext();
 		final Model model = appModel.getModel();
-		final KeyPressedManager keyPressedManager = new KeyPressedManager();
-		final KeymapManager keymapManager = new KeymapManager();
-		final ProjectModel nmam = new ProjectModel( context, model, sbdv, keyPressedManager, keymapManager, np );
+		final ProjectModel nmam = ProjectModel.create( context, model, sbdv, np );
 
 		// Close the old one.
 		appModel.close();

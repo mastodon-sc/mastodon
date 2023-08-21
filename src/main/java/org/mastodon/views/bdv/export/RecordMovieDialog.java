@@ -64,11 +64,8 @@ import javax.swing.event.ChangeListener;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.ui.coloring.ColorBarOverlay;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.ui.keymap.Keymap;
-import org.mastodon.ui.keymap.Keymap.UpdateListener;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.DialogType;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
@@ -76,11 +73,15 @@ import org.mastodon.views.bdv.BigDataViewerMamut;
 import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.scijava.plugin.Plugin;
 import org.scijava.prefs.DefaultPrefService;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 
 import bdv.export.ProgressWriter;
 import bdv.tools.ToggleDialogAction;
+import bdv.ui.keymap.Keymap;
+import bdv.ui.keymap.Keymap.UpdateListener;
 import bdv.util.DelayedPackDialog;
 import bdv.viewer.OverlayRenderer;
 import bdv.viewer.ViewerPanel;
@@ -107,7 +108,7 @@ public class RecordMovieDialog extends DelayedPackDialog implements OverlayRende
 
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER );
 		}
 
 		@Override

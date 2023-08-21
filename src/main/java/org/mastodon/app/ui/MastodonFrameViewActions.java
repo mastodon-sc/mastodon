@@ -33,12 +33,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.util.HasSelectedState;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -60,7 +61,8 @@ public class MastodonFrameViewActions
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.TABLE );
+			// TODO add grapher?
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.TABLE );
 		}
 
 		@Override

@@ -68,12 +68,13 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.util.KeyConfigUtils;
 import org.mastodon.views.trackscheme.util.AlphanumCompare;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -152,7 +153,8 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.TABLE );
+			// TODO add grapher
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.TABLE );
 		}
 
 		@Override

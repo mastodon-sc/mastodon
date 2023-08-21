@@ -72,9 +72,9 @@ import org.mastodon.mamut.views.table.MamutViewTableFactory;
 import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeFactory;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.util.RunnableActionPair;
 
+import bdv.ui.keymap.Keymap;
 import net.miginfocom.swing.MigLayout;
 
 public class MainWindow extends JFrame
@@ -185,7 +185,7 @@ public class MainWindow extends JFrame
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
-		final Keymap keymap = appModel.getKeymapManager().getForwardDefaultKeymap();
+		final Keymap keymap = appModel.getKeymapManager().getForwardSelectedKeymap();
 		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, projectActionMap );

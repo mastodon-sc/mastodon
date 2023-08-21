@@ -31,8 +31,6 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import bdv.viewer.OverlayRenderer;
-import bdv.viewer.TransformListener;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -42,9 +40,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.Vertex;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.trackscheme.ScreenTransform;
@@ -53,8 +50,13 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
+
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
 
 /**
  * Bahviour for creating / deleting links in TrackScheme views.
@@ -83,7 +85,7 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

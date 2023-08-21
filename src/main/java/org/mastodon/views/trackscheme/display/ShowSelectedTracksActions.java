@@ -36,10 +36,9 @@ import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.collection.ref.RefSetImp;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.TreeUtils;
 import org.mastodon.views.trackscheme.LexicographicalVertexOrder;
@@ -47,6 +46,8 @@ import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -77,7 +78,7 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
 		}
 
 		@Override
@@ -172,7 +173,7 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 		final RefSet< TrackSchemeVertex > selectedNodes = new RefSetImp<>( viewGraph.getVertexPool() );
 		selectedNodes.addAll( selectionModel.getSelectedVertices() );
 		addEdgeTargets( selectedNodes, selectionModel.getSelectedEdges() );
-		RefList< TrackSchemeVertex > sortedRoots = LexicographicalVertexOrder.sort( viewGraph, viewGraph.getRoots() );
+		final RefList< TrackSchemeVertex > sortedRoots = LexicographicalVertexOrder.sort( viewGraph, viewGraph.getRoots() );
 		return TreeUtils.findSelectedSubtreeRoots( viewGraph, sortedRoots, selectedNodes );
 	}
 
@@ -195,7 +196,7 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 
 	private RefList< TrackSchemeVertex > getRealRoots( final RefSet< TrackSchemeVertex > selectedNodes )
 	{
-		RefSet< TrackSchemeVertex > roots = TreeUtils.findRootsOfTheGivenNodes( viewGraph, selectedNodes );
+		final RefSet< TrackSchemeVertex > roots = TreeUtils.findRootsOfTheGivenNodes( viewGraph, selectedNodes );
 		return LexicographicalVertexOrder.sort( viewGraph, roots );
 	}
 }

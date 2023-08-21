@@ -40,8 +40,11 @@ import javax.swing.WindowConstants;
 
 import org.mastodon.views.bdv.NavigationActionsDescriptions;
 import org.scijava.listeners.Listeners;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 
+import bdv.ui.keymap.Keymap;
+import bdv.ui.keymap.KeymapManager;
 import bdv.ui.settings.ModificationListener;
 import bdv.ui.settings.SelectAndEditProfileSettingsPage;
 import bdv.ui.settings.SettingsPanel;
@@ -65,7 +68,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 	{
 		super(
 				treePath,
-				new StyleProfileManager<>( styleManager, new KeymapManager( false ) ),
+				new StyleProfileManager<>( styleManager, new MastodonKeymapManager() ),
 				new KeymapProfileEditPanel( styleManager.getSelectedStyle(), commandDescriptions ) );
 	}
 
@@ -133,7 +136,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 
 	public static void main( final String[] args )
 	{
-		final KeymapManager styleManager = new KeymapManager();
+		final KeymapManager styleManager = new MastodonKeymapManager();
 
 		final SettingsPanel settings = new SettingsPanel();
 

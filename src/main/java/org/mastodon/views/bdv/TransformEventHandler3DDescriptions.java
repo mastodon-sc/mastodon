@@ -28,11 +28,13 @@
  */
 package org.mastodon.views.bdv;
 
-import bdv.TransformEventHandler3D;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
+
+import bdv.TransformEventHandler3D;
 
 /*
  * Command descriptions for all commands provided by {@link TransformEventHandler3D}
@@ -42,7 +44,7 @@ public class TransformEventHandler3DDescriptions extends CommandDescriptionProvi
 {
 	public TransformEventHandler3DDescriptions()
 	{
-		super( KeyConfigContexts.BIGDATAVIEWER );
+		super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER );
 	}
 
 	@Override

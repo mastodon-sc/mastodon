@@ -47,10 +47,10 @@ import org.mastodon.app.ui.CloseWindowActions;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
-import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.util.Actions;
 
+import bdv.ui.keymap.Keymap;
 import bdv.ui.settings.SimpleSettingsPage;
 import bdv.ui.settings.SingleSettingsPanel;
 

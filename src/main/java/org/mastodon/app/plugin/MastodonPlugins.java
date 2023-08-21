@@ -37,8 +37,9 @@ import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.ui.keymap.Keymap;
 import org.scijava.ui.behaviour.util.Actions;
+
+import bdv.ui.keymap.Keymap;
 
 public class MastodonPlugins< PL extends MastodonPlugin< M >, M extends MastodonAppPluginModel >
 {

@@ -35,16 +35,17 @@ import javax.swing.ImageIcon;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.HasLabel;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 import org.mastodon.views.trackscheme.display.TrackSchemeZoom;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
@@ -76,7 +77,7 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.GRAPHER );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.GRAPHER );
 		}
 
 		@Override

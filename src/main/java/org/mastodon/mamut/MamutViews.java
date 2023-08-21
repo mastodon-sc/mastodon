@@ -43,9 +43,9 @@ import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
 import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.MamutViewI;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 
 /**
  * Manages a collection of view factories.
@@ -104,7 +104,7 @@ public class MamutViews
 
 	CommandDescriptionProvider getCommandDescriptions()
 	{
-		return new CommandDescriptionProvider( KeyConfigContexts.MASTODON )
+		return new CommandDescriptionProvider( KeyConfigScopes.MAMUT, KeyConfigContexts.MASTODON )
 		{
 
 			@Override

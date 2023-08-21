@@ -44,14 +44,15 @@ import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.ui.keymap.Keymap;
-import org.mastodon.ui.keymap.KeymapManager;
+import org.mastodon.ui.keymap.MastodonKeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
 import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
 
+import bdv.ui.keymap.Keymap;
+import bdv.ui.keymap.KeymapManager;
 import bdv.viewer.animate.MessageOverlayAnimator;
 
 /**
@@ -82,7 +83,7 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 
 	private final MamutProject project;
 
-	public ProjectModel(
+	private ProjectModel(
 			final Context context,
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,
@@ -95,8 +96,8 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 				model,
 				keyPressedManager,
 				keymapManager,
-				new MamutPlugins( keymapManager.getForwardDefaultKeymap() ),
-				new Actions( keymapManager.getForwardDefaultKeymap().getConfig(), KeyConfigContexts.MASTODON ),
+				new MamutPlugins( keymapManager.getForwardSelectedKeymap() ),
+				new Actions( keymapManager.getForwardSelectedKeymap().getConfig(), KeyConfigContexts.MASTODON ),
 				new String[] { KeyConfigContexts.MASTODON } );
 
 		this.context = context;
@@ -106,7 +107,7 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 
-		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
+		final Keymap keymap = keymapManager.getForwardSelectedKeymap();
 		keymap.updateListeners().add( () -> {
 			getProjectActions().updateKeyConfig( keymap.getConfig() );
 			getModelActions().updateKeyConfig( keymap.getConfig() );
@@ -206,5 +207,12 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 	public MamutProject getProject()
 	{
 		return project;
+	}
+
+	public static ProjectModel create( final Context context, final Model model, final SharedBigDataViewerData imageData, final MamutProject project )
+	{
+		final KeyPressedManager keyPressedManager = new KeyPressedManager();
+		final KeymapManager keymapManager = new MastodonKeymapManager( true );
+		return new ProjectModel( context, model, imageData, keyPressedManager, keymapManager, project );
 	}
 }

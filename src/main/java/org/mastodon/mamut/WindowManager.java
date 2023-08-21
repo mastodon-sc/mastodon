@@ -63,12 +63,7 @@ import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
-import org.mastodon.ui.keymap.CommandDescriptionsBuilder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.ui.keymap.Keymap;
-import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
@@ -77,10 +72,15 @@ import org.mastodon.views.context.HasContextProvider;
 import org.scijava.Context;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionsBuilder;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
 import bdv.tools.ToggleDialogAction;
+import bdv.ui.keymap.Keymap;
+import bdv.ui.keymap.KeymapManager;
 import bdv.ui.settings.SettingsPage;
 import bdv.util.InvokeOnEDT;
 
@@ -154,7 +154,7 @@ public class WindowManager
 		final Context context = appModel.getContext();
 		final Model model = appModel.getModel();
 		final KeymapManager keymapManager = appModel.getKeymapManager();
-		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
+		final Keymap keymap = keymapManager.getForwardSelectedKeymap();
 		final Actions projectActions = appModel.getProjectActions();
 
 		/*
@@ -562,7 +562,7 @@ public class WindowManager
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MAMUT, KeyConfigContexts.MASTODON );
 		}
 
 		@Override

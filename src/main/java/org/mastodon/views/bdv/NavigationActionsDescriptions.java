@@ -28,12 +28,6 @@
  */
 package org.mastodon.views.bdv;
 
-import java.util.stream.IntStream;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
-import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.scijava.plugin.Plugin;
-
 import static bdv.viewer.NavigationActions.ALIGN_XY_PLANE;
 import static bdv.viewer.NavigationActions.ALIGN_XY_PLANE_KEYS;
 import static bdv.viewer.NavigationActions.ALIGN_XZ_PLANE;
@@ -55,6 +49,14 @@ import static bdv.viewer.NavigationActions.TOGGLE_INTERPOLATION_KEYS;
 import static bdv.viewer.NavigationActions.TOGGLE_SOURCE_VISIBILITY;
 import static bdv.viewer.NavigationActions.TOGGLE_SOURCE_VISIBILITY_KEYS_FORMAT;
 
+import java.util.stream.IntStream;
+
+import org.mastodon.ui.keymap.KeyConfigScopes;
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
+
 /*
  * Command descriptions for all commands provided by {@link NavigationActions}
  */
@@ -63,7 +65,7 @@ public class NavigationActionsDescriptions extends CommandDescriptionProvider
 {
 	public NavigationActionsDescriptions()
 	{
-		super( KeyConfigContexts.BIGDATAVIEWER );
+		super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER );
 	}
 
 	@Override

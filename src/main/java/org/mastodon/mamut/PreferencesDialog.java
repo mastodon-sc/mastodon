@@ -42,9 +42,9 @@ import javax.swing.WindowConstants;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.CloseWindowActions;
 import org.mastodon.app.ui.SettingsPanel;
-import org.mastodon.ui.keymap.Keymap;
 import org.scijava.ui.behaviour.util.Actions;
 
+import bdv.ui.keymap.Keymap;
 import bdv.ui.settings.SettingsPage;
 
 public class PreferencesDialog extends JDialog

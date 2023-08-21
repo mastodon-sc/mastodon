@@ -32,16 +32,17 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.graph.algorithm.traversal.UndirectedDepthFirstIterator;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions.NavigatorEtiquette;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 
 /**
@@ -99,7 +100,7 @@ public class DataDisplayNavigationActions
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.GRAPHER );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.GRAPHER );
 		}
 
 		@Override
