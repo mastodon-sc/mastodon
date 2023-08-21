@@ -50,6 +50,7 @@ import java.util.function.Consumer;
 import javax.swing.ActionMap;
 import javax.swing.JDialog;
 
+import org.mastodon.app.plugin.PluginUtils;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
@@ -74,11 +75,8 @@ import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.context.HasContextProvider;
 import org.scijava.Context;
-import org.scijava.InstantiableException;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -346,25 +344,8 @@ public class WindowManager
 	private MamutViews discoverViewFactories()
 	{
 		final MamutViews mamutViews = new MamutViews();
-		final Context context = appModel.getContext();
-		if ( context != null )
-		{
-			final PluginService pluginService = context.getService( PluginService.class );
-			final List< PluginInfo< MamutViewFactory > > infos = pluginService.getPluginsOfType( MamutViewFactory.class );
-			for ( final PluginInfo< MamutViewFactory > info : infos )
-			{
-				try
-				{
-					final MamutViewFactory factory = info.createInstance();
-					context.inject( factory );
-					mamutViews.register( factory, appModel );
-				}
-				catch ( final InstantiableException e )
-				{
-					e.printStackTrace();
-				}
-			}
-		}
+		final Consumer< MamutViewFactory > registerViewFactory = factory -> mamutViews.register( factory, appModel );
+		PluginUtils.forEachDiscoveredPlugin( MamutViewFactory.class, registerViewFactory, appModel.getContext() );
 		return mamutViews;
 	}
 
@@ -377,31 +358,14 @@ public class WindowManager
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	private void discoverManagers()
 	{
-		final Context context = appModel.getContext();
-		if ( context != null )
-		{
-			final PluginService pluginService = context.getService( PluginService.class );
-			final List< PluginInfo< StyleManagerFactory > > infos = pluginService.getPluginsOfType( StyleManagerFactory.class );
-			for ( final PluginInfo< StyleManagerFactory > info : infos )
-			{
-				try
-				{
-					final StyleManagerFactory factory = info.createInstance();
-					context.inject( factory );
-					// Add to managers map.
-					final Object manager = factory.create( appModel );
-					managers.put( factory.getManagerClass(), manager );
-					// Settings page.
-					if ( factory.hasSettingsPage() )
-						settings.addPage( factory.createSettingsPage( manager ) );
-				}
-				catch ( final InstantiableException e )
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-
+		final Consumer< StyleManagerFactory > registerAction = ( factory ) -> {
+			final Object manager = factory.create( appModel );
+			managers.put( factory.getManagerClass(), manager );
+			// Settings page.
+			if ( factory.hasSettingsPage() )
+				settings.addPage( factory.createSettingsPage( manager ) );
+		};
+		PluginUtils.forEachDiscoveredPlugin( StyleManagerFactory.class, registerAction, appModel.getContext() );
 	}
 
 	/**
@@ -450,7 +414,7 @@ public class WindowManager
 	 */
 	public < T extends MamutViewI > void forEachView( final Class< T > klass, final Consumer< T > action )
 	{
-		Optional.of( getViewList( klass ) )
+		Optional.ofNullable( getViewList( klass ) )
 				.orElse( Collections.emptyList() )
 				.forEach( action );
 	}
