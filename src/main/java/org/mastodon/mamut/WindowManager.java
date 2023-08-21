@@ -54,6 +54,7 @@ import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
+import org.mastodon.mamut.managers.StyleManagerFactory;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory;
@@ -68,17 +69,10 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
-import org.mastodon.util.ToggleDialogAction;
-import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
-import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.context.HasContextProvider;
-import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
-import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
-import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
-import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.listeners.Listeners;
@@ -88,6 +82,8 @@ import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
+import bdv.tools.ToggleDialogAction;
+import bdv.ui.settings.SettingsPage;
 import bdv.util.InvokeOnEDT;
 
 /**
@@ -164,11 +160,17 @@ public class WindowManager
 		final Actions projectActions = appModel.getProjectActions();
 
 		/*
-		 * Create and store managers.
+		 * Preferences dialog.
 		 */
-		managers.put( TrackSchemeStyleManager.class, new TrackSchemeStyleManager() );
-		managers.put( DataDisplayStyleManager.class, new DataDisplayStyleManager() );
-		managers.put( RenderSettingsManager.class, new RenderSettingsManager() );
+		this.settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
+		projectActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
+
+		/*
+		 * Create, discover and store managers.
+		 */
+
+		discoverManagers();
 		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
 		managers.put( FeatureColorModeManager.class, featureColorModeManager );
 		final MamutFeatureProjectionsManager featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
@@ -206,18 +208,12 @@ public class WindowManager
 		projectActions.namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
 		/*
-		 * Preferences dialog.
+		 * Extra settings pages.
 		 */
-		this.settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
-		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", getManager( TrackSchemeStyleManager.class ) ) );
-		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", getManager( RenderSettingsManager.class ) ) );
-		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", getManager( DataDisplayStyleManager.class ) ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
 		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager,
 				featureProjectionsManager, "Spot", "Link" ) );
 		settings.pack();
-		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
-		projectActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
 		/*
 		 * Tag-set and feature computation dialogs
@@ -370,6 +366,42 @@ public class WindowManager
 			}
 		}
 		return mamutViews;
+	}
+
+	/**
+	 * Discovers the {@link StyleManagerFactory}s present at runtime. Uses them
+	 * to instantiate the managers, and registers them into the
+	 * {@link #managers} map. If the factory can return a {@link SettingsPage},
+	 * create one and add it to the {@link #settings} page.
+	 */
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	private void discoverManagers()
+	{
+		final Context context = appModel.getContext();
+		if ( context != null )
+		{
+			final PluginService pluginService = context.getService( PluginService.class );
+			final List< PluginInfo< StyleManagerFactory > > infos = pluginService.getPluginsOfType( StyleManagerFactory.class );
+			for ( final PluginInfo< StyleManagerFactory > info : infos )
+			{
+				try
+				{
+					final StyleManagerFactory factory = info.createInstance();
+					context.inject( factory );
+					// Add to managers map.
+					final Object manager = factory.create( appModel );
+					managers.put( factory.getManagerClass(), manager );
+					// Settings page.
+					if ( factory.hasSettingsPage() )
+						settings.addPage( factory.createSettingsPage( manager ) );
+				}
+				catch ( final InstantiableException e )
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+
 	}
 
 	/**
