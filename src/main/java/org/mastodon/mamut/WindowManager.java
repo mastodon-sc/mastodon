@@ -255,7 +255,7 @@ public class WindowManager
 	 *            the GUI state map.
 	 * @return a new instance of the view, that was shown.
 	 */
-	public < T extends MamutViewI > T createView( final Class< T > klass, final Map< String, Object > guiState )
+	public synchronized < T extends MamutViewI > T createView( final Class< T > klass, final Map< String, Object > guiState )
 	{
 		// Get the right factory.
 		final MamutViewFactory< T > factory = mamutViews.getFactory( klass );
