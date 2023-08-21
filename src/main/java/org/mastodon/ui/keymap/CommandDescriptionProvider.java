@@ -37,6 +37,8 @@ import org.scijava.plugin.SciJavaPlugin;
  * <p>
  * (This allows to discover Plugin shortcuts which cannot be hardwired into the
  * default keymap.)
+ * 
+ * TODO: remove and replace by the BDV equivalent.
  */
 public abstract class CommandDescriptionProvider implements SciJavaPlugin
 {
