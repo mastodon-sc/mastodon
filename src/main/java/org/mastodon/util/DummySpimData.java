@@ -39,6 +39,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.io.FilenameUtils;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+
 import bdv.spimdata.SequenceDescriptionMinimal;
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
@@ -56,12 +63,6 @@ import net.imglib2.FinalDimensions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Cast;
-import org.apache.commons.io.FilenameUtils;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 /**
  * Create dummy {@link SpimDataMinimal} with a {@code BasicImgLoader} that
@@ -77,7 +78,7 @@ public class DummySpimData
 {
 	static public final String DUMMY = ".dummy";
 
-	public static boolean isDummyString( String name )
+	public static boolean isDummyString( final String name )
 	{
 		return name.endsWith( DUMMY );
 	}
@@ -141,7 +142,6 @@ public class DummySpimData
 				IntStream.range( 0, t ).mapToObj( tp -> new ViewRegistration( tp, 0, calib ) )
 						.collect( Collectors.toList() ) );
 		return new SpimDataMinimal( basePath, sequenceDescription, viewRegistrations );
-
 	}
 
 	private static double get( final String[] parts, final String key, final double defaultValue )
@@ -159,40 +159,40 @@ public class DummySpimData
 	}
 
 	/**
-	 * @return a {@link AbstractSpimData} object. Pixel sizes,
-	 * image sizes, and image transformations are read from the given
-	 * BigDataViewer XML. The actual image data is not loaded, all pixels
-	 * are black. {@link DummyImgLoader} is used to provide the dummy image data.
+	 * @return a {@link AbstractSpimData} object. Pixel sizes, image sizes, and
+	 *         image transformations are read from the given BigDataViewer XML.
+	 *         The actual image data is not loaded, all pixels are black.
+	 *         {@link DummyImgLoader} is used to provide the dummy image data.
 	 */
-	public static AbstractSpimData< ? > fromSpimDataXml( String spimDataXmlFilename )
+	public static AbstractSpimData< ? > fromSpimDataXml( final String spimDataXmlFilename )
 			throws SpimDataException
 	{
-		File modifiedXml = getBdvXmlWithoutImageLoader( new File( spimDataXmlFilename ) );
-		AbstractSpimData< ? > spimData = new XmlIoSpimDataMinimal().load( modifiedXml.getAbsolutePath() );
+		final File modifiedXml = getBdvXmlWithoutImageLoader( new File( spimDataXmlFilename ) );
+		final AbstractSpimData< ? > spimData = new XmlIoSpimDataMinimal().load( modifiedXml.getAbsolutePath() );
 		setDummyImageLoader( spimData );
 		return spimData;
 	}
 
-	private static File getBdvXmlWithoutImageLoader( File xmlFile )
+	private static File getBdvXmlWithoutImageLoader( final File xmlFile )
 	{
-		Document document = readXml( xmlFile );
+		final Document document = readXml( xmlFile );
 		document.getRootElement()
 				.getChild( "SequenceDescription" )
 				.removeChildren( "ImageLoader" );
 		return writeXmlToTmpFile( document );
 	}
 
-	private static void setDummyImageLoader( AbstractSpimData< ? > spimData )
+	private static void setDummyImageLoader( final AbstractSpimData< ? > spimData )
 	{
 		final AbstractSequenceDescription< ?, ?, BasicImgLoader > seq =
 				Cast.unchecked( spimData.getSequenceDescription() );
-		List< Dimensions > dimensionsList = new ArrayList<>();
-		for ( BasicViewSetup basicViewSetup : seq.getViewSetupsOrdered() )
+		final List< Dimensions > dimensionsList = new ArrayList<>();
+		for ( final BasicViewSetup basicViewSetup : seq.getViewSetupsOrdered() )
 			dimensionsList.add( basicViewSetup.getSize() );
 		seq.setImgLoader( new DummyImgLoader( new UnsignedShortType(), dimensionsList ) );
 	}
 
-	private static Document readXml( File xmlFile )
+	private static Document readXml( final File xmlFile )
 	{
 		try
 		{
@@ -204,11 +204,11 @@ public class DummySpimData
 		}
 	}
 
-	private static File writeXmlToTmpFile( Document document )
+	private static File writeXmlToTmpFile( final Document document )
 	{
 		try
 		{
-			File file = File.createTempFile( "dataset-dummy-img-loader", ".xml" );
+			final File file = File.createTempFile( "dataset-dummy-img-loader", ".xml" );
 			file.deleteOnExit();
 			try (OutputStream outputStream = new FileOutputStream( file ))
 			{
@@ -216,7 +216,7 @@ public class DummySpimData
 			}
 			return file;
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{
 			throw new RuntimeException( e );
 		}
