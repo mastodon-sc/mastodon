@@ -107,8 +107,6 @@ public class SharedBigDataViewerData
 
 	private final AbstractSpimData< ? > spimData;
 
-	private final int numTimepoints;
-
 	private final CacheControl cache;
 
 	private final boolean is2D;
@@ -119,14 +117,12 @@ public class SharedBigDataViewerData
 			final AbstractSpimData< ? > spimData,
 			final ArrayList< SourceAndConverter< ? > > sources,
 			final ConverterSetups setups,
-			final CacheControl cache,
-			final int numTimepoints )
+			final CacheControl cache )
 	{
 		this.spimData = spimData;
 		this.sources = sources;
 		this.setups = setups;
 		this.cache = cache;
-		this.numTimepoints = numTimepoints;
 
 		final ViewerOptions lvo = new ViewerOptions();
 		this.inputTriggerConfig = ( lvo.values.getInputTriggerConfig() != null )
@@ -344,7 +340,7 @@ public class SharedBigDataViewerData
 
 	public int getNumTimepoints()
 	{
-		return numTimepoints;
+		return spimData.getSequenceDescription().getTimePoints().size();
 	}
 
 	public CacheControl getCache()
@@ -388,7 +384,7 @@ public class SharedBigDataViewerData
 		for ( final SourceAndConverter< ? > sac : sources )
 		{
 			final Source< ? > source = sac.getSpimSource();
-			for ( int t = 0; t < numTimepoints; t++ )
+			for ( int t = 0; t < getNumTimepoints(); t++ )
 			{
 				if ( source.isPresent( t ) )
 				{
@@ -433,7 +429,6 @@ public class SharedBigDataViewerData
 			final AbstractSpimData< ? > spimData )
 	{
 		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
-		final int numTimepoints = seq.getTimePoints().size();
 		final CacheControl cache = ( ( ViewerImgLoader ) seq.getImgLoader() ).getCacheControl();
 
 		final ArrayList< ConverterSetup > converterSetups = new ArrayList<>();
@@ -450,8 +445,7 @@ public class SharedBigDataViewerData
 				spimData,
 				sources,
 				setups,
-				cache,
-				numTimepoints );
+				cache );
 
 		if ( !sbdv.tryLoadSettings( spimDataXmlFilename ) )
 		{
@@ -593,8 +587,7 @@ public class SharedBigDataViewerData
 				spimData,
 				sources,
 				css,
-				cache,
-				numTimepoints );
+				cache );
 
 		// File info
 		final FileInfo fileInfo = imp.getOriginalFileInfo();

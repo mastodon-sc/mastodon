@@ -69,10 +69,6 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 
 	private final SharedBigDataViewerData sharedBdvData;
 
-	private final int minTimepoint;
-
-	private final int maxTimepoint;
-
 	private final BranchGraphSynchronizer branchGraphSync;
 
 	private final Listeners.List< CloseListener > closeListeners = new Listeners.List<>();
@@ -104,8 +100,6 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 		this.project = project;
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
-		this.minTimepoint = 0;
-		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 
 		final Keymap keymap = keymapManager.getForwardSelectedKeymap();
 		keymap.updateListeners().add( () -> {
@@ -162,14 +156,24 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 		return sharedBdvData;
 	}
 
+	/**
+	 * Returns the starting time-point <b>in the image data</b>.
+	 * 
+	 * @return the starting time-point.
+	 */
 	public int getMinTimepoint()
 	{
-		return minTimepoint;
+		return 0;
 	}
 
+	/**
+	 * Returns the last time-point <b>in the image data</b>.
+	 * 
+	 * @return the last time-point.
+	 */
 	public int getMaxTimepoint()
 	{
-		return maxTimepoint;
+		return sharedBdvData.getNumTimepoints() - 1;
 	}
 
 	public BranchGraphSynchronizer getBranchGraphSync()
