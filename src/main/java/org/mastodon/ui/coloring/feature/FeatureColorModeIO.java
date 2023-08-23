@@ -28,6 +28,8 @@
  */
 package org.mastodon.ui.coloring.feature;
 
+import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +47,6 @@ import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
-
-import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 
 public class FeatureColorModeIO
 {
@@ -115,11 +115,12 @@ public class FeatureColorModeIO
 			try
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
-				final String featureKey = ( String ) mapping.get( "feature" );
-				final String projectionKey = ( String ) mapping.get( "projection" );
-				final TargetType targetType = TargetType.valueOf( ( String ) mapping.get( "target" ) );
-				final int i0 = ( Integer ) mapping.get( "i0" );
-				final int i1 = ( Integer ) mapping.get( "i1" );
+				final String featureKey = getString( mapping, "feature" );
+				final String projectionKey = getString( mapping, "projection" );
+				final String targetStr = getString( mapping, "target" );
+				final TargetType targetType = TargetType.valueOf( targetStr );
+				final int i0 = getInt( mapping, "i0" ); 
+				final int i1 = getInt( mapping, "i1" );
 				return new FeatureProjectionId( featureKey, projectionKey, targetType, i0, i1 );
 			}
 			catch ( final Exception e )
@@ -174,18 +175,18 @@ public class FeatureColorModeIO
 			try
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
-				final String name = ( String ) mapping.get( "name" );
+				final String name = getString( mapping, "name" ); 
 				final FeatureColorMode s = FeatureColorMode.defaultMode().copy( name );
 
-				s.setVertexColorMode( VertexColorMode.valueOf( ( String ) mapping.get( "vertexColorMode" ) ) );
+				s.setVertexColorMode( VertexColorMode.valueOf( getString( mapping, "vertexColorMode" ) ) );
 				s.setVertexFeatureProjection( ( FeatureProjectionId ) mapping.get( "vertexFeatureProjection" ) );
-				s.setVertexColorMap( ( String ) mapping.get( "vertexColorMap" ) );
+				s.setVertexColorMap( getString( mapping, "vertexColorMap" ) );
 				@SuppressWarnings( "unchecked" )
 				final List< Double > vertexRange = ( List< Double > ) mapping.get( "vertexFeatureRange" );
 				s.setVertexRange( vertexRange.get( 0 ), vertexRange.get( 1 ) );
-				s.setEdgeColorMode( EdgeColorMode.valueOf( ( String ) mapping.get( "edgeColorMode" ) ) );
+				s.setEdgeColorMode( EdgeColorMode.valueOf( getString( mapping, "edgeColorMode" ) ) );
 				s.setEdgeFeatureProjection( ( FeatureProjectionId ) mapping.get( "edgeFeatureProjection" ) );
-				s.setEdgeColorMap( ( String ) mapping.get( "edgeColorMap" ) );
+				s.setEdgeColorMap( getString( mapping, "edgeColorMap" ) );
 				@SuppressWarnings( "unchecked" )
 				final List< Double > edgeRange = ( List< Double > ) mapping.get( "edgeFeatureRange" );
 				s.setEdgeRange( edgeRange.get( 0 ), edgeRange.get( 1 ) );
