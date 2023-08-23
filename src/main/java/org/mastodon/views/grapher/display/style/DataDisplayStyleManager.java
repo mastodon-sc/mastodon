@@ -28,20 +28,12 @@
  */
 package org.mastodon.views.grapher.display.style;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.mastodon.io.IOUtils;
+import org.mastodon.app.ui.AbstractStyleManagerYaml;
 import org.yaml.snakeyaml.Yaml;
-
-import bdv.ui.settings.style.AbstractStyleManager;
 
 /**
  * Manages a collection of {@link DataDisplayStyle}.
@@ -52,7 +44,7 @@ import bdv.ui.settings.style.AbstractStyleManager;
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch
  */
-public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplayStyleManager, DataDisplayStyle >
+public class DataDisplayStyleManager extends AbstractStyleManagerYaml< DataDisplayStyleManager, DataDisplayStyle >
 {
 	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/datagraphstyles.yaml";
 
@@ -111,62 +103,15 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 		loadStyles( STYLE_FILE );
 	}
 
-	public void loadStyles( final String filename )
-	{
-		userStyles.clear();
-		final Set< String > names =
-				builtinStyles.stream().map( DataDisplayStyle::getName ).collect( Collectors.toSet() );
-		try
-		{
-			final FileReader input = new FileReader( filename );
-			final Yaml yaml = DataDisplayStyleIO.createYaml();
-			final Iterable< Object > objs = yaml.loadAll( input );
-			String defaultStyleName = null;
-			for ( final Object obj : objs )
-			{
-				if ( obj instanceof String )
-				{
-					defaultStyleName = ( String ) obj;
-				}
-				else if ( obj instanceof DataDisplayStyle )
-				{
-					final DataDisplayStyle ts = ( DataDisplayStyle ) obj;
-					if ( null != ts )
-					{
-						// sanity check: style names must be unique
-						if ( names.add( ts.getName() ) )
-							userStyles.add( ts );
-					}
-				}
-			}
-			setSelectedStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
-		}
-		catch ( final FileNotFoundException e )
-		{}
-	}
-
 	@Override
 	public void saveStyles()
 	{
 		saveStyles( STYLE_FILE );
 	}
 
-	public void saveStyles( final String filename )
+	@Override
+	protected Yaml createYaml()
 	{
-		try
-		{
-			IOUtils.mkdirs( filename );
-			final FileWriter output = new FileWriter( filename );
-			final Yaml yaml = DataDisplayStyleIO.createYaml();
-			final ArrayList< Object > objects = new ArrayList<>();
-			objects.add( selectedStyle.getName() );
-			objects.addAll( userStyles );
-			yaml.dumpAll( objects.iterator(), output );
-			output.close();
-		}
-		catch ( final IOException e )
-		{
-			e.printStackTrace();
-		}
+		return DataDisplayStyleIO.createYaml();
 	}
 }
