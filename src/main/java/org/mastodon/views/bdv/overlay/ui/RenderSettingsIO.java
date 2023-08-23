@@ -223,47 +223,30 @@ public class RenderSettingsIO
 				final String name = ( String ) mapping.get( "name" );
 				final RenderSettings s = RenderSettings.defaultStyle().copy( name );
 
-				s.setName( ( String ) mapping.getOrDefault( "name", "CouldNotFindName" ) );
+				s.setName( getStringOrDefault( mapping, "name", "CouldNotFindName" ) );
 
-				s.setUseAntialiasing(
-						( boolean ) mapping.getOrDefault( "antialiasing", RenderSettings.DEFAULT_USE_ANTI_ALIASING ) );
-				s.setDrawLinks( ( boolean ) mapping.getOrDefault( "drawLinks", RenderSettings.DEFAULT_DRAW_LINKS ) );
-				s.setDrawLinksAheadInTime( ( boolean ) mapping.getOrDefault( "drawLinksAheadInTime",
-						RenderSettings.DEFAULT_DRAW_LINKS_AHEAD_IN_TIME ) );
-				s.setDrawArrowHeads(
-						( boolean ) mapping.getOrDefault( "drawArrowHeads", RenderSettings.DEFAULT_DRAW_ARROW_HEADS ) );
-				s.setTimeLimit(
-						( int ) mapping.getOrDefault( "timeRangeForLinks", RenderSettings.DEFAULT_LIMIT_TIME_RANGE ) );
-				s.setUseGradient(
-						( boolean ) mapping.getOrDefault( "gradientForLinks", RenderSettings.DEFAULT_USE_GRADIENT ) );
-				s.setDrawSpots( ( boolean ) mapping.getOrDefault( "drawSpots", RenderSettings.DEFAULT_DRAW_SPOTS ) );
-				s.setDrawEllipsoidSliceIntersection( ( boolean ) mapping.getOrDefault( "drawEllipsoidIntersection",
-						RenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION ) );
-				s.setDrawEllipsoidSliceProjection( ( boolean ) mapping.getOrDefault( "drawEllipsoidProjection",
-						RenderSettings.DEFAULT_DRAW_SLICE_PROJECTION ) );
-				s.setDrawSpotCenters(
-						( boolean ) mapping.getOrDefault( "drawSpotCenters", RenderSettings.DEFAULT_DRAW_POINTS ) );
-				s.setDrawSpotCentersForEllipses( ( boolean ) mapping.getOrDefault( "drawSpotCentersForEllipses",
-						RenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE ) );
-				s.setDrawSpotLabels(
-						( boolean ) mapping.getOrDefault( "drawSpotLabels", RenderSettings.DEFAULT_DRAW_SPOT_LABELS ) );
-				s.setFillSpots( ( boolean ) mapping.getOrDefault( "fillSpots", RenderSettings.DEFAULT_FILL_SPOTS ) );
-				s.setFocusLimit(
-						( double ) mapping.getOrDefault( "focusLimit", RenderSettings.DEFAULT_LIMIT_FOCUS_RANGE ) );
-				s.setFocusLimitViewRelative( ( boolean ) mapping.getOrDefault( "focusLimitViewRelative",
-						RenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE ) );
-				s.setEllipsoidFadeDepth( ( double ) mapping.getOrDefault( "ellipsoidFadeDepth",
-						RenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH ) );
-				s.setPointFadeDepth(
-						( double ) mapping.getOrDefault( "pointFadeDepth", RenderSettings.DEFAULT_POINT_FADE_DEPTH ) );
-				s.setSpotStrokeWidth( ( double ) mapping.getOrDefault( "spotStrokeWidth",
-						RenderSettings.DEFAULT_SPOT_STROKE_WIDTH ) );
-				s.setLinkStrokeWidth( ( double ) mapping.getOrDefault( "linkStrokeWidth",
-						RenderSettings.DEFAULT_LINK_STROKE_WIDTH ) );
-				s.setColorSpot(
-						( int ) mapping.getOrDefault( "colorSpot", RenderSettings.DEFAULT_COLOR_SPOT_AND_PRESENT ) );
-				s.setColorPast( ( int ) mapping.getOrDefault( "colorPast", RenderSettings.DEFAULT_COLOR_PAST ) );
-				s.setColorFuture( ( int ) mapping.getOrDefault( "colorFuture", RenderSettings.DEFAULT_COLOR_FUTURE ) );
+				s.setUseAntialiasing( getBooleanOrDefault( mapping, "antialiasing", RenderSettings.DEFAULT_USE_ANTI_ALIASING ) );
+				s.setDrawLinks( getBooleanOrDefault( mapping, "drawLinks", RenderSettings.DEFAULT_DRAW_LINKS ) );
+				s.setDrawLinksAheadInTime( getBooleanOrDefault( mapping, "drawLinksAheadInTime", RenderSettings.DEFAULT_DRAW_LINKS_AHEAD_IN_TIME ) );
+				s.setDrawArrowHeads( getBooleanOrDefault( mapping, "drawArrowHeads", RenderSettings.DEFAULT_DRAW_ARROW_HEADS ) );
+				s.setTimeLimit( getIntOrDefault( mapping, "timeRangeForLinks", RenderSettings.DEFAULT_LIMIT_TIME_RANGE ) );
+				s.setUseGradient( getBooleanOrDefault( mapping, "gradientForLinks", RenderSettings.DEFAULT_USE_GRADIENT ) );
+				s.setDrawSpots( getBooleanOrDefault( mapping, "drawSpots", RenderSettings.DEFAULT_DRAW_SPOTS ) );
+				s.setDrawEllipsoidSliceIntersection( getBooleanOrDefault( mapping, "drawEllipsoidIntersection", RenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION ) );
+				s.setDrawEllipsoidSliceProjection( getBooleanOrDefault( mapping, "drawEllipsoidProjection", RenderSettings.DEFAULT_DRAW_SLICE_PROJECTION ) );
+				s.setDrawSpotCenters( getBooleanOrDefault( mapping, "drawSpotCenters", RenderSettings.DEFAULT_DRAW_POINTS ) );
+				s.setDrawSpotCentersForEllipses( getBooleanOrDefault( mapping, "drawSpotCentersForEllipses", RenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE ) );
+				s.setDrawSpotLabels( getBooleanOrDefault( mapping, "drawSpotLabels", RenderSettings.DEFAULT_DRAW_SPOT_LABELS ) );
+				s.setFillSpots( getBooleanOrDefault( mapping, "fillSpots", RenderSettings.DEFAULT_FILL_SPOTS ) );
+				s.setFocusLimit( getDoubleOrDefault( mapping, "focusLimit", RenderSettings.DEFAULT_LIMIT_FOCUS_RANGE ) );
+				s.setFocusLimitViewRelative( getBooleanOrDefault( mapping, "focusLimitViewRelative", RenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE ) );
+				s.setEllipsoidFadeDepth( getDoubleOrDefault( mapping, "ellipsoidFadeDepth", RenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH ) );
+				s.setPointFadeDepth( getDoubleOrDefault( mapping, "pointFadeDepth", RenderSettings.DEFAULT_POINT_FADE_DEPTH ) );
+				s.setSpotStrokeWidth( getDoubleOrDefault( mapping, "spotStrokeWidth", RenderSettings.DEFAULT_SPOT_STROKE_WIDTH ) );
+				s.setLinkStrokeWidth( getDoubleOrDefault( mapping, "linkStrokeWidth", RenderSettings.DEFAULT_LINK_STROKE_WIDTH ) );
+				s.setColorSpot( getIntOrDefault( mapping, "colorSpot", RenderSettings.DEFAULT_COLOR_SPOT_AND_PRESENT ) );
+				s.setColorPast( getIntOrDefault( mapping, "colorPast", RenderSettings.DEFAULT_COLOR_PAST ) );
+				s.setColorFuture( getIntOrDefault( mapping, "colorFuture", RenderSettings.DEFAULT_COLOR_FUTURE ) );
 
 				return s;
 			}

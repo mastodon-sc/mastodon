@@ -80,7 +80,6 @@ public class TrackSchemeStyleIO
 		}
 	}
 
-	public // TODO?
 	static Yaml createYaml()
 	{
 		final DumperOptions dumperOptions = new DumperOptions();
@@ -182,10 +181,10 @@ public class TrackSchemeStyleIO
 			try
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
-				final float width = ( ( Double ) mapping.get( "width" ) ).floatValue();
-				final int cap = ( Integer ) mapping.get( "cap" );
-				final int join = ( Integer ) mapping.get( "join" );
-				final float miterlimit = ( ( Double ) mapping.get( "miterlimit" ) ).floatValue();
+				final float width = getFloat( mapping, "width" );
+				final int cap = getInt( mapping, "cap" );
+				final int join = getInt( mapping, "join" );
+				final float miterlimit = getFloat( mapping, "miterlimit" );
 				@SuppressWarnings( "unchecked" )
 				final List< Double > list = ( List< Double > ) mapping.get( "dash" );
 				float[] dash = null;
@@ -196,7 +195,7 @@ public class TrackSchemeStyleIO
 					for ( final double d : list )
 						dash[ i++ ] = ( float ) d;
 				}
-				final float dash_phase = ( ( Double ) mapping.get( "dash_phase" ) ).floatValue();
+				final float dash_phase = getFloat( mapping, "dash_phase" );
 				return new BasicStroke( width, cap, join, miterlimit, dash, dash_phase );
 			}
 			catch ( final Exception e )
@@ -242,9 +241,9 @@ public class TrackSchemeStyleIO
 			try
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
-				final String name = ( String ) mapping.get( "name" );
-				final int style = ( Integer ) mapping.get( "style" );
-				final int size = ( Integer ) mapping.get( "size" );
+				final String name = getString( mapping, "name" );
+				final int style = getInt( mapping, "style" );
+				final int size = getInt( mapping, "size" );
 				return new Font( name, style, size );
 			}
 			catch ( final Exception e )
@@ -333,68 +332,48 @@ public class TrackSchemeStyleIO
 			try
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
-				final String name = ( String ) mapping.getOrDefault( "name", "NameNotFound" );
+				final String name = getStringOrDefault( mapping, "name", "NameNotFound" );
 				final TrackSchemeStyle s = TrackSchemeStyle.defaultStyle().copy( name );
 				final TrackSchemeStyle df = TrackSchemeStyle.defaultStyle();
 
 				s.edgeColor( ( Color ) mapping.getOrDefault( "edgeColor", df.getEdgeColor() ) );
 				s.vertexFillColor( ( Color ) mapping.getOrDefault( "vertexFillColor", df.getVertexFillColor() ) );
 				s.vertexDrawColor( ( Color ) mapping.getOrDefault( "vertexDrawColor", df.getVertexDrawColor() ) );
-				s.selectedVertexFillColor(
-						( Color ) mapping.getOrDefault( "selectedVertexFillColor", df.getSelectedVertexFillColor() ) );
+				s.selectedVertexFillColor( ( Color ) mapping.getOrDefault( "selectedVertexFillColor", df.getSelectedVertexFillColor() ) );
 				s.selectedEdgeColor( ( Color ) mapping.getOrDefault( "selectedEdgeColor", df.getSelectedEdgeColor() ) );
-				s.selectedVertexDrawColor(
-						( Color ) mapping.getOrDefault( "selectedVertexDrawColor", df.getSelectedVertexDrawColor() ) );
-				s.simplifiedVertexFillColor( ( Color ) mapping.getOrDefault( "simplifiedVertexFillColor",
-						df.getSimplifiedVertexFillColor() ) );
-				s.selectedSimplifiedVertexFillColor( ( Color ) mapping.getOrDefault(
-						"selectedSimplifiedVertexFillColor", df.getSelectedSimplifiedVertexFillColor() ) );
+				s.selectedVertexDrawColor( ( Color ) mapping.getOrDefault( "selectedVertexDrawColor", df.getSelectedVertexDrawColor() ) );
+				s.simplifiedVertexFillColor( ( Color ) mapping.getOrDefault( "simplifiedVertexFillColor", df.getSimplifiedVertexFillColor() ) );
+				s.selectedSimplifiedVertexFillColor( ( Color ) mapping.getOrDefault( "selectedSimplifiedVertexFillColor", df.getSelectedSimplifiedVertexFillColor() ) );
 				s.backgroundColor( ( Color ) mapping.getOrDefault( "backgroundColor", df.getBackgroundColor() ) );
-				s.currentTimepointColor(
-						( Color ) mapping.getOrDefault( "currentTimepointColor", df.getCurrentTimepointColor() ) );
+				s.currentTimepointColor( ( Color ) mapping.getOrDefault( "currentTimepointColor", df.getCurrentTimepointColor() ) );
 				s.decorationColor( ( Color ) mapping.getOrDefault( "decorationColor", df.getDecorationColor() ) );
 				s.vertexRangeColor( ( Color ) mapping.getOrDefault( "vertexRangeColor", df.getVertexRangeColor() ) );
-				s.headerBackgroundColor(
-						( Color ) mapping.getOrDefault( "headerBackgroundColor", df.getHeaderBackgroundColor() ) );
-				s.headerDecorationColor(
-						( Color ) mapping.getOrDefault( "headerDecorationColor", df.getHeaderDecorationColor() ) );
-				s.headerCurrentTimepointColor( ( Color ) mapping.getOrDefault( "headerCurrentTimepointColor",
-						df.getCurrentTimepointColor() ) );
+				s.headerBackgroundColor( ( Color ) mapping.getOrDefault( "headerBackgroundColor", df.getHeaderBackgroundColor() ) );
+				s.headerDecorationColor( ( Color ) mapping.getOrDefault( "headerDecorationColor", df.getHeaderDecorationColor() ) );
+				s.headerCurrentTimepointColor( ( Color ) mapping.getOrDefault( "headerCurrentTimepointColor", df.getCurrentTimepointColor() ) );
 
 				s.font( ( Font ) mapping.getOrDefault( "font", df.getFont() ) );
 				s.headerFont( ( Font ) mapping.getOrDefault( "headerFont", df.getHeaderFont() ) );
 
 				s.edgeStroke( ( Stroke ) mapping.getOrDefault( "edgeStroke", df.getEdgeStroke() ) );
 				s.edgeGhostStroke( ( Stroke ) mapping.getOrDefault( "edgeGhostStroke", df.getEdgeGhostStroke() ) );
-				s.edgeHighlightStroke(
-						( Stroke ) mapping.getOrDefault( "edgeHighlightStroke", df.getEdgeHighlightStroke() ) );
+				s.edgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "edgeHighlightStroke", df.getEdgeHighlightStroke() ) );
 				s.vertexStroke( ( Stroke ) mapping.getOrDefault( "vertexStroke", df.getVertexStroke() ) );
-				s.vertexGhostStroke(
-						( Stroke ) mapping.getOrDefault( "vertexGhostStroke", df.getVertexGhostStroke() ) );
-				s.vertexHighlightStroke(
-						( Stroke ) mapping.getOrDefault( "vertexHighlightStroke", df.getVertexHighlightStroke() ) );
+				s.vertexGhostStroke( ( Stroke ) mapping.getOrDefault( "vertexGhostStroke", df.getVertexGhostStroke() ) );
+				s.vertexHighlightStroke( ( Stroke ) mapping.getOrDefault( "vertexHighlightStroke", df.getVertexHighlightStroke() ) );
 				s.focusStroke( ( Stroke ) mapping.getOrDefault( "focusStroke", df.getFocusStroke() ) );
-				s.branchGraphEdgeStroke(
-						( Stroke ) mapping.getOrDefault( "branchGraphEdgeStroke", df.getBranchGraphEdgeStroke() ) );
-				s.branchGraphEdgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "branchGraphEdgeHighlightStroke",
-						df.getBranchGraphEdgeHighlightStroke() ) );
-				s.hierarchyEdgeStroke(
-						( Stroke ) mapping.getOrDefault( "hierarchyEdgeStroke", df.getHierarchyEdgeStroke() ) );
-				s.hierarchyEdgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "hierarchyEdgeHighlightStroke",
-						df.getHierarchyEdgeHighlightStroke() ) );
-				s.hierarchyVertexStroke(
-						( Stroke ) mapping.getOrDefault( "hierarchyVertexStroke", df.getHierarchyVertexStroke() ) );
-				s.hierarchyVertexHighlightStroke( ( Stroke ) mapping.getOrDefault( "hierarchyVertexHighlightStroke",
-						df.getHierarchyVertexHighlightStroke() ) );
+				s.branchGraphEdgeStroke( ( Stroke ) mapping.getOrDefault( "branchGraphEdgeStroke", df.getBranchGraphEdgeStroke() ) );
+				s.branchGraphEdgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "branchGraphEdgeHighlightStroke", df.getBranchGraphEdgeHighlightStroke() ) );
+				s.hierarchyEdgeStroke( ( Stroke ) mapping.getOrDefault( "hierarchyEdgeStroke", df.getHierarchyEdgeStroke() ) );
+				s.hierarchyEdgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "hierarchyEdgeHighlightStroke", df.getHierarchyEdgeHighlightStroke() ) );
+				s.hierarchyVertexStroke( ( Stroke ) mapping.getOrDefault( "hierarchyVertexStroke", df.getHierarchyVertexStroke() ) );
+				s.hierarchyVertexHighlightStroke( ( Stroke ) mapping.getOrDefault( "hierarchyVertexHighlightStroke", df.getHierarchyVertexHighlightStroke() ) );
 
-				s.hierarchyGraphCurvedLines( ( boolean ) mapping.getOrDefault( "hierarchyGraphCurvedLines",
-						df.isHierarchyGraphCurvedLines() ) );
-				s.highlightCurrentTimepoint( ( boolean ) mapping.getOrDefault( "highlightCurrentTimepoint",
-						df.isHighlightCurrentTimepoint() ) );
-				s.paintRows( ( boolean ) mapping.getOrDefault( "paintRows", df.isPaintRows() ) );
-				s.paintColumns( ( boolean ) mapping.getOrDefault( "paintColumns", df.isPaintColumns() ) );
-				s.paintHeaderShadow(
-						( boolean ) mapping.getOrDefault( "paintHeaderShadow", df.isPaintHeaderShadow() ) );
+				s.hierarchyGraphCurvedLines( getBooleanOrDefault( mapping, "hierarchyGraphCurvedLines", df.isHierarchyGraphCurvedLines() ) );
+				s.highlightCurrentTimepoint( getBooleanOrDefault( mapping, "highlightCurrentTimepoint", df.isHighlightCurrentTimepoint() ) );
+				s.paintRows( getBooleanOrDefault( mapping, "paintRows", df.isPaintRows() ) );
+				s.paintColumns( getBooleanOrDefault( mapping, "paintColumns", df.isPaintColumns() ) );
+				s.paintHeaderShadow( getBooleanOrDefault( mapping, "paintHeaderShadow", df.isPaintHeaderShadow() ) );
 
 				return s;
 			}

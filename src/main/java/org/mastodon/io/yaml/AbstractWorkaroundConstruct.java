@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
+import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -62,4 +63,76 @@ public abstract class AbstractWorkaroundConstruct extends AbstractConstruct
 	{
 		return tag;
 	}
+
+	/*
+	 * Static utilities to facilitate 'manually' reconstructing an object from a
+	 * YAML list, and generate meaningful exception when something goes wrong.
+	 */
+
+	protected static final String getString( final Map< Object, Object > mapping, final String key )
+	{
+		return getStringOrDefault( mapping, key, null );
+	}
+
+	protected static final String getStringOrDefault( final Map< Object, Object > mapping, final String key, final String defaultValue )
+	{
+		return getOrDefault( mapping, key, String.class, defaultValue );
+	}
+
+	protected static final int getInt( final Map< Object, Object > mapping, final String key )
+	{
+		return getOrDefault( mapping, key, Number.class, null ).intValue();
+	}
+
+	protected static final int getIntOrDefault( final Map< Object, Object > mapping, final String key, final int defaultValue )
+	{
+		return getOrDefault( mapping, key, Number.class, defaultValue ).intValue();
+	}
+
+	protected static final double getDouble( final Map< Object, Object > mapping, final String key )
+	{
+		return getOrDefault( mapping, key, Number.class, null ).doubleValue();
+	}
+
+	protected static final double getDoubleOrDefault( final Map< Object, Object > mapping, final String key, final double defaultValue )
+	{
+		return getOrDefault( mapping, key, Number.class, defaultValue ).doubleValue();
+	}
+
+	protected static final float getFloat( final Map< Object, Object > mapping, final String key )
+	{
+		return getOrDefault( mapping, key, Number.class, null ).floatValue();
+	}
+
+	protected static final float getFloatOrDefault( final Map< Object, Object > mapping, final String key, final float defaultValue )
+	{
+		return getOrDefault( mapping, key, Number.class, defaultValue ).floatValue();
+	}
+
+	protected static final boolean getBoolean( final Map< Object, Object > mapping, final String key )
+	{
+		return getOrDefault( mapping, key, Boolean.class, null );
+	}
+
+	protected static final boolean getBooleanOrDefault( final Map< Object, Object > mapping, final String key, final boolean defaultValue )
+	{
+		return getOrDefault( mapping, key, Boolean.class, defaultValue );
+	}
+
+
+	@SuppressWarnings( "unchecked" )
+	protected static final < T > T getOrDefault( final Map< Object, Object > mapping, final String key, final Class< T > klass, final T defaultValue )
+	{
+		final Object obj = mapping.getOrDefault( key, defaultValue );
+		if ( obj == null )
+			throw new YAMLException( "Could not find value for required parameter '" + key + "'." );
+
+		if ( klass.isInstance( obj ) )
+			return ( T ) obj;
+		else
+			throw new YAMLException( "Incorrect value class for parameter '" + key
+					+ "'. Expected " + klass.getSimpleName()
+					+ " but found " + obj.getClass().getSimpleName() + "." );
+	}
+
 }

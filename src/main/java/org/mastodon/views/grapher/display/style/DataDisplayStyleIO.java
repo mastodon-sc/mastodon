@@ -325,24 +325,19 @@ public class DataDisplayStyleIO
 				final DataDisplayStyle s = DataDisplayStyle.defaultStyle().copy( name );
 				final DataDisplayStyle df = DataDisplayStyle.defaultStyle();
 
-				s.autoVertexSize( ( boolean ) mapping.getOrDefault( "autoVertexSize", df.isAutoVertexSize() ) );
-				s.vertexFixedSize( ( double ) mapping.getOrDefault( "vertexFixedSize", df.getVertexFixedSize() ) );
-				s.vertexDrawShape( VertexDrawShape.valueOf(
-						( String ) mapping.getOrDefault( "vertexDrawShape", df.getVertexDrawShape().name() ) ) );
+				s.autoVertexSize( getBooleanOrDefault( mapping, "autoVertexSize", df.isAutoVertexSize() ) );
+				s.vertexFixedSize( getDoubleOrDefault( mapping, "vertexFixedSize", df.getVertexFixedSize() ) );
+				s.vertexDrawShape( VertexDrawShape.valueOf( getStringOrDefault( mapping, "vertexDrawShape", df.getVertexDrawShape().name() ) ) );
 
 				s.edgeColor( ( Color ) mapping.getOrDefault( "edgeColor", df.getEdgeColor() ) );
 				s.vertexFillColor( ( Color ) mapping.getOrDefault( "vertexFillColor", df.getVertexFillColor() ) );
 				s.vertexDrawColor( ( Color ) mapping.getOrDefault( "vertexDrawColor", df.getVertexDrawColor() ) );
 
-				s.selectedVertexFillColor(
-						( Color ) mapping.getOrDefault( "selectedVertexFillColor", df.getSelectedVertexFillColor() ) );
+				s.selectedVertexFillColor( ( Color ) mapping.getOrDefault( "selectedVertexFillColor", df.getSelectedVertexFillColor() ) );
 				s.selectedEdgeColor( ( Color ) mapping.getOrDefault( "selectedEdgeColor", df.getSelectedEdgeColor() ) );
-				s.selectedVertexDrawColor(
-						( Color ) mapping.getOrDefault( "selectedVertexDrawColor", df.getSelectedVertexDrawColor() ) );
-				s.simplifiedVertexFillColor( ( Color ) mapping.getOrDefault( "simplifiedVertexFillColor",
-						df.getSimplifiedVertexFillColor() ) );
-				s.selectedSimplifiedVertexFillColor( ( Color ) mapping.getOrDefault(
-						"selectedSimplifiedVertexFillColor", df.getSelectedSimplifiedVertexFillColor() ) );
+				s.selectedVertexDrawColor( ( Color ) mapping.getOrDefault( "selectedVertexDrawColor", df.getSelectedVertexDrawColor() ) );
+				s.simplifiedVertexFillColor( ( Color ) mapping.getOrDefault( "simplifiedVertexFillColor", df.getSimplifiedVertexFillColor() ) );
+				s.selectedSimplifiedVertexFillColor( ( Color ) mapping.getOrDefault( "selectedSimplifiedVertexFillColor", df.getSelectedSimplifiedVertexFillColor() ) );
 
 				s.backgroundColor( ( Color ) mapping.getOrDefault( "backgroundColor", df.getBackgroundColor() ) );
 				s.axisColor( ( Color ) mapping.getOrDefault( "axisColor", df.getAxisColor() ) );
@@ -353,14 +348,12 @@ public class DataDisplayStyleIO
 
 				s.axisStroke( ( Stroke ) mapping.getOrDefault( "axisStroke", df.getAxisStroke() ) );
 				s.edgeStroke( ( Stroke ) mapping.getOrDefault( "edgeStroke", df.getEdgeStroke() ) );
-				s.edgeHighlightStroke(
-						( Stroke ) mapping.getOrDefault( "edgeHighlightStroke", df.getEdgeHighlightStroke() ) );
+				s.edgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "edgeHighlightStroke", df.getEdgeHighlightStroke() ) );
 				s.vertexStroke( ( Stroke ) mapping.getOrDefault( "vertexStroke", df.getVertexStroke() ) );
-				s.vertexHighlightStroke(
-						( Stroke ) mapping.getOrDefault( "vertexHighlightStroke", df.getVertexHighlightStroke() ) );
+				s.vertexHighlightStroke( ( Stroke ) mapping.getOrDefault( "vertexHighlightStroke", df.getVertexHighlightStroke() ) );
 				s.focusStroke( ( Stroke ) mapping.getOrDefault( "focusStroke", df.getFocusStroke() ) );
 
-				s.drawVertexName( ( boolean ) mapping.getOrDefault( "drawVertexName", df.isDrawVertexName() ) );
+				s.drawVertexName( getBooleanOrDefault( mapping, "drawVertexName", df.isDrawVertexName() ) );
 
 				return s;
 			}
