@@ -188,6 +188,14 @@ public class ProjectSaver
 	 */
 	public static void saveProject( final ProjectModel appModel, final Component parentComponent )
 	{
+		final MamutProject project = appModel.getProject();
+		// If a Mastodon project was not yet created, ask to create one.
+		if ( project.getProjectRoot() == null )
+		{
+			saveProjectAs( appModel, parentComponent );
+			return;
+		}
+
 		try
 		{
 			saveProject( appModel.getProject().getProjectRoot(), appModel );
