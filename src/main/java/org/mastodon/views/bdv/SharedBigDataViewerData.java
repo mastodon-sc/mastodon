@@ -75,6 +75,7 @@ import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.process.LUT;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.SpimDataIOException;
 import mpicbg.spim.data.XmlHelpers;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
@@ -400,8 +401,17 @@ public class SharedBigDataViewerData
 
 	public static SharedBigDataViewerData fromSpimDataXmlFile( final String spimDataXmlFilename ) throws SpimDataException
 	{
-		final AbstractSpimData< ? > spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
-		return fromSpimData( spimDataXmlFilename, spimData );
+		try
+		{
+			final AbstractSpimData< ? > spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+			return fromSpimData( spimDataXmlFilename, spimData );
+		}
+		catch ( final RuntimeException e )
+		{
+			if ( FileNotFoundException.class.isInstance( e.getCause() ) )
+				throw new SpimDataIOException( "Could not find the image data file:\n" + e.getMessage() );
+		}
+		return null;
 	}
 
 	public static SharedBigDataViewerData fromDummyFilename( final String spimDataXmlFilename )
