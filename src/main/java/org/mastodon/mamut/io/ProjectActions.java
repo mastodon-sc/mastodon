@@ -62,6 +62,18 @@ public class ProjectActions
 		actions.namedAction( importMamutAction, IMPORT_MAMUT_KEYS );
 	}
 
+	/**
+	 * Installs the save and import actions onto the specified {@link Actions}
+	 * object.
+	 * 
+	 * @param actions
+	 *            the actions to install to.
+	 * @param appModel
+	 *            the project model.
+	 * @param parentComponent
+	 *            a component to use as parent in dialog (can be
+	 *            <code>null</code>).
+	 */
 	public static void installAppActions( final Actions actions, final ProjectModel appModel, final Frame parentComponent )
 	{
 		final RunnableAction saveProjectAction = new RunnableAction( SAVE_PROJECT, () -> ProjectSaver.saveProject( appModel, parentComponent ) );
@@ -104,7 +116,7 @@ public class ProjectActions
 			descriptions.add( EXPORT_MAMUT, EXPORT_MAMUT_KEYS, "Export current project as a MaMuT project." );
 		}
 	}
-	
+
 	private static final class BasicErrorLogger implements Consumer< String >
 	{
 
