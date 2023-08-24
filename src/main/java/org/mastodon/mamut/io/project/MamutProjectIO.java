@@ -126,12 +126,14 @@ public class MamutProjectIO
 		}
 		catch ( final JDOMException e )
 		{
-			throw new IOException( e );
+			throw new IOException( "Problem with the " + MamutProject.PROJECT_FILE_NAME + " file:\n"
+					+ e.getMessage() );
 		}
 		final Element root = doc.getRootElement();
 
 		if ( !MAMUTPROJECT_TAG.equals( root.getName() ) )
-			throw new IOException( "expected <" + MAMUTPROJECT_TAG + "> root element. wrong file?" );
+			throw new IOException( "Problem with the " + MamutProject.PROJECT_FILE_NAME + " file:\n"
+					+ "Expected the root element to be <" + MAMUTPROJECT_TAG + "> but got <" + root.getName() + ">. Wrong file?" );
 
 		fromXml( project, root );
 
