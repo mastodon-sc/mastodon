@@ -49,6 +49,7 @@ import java.util.function.Consumer;
 
 import javax.swing.ActionMap;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 
 import org.mastodon.app.plugin.PluginUtils;
 import org.mastodon.app.ui.ViewMenu;
@@ -137,6 +138,12 @@ public class WindowManager
 
 	private final PreferencesDialog settings;
 
+	/**
+	 * The list of windows, that are not Mamut views, registered to this window
+	 * manager.
+	 */
+	private final List< Window > registeredWindows = new ArrayList<>();
+
 	private final ProjectModel appModel;
 
 	private final MamutViews mamutViews;
@@ -220,6 +227,14 @@ public class WindowManager
 		tagSetDialog.setIconImages( TAGS_ICON );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
+
+		/*
+		 * Register windows.
+		 */
+		registeredWindows.add( featureComputationDialog );
+		registeredWindows.add( tagSetDialog );
+		registeredWindows.add( settings );
+		forEachWindow( w -> adjustTitle( w, appModel.getProjectName() ) );
 	}
 
 	/**
@@ -264,6 +279,9 @@ public class WindowManager
 
 		// Create the view.
 		final T view = factory.create( appModel );
+
+		// Adjust the frame name.
+		adjustTitle( view.getFrame(), appModel.getProjectName() );
 
 		// Restore the view GUI state.
 		factory.restoreGuiState( view, guiState );
@@ -439,6 +457,20 @@ public class WindowManager
 	}
 
 	/**
+	 * Executes the specified actions for all the windows currently opened and
+	 * managed by this window manager. This includes the Mamut views, and the
+	 * various dialogs.
+	 * 
+	 * @param action
+	 *            the action to execute.
+	 */
+	public void forEachWindow( final Consumer< ? super Window > action )
+	{
+		forEachView( v -> action.accept( v.getFrame() ) );
+		registeredWindows.forEach( action );
+	}
+
+	/**
 	 * Opens the online documentation in a browser window.
 	 */
 	public void openOnlineDocumentation()
@@ -477,10 +509,7 @@ public class WindowManager
 	public void closeAllWindows()
 	{
 		final ArrayList< Window > windows = new ArrayList<>();
-		forEachView( v -> windows.add( v.getFrame() ) );
-		windows.add( tagSetDialog );
-		windows.add( featureComputationDialog );
-
+		forEachWindow( w -> windows.add( w ) );
 		try
 		{
 			InvokeOnEDT.invokeAndWait(
@@ -498,14 +527,6 @@ public class WindowManager
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * This method is called when the MainWindow is closed.
-	 */
-	public void dispose()
-	{
-		settings.dispose();
 	}
 
 	/**
@@ -581,5 +602,44 @@ public class WindowManager
 			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS,
 					"Show the feature computation dialog." );
 		}
+	}
+
+	/**
+	 * Possibly appends the project name to a given window title, making sure we
+	 * do not append to an already appended project name.
+	 * 
+	 * @param title
+	 *            the initial window name.
+	 * @param projectName
+	 *            the project name.
+	 * @return an adjusted window name.
+	 */
+	private static final String adjustTitle( final String title, final String projectName )
+	{
+		if ( projectName == null || projectName.isEmpty() )
+			return title;
+
+		final String separator = " - ";
+		final int index = title.indexOf( separator );
+		final String prefix = ( index < 0 ) ? title : title.substring( 0, index );
+		return prefix + separator + projectName;
+	}
+
+	public static void adjustTitle( final JDialog dialog, final String projectName )
+	{
+		dialog.setTitle( adjustTitle( dialog.getTitle(), projectName ) );
+	}
+
+	public static void adjustTitle( final JFrame frame, final String projectName )
+	{
+		frame.setTitle( adjustTitle( frame.getTitle(), projectName ) );
+	}
+
+	public static void adjustTitle( final Window w, final String projectName )
+	{
+		if ( w instanceof JDialog )
+			adjustTitle( ( JDialog ) w, projectName );
+		else if ( w instanceof JFrame )
+			adjustTitle( ( JFrame ) w, projectName );
 	}
 }
