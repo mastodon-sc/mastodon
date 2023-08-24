@@ -28,6 +28,7 @@ import org.scijava.Context;
 import ij.IJ;
 import ij.ImagePlus;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 
 /**
  * Static methods to open a Mastodon Mamut project.
@@ -138,10 +139,32 @@ public class ProjectLoader
 	 */
 	public static ProjectModel open( final MamutProject project, final Context context, final boolean restoreGUIState, final boolean authorizeSubstituteDummyData ) throws IOException, SpimDataException
 	{
+		// Load image data.
 		final SharedBigDataViewerData imageData = loadImageData( project, authorizeSubstituteDummyData );
+
+		// Try to read units from spimData is they are not present.
+		if ( project.getSpaceUnits() == null )
+		{
+			project.setSpaceUnits(
+					imageData.getSpimData().getSequenceDescription().getViewSetupsOrdered().stream()
+							.filter( BasicViewSetup::hasVoxelSize )
+							.map( setup -> setup.getVoxelSize().unit() )
+							.findFirst()
+							.orElse( "pixel" ) );
+		}
+
+		if ( project.getTimeUnits() == null )
+		{
+			project.setTimeUnits( "frame" );
+		}
+
+		// Load model.
 		final Model model = loadModel( project, context );
+
+		// Build app model.
 		final ProjectModel appModel = ProjectModel.create( context, model, imageData, project );
 
+		// Restore GUI state.
 		if ( restoreGUIState )
 			loadGUI( project, appModel.getWindowManager() );
 
