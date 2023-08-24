@@ -204,6 +204,9 @@ public class MainWindow extends JFrame
 
 		pack();
 		setResizable( false );
+
+		// Register to when the project model is closed.
+		appModel.projectClosedListeners().add( () -> dispose() );
 	}
 
 	/**
@@ -220,7 +223,6 @@ public class MainWindow extends JFrame
 		if ( appModel.getModel().isSavePoint() )
 		{
 			appModel.close();
-			dispose();
 			return true;
 		}
 
@@ -252,7 +254,6 @@ public class MainWindow extends JFrame
 
 		case JOptionPane.NO_OPTION:
 			appModel.close();
-			dispose();
 		}
 		return true;
 	}
