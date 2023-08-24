@@ -69,6 +69,7 @@ import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.ViewerState;
+import ch.systemsx.cisd.hdf5.exceptions.HDF5FileNotFoundException;
 import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
@@ -409,9 +410,14 @@ public class SharedBigDataViewerData
 		catch ( final RuntimeException e )
 		{
 			if ( FileNotFoundException.class.isInstance( e.getCause() ) )
-				throw new SpimDataIOException( "Could not find the image data file:\n" + e.getMessage() );
+				throw new SpimDataIOException( "Could not find the image data file:\n" + e.getCause().getMessage() );
+			else if ( HDF5FileNotFoundException.class.isInstance( e ) )
+				throw new SpimDataIOException( "Error in the BDV XML file:" + spimDataXmlFilename
+						+ "\nCould not find the HDF5 image data file:\n"
+						+ e.getMessage() );
+			
+			throw ( e );
 		}
-		return null;
 	}
 
 	public static SharedBigDataViewerData fromDummyFilename( final String spimDataXmlFilename )

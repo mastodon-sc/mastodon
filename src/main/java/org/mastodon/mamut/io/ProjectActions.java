@@ -2,9 +2,13 @@ package org.mastodon.mamut.io;
 
 import java.awt.Component;
 import java.awt.Frame;
+import java.util.function.Consumer;
+
+import javax.swing.JOptionPane;
 
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.launcher.LauncherUtil;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -46,10 +50,11 @@ public class ProjectActions
 	 */
 	public static void installGlobalActions( final Actions actions, final Context context, final Component parentComponent )
 	{
-		final RunnableAction createProjectAction = new RunnableAction( CREATE_PROJECT, () -> ProjectCreator.createProjectWithDialog( context, parentComponent ) );
-		final RunnableAction createProjectFromUrlAction = new RunnableAction( CREATE_PROJECT_FROM_URL, () -> ProjectCreator.createProjectFromUrl( context, parentComponent ) );
-		final RunnableAction loadProjectAction = new RunnableAction( LOAD_PROJECT, () -> ProjectLoader.openWithDialog( context, parentComponent ) );
-		final RunnableAction importMamutAction = new RunnableAction( IMPORT_MAMUT, () -> ProjectImporter.openMamutWithDialog( parentComponent, context ) );
+		final BasicErrorLogger errorLogger = new BasicErrorLogger( parentComponent );
+		final RunnableAction createProjectAction = new RunnableAction( CREATE_PROJECT, () -> LauncherUtil.createProjectWithDialog( context, parentComponent, errorLogger ) );
+		final RunnableAction createProjectFromUrlAction = new RunnableAction( CREATE_PROJECT_FROM_URL, () -> ProjectCreator.createProjectFromUrl( context, parentComponent, errorLogger ) );
+		final RunnableAction loadProjectAction = new RunnableAction( LOAD_PROJECT, () -> LauncherUtil.openWithDialog( context, parentComponent, errorLogger ) );
+		final RunnableAction importMamutAction = new RunnableAction( IMPORT_MAMUT, () -> ProjectImporter.openMamutWithDialog( parentComponent, context, errorLogger ) );
 
 		actions.namedAction( createProjectAction, CREATE_PROJECT_KEYS );
 		actions.namedAction( createProjectFromUrlAction, CREATE_PROJECT_FROM_URL_KEYS );
@@ -99,4 +104,25 @@ public class ProjectActions
 			descriptions.add( EXPORT_MAMUT, EXPORT_MAMUT_KEYS, "Export current project as a MaMuT project." );
 		}
 	}
+	
+	private static final class BasicErrorLogger implements Consumer< String >
+	{
+
+		private final Component parent;
+
+		public BasicErrorLogger( final Component parent )
+		{
+			this.parent = parent;
+		}
+
+		@Override
+		public void accept( final String error )
+		{
+			JOptionPane.showMessageDialog(
+					parent,
+					"Problem reading Mastodon file:\n" + error,
+					"Error reading Mastodon file",
+					JOptionPane.ERROR_MESSAGE );
+		}
+	};
 }

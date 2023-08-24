@@ -48,7 +48,6 @@ import java.util.function.IntUnaryOperator;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.jdom2.JDOMException;
 import org.mastodon.app.MastodonIcons;
@@ -62,6 +61,7 @@ import org.mastodon.mamut.io.importer.simi.SimiImporter.LabelFunction;
 import org.mastodon.mamut.io.importer.tgmm.TgmmImporter;
 import org.mastodon.mamut.io.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.ui.util.EverythingDisablerAndReenabler;
 import org.mastodon.ui.util.ExtensionFileFilter;
@@ -128,6 +128,7 @@ public class MastodonLauncher extends JFrame
 
 	private void importSimi()
 	{
+		gui.clearLog();
 		if ( !gui.importSimiBioCellPanel.checkBDVFile() )
 			return;
 
@@ -140,7 +141,7 @@ public class MastodonLauncher extends JFrame
 			{
 				// Create new blank project from BDV file.
 				final File bdvFile = new File( gui.importSimiBioCellPanel.textAreaBDVFile.getText() );
-				final ProjectModel appModel = ProjectCreator.createProjectFromBdvFileWithDialog( bdvFile, context, gui );
+				final ProjectModel appModel = LauncherUtil.createProjectFromBdvFileWithDialog( bdvFile, context, gui, gui::error );
 
 				final Model model = appModel.getModel();
 				final AbstractSpimData< ? > spimData = appModel.getSharedBdvData().getSpimData();
@@ -204,18 +205,13 @@ public class MastodonLauncher extends JFrame
 			{
 				gui.importSimiBioCellPanel.labelInfo.setText(
 						"<html>Problem reading the SimiBioCell file.<p>" +
-								LauncherUtil.toMessage( e ) + "</html>" );
+								e.getMessage() + "</html>" );
 			}
 			catch ( final ParseException e )
 			{
 				gui.importSimiBioCellPanel.labelInfo.setText(
 						"<html>Problem parsing the SimiBioCell file.<p>" +
-								LauncherUtil.toMessage( e ) + "</html>" );
-			}
-			catch ( final SpimDataException e )
-			{
-				gui.importSimiBioCellPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
-						LauncherUtil.toMessage( e ) + "</html>" );
+								e.getMessage() + "</html>" );
 			}
 			finally
 			{
@@ -226,6 +222,7 @@ public class MastodonLauncher extends JFrame
 
 	private void importTgmm()
 	{
+		gui.clearLog();
 		if ( !gui.importTGMMPanel.checkBDVFile( false ) || !gui.importTGMMPanel.checkTGMMFolder() )
 			return;
 
@@ -243,7 +240,7 @@ public class MastodonLauncher extends JFrame
 
 				// Create new blank project from BDV file.
 				final File bdvFile = new File( gui.importTGMMPanel.textAreaBDVFile.getText() );
-				final ProjectModel appModel = ProjectCreator.createProjectFromBdvFileWithDialog( bdvFile, context, gui );
+				final ProjectModel appModel = LauncherUtil.createProjectFromBdvFileWithDialog( bdvFile, context, gui, gui::error );
 
 				final Model model = appModel.getModel();
 				final AbstractSpimData< ? > spimData = appModel.getSharedBdvData().getSpimData();
@@ -280,17 +277,12 @@ public class MastodonLauncher extends JFrame
 			catch ( final ParseException e )
 			{
 				gui.importTGMMPanel.labelInfo.setText( "<html>Could not parse timepoint pattern.<p>" +
-						LauncherUtil.toMessage( e ) + "</html>" );
+						e.getMessage() + "</html>" );
 			}
 			catch ( JDOMException | IOException e )
 			{
 				gui.importTGMMPanel.labelInfo.setText( "<html>Malformed TGMM dataset.<p>" +
-						LauncherUtil.toMessage( e ) + "</html>" );
-			}
-			catch ( final SpimDataException e )
-			{
-				gui.importTGMMPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
-						LauncherUtil.toMessage( e ) + "</html>" );
+						e.getMessage() + "</html>" );
 			}
 			disabler.reenable();
 		} ).start();
@@ -332,6 +324,7 @@ public class MastodonLauncher extends JFrame
 
 	private void createNewProject()
 	{
+		gui.clearLog();
 		if ( gui.newMastodonProjectPanel.rdbtBrowseToBDV.isSelected() )
 		{
 			/*
@@ -348,14 +341,9 @@ public class MastodonLauncher extends JFrame
 			new Thread( () -> {
 				try
 				{
-					final ProjectModel appModel = ProjectCreator.createProjectFromBdvFileWithDialog( file, context, gui );
+					final ProjectModel appModel = LauncherUtil.createProjectFromBdvFileWithDialog( file, context, gui, gui::error );
 					new MainWindow( appModel ).setVisible( true );
 					dispose();
-				}
-				catch ( final SpimDataException e )
-				{
-					gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid BDV xml/h5 file.<p>" +
-							LauncherUtil.toMessage( e ) + "</html>" );
 				}
 				finally
 				{
@@ -450,7 +438,7 @@ public class MastodonLauncher extends JFrame
 				catch ( final SpimDataException e )
 				{
 					gui.newMastodonProjectPanel.labelInfo.setText( "<html>Invalid image.<p>" +
-							LauncherUtil.toMessage( e ) + "</html>" );
+							e.getMessage() + "</html>" );
 				}
 				finally
 				{
@@ -492,6 +480,7 @@ public class MastodonLauncher extends JFrame
 
 	private void createProjectFromURL()
 	{
+		gui.clearLog();
 		final String filepath = gui.openRemoteURLPanel.taFileSave.getText();
 		if ( filepath == null || filepath.isEmpty() )
 		{
@@ -537,13 +526,13 @@ public class MastodonLauncher extends JFrame
 				{
 					gui.openRemoteURLPanel.log.setForeground( Color.RED );
 					gui.openRemoteURLPanel.log.setText( "<html>Problem save to BDV file.<p>" +
-							LauncherUtil.toMessage( e ) + "</html>" );
+							e.getMessage() + "</html>" );
 				}
 
 				/*
 				 * Open it as a new Mastodon project.
 				 */
-				final ProjectModel appModel = ProjectCreator.createProjectFromBdvFileWithDialog( file, context, gui );
+				final ProjectModel appModel = LauncherUtil.createProjectFromBdvFileWithDialog( file, context, gui, gui::error );
 				new MainWindow( appModel ).setVisible( true );
 
 				/*
@@ -553,12 +542,6 @@ public class MastodonLauncher extends JFrame
 				RecentProjectsPanel.recentProjects.add( file.getAbsolutePath() );
 
 				dispose();
-			}
-			catch ( final SpimDataException e )
-			{
-				gui.openRemoteURLPanel.log.setForeground( Color.RED );
-				gui.openRemoteURLPanel.log.setText( "<html>Problem creating project.<p>" +
-						LauncherUtil.toMessage( e ) + "</html>" );
 			}
 			finally
 			{
@@ -586,11 +569,11 @@ public class MastodonLauncher extends JFrame
 
 		gui.showPanel( LauncherGUI.LOGGER_KEY );
 		new Thread( () -> {
+			MamutProject project = null;
 			try
 			{
-
 				final TrackMateImporter importer = new TrackMateImporter( file );
-				final MamutProject project = importer.createProject();
+				project = importer.createProject();
 				final ProjectModel appModel = ProjectLoader.open( project, context );
 
 				final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
@@ -600,7 +583,7 @@ public class MastodonLauncher extends JFrame
 			}
 			catch ( final IOException | SpimDataException e )
 			{
-				gui.error( "Invalid MaMuT file.\n\n" + LauncherUtil.toMessage( e ) );
+				gui.error( "Invalid MaMuT file.\n\n" + LauncherUtil.getProblemDescription( project, e ) );
 			}
 			finally
 			{
@@ -611,57 +594,57 @@ public class MastodonLauncher extends JFrame
 
 	private void loadMastodonProject( final String projectPath )
 	{
-		final EverythingDisablerAndReenabler disabler =
-				new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+		final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
 		disabler.disable();
+		gui.clearLog();
 		gui.showPanel( LauncherGUI.LOGGER_KEY );
+		final File file;
+		if ( projectPath == null )
+		{
+			// Use the the most recent opened location as initial
+			// location for the file chooser
+			final Iterator< String > iterator = RecentProjectsPanel.recentProjects.iterator();
+			final String previousPath = iterator.hasNext() ? iterator.next() : null;
+			// We have to use the JFileChooser to open folders.
+			file = FileChooser.chooseFile(
+					true,
+					this,
+					previousPath,
+					new ExtensionFileFilter( "mastodon" ),
+					"Open Mastodon Project",
+					FileChooser.DialogType.LOAD,
+					SelectionMode.FILES_AND_DIRECTORIES );
+			if ( file == null )
+				return;
+		}
+		else
+		{
+			file = new File( projectPath );
+		}
+		gui.log( "Opening Mastodon project file " + file + "\n" );
+
 		new Thread( () -> {
 			try
 			{
-				gui.clearLog();
-				SwingUtilities.invokeLater( () -> {
-
-					final File file;
-					if ( projectPath == null )
-					{
-						// Use the the most recent opened location as initial
-						// location for the file chooser
-						final Iterator<String> iterator = RecentProjectsPanel.recentProjects.iterator();
-						final String previousPath = iterator.hasNext() ? iterator.next() : null;
-						// We have to use the JFileChooser to open folders.
-						file = FileChooser.chooseFile(
-								true,
-								this,
-								previousPath,
-								new ExtensionFileFilter( "mastodon" ),
-								"Open Mastodon Project",
-								FileChooser.DialogType.LOAD,
-								SelectionMode.FILES_AND_DIRECTORIES );
-						if ( file == null )
-							return;
-					}
-					else
-					{
-						file = new File( projectPath );
-					}
-
-					try
-					{
-						final ProjectModel appModel = ProjectLoader.openWithDialog( file.getAbsolutePath(), context, this );
-						new MainWindow( appModel ).setVisible( true );
-						dispose();
-						/*
-						 * We update the list of recent projects here so that
-						 * only projects that were successfully opened are added
-						 * to the list.
-						 */
-						RecentProjectsPanel.recentProjects.add( file.getAbsolutePath() );
-					}
-					catch ( final IOException | SpimDataException e )
-					{
-						gui.error( "Invalid Mastodon file.\n\n" + LauncherUtil.toMessage( e ) );
-					}
-				} );
+				try
+				{
+					final MamutProject project = MamutProjectIO.load( file.getAbsolutePath() );
+					final ProjectModel appModel = LauncherUtil.openWithDialog( project, context, this, gui::error );
+					if ( appModel == null )
+						return;
+					new MainWindow( appModel ).setVisible( true );
+					dispose();
+					/*
+					 * We update the list of recent projects here so that only
+					 * projects that were successfully opened are added to the
+					 * list.
+					 */
+					RecentProjectsPanel.recentProjects.add( file.getAbsolutePath() );
+				}
+				catch ( final IOException e )
+				{
+					gui.error( "Invalid Mastodon file.\nMaybe it is not a Mastodon file?\n\n" + LauncherUtil.getProblemDescription( null, e ) );
+				}
 			}
 			finally
 			{
@@ -681,8 +664,7 @@ public class MastodonLauncher extends JFrame
 			{
 				dropTargetDropEvent.acceptDrop( DnDConstants.ACTION_COPY );
 				@SuppressWarnings( "unchecked" )
-				final
-				List< File > droppedFiles = ( List< File > ) dropTargetDropEvent.getTransferable().getTransferData( DataFlavor.javaFileListFlavor );
+				final List< File > droppedFiles = ( List< File > ) dropTargetDropEvent.getTransferable().getTransferData( DataFlavor.javaFileListFlavor );
 				for ( final File file : droppedFiles )
 				{
 					// process files

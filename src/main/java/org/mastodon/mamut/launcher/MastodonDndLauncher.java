@@ -33,7 +33,6 @@ import java.util.ArrayList;
 
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
 import org.scijava.io.AbstractIOPlugin;
 import org.scijava.io.IOPlugin;
 import org.scijava.io.location.FileLocation;
@@ -76,7 +75,7 @@ public class MastodonDndLauncher extends AbstractIOPlugin< Object >
 
 		try
 		{
-			final ProjectModel appModel = ProjectLoader.openWithDialog( projectPath, getContext(), null );
+			final ProjectModel appModel = LauncherUtil.openWithDialog( projectPath, getContext(), null );
 			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 		}
