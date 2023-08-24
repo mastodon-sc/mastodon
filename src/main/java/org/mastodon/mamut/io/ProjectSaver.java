@@ -369,9 +369,6 @@ public class ProjectSaver
 		final Model model = appModel.getModel();
 		final ProjectModel nmam = ProjectModel.create( context, model, sbdv, np );
 
-		// Close the old one.
-		appModel.close();
-
 		// Offer to save the new project.
 		final File file = FileChooser.chooseFile( true,
 				parentComponent,
@@ -396,7 +393,11 @@ public class ProjectSaver
 					"Error writing to file",
 					JOptionPane.ERROR_MESSAGE );
 			e.printStackTrace();
+			return;
 		}
+
+		// Close the old one.
+		appModel.close();
 
 		// Show the UI for the new one.
 		new MainWindow( nmam ).setVisible( true );
