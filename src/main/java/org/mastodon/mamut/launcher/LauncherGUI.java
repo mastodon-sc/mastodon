@@ -247,6 +247,7 @@ class LauncherGUI extends JPanel
 			super( new BorderLayout() );
 			this.textPane = new JTextPane();
 			textPane.setOpaque( false );
+			textPane.setEditable( false );
 			add( textPane, BorderLayout.CENTER );
 		}
 	}
