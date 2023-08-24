@@ -47,7 +47,6 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -67,7 +66,6 @@ import javax.swing.WindowConstants;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.mamut.io.ProjectActions;
-import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
 import org.mastodon.mamut.views.grapher.MamutViewGrapherFactory;
@@ -233,38 +231,24 @@ public class MainWindow extends JFrame
 			{
 				new Thread( () -> {
 					action.actionPerformed( e );
-					updateTitle();
+					updateWindowNames();
 				} ).start();
 			}
 		};
 	}
 
-	private void updateTitle()
+	private void updateWindowNames()
 	{
+		appModel.getWindowManager().forEachWindow( w -> WindowManager.adjustTitle( w, appModel.getProjectName() ) );
 		setTitle( makeName( appModel ) );
 	}
 
 	private static final String makeName( final ProjectModel pm )
 	{
-		String extra = "";
-		final MamutProject project = pm.getProject();
-		if ( project != null )
-		{
-			final File projectRoot = project.getProjectRoot();
-			if ( projectRoot != null )
-			{
-				extra = " - " + projectRoot.getName();
-			}
-			else
-			{
-				final File datasetXmlFile = project.getDatasetXmlFile();
-				if ( datasetXmlFile != null )
-					extra = " - " + datasetXmlFile.getName();
-			}
-		}
-		final int index = extra.lastIndexOf( '.' );
-		extra = ( index < 0 ) ? extra : extra.substring( 0, index );
-		return "Mastodon" + extra;
+		final String extra = pm.getProjectName();
+		if ( extra == null || extra.isEmpty() )
+			return "Mastodon";
+		return "Mastodon - " + extra;
 	}
 
 	/**
