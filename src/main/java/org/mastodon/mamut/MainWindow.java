@@ -44,9 +44,12 @@ import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
@@ -64,6 +67,7 @@ import javax.swing.WindowConstants;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.mamut.io.ProjectActions;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
 import org.mastodon.mamut.views.grapher.MamutViewGrapherFactory;
@@ -89,7 +93,7 @@ public class MainWindow extends JFrame
 
 	public MainWindow( final ProjectModel appModel )
 	{
-		super( "Mastodon" );
+		super( makeName( appModel ) );
 		this.appModel = appModel;
 		setIconImages( MASTODON_ICON );
 		setLocationByPlatform( true );
@@ -153,13 +157,13 @@ public class MainWindow extends JFrame
 		ioLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( ioLabel, "span, wrap" );
 
-		final JButton saveProjectButton = new JButton( projectActionMap.get( ProjectActions.SAVE_PROJECT ) );
+		final JButton saveProjectButton = new JButton( saveAction( projectActionMap.get( ProjectActions.SAVE_PROJECT ) ) );
 		prepareButton( saveProjectButton, "save", SAVE_ICON_MEDIUM );
 		buttonsPanel.add( saveProjectButton, "grow" );
 
-		final JButton loadProjectButton = new JButton( projectActionMap.get( ProjectActions.SAVE_PROJECT_AS ) );
-		prepareButton( loadProjectButton, "save as...", SAVE_AS_ICON_MEDIUM );
-		buttonsPanel.add( loadProjectButton, "grow, wrap" );
+		final JButton saveProjectAsButton = new JButton( saveAction( projectActionMap.get( ProjectActions.SAVE_PROJECT_AS ) ) );
+		prepareButton( saveProjectAsButton, "save as...", SAVE_AS_ICON_MEDIUM );
+		buttonsPanel.add( saveProjectAsButton, "grow, wrap" );
 
 		/*
 		 * Background with an image.
@@ -207,6 +211,60 @@ public class MainWindow extends JFrame
 
 		// Register to when the project model is closed.
 		appModel.projectClosedListeners().add( () -> dispose() );
+	}
+
+	/**
+	 * Adds a hook to a save action so that we update the title with the new
+	 * project name after saving.
+	 * 
+	 * @param action
+	 *            the save action.
+	 * @return a wrapping action.
+	 */
+	private Action saveAction( final Action action )
+	{
+		return new AbstractAction()
+		{
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				new Thread( () -> {
+					action.actionPerformed( e );
+					updateTitle();
+				} ).start();
+			}
+		};
+	}
+
+	private void updateTitle()
+	{
+		setTitle( makeName( appModel ) );
+	}
+
+	private static final String makeName( final ProjectModel pm )
+	{
+		String extra = "";
+		final MamutProject project = pm.getProject();
+		if ( project != null )
+		{
+			final File projectRoot = project.getProjectRoot();
+			if ( projectRoot != null )
+			{
+				extra = " - " + projectRoot.getName();
+			}
+			else
+			{
+				final File datasetXmlFile = project.getDatasetXmlFile();
+				if ( datasetXmlFile != null )
+					extra = " - " + datasetXmlFile.getName();
+			}
+		}
+		final int index = extra.lastIndexOf( '.' );
+		extra = ( index < 0 ) ? extra : extra.substring( 0, index );
+		return "Mastodon" + extra;
 	}
 
 	/**
