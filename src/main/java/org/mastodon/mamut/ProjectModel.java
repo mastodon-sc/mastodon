@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 import org.mastodon.app.MastodonAppModel;
@@ -211,6 +212,33 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 	public MamutProject getProject()
 	{
 		return project;
+	}
+
+	/**
+	 * Returns a suitable project name for the project managed in this model.
+	 * 
+	 * @return the project name.
+	 */
+	public String getProjectName()
+	{
+		String name = "";
+		if ( project != null )
+		{
+			final File projectRoot = project.getProjectRoot();
+			if ( projectRoot != null )
+			{
+				name = projectRoot.getName();
+			}
+			else
+			{
+				final File datasetXmlFile = project.getDatasetXmlFile();
+				if ( datasetXmlFile != null )
+					name = datasetXmlFile.getName();
+			}
+		}
+		final int index = name.lastIndexOf( '.' );
+		name = ( index < 0 ) ? name : name.substring( 0, index );
+		return name;
 	}
 
 	public static ProjectModel create( final Context context, final Model model, final SharedBigDataViewerData imageData, final MamutProject project )
