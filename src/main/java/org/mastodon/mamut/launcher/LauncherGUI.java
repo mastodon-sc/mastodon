@@ -57,7 +57,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
@@ -350,36 +349,36 @@ class LauncherGUI extends JPanel
 		log( message, ERROR_COLOR );
 	}
 
+	public void log( final String string )
+	{
+		log( string, NORMAL_COLOR );
+	}
 	public void log( final String message, final Color color )
 	{
-		SwingUtilities.invokeLater( new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				final StyleContext sc = StyleContext.getDefaultStyleContext();
-				final AttributeSet aset = sc.addAttribute( SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color );
-				final AbstractDocument doc = ( AbstractDocument ) logger.textPane.getStyledDocument();
-				final int len = doc.getLength();
-				final int l = message.length();
+		final StyleContext sc = StyleContext.getDefaultStyleContext();
+		final AttributeSet aset = sc.addAttribute( SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color );
+		final AbstractDocument doc = ( AbstractDocument ) logger.textPane.getStyledDocument();
+		final int len = doc.getLength();
+		final int l = message.length();
 
-				if ( len + l > MAX_N_CHARS )
-				{
-					final int delta = Math.max( 0, Math.min( l - 1, len + l - MAX_N_CHARS ) );
-					try
-					{
-						doc.remove( 0, delta );
-					}
-					catch ( final BadLocationException e )
-					{
-						e.printStackTrace();
-					}
-				}
-				logger.textPane.setCaretPosition( doc.getLength() );
-				logger.textPane.setCharacterAttributes( aset, false );
-				logger.textPane.replaceSelection( message );
+		logger.textPane.setEditable( true );
+		if ( len + l > MAX_N_CHARS )
+		{
+			final int delta = Math.max( 0, Math.min( l - 1, len + l - MAX_N_CHARS ) );
+			try
+			{
+				doc.remove( 0, delta );
 			}
-		} );
+			catch ( final BadLocationException e )
+			{
+				e.printStackTrace();
+			}
+		}
+		logger.textPane.setCaretPosition( doc.getLength() );
+		logger.textPane.setCharacterAttributes( aset, false );
+		logger.textPane.replaceSelection( message );
+		logger.textPane.setEditable( false );
+		showPanel( LOGGER_KEY );
 	}
 
 	public void setStatus( final String status )
@@ -389,14 +388,9 @@ class LauncherGUI extends JPanel
 
 	public void setLog( final String string )
 	{
-		SwingUtilities.invokeLater( new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				logger.textPane.setText( string );
-			}
-		} );
+		logger.textPane.setEditable( true );
+		logger.textPane.setText( string );
+		logger.textPane.setEditable( false );
 	}
 
 	public void clearLog()

@@ -1,17 +1,11 @@
 package org.mastodon.mamut.io;
 
-import static org.mastodon.app.MastodonIcons.LOAD_ICON_MEDIUM;
-
-import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
-import javax.swing.JOptionPane;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -27,9 +21,6 @@ import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.ui.util.ExtensionFileFilter;
-import org.mastodon.ui.util.FileChooser;
-import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.mastodon.util.DummySpimData;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
@@ -37,8 +28,6 @@ import org.scijava.Context;
 import ij.IJ;
 import ij.ImagePlus;
 import mpicbg.spim.data.SpimDataException;
-import mpicbg.spim.data.SpimDataIOException;
-import mpicbg.spim.data.XmlKeys;
 
 /**
  * Static methods to open a Mastodon Mamut project.
@@ -49,10 +38,6 @@ public class ProjectLoader
 	static final String GUI_TAG = "MamutGui";
 
 	static final String WINDOWS_TAG = "Windows";
-
-	private static File proposedProjectRoot;
-
-	private static MamutProject project;
 
 	/**
 	 * Opens a project. The GUI state is not restored.
@@ -161,201 +146,6 @@ public class ProjectLoader
 			loadGUI( project, appModel.getWindowManager() );
 
 		return appModel;
-	}
-
-	/**
-	 * Opens a project interactively, prompting the user for the project file.
-	 * <p>
-	 * If the image data cannot be loaded a dialog shows up telling the user
-	 * about the problem, and offering to start Mastodon on substituted dummy
-	 * image data. If the user declines, a {@link SpimDataException} is thrown.
-	 * <p>
-	 * The GUI state is restored.
-	 * 
-	 * @param context
-	 *            the current context.
-	 * @param parentComponent
-	 *            a component to use as parent to show dialogs during opening.
-	 *            Can be <code>null</code>.
-	 * @return the loaded {@link ProjectModel}.
-	 * @throws IOException
-	 *             if the project points to a regular image file for image data,
-	 *             and that file cannot be opened properly, or if there is a
-	 *             problem loading the model data, or if there is a problem
-	 *             reading the GUI state.
-	 * @throws SpimDataException
-	 *             if the project points to a BDV file that cannot be opened,
-	 *             and the user declined to substitute a dummy dataset.
-	 */
-	public static final ProjectModel openWithDialog( final Context context, final Component parentComponent )
-	{
-		String fn = null;
-		if ( proposedProjectRoot != null )
-			fn = proposedProjectRoot.getAbsolutePath();
-		else if ( project != null && project.getProjectRoot() != null )
-			fn = project.getProjectRoot().getAbsolutePath();
-		final File file = FileChooser.chooseFile(
-				true,
-				parentComponent,
-				fn,
-				new ExtensionFileFilter( "mastodon" ),
-				"Open Mastodon Project",
-				FileChooser.DialogType.LOAD,
-				SelectionMode.FILES_AND_DIRECTORIES,
-				LOAD_ICON_MEDIUM.getImage() );
-		if ( file == null )
-			return null;
-
-		try
-		{
-			proposedProjectRoot = file;
-			final MamutProject project = MamutProjectIO.load( file.getAbsolutePath() );
-			return openWithDialog( project, context, parentComponent );
-		}
-		catch ( final IOException | SpimDataException e )
-		{
-			JOptionPane.showMessageDialog(
-					parentComponent,
-					"Problem reading Mastodon file:\n" + e.getMessage(),
-					"Error reading Mastodon file",
-					JOptionPane.ERROR_MESSAGE );
-		}
-		return null;
-	}
-
-	/**
-	 * Opens a project interactively from a specified Mastodon file.
-	 * <p>
-	 * If the image data cannot be loaded a dialog shows up telling the user
-	 * about the problem, and offering to start Mastodon on substituted dummy
-	 * image data. If the user declines, a {@link SpimDataException} is thrown.
-	 * <p>
-	 * The GUI state is restored.
-	 * 
-	 * @param mastodonFile
-	 *            path to a Mastodon file
-	 * @param context
-	 *            the current context.
-	 * 
-	 * @return the loaded {@link ProjectModel}.
-	 * @throws IOException
-	 *             if the project points to a regular image file for image data,
-	 *             and that file cannot be opened properly, or if there is a
-	 *             problem loading the model data, or if there is a problem
-	 *             reading the GUI state.
-	 * @throws SpimDataException
-	 *             if the project points to a BDV file that cannot be opened,
-	 *             and the user declined to substitute a dummy dataset.
-	 */
-	public static synchronized ProjectModel openWithDialog( final String mastodonFile, final Context context ) throws IOException, SpimDataException
-	{
-		final MamutProject project = MamutProjectIO.load( mastodonFile );
-		return openWithDialog( project, context );
-	}
-
-
-	/**
-	 * Opens a project interactively from a specified project object.
-	 * <p>
-	 * If the image data cannot be loaded a dialog shows up telling the user
-	 * about the problem, and offering to start Mastodon on substituted dummy
-	 * image data. If the user declines, a {@link SpimDataException} is thrown.
-	 * <p>
-	 * The GUI state is restored.
-	 * 
-	 * @param project
-	 *            the object describing the project on disk.
-	 * @param context
-	 *            the current context.
-	 * 
-	 * @return the loaded {@link ProjectModel}.
-	 * @throws IOException
-	 *             if the project points to a regular image file for image data,
-	 *             and that file cannot be opened properly, or if there is a
-	 *             problem loading the model data, or if there is a problem
-	 *             reading the GUI state.
-	 * @throws SpimDataException
-	 *             if the project points to a BDV file that cannot be opened,
-	 *             and the user declined to substitute a dummy dataset.
-	 */
-	public static synchronized ProjectModel openWithDialog( final MamutProject project, final Context context ) throws IOException, SpimDataException
-	{
-		return openWithDialog( project, context, null );
-	}
-
-	/**
-	 * Opens a project interactively from a Mastodon file.
-	 * <p>
-	 * If the image data cannot be loaded a dialog shows up telling the user
-	 * about the problem, and offering to start Mastodon on substituted dummy
-	 * image data.
-	 * <p>
-	 * The GUI state is restored.
-	 * 
-	 * @param mastodonFile
-	 *            path to a Mastodon file
-	 * @param context
-	 *            the current context.
-	 * @param parentComponent
-	 *            a component to use as parent to show dialogs during opening.
-	 *            Can be <code>null</code>.
-	 * @throws IOException
-	 *             if the project points to a regular image file for image data,
-	 *             and that file cannot be opened properly and the user declined
-	 *             to substitute dummy data; or if there is a problem loading
-	 *             the model data; or if there is a problem reading the GUI
-	 *             state.
-	 * @throws SpimDataException
-	 *             if the project points to a BDV file that cannot be opened,
-	 *             and the user declined to substitute a dummy dataset.
-	 * @return the loaded {@link ProjectModel}.
-	 */
-	public static synchronized ProjectModel openWithDialog( final String mastodonFile, final Context context, final Component parentComponent ) throws IOException, SpimDataException
-	{
-		final MamutProject project = MamutProjectIO.load( mastodonFile );
-		return openWithDialog( project, context, parentComponent );
-	}
-
-	/**
-	 * Opens a project interactively from a project object.
-	 * <p>
-	 * If the image data cannot be loaded a dialog shows up telling the user
-	 * about the problem, and offering to start Mastodon on substituted dummy
-	 * image data.
-	 * <p>
-	 * The GUI state is restored.
-	 * 
-	 * @param project
-	 *            the object describing the project on disk.
-	 * @param context
-	 *            the current context.
-	 * @param parentComponent
-	 *            a component to use as parent to show dialogs during opening.
-	 *            Can be <code>null</code>.
-	 * @throws IOException
-	 *             if the project points to a regular image file for image data,
-	 *             and that file cannot be opened properly and the user declined
-	 *             to substitute dummy data; or if there is a problem loading
-	 *             the model data; or if there is a problem reading the GUI
-	 *             state.
-	 * @throws SpimDataException
-	 *             if the project points to a BDV file that cannot be opened,
-	 *             and the user declined to substitute a dummy dataset.
-	 * @return the loaded {@link ProjectModel}.
-	 */
-	public static synchronized ProjectModel openWithDialog( final MamutProject project, final Context context, final Component parentComponent ) throws IOException, SpimDataException
-	{
-		try
-		{
-			return open( project, context, true, false );
-		}
-		catch ( final SpimDataIOException | UnknownHostException e )
-		{
-			if ( getUserPermissionToOpenDummyData( project, e, parentComponent ) )
-				return open( project, context, true, true );
-
-			throw e;
-		}
 	}
 
 	/**
@@ -506,63 +296,6 @@ public class ProjectLoader
 		}
 	}
 
-	/**
-	 * Shows an dialog the explains to the user why the image data could not
-	 * been loaded, and offers to open Mastodon with dummy image data.
-	 */
-	private static boolean getUserPermissionToOpenDummyData( final MamutProject project, final Exception e, final Component parentComponent )
-	{
-		final String problemDescription = getProblemDescription( project, e );
-		System.err.println( problemDescription );
-		final String title = "Problem Opening Mastodon Project";
-		String message = "";
-		message += "Mastodon could not find the images associated with this project.\n";
-		message += "\n";
-		message += problemDescription + "\n";
-		message += "\n";
-		message += "It is still possible to open the project.\n";
-		message += "You can inspect and modify the tracking data.\n";
-		message += "But you won't be able to see the image data.\n";
-		message += "\n";
-		message += "You may fix this problem by correcting the image path in the Mastodon project.\n";
-		message += "In the Mastodon menu select: File -> Fix Image Path.\n";
-		message += "\n";
-		message += "How would you like to continue?";
-		final String[] options = { "Open With Dummy Images", "Cancel" };
-		final int dialogResult = JOptionPane.showOptionDialog( parentComponent, message, title, JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE, null, options, null );
-		return dialogResult == JOptionPane.YES_OPTION;
-	}
-
-	private static String getProblemDescription( final MamutProject project, final Exception e )
-	{
-		final File datasetXml = project.getDatasetXmlFile();
-		if ( !datasetXml.exists() )
-			return "The image data XML was not found:\n" + datasetXml;
-		final Throwable cause = e.getCause();
-		if ( cause instanceof UnknownHostException )
-			return errorMessageUnknownHost( datasetXml, cause.getMessage() );
-		return e.getMessage();
-	}
-
-	private static String errorMessageUnknownHost( final File datasetXml, final String host )
-	{
-		final SAXBuilder sax = new SAXBuilder();
-		try
-		{
-			final Document doc = sax.build( datasetXml );
-			final Element root = doc.getRootElement();
-			final String baseUrl = root
-					.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
-					.getChild( XmlKeys.IMGLOADER_TAG )
-					.getChildText( "baseUrl" );
-			return "Cannot reach host  " + host + " for the dataset URL: " + baseUrl;
-		}
-		catch ( final Exception e )
-		{
-			return "Unparsable dataset file: " + e.getMessage();
-		}
-	}
 
 	private static SharedBigDataViewerData openDummyImageData( final MamutProject project )
 	{

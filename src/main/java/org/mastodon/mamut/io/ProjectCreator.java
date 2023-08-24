@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,83 +32,6 @@ import mpicbg.spim.data.XmlIoSpimData;
  */
 public class ProjectCreator
 {
-
-	/**
-	 * Interactively creates a new project prompting the user for a path to a
-	 * BDV/XML file.
-	 * <p>
-	 * A dialog is shown to prompt the user for the path to the XML file. If the
-	 * image data cannot be loaded a dialog shows up telling the user about the
-	 * problem, and offering to start Mastodon on substituted dummy image data.
-	 * 
-	 * @param context
-	 *            the current context.
-	 * @param parentComponent
-	 *            a component to use as parent to show dialogs during opening.
-	 *            Can be <code>null</code>.
-	 * @return a new {@link ProjectModel} or <code>null</code> if the user
-	 *         clicked cancel, or if the BDV file is faulty and the user
-	 *         declined to substitute a dummy dataset.
-	 */
-	public static synchronized ProjectModel createProjectWithDialog( final Context context, final Component parentComponent )
-	{
-		final File file = FileChooser.chooseFile(
-				parentComponent,
-				null,
-				new XmlFileFilter(),
-				"Open BigDataViewer File",
-				FileChooser.DialogType.LOAD,
-				NEW_ICON_MEDIUM.getImage() );
-		if ( file == null )
-			return null;
-
-		try
-		{
-			return createProjectFromBdvFileWithDialog( file, context, parentComponent );
-		}
-		catch ( final SpimDataException e )
-		{
-			JOptionPane.showMessageDialog(
-					parentComponent,
-					"Problem reading image file:\n" + e.getMessage(),
-					"Error reading image data",
-					JOptionPane.ERROR_MESSAGE );
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * Interactively creates a new project from a BDV/XML file.
-	 * <p>
-	 * If the specified BDV file cannot be loaded a dialog shows up telling the
-	 * user about the problem, and offering to start Mastodon on substituted
-	 * dummy image data.
-	 * 
-	 * @param context
-	 *            the current context.
-	 * @param parentComponent
-	 *            a component to use as parent to show dialogs during opening.
-	 *            Can be <code>null</code>.
-	 * @return a new {@link ProjectModel}.
-	 * @throws SpimDataException
-	 *             if the BDV file that cannot be opened, and the user declined
-	 *             to substitute a dummy dataset.
-	 */
-	public static ProjectModel createProjectFromBdvFileWithDialog( final File file, final Context context, final Component parentComponent ) throws SpimDataException
-	{
-		final MamutProject project = MamutProjectIO.fromBdvFile( file );
-		try
-		{
-			return ProjectLoader.openWithDialog( project, context, parentComponent );
-		}
-		catch ( final IOException e )
-		{
-			// Should not happen because the data model and the GUI state are empty.
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	/**
 	 * Creates a new project from a BDV/XML file.
@@ -147,10 +71,13 @@ public class ProjectCreator
 	 * @param parentComponent
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
+	 * @param errorConsumer
+	 *            a consumer that will receive an user-readable error message if
+	 *            something wrong happens.
 	 * @return a new {@link ProjectModel} or <code>null</code> if the user
 	 *         clicked cancel, or if the image data cannot be accessed.
 	 */
-	public static synchronized ProjectModel createProjectFromUrl( final Context context, final Component parentComponent )
+	public static synchronized ProjectModel createProjectFromUrl( final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
 	{
 		final String urlString = JOptionPane.showInputDialog( parentComponent, "Please input a url for image data" );
 		if ( urlString == null )

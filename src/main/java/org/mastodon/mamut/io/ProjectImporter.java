@@ -6,19 +6,17 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
-
-import javax.swing.JOptionPane;
+import java.util.function.Consumer;
 
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.simi.SimiImportDialog;
 import org.mastodon.mamut.io.importer.tgmm.TgmmImportDialog;
 import org.mastodon.mamut.io.importer.trackmate.TrackMateImporter;
+import org.mastodon.mamut.launcher.LauncherUtil;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.XmlFileFilter;
 import org.scijava.Context;
-
-import mpicbg.spim.data.SpimDataException;
 
 /**
  * Static methods for creating projects from other file formats.
@@ -34,10 +32,13 @@ public class ProjectImporter
 	 *            a component used as parent for dialogs.
 	 * @param context
 	 *            the current context.
-	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the
-	 *         user cancels loading or if there is a problem reading the data.
+	 * @param errorConsumer
+	 *            a consumer that will receive an user-readable error message if
+	 *            something wrong happens.
+	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the user
+	 *         cancels loading or if there is a problem reading the data.
 	 */
-	public static synchronized ProjectModel openMamutWithDialog( final Component parentComponent, final Context context )
+	public static synchronized ProjectModel openMamutWithDialog( final Component parentComponent, final Context context, final Consumer< String > errorConsumer )
 	{
 		final File file = FileChooser.chooseFile(
 				parentComponent,
@@ -52,19 +53,14 @@ public class ProjectImporter
 		try
 		{
 			final TrackMateImporter importer = new TrackMateImporter( file );
-			final ProjectModel appModel = ProjectLoader.openWithDialog( importer.createProject(), context, parentComponent );
+			final ProjectModel appModel = LauncherUtil.openWithDialog( importer.createProject(), context, parentComponent, errorConsumer );
 			final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
 			importer.readModel( appModel.getModel(), featureSpecsService );
 			return appModel;
 		}
-		catch ( IOException | SpimDataException e )
+		catch ( final IOException e )
 		{
-			JOptionPane.showMessageDialog(
-					parentComponent,
-					"Problem reading MaMuT file:\n" + e.getMessage(),
-					"Error reading MaMuT file",
-					JOptionPane.ERROR_MESSAGE );
-			e.printStackTrace();
+			errorConsumer.accept( "Problem reading MaMuT file:\n" + e.getMessage() );
 		}
 		return null;
 	}
