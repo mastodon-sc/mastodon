@@ -57,6 +57,8 @@ public class ProjectSaver
 	/**
 	 * Interactively saves the specified project. A dialog is shown prompting
 	 * the user to a save path.
+	 * <p>
+	 * Must <b>not</b> be called on the EDT.
 	 * 
 	 * @param appModel
 	 *            the project model.
@@ -69,111 +71,106 @@ public class ProjectSaver
 		final MamutProject project = appModel.getProject();
 		final String projectRoot = getProposedProjectRoot( project );
 
-		new Thread( new Runnable()
+		try
 		{
-			@Override
-			public void run()
+
+			/*
+			 * Check if the image data is based on a non-BDV image. If it's the
+			 * case, offer to convert.
+			 */
+
+			if ( project instanceof MamutImagePlusProject )
 			{
-				try
+
+				final AtomicInteger returnUserValue = new AtomicInteger( -1 );
+				SwingUtilities.invokeAndWait( new Runnable()
 				{
 
-					/*
-					 * Check if the image data is based on a non-BDV image. If
-					 * it's the case, offer to convert.
-					 */
-
-					if ( project instanceof MamutImagePlusProject )
+					@Override
+					public void run()
 					{
-
-						final AtomicInteger returnUserValue = new AtomicInteger( -1 );
-						SwingUtilities.invokeAndWait( new Runnable()
-						{
-
-							@Override
-							public void run()
-							{
-								final int val = JOptionPane.showConfirmDialog(
-										parentComponent,
-										"The image data is not currently saved as a BDV file, \n"
-												+ "which is optimal for Mastodon. Mastodon might fail \n"
-												+ "to load the image data when you will reopen the \n"
-												+ "project you are about to save.\n"
-												+ "\n"
-												+ "Do you want to resave the image to the BDV file \n"
-												+ "format prior to saving the Mastodon project? \n"
-												+ "\n"
-												+ "(Clicking 'Yes' will show the BDV exporter \n"
-												+ "interface and close all Mastodon windows, \n"
-												+ "then offer to save the Mastodon project.)",
-										"Image not in BDV file format",
-										JOptionPane.YES_NO_OPTION,
-										JOptionPane.QUESTION_MESSAGE,
-										MastodonIcons.MASTODON_ICON_MEDIUM );
-								returnUserValue.set( val );
-							}
-						} );
-
-						if ( returnUserValue.get() == JOptionPane.YES_OPTION )
-						{
-							/*
-							 * If the user chose to resave to BDV, then we make
-							 * a new project out of the new data, save it and
-							 * reopen it.
-							 */
-							saveAndReopenImagePlusProject( appModel, parentComponent );
-							return;
-						}
+						final int val = JOptionPane.showConfirmDialog(
+								parentComponent,
+								"The image data is not currently saved as a BDV file, \n"
+										+ "which is optimal for Mastodon. Mastodon might fail \n"
+										+ "to load the image data when you will reopen the \n"
+										+ "project you are about to save.\n"
+										+ "\n"
+										+ "Do you want to resave the image to the BDV file \n"
+										+ "format prior to saving the Mastodon project? \n"
+										+ "\n"
+										+ "(Clicking 'Yes' will show the BDV exporter \n"
+										+ "interface and close all Mastodon windows, \n"
+										+ "then offer to save the Mastodon project.)",
+								"Image not in BDV file format",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE,
+								MastodonIcons.MASTODON_ICON_MEDIUM );
+						returnUserValue.set( val );
 					}
+				} );
 
-					/*
-					 * Ask for a file path to save to.
-					 */
-
-					SwingUtilities.invokeAndWait( new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							final File file = FileChooser.chooseFile( true,
-									parentComponent,
-									projectRoot,
-									new ExtensionFileFilter( "mastodon" ),
-									"Save Mastodon Project",
-									FileChooser.DialogType.SAVE,
-									SelectionMode.FILES_ONLY,
-									SAVE_ICON_MEDIUM.getImage() );
-							if ( file == null )
-								return;
-
-							new Thread( () -> {
-								try
-								{
-									saveProject( file, appModel );
-								}
-								catch ( final IOException e )
-								{
-									JOptionPane.showMessageDialog(
-											parentComponent,
-											"Could not save project:\n" + e.getMessage(),
-											"Error writing to file",
-											JOptionPane.ERROR_MESSAGE );
-									e.printStackTrace();
-								}
-							} ).start();
-						}
-					} );
-				}
-				catch ( final InterruptedException | InvocationTargetException | IOException e )
+				if ( returnUserValue.get() == JOptionPane.YES_OPTION )
 				{
-					JOptionPane.showMessageDialog(
-							parentComponent,
-							"Problem writing the project:\n" + e.getMessage(),
-							"Error writing to file",
-							JOptionPane.ERROR_MESSAGE );
-					e.printStackTrace();
+					/*
+					 * If the user chose to resave to BDV, then we make a new
+					 * project out of the new data, save it and reopen it.
+					 */
+					saveAndReopenImagePlusProject( appModel, parentComponent );
+					return;
 				}
 			}
-		} ).start();
+
+			/*
+			 * Ask for a file path to save to. We want to go on the EDT and keep
+			 * a ref to what we will receive; we use a StringBuilder for that.
+			 */
+			final StringBuilder str = new StringBuilder();
+			SwingUtilities.invokeAndWait( new Runnable()
+			{
+
+				@Override
+				public void run()
+				{
+					final File file = FileChooser.chooseFile( true,
+							parentComponent,
+							projectRoot,
+							new ExtensionFileFilter( "mastodon" ),
+							"Save Mastodon Project",
+							FileChooser.DialogType.SAVE,
+							SelectionMode.FILES_ONLY,
+							SAVE_ICON_MEDIUM.getImage() );
+					if ( file == null )
+						return;
+					str.append( file.getAbsolutePath() );
+				}
+			} );
+			if ( str.length() == 0 ) // Abort
+				return;
+
+			try
+			{
+				saveProject( new File( str.toString() ), appModel );
+			}
+			catch ( final IOException e )
+			{
+				JOptionPane.showMessageDialog(
+						parentComponent,
+						"Could not save project:\n" + e.getMessage(),
+						"Error writing to file",
+						JOptionPane.ERROR_MESSAGE );
+				e.printStackTrace();
+			}
+		}
+		catch ( final InterruptedException | InvocationTargetException | IOException e )
+		{
+			JOptionPane.showMessageDialog(
+					parentComponent,
+					"Problem writing the project:\n" + e.getMessage(),
+					"Error writing to file",
+					JOptionPane.ERROR_MESSAGE );
+			e.printStackTrace();
+		}
 	}
 
 	/**
