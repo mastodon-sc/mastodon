@@ -240,6 +240,9 @@ public class WindowManager
 	/**
 	 * Creates, shows, registers and returns a view of the specified class, with
 	 * GUI state read from the specified map.
+	 * <p>
+	 * Return <code>null</code> if the type of view is unknown to the window
+	 * manager.
 	 * 
 	 * @param <T>
 	 *            the view type.
@@ -247,12 +250,17 @@ public class WindowManager
 	 *            the view class.
 	 * @param guiState
 	 *            the GUI state map.
-	 * @return a new instance of the view, that was shown.
+	 * @return a new instance of the view, or <code>null</code> if the view
+	 *         class is unknown to the window manager.
 	 */
 	public synchronized < T extends MamutViewI > T createView( final Class< T > klass, final Map< String, Object > guiState )
 	{
 		// Get the right factory.
 		final MamutViewFactory< T > factory = mamutViews.getFactory( klass );
+
+		// Return null if the view type is unknown to us.
+		if ( factory == null )
+			return null;
 
 		// Create the view.
 		final T view = factory.create( appModel );
