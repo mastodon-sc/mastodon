@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JOptionPane;
@@ -39,6 +40,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory;
+import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
@@ -241,6 +243,32 @@ public class ProjectSaver
 			saveBackupDatasetXml( tmpDatasetXml, writer );
 			// Set save point.
 			model.setSavePoint();
+		}
+
+		// Save BDV settings.
+		// Imperfect because a full saving requires have a view opened,
+		// which is not necessarily our case.
+		final SharedBigDataViewerData sbdv = appModel.getSharedBdvData();
+		if ( sbdv.getProposedSettingsFile() != null )
+		{
+			final String settingsFile = sbdv.getProposedSettingsFile().getAbsolutePath();
+			final AtomicBoolean alreadySaved = new AtomicBoolean( false );
+			appModel.getWindowManager().forEachView( MamutViewBdv.class, ( v ) -> {
+				if ( !alreadySaved.get() )
+				{
+					try
+					{
+						sbdv.saveSettings( settingsFile, v.getViewerPanelMamut() );
+						alreadySaved.set( true );
+					}
+					catch ( final IOException e )
+					{
+						e.printStackTrace();
+					}
+				}
+			} );
+			if ( !alreadySaved.get() )
+				sbdv.saveSettings( settingsFile, null );
 		}
 	}
 
