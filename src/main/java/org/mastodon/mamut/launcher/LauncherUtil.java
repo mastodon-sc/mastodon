@@ -130,7 +130,9 @@ public class LauncherUtil
 	 * If the specified BDV file cannot be loaded a dialog shows up telling the
 	 * user about the problem, and offering to start Mastodon on substituted
 	 * dummy image data.
-	 * 
+	 *
+	 * @param file
+	 *            the BDX XML file.
 	 * @param context
 	 *            the current context.
 	 * @param parentComponent

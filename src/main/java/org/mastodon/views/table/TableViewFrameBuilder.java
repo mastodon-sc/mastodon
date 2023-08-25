@@ -693,6 +693,7 @@ public class TableViewFrameBuilder
 		 * @param selectionTable
 		 *            if <code>true</code> will display the content of the
 		 *            {@link #selectionModel}.
+		 * @return this builder.
 		 */
 		public GraphTableBuilder< V, E > selectionTable( final boolean selectionTable )
 		{

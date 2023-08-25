@@ -68,12 +68,15 @@ public class BranchGraphUndoActions
 	/**
 	 * Create Undo/Redo actions and install them in the specified
 	 * {@link Actions}.
-	 *  @param actions
+	 * 
+	 * @param actions
 	 *            Actions are added here.
 	 * @param model
 	 *            Actions are targeted at this {@link Model}s {@code undo()} and
 	 *            {@code redo()} methods.
 	 * @param branchGraphSync
+	 *            the branch sync object, used to regenerate the branch graph
+	 *            when the core model changes.
 	 */
 	public static void install( final Actions actions, final Model model, final BranchGraphSynchronizer branchGraphSync )
 	{

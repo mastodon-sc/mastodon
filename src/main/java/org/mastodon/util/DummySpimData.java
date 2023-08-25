@@ -159,10 +159,17 @@ public class DummySpimData
 	}
 
 	/**
-	 * @return a {@link AbstractSpimData} object. Pixel sizes, image sizes, and
-	 *         image transformations are read from the given BigDataViewer XML.
-	 *         The actual image data is not loaded, all pixels are black.
-	 *         {@link DummyImgLoader} is used to provide the dummy image data.
+	 * Returns a new {@link AbstractSpimData} object.Pixel sizes, image sizes,
+	 * and image transformations are read from the given BigDataViewer XML. The
+	 * actual image data is not loaded, all pixels are black.
+	 * {@link DummyImgLoader} is used to provide the dummy image data.
+	 * 
+	 * @param spimDataXmlFilename
+	 *            the spim data file name.
+	 * @return a {@link AbstractSpimData} object.
+	 * @throws SpimDataException
+	 *             if something wrong happens when building the spim data
+	 *             object.
 	 */
 	public static AbstractSpimData< ? > fromSpimDataXml( final String spimDataXmlFilename )
 			throws SpimDataException

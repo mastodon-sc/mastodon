@@ -13,6 +13,9 @@ public class DefaultFadingModel
 
 	/**
 	 * Creates a new Fading Model for the specified graph.
+	 * 
+	 * @param timepointModel
+	 *            the timepoint model to base this fading model on.
 	 */
 	public DefaultFadingModel( final TimepointModel timepointModel )
 	{

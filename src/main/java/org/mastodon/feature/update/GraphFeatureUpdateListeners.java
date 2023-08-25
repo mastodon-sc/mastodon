@@ -56,8 +56,11 @@ public class GraphFeatureUpdateListeners
 	 *            the class of vertices in the model.
 	 * @param edgeClass
 	 *            the class of edges in the model.
-	 *
 	 * @return a new {@link PropertyChangeListener}.
+	 * @param <V>
+	 *            the type of vertices.
+	 * @param <E>
+	 *            the type of edges.
 	 */
 	public static < V extends Vertex< E >, E extends Edge< V > > PropertyChangeListener< V > vertexPropertyListener(
 			final FeatureModel featureModel, final Class< V > vertexClass, final Class< E > edgeClass )

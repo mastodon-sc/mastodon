@@ -73,21 +73,20 @@ import net.imglib2.util.Cast;
  * 
  * <pre>
  * {@code
- * for ( DepthFirstIteration.Step<Spot> step : DepthFirstIteration.forRoot( graph, root ) )
+ * for ( DepthFirstIteration.Step< Spot > step : DepthFirstIteration.forRoot( graph, root ) )
  * {
- *     Spot node = step.node();
- *     if ( step.isFirstVisit() )
- *        System.out.println( "first visit " + node.getLabel() );
- *     if ( step.isSecondVisit() )
- *        System.out.println( "second visit " + node.getLabel() );
- *     if ( step.isLeaf() )
- *        System.out.println( "leaf " + node.getLabel() );
+ * 	Spot node = step.node();
+ * 	if ( step.isFirstVisit() )
+ * 		System.out.println( "first visit " + node.getLabel() );
+ * 	if ( step.isSecondVisit() )
+ * 		System.out.println( "second visit " + node.getLabel() );
+ * 	if ( step.isLeaf() )
+ * 		System.out.println( "leaf " + node.getLabel() );
  * }
  * }
  * </pre>
  * 
  * It will print the following on the console:
- * <p>
  * 
  * <pre>
  * first visit a

@@ -432,7 +432,11 @@ public class SharedBigDataViewerData
 	 * BigDataViewer XML. The actual image data is not loaded, all pixels are
 	 * black.
 	 * 
+	 * @param spimDataXmlFilename
+	 *            the pseudo XML file, containing the dummy information.
 	 * @return a "dummy" {@link SharedBigDataViewerData} object.
+	 * @throws SpimDataException
+	 *             if something wrong happens when build the spim data object.
 	 */
 	public static SharedBigDataViewerData createDummyDataFromSpimDataXml( final String spimDataXmlFilename ) throws SpimDataException
 	{

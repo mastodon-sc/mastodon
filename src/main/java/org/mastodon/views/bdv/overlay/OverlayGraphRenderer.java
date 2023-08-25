@@ -182,10 +182,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public static final double pointRadius = 2.5;
 
 	/**
-	 * Return signed distance of p to z=0 plane, truncated at cutoff and scaled
-	 * by 1/cutoff. A point on the plane has d=0. A Point that is at cutoff or
-	 * farther behind the plane has d=1. A point that is at -cutoff or more in
-	 * front of the plane has d=-1.
+	 * Return signed distance of p to a plane along Z, truncated at cutoff and
+	 * scaled by 1/cutoff. A point on the plane has d=0. A Point that is at
+	 * cutoff or farther behind the plane has d=1. A point that is at -cutoff or
+	 * more in front of the plane has d=-1.
+	 * 
+	 * @param z
+	 *            the position of the plane.
+	 * @param cutoff
+	 *            the cutoff.
+	 * @return the signed distance.
 	 */
 	protected static double sliceDistance( final double z, final double cutoff )
 	{
@@ -197,8 +203,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	/**
 	 * Return signed distance of timepoint t to t0, truncated at cutoff and
-	 * scaled by 1/cutoff. t=t0 has d=0. t&le;t0-cutoff has d=-1.
-	 * t&ge;t0+cutoff has d=1.
+	 * scaled by 1/cutoff. t=t0 has d=0. t&le;t0-cutoff has d=-1. t&ge;t0+cutoff
+	 * has d=1.
+	 * 
+	 * @param t
+	 *            the timepoint.
+	 * @param t0
+	 *            the target timepoint.
+	 * @param cutoff
+	 *            the cutoff.
+	 * @return the signed distance.
 	 */
 	private static double timeDistance( final double t, final double t0, final double cutoff )
 	{
@@ -250,7 +264,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *            (alpha value decreases).
 	 * @param isSelected
 	 *            whether to use selected or un-selected color scheme.
-	 * @param color the color assigned to the object when using a coloring scheme.
+	 * @param color
+	 *            the color assigned to the object when using a coloring scheme.
+	 * @param isHighlighted
+	 *            whether the object is highlighted.
+	 * @param colorSpot
+	 *            the default color to paint the spot.
+	 * @param colorPast
+	 *            the color used to paint objects that are in the past.
+	 * @param colorFuture
+	 *            the color used to paint objects that are in the future.
 	 * @return vertex/edge color suitable for display in a BDV.
 	 */
 	protected static Color getColor(
@@ -400,8 +423,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * center of every ellipsoid that intersects the visible volume.
 	 *
 	 * @param transform
+	 *            the current view transform.
 	 * @param timepoint
-	 * @return
+	 *            the current timepoint.
+	 * @return a convex polytope object.
 	 */
 	protected ConvexPolytope getVisiblePolytopeGlobal(
 			final AffineTransform3D transform,

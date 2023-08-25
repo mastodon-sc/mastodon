@@ -190,6 +190,8 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 
 	/**
 	 * Listeners that are notified when the Mastodon project is closed.
+	 * 
+	 * @return the {@link Listeners}.
 	 */
 	public Listeners< CloseListener > projectClosedListeners()
 	{

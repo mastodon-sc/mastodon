@@ -129,6 +129,10 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 	 *            the component to focus back to, when the use presses ESCAPE in
 	 *            the search text field.
 	 * @return a new panel containing the search field.
+	 * @param <V>
+	 *            the type of vertices in the graph to search.
+	 * @param <E>
+	 *            the type of edges in the graph to search.
 	 */
 	public static < V extends Vertex< E > & HasLabel & Ref< V >, E extends Edge< V > > JPanel
 			install(
