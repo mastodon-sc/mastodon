@@ -33,11 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
-
 import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.app.ui.ViewFrame;
@@ -59,6 +54,7 @@ import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
+import org.mastodon.ui.coloring.ColorBarOverlayMenu;
 import org.mastodon.ui.coloring.ColoringMenu;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.ColoringModelMain;
@@ -206,35 +202,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 			final JMenuHandle menuHandle,
 			final Runnable refresh )
 	{
-		menuHandle.getMenu().add( new JSeparator() );
-		final JCheckBoxMenuItem toggleOverlay =
-				new JCheckBoxMenuItem( "Show colorbar", ColorBarOverlay.DEFAULT_VISIBLE );
-		toggleOverlay.addActionListener( ( l ) -> {
-			colorBarOverlay.setVisible( toggleOverlay.isSelected() );
-			refresh.run();
-		} );
-		menuHandle.getMenu().add( toggleOverlay );
-
-		menuHandle.getMenu().add( new JSeparator() );
-		menuHandle.getMenu().add( "Position:" ).setEnabled( false );
-
-		final ButtonGroup buttonGroup = new ButtonGroup();
-		for ( final Position position : Position.values() )
-		{
-			final JRadioButtonMenuItem positionItem = new JRadioButtonMenuItem( position.toString() );
-			positionItem.addActionListener( ( l ) -> {
-				if ( positionItem.isSelected() )
-				{
-					colorBarOverlay.setPosition( position );
-					refresh.run();
-				}
-			} );
-			buttonGroup.add( positionItem );
-			menuHandle.getMenu().add( positionItem );
-
-			if ( position.equals( ColorBarOverlay.DEFAULT_POSITION ) )
-				positionItem.setSelected( true );
-		}
+		final ColorBarOverlayMenu menu = new ColorBarOverlayMenu( menuHandle.getMenu(), colorBarOverlay, refresh );
+		colorBarOverlay.listeners().add( menu );
 	}
 
 	protected void registerTagSetMenu(
