@@ -69,7 +69,8 @@ public class ProjectImporter
 	 * Shows an importer window that allows importing data from a Simi Biocell
 	 * file. The cell data is <b>added</b> to the existing project.
 	 * 
-	 * @see http://www.simi.com/en/products/cell-research.html
+	 * @see <a href=
+	 *      "http://www.simi.com/en/products/cell-research.html">http://www.simi.com/en/products/cell-research.html</a>
 	 * 
 	 * @param appModel
 	 *            the project to add the data to.
@@ -86,7 +87,8 @@ public class ProjectImporter
 	 * Shows an importer window that allows importing data from a TGMM file. The
 	 * cell data is <b>added</b> to the existing project.
 	 * 
-	 * @see https://github.com/KellerLabTeam/tgmm-docker
+	 * @see <a href=
+	 *      "https://github.com/KellerLabTeam/tgmm-docker">https://github.com/KellerLabTeam/tgmm-docker</a>
 	 * 
 	 * @param appModel
 	 *            the project to add the data to.

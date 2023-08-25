@@ -37,11 +37,7 @@ import org.scijava.plugin.Plugin;
  * <li><code>'GrapherTransform'</code> &rarr; a
  * {@link org.mastodon.views.grapher.datagraph.ScreenTransform} specifying the
  * region to initially zoom on the XY plot.
- * 
  * </ul>
- * 
- * @param guiState
- *            the map of settings.
  */
 @Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 4 )
 public class MamutViewGrapherFactory extends AbstractMamutViewFactory< MamutViewGrapher >

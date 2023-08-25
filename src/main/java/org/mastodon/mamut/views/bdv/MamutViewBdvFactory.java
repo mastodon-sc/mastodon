@@ -57,9 +57,6 @@ public class MamutViewBdvFactory extends AbstractMamutViewFactory< MamutViewBdv 
 	/**
 	 * Key for the {@link ViewerState} in a BDV view. Value is a XML
 	 * {@link Element} serialized from the state.
-	 *
-	 * @see ViewerPanelMamut#stateToXml()
-	 * @see ViewerPanelMamut#stateFromXml(Element)
 	 */
 	public static final String BDV_STATE_KEY = "BdvState";
 
