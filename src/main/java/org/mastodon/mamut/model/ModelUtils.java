@@ -71,6 +71,8 @@ public class ModelUtils
 	 * 
 	 * @param model
 	 *            the model.
+	 * @param maxLines
+	 *            the max number of rows to print in the two tables.
 	 * @return a String representation of the model.
 	 */
 	public static final String dump( final Model model, final long maxLines )

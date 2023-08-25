@@ -31,7 +31,7 @@ public class TagHelper
 
 	private final ObjTagMap< Link, TagSetStructure.Tag > edgeTags;
 
-	public TagHelper( Model model, TagSetStructure.TagSet tagSet, TagSetStructure.Tag tag )
+	public TagHelper( final Model model, final TagSetStructure.TagSet tagSet, final TagSetStructure.Tag tag )
 	{
 		this.model = Objects.requireNonNull( model );
 		this.tagSet = Objects.requireNonNull( tagSet );
@@ -44,18 +44,20 @@ public class TagHelper
 			throw new NoSuchElementException( "Tag set " + tagSet + " is not registered in the model." );
 	}
 
-	public TagHelper( Model model, TagSetStructure.TagSet tagSet, String tagLabel )
+	public TagHelper( final Model model, final TagSetStructure.TagSet tagSet, final String tagLabel )
 	{
 		this( model, tagSet, TagSetUtils.findTag( tagSet, tagLabel ) );
 	}
 
-	public TagHelper( Model model, String tagSetName, String tagLabel )
+	public TagHelper( final Model model, final String tagSetName, final String tagLabel )
 	{
 		this( model, TagSetUtils.findTagSet( model, tagSetName ), tagLabel );
 	}
 
 	/**
 	 * Returns the tag set this tag belongs to.
+	 * 
+	 * @return the tag set this tag belongs to.
 	 */
 	public TagSetStructure.TagSet getTagSet()
 	{
@@ -64,6 +66,8 @@ public class TagHelper
 
 	/**
 	 * Returns the tag that is represented by this {@link TagHelper}.
+	 * 
+	 * @return the tag.
 	 */
 	public TagSetStructure.Tag getTag()
 	{
@@ -72,93 +76,127 @@ public class TagHelper
 
 	/**
 	 * Assigns the tag to the specified spot.
+	 * 
+	 * @param spot
+	 *            the spot to associate to tag to.
 	 */
-	public void tagSpot( Spot spot )
+	public void tagSpot( final Spot spot )
 	{
 		vertexTags.set( spot, tag );
 	}
 
 	/**
 	 * Assigns the tag to the specified link.
+	 * 
+	 * @param link
+	 *            the link to associate the tag to.
 	 */
-	public void tagLink( Link link )
+	public void tagLink( final Link link )
 	{
 		edgeTags.set( link, tag );
 	}
 
 	/**
-	 * Returns true is the specified spot is tagged with this tag.
+	 * Returns <code>true</code> is the specified spot is tagged with this tag.
+	 * 
+	 * @param spot
+	 *            the spot.
+	 * @return <code>true</code> is the specified spot is tagged with this tag.
 	 */
-	public boolean isTagged( Spot spot )
+	public boolean isTagged( final Spot spot )
 	{
 		return vertexTags.get( spot ) == tag;
 	}
 
 	/**
-	 * Returns true is the specified link is tagged with this tag.
+	 * Returns <code>true</code> is the specified link is tagged with this tag.
+	 * 
+	 * @param link
+	 *            the link.
+	 * @return <code>true</code> is the specified link is tagged with this tag.
 	 */
-	public boolean isTagged( Link link )
+	public boolean isTagged( final Link link )
 	{
 		return edgeTags.get( link ) == tag;
 	}
 
 	/**
 	 * Assigns the tag to the specified spot and all its incoming edges.
+	 * 
+	 * @param spot
+	 *            the spot.
 	 */
-	public void tagSpotAndIncomingEdges( Spot spot )
+	public void tagSpotAndIncomingEdges( final Spot spot )
 	{
 		tagSpot( spot );
-		for ( Link link : spot.incomingEdges() )
+		for ( final Link link : spot.incomingEdges() )
 			tagLink( link );
 	}
 
 	/**
 	 * Assigns the tag to the specified spot and all its outgoing edges.
+	 * 
+	 * @param spot
+	 *            the spot.
 	 */
-	public void tagSpotAndOutgoingEdges( Spot spot )
+	public void tagSpotAndOutgoingEdges( final Spot spot )
 	{
 		tagSpot( spot );
-		for ( Link link : spot.outgoingEdges() )
+		for ( final Link link : spot.outgoingEdges() )
 			tagLink( link );
 	}
 
 	/**
-	 * Removes the tag from the specified spot. This also removes any other
-	 * tag in the same tag set from the spot.
+	 * Removes the tag from the specified spot. This also removes any other tag
+	 * in the same tag set from the spot.
+	 * 
+	 * @param spot
+	 *            the spot.
 	 */
-	public void untagSpot( Spot spot )
+	public void untagSpot( final Spot spot )
 	{
 		vertexTags.remove( spot );
 	}
 
 	/**
-	 * Removes the tag from the specified link. This also removes any other
-	 * tag in the same tag set from the link.
+	 * Removes the tag from the specified link. This also removes any other tag
+	 * in the same tag set from the link.
+	 * 
+	 * @param link
+	 *            the link.
 	 */
-	public void untagLink( Link link )
+	public void untagLink( final Link link )
 	{
 		edgeTags.remove( link );
 	}
 
 	/**
 	 * Assigns the tag to the branch that the specified spot belongs to.
+	 * 
+	 * @param spot
+	 *            the spot to find the branch from.
 	 */
-	public void tagBranch( Spot spot )
+	public void tagBranch( final Spot spot )
 	{
 		forEachSpotAndLinkOfTheBranch( model.getGraph(), spot, this::tagSpot, this::tagLink );
 	}
 
 	/**
-	 * Removes the tag from the branch that the specified spot belongs to.
-	 * This also removes any other tag in the same tag set from the branch.
+	 * Removes the tag from the branch that the specified spot belongs to. This
+	 * also removes any other tag in the same tag set from the branch.
+	 * 
+	 * @param spot
+	 *            the spot to find the branch from.
 	 */
-	public void untagBranch( Spot spot )
+	public void untagBranch( final Spot spot )
 	{
 		forEachSpotAndLinkOfTheBranch( model.getGraph(), spot, this::untagSpot, this::untagLink );
 	}
 
 	/**
 	 * Returns all spots that are tagged with this tag.
+	 * 
+	 * @return the spots.
 	 */
 	public Collection< Spot > getTaggedSpots()
 	{
@@ -167,6 +205,8 @@ public class TagHelper
 
 	/**
 	 * Returns all links that are tagged with this tag.
+	 * 
+	 * @return the links.
 	 */
 	public Collection< Link > getTaggedLinks()
 	{
@@ -185,7 +225,7 @@ public class TagHelper
 	 * @param spotAction This action is performed on each spot of the branch.
 	 * @param linkAction This action is performed on each link of the branch.
 	 */
-	private void forEachSpotAndLinkOfTheBranch( ModelGraph graph, Spot spot, Consumer< Spot > spotAction, Consumer< Link > linkAction )
+	private void forEachSpotAndLinkOfTheBranch( final ModelGraph graph, final Spot spot, final Consumer< Spot > spotAction, final Consumer< Link > linkAction )
 	{
 		Spot s = graph.vertexRef();
 		try
@@ -195,7 +235,7 @@ public class TagHelper
 			s.refTo( spot );
 			while ( s.outgoingEdges().size() == 1 )
 			{
-				Link link = s.outgoingEdges().get( 0 );
+				final Link link = s.outgoingEdges().get( 0 );
 				s = link.getTarget( s );
 				if ( s.incomingEdges().size() != 1 )
 					break;
@@ -206,7 +246,7 @@ public class TagHelper
 			s.refTo( spot );
 			while ( s.incomingEdges().size() == 1 )
 			{
-				Link link = s.incomingEdges().get( 0 );
+				final Link link = s.incomingEdges().get( 0 );
 				s = link.getSource( s );
 				if ( s.outgoingEdges().size() != 1 )
 					break;

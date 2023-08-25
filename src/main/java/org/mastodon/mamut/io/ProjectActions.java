@@ -47,6 +47,14 @@ public class ProjectActions
 	 * Install the global actions for creating, loading or importing a new
 	 * project. These actions relates to the app context where an app model does
 	 * not exist yet (they create it).
+	 * 
+	 * @param actions
+	 *            the {@link Actions} to register to.
+	 * @param context
+	 *            the current context.
+	 * @param parentComponent
+	 *            a component to use as parent when showing dialogs. Can be
+	 *            <code>null</code>.
 	 */
 	public static void installGlobalActions( final Actions actions, final Context context, final Component parentComponent )
 	{

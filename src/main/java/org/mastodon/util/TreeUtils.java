@@ -20,11 +20,12 @@ public class TreeUtils
 
 	/**
 	 * This method finds a subset of the given {@code selectedVertices} that
-	 * contains only the roots of the subtrees that are selected. The order
-	 * of the returned list follows the order of the {@code roots} list and
-	 * the order of the outgoing edges of the graphs vertices.
+	 * contains only the roots of the subtrees that are selected. The order of
+	 * the returned list follows the order of the {@code roots} list and the
+	 * order of the outgoing edges of the graphs vertices.
 	 * <p>
 	 * Example {@code graph}:
+	 * 
 	 * <pre>
 	 *   A                B
 	 *  / \             /   \
@@ -35,8 +36,20 @@ public class TreeUtils
 	 *   a4 a5
 	 * </pre>
 	 *
-	 * If {@code selectedVertices} contains: {@code {a2, a4, a5, b1, b3, b4, b6}},
-	 * then the returned list will be: {@code [a2, b1, b6]}.
+	 * If {@code selectedVertices} contains: {@code {a2, a4, a5, b1, b3, b4,
+	 * b6}}, then the returned list will be: {@code [a2, b1, b6]}.
+	 * 
+	 * @param <V>
+	 *            the type vertices in the graph.
+	 * @param graph
+	 *            the graph.
+	 * @param roots
+	 *            the roots of the graph, that is vertices with no incoming
+	 *            edges.
+	 * @param selectedVertices
+	 *            the selected vertices.
+	 * @return the subset of selected vertices that contains only the roots of
+	 *         the subtrees.
 	 */
 	public static < V extends Vertex< ? > > RefList< V > findSelectedSubtreeRoots(
 			final Graph< V, ? > graph,
@@ -61,12 +74,12 @@ public class TreeUtils
 		return selectedSubtreeRoots;
 	}
 
-	private static < V extends Vertex< ? > > boolean ensureNoLoop( DepthFirstIteration.Step< V > step, RefSet< V > visitedNodes )
+	private static < V extends Vertex< ? > > boolean ensureNoLoop( final DepthFirstIteration.Step< V > step, final RefSet< V > visitedNodes )
 	{
 		if ( !step.isFirstVisit() )
 			return true;
 
-		boolean isLoop = !visitedNodes.add( step.node() ); // The depth first iteration enters a node for the second time. -> there's a loop.
+		final boolean isLoop = !visitedNodes.add( step.node() ); // The depth first iteration enters a node for the second time. -> there's a loop.
 		if ( isLoop )
 			step.truncate(); // Break the loop by not visiting the child nodes.
 
@@ -78,6 +91,7 @@ public class TreeUtils
 	 * that contain any of the given {@code nodes}.
 	 * <p>
 	 * Example:
+	 * 
 	 * <pre>
 	 *   A                B      C
 	 *  / \             /   \  /
@@ -93,22 +107,42 @@ public class TreeUtils
 	 * <p>
 	 * If {@code nodes} contains {@code {a2, a4, b4}} then the method will
 	 * return {@code {A, B, C}}.
+	 * 
+	 * @param <V>
+	 *            the type of vertices in the graph.
+	 * @param <E>
+	 *            the type of edges in the graph.
+	 * @param graph
+	 *            the graph.
+	 * @param nodes
+	 *            the nodes.
+	 * @return the filtered roots.
 	 */
-	public static <V extends Vertex<E>, E extends Edge< V > > RefSet< V > findRootsOfTheGivenNodes( Graph< V, E > graph, Collection< V > nodes )
+	public static <V extends Vertex<E>, E extends Edge< V > > RefSet< V > findRootsOfTheGivenNodes( final Graph< V, E > graph, final Collection< V > nodes )
 	{
 		return filterRoots( graph, findAllConnectedNodes( graph, nodes ) );
 	}
 
 	/**
-	 * @return the set of predecessors of the given {@code nodes}. Please note
+	 * Returns the set of predecessors of the given {@code nodes}. Please note
 	 * that returned set also contains all the given {@code nodes}.
+	 * 
+	 * @param <V>
+	 *            the type of vertices in the graph.
+	 * @param <E>
+	 *            the type of edges in the graph.
+	 * @param graph
+	 *            the graph.
+	 * @param nodes
+	 *            the nodes.
+	 * @return the set of predecessors.
 	 */
-	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > findAllConnectedNodes( Graph< V, E > graph, Collection< V > nodes )
+	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > findAllConnectedNodes( final Graph< V, E > graph, final Collection< V > nodes )
 	{
 		// The following code performs an inverse depth first search starting
 		// from the given nodes. The set of visited nodes is returned.
-		V ref = graph.vertexRef();
-		V ref2 = graph.vertexRef();
+		final V ref = graph.vertexRef();
+		final V ref2 = graph.vertexRef();
 		try
 		{
 			final RefSet< V > visited = RefCollections.createRefSet( graph.vertices() );
@@ -116,13 +150,13 @@ public class TreeUtils
 			final RefStack< V > stack = RefCollections.createRefStack( graph.vertices() );
 			stack.addAll( visited );
 			while ( ! stack.isEmpty() ) {
-				V node = stack.pop( ref );
-				for ( E edge : node.incomingEdges() ) {
-					V parentNode = edge.getSource( ref2 );
+				final V node = stack.pop( ref );
+				for ( final E edge : node.incomingEdges() ) {
+					final V parentNode = edge.getSource( ref2 );
 					addNode( visited, stack, parentNode );
 				}
-				for ( E edge : node.outgoingEdges() ) {
-					V childNode = edge.getTarget( ref2 );
+				for ( final E edge : node.outgoingEdges() ) {
+					final V childNode = edge.getTarget( ref2 );
 					addNode( visited, stack, childNode );
 				}
 			}
@@ -135,22 +169,32 @@ public class TreeUtils
 		}
 	}
 
-	private static < V extends Vertex<E>, E extends Edge< V > > void addNode( RefSet< V > visited, RefStack< V > stack, V parentNode )
+	private static < V extends Vertex<E>, E extends Edge< V > > void addNode( final RefSet< V > visited, final RefStack< V > stack, final V parentNode )
 	{
-		boolean firstVisit = visited.add( parentNode );
+		final boolean firstVisit = visited.add( parentNode );
 		if ( firstVisit )
 			stack.add( parentNode );
 	}
 
 	/**
-	 * @return a subset of the given {@code nodes} that contains only those
+	 * Returns a subset of the given {@code nodes} that contains only those
 	 * nodes that are roots of the {@code graph}. (A note is considered a root
 	 * if it has no incoming edges.)
+	 * 
+	 * @param <V>
+	 *            the type of vertices in the graph.
+	 * @param <E>
+	 *            the type of edges in the graph.
+	 * @param graph
+	 *            the graph.
+	 * @param nodes
+	 *            the nodes.
+	 * @return a subset of the nodes.
 	 */
-	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > filterRoots( Graph< V, E > graph, Collection< V > nodes )
+	private static < V extends Vertex<E>, E extends Edge< V > > RefSet< V > filterRoots( final Graph< V, E > graph, final Collection< V > nodes )
 	{
 		final RefSet< V > roots = RefCollections.createRefSet( graph.vertices() );
-		for ( V node : nodes )
+		for ( final V node : nodes )
 			if ( node.incomingEdges().isEmpty() )
 				roots.add( node );
 		return roots;

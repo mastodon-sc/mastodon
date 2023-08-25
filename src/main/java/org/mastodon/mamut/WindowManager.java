@@ -435,6 +435,8 @@ public class WindowManager
 	 *            the action to execute.
 	 * @param klass
 	 *            the view class.
+	 * @param <T>
+	 *            the type of the view to operate on.
 	 */
 	public < T extends MamutViewI > void forEachView( final Class< T > klass, final Consumer< T > action )
 	{

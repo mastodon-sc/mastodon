@@ -249,11 +249,13 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 	}
 
 	/**
+	 * Returns the closest active vertex from the specified coordinate.
 	 * 
 	 * @param centerPos
-	 *            in screen coordinates.
+	 *            the coordinate, in screen coordinates.
 	 * @param ref
-	 * @return
+	 *            a ref to a vertex object.
+	 * @return the closest vertex, or <code>null</code> if it cannot be found.
 	 */
 	public DataVertex getClosestActiveVertex( final RealPoint centerPos, final DataVertex ref )
 	{
@@ -493,11 +495,18 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		screenKDtree = KDTree.kdtree( screenVertices, screenVertexPool );
 	}
 
+	/**
+	 * Interface for listeners that are notified when the layout of the data
+	 * graph has changed.
+	 */
 	public interface LayoutListener
 	{
 
 		/**
-		 * Notifies after the layout has been done.
+		 * Notified after the layout has been done.
+		 * 
+		 * @param layout
+		 *            the layout.
 		 */
 		public void layoutChanged( final DataGraphLayout< ?, ? > layout );
 	}
