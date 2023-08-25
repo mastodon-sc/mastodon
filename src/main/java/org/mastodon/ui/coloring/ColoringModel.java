@@ -57,6 +57,11 @@ import org.scijava.listeners.Listeners;
 public abstract class ColoringModel
 {
 
+	public enum ColoringStyle
+	{
+		NONE, BY_TRACK, BY_FEATURE, BY_TAGSET;
+	}
+
 	public interface ColoringChangedListener
 	{
 		void coloringChanged();
@@ -74,6 +79,8 @@ public abstract class ColoringModel
 
 	private final Listeners.List< ColoringChangedListener > listeners;
 
+	private ColoringStyle style;
+
 	public ColoringModel(
 			final TagSetModel< ?, ? > tagSetModel,
 			final FeatureColorModeManager featureColorModeManager,
@@ -83,6 +90,7 @@ public abstract class ColoringModel
 		this.featureColorModeManager = featureColorModeManager;
 		this.projections = new ProjectionsFromFeatureModel( featureModel );
 		this.listeners = new Listeners.SynchronizedList<>();
+		this.style = ColoringStyle.NONE;
 	}
 
 	public Listeners< ColoringChangedListener > listeners()
@@ -92,6 +100,15 @@ public abstract class ColoringModel
 
 	public void colorByNone()
 	{
+		style = ColoringStyle.NONE;
+		tagSet = null;
+		featureColorMode = null;
+		listeners.list.forEach( ColoringChangedListener::coloringChanged );
+	}
+
+	public void colorByTrack()
+	{
+		style = ColoringStyle.BY_TRACK;
 		tagSet = null;
 		featureColorMode = null;
 		listeners.list.forEach( ColoringChangedListener::coloringChanged );
@@ -99,6 +116,7 @@ public abstract class ColoringModel
 
 	public void colorByTagSet( final TagSetStructure.TagSet tagSet )
 	{
+		style = ColoringStyle.BY_TAGSET;
 		this.tagSet = tagSet;
 		this.featureColorMode = null;
 		listeners.list.forEach( ColoringChangedListener::coloringChanged );
@@ -111,6 +129,7 @@ public abstract class ColoringModel
 
 	public void colorByFeature( final FeatureColorMode featureColorMode )
 	{
+		style = ColoringStyle.BY_FEATURE;
 		this.featureColorMode = featureColorMode;
 		this.tagSet = null;
 		listeners.list.forEach( ColoringChangedListener::coloringChanged );
@@ -121,9 +140,9 @@ public abstract class ColoringModel
 		return featureColorMode;
 	}
 
-	public boolean noColoring()
+	public ColoringStyle getColoringStyle()
 	{
-		return tagSet == null && featureColorMode == null;
+		return style;
 	}
 
 	public void tagSetStructureChanged()

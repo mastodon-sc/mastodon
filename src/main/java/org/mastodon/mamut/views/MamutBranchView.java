@@ -57,11 +57,13 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.branch.BranchGraphEdgeBimap;
 import org.mastodon.model.branch.BranchGraphFocusAdapter;
 import org.mastodon.model.branch.BranchGraphHighlightAdapter;
 import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.model.branch.BranchGraphSelectionAdapter;
 import org.mastodon.model.branch.BranchGraphTagSetAdapter;
+import org.mastodon.model.branch.BranchGraphVertexBimap;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColorBarOverlay;
@@ -73,6 +75,7 @@ import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.ui.coloring.TrackGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -265,16 +268,40 @@ public class MamutBranchView<
 		featureModel.listeners().add( coloringMenu );
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
 
+		// Handle track color generator.
+		final TrackGraphColorGenerator< Spot, Link > tgcg = new TrackGraphColorGenerator<>( appModel.getModel().getGraph() );
+		appModel.getModel().getGraph().addGraphChangeListener( tgcg );
+		onClose( () -> appModel.getModel().getGraph().removeGraphChangeListener( tgcg ) );
+		// Adapt it so that is a color generator for the branch graph.
+		final Model m = appModel.getModel();
+		final GraphColorGeneratorAdapter< Spot, Link, BranchSpot, BranchLink > branchTgcg = new GraphColorGeneratorAdapter<>(
+				new BranchGraphVertexBimap<>( m.getBranchGraph(), m.getGraph() ),
+				new BranchGraphEdgeBimap<>( m.getBranchGraph(), m.getGraph() ) );
+		branchTgcg.setColorGenerator( tgcg );
+
 		@SuppressWarnings( "unchecked" )
 		final ColoringModelMain.ColoringChangedListener coloringChangedListener = () -> {
-			if ( coloringModel.noColoring() )
-				colorGeneratorAdapter.setColorGenerator( null );
-			else if ( coloringModel.getTagSet() != null )
-				colorGeneratorAdapter
-						.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
-			else if ( coloringModel.getFeatureColorMode() != null )
-				colorGeneratorAdapter.setColorGenerator( ( GraphColorGenerator< BranchSpot, BranchLink > ) coloringModel
-						.getFeatureGraphColorGenerator() );
+			final GraphColorGenerator< BranchSpot, BranchLink > colorGenerator;
+			tgcg.pauseListener( true );
+			switch(coloringModel.getColoringStyle())
+			{
+			case BY_FEATURE:
+				colorGenerator = ( GraphColorGenerator< BranchSpot, BranchLink > ) coloringModel.getFeatureGraphColorGenerator();
+				break;
+			case BY_TAGSET:
+				colorGenerator = new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) ;
+				break;
+			case BY_TRACK:
+				tgcg.pauseListener( false );
+				colorGenerator = branchTgcg;
+				break;
+			case NONE:
+				colorGenerator = null;
+				break;
+			default:
+				throw new IllegalArgumentException( "Unknown coloring style: " + coloringModel.getColoringStyle() );
+			}
+			colorGeneratorAdapter.setColorGenerator(colorGenerator);
 			refresh.run();
 		};
 		coloringModel.listeners().add( coloringChangedListener );

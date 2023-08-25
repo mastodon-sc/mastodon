@@ -8,6 +8,7 @@ import static org.mastodon.mamut.views.MamutView.GROUP_HANDLE_ID_KEY;
 import static org.mastodon.mamut.views.MamutView.NO_COLORING_KEY;
 import static org.mastodon.mamut.views.MamutView.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.mamut.views.MamutView.TAG_SET_KEY;
+import static org.mastodon.mamut.views.MamutView.TRACK_COLORING_KEY;
 
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -23,6 +24,7 @@ import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModel.ColoringStyle;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
@@ -114,9 +116,11 @@ public abstract class AbstractMamutViewFactory< T extends MamutViewI > implement
 	 */
 	protected static void getColoringState( final ColoringModel coloringModel, final Map< String, Object > guiState )
 	{
-		final boolean noColoring = coloringModel.noColoring();
+		final boolean noColoring = coloringModel.getColoringStyle() == ColoringStyle.NONE;
 		guiState.put( NO_COLORING_KEY, noColoring );
-		if ( !noColoring )
+		final boolean trackColoring = coloringModel.getColoringStyle() == ColoringStyle.BY_TRACK;
+		guiState.put( TRACK_COLORING_KEY, trackColoring );
+		if ( !noColoring && !trackColoring )
 			if ( coloringModel.getTagSet() != null )
 				guiState.put( TAG_SET_KEY, coloringModel.getTagSet().getName() );
 			else if ( coloringModel.getFeatureColorMode() != null )
@@ -149,9 +153,14 @@ public abstract class AbstractMamutViewFactory< T extends MamutViewI > implement
 	protected static void restoreColoringModel( final ColoringModel coloringModel, final Map< String, Object > guiState )
 	{
 		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
+		final Boolean trackColoring = ( Boolean ) guiState.get( TRACK_COLORING_KEY );
 		if ( null != noColoring && noColoring )
 		{
 			coloringModel.colorByNone();
+		}
+		else if ( null != trackColoring && trackColoring )
+		{
+			coloringModel.colorByTrack();
 		}
 		else
 		{
