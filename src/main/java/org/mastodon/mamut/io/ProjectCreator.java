@@ -161,6 +161,9 @@ public class ProjectCreator
 	 * @param context
 	 *            the current context.
 	 * @return a new {@link ProjectModel}.
+	 * @throws SpimDataException
+	 *             SpimDataException if the project points to a BDV file for
+	 *             image data, and that BDV cannot be opened properly.
 	 */
 	public static ProjectModel createProjectFromImp( final ImagePlus imp, final Context context ) throws SpimDataException
 	{

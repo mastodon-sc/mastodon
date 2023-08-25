@@ -82,7 +82,7 @@ public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTa
 
 	/**
 	 * Key to the parameter that stores the GUI states of multiple tables. Value
-	 * is a <code>List<Map<String, Object>></code>.
+	 * is a <code>List&lt;Map&lt;String, Object&gt;&gt;</code>.
 	 */
 	public static final String TABLE_ELEMENT = "Tables";
 

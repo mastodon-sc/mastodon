@@ -61,7 +61,6 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.MamutViewI;
-import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -89,9 +88,7 @@ import bdv.util.InvokeOnEDT;
  * Main GUI class for the Mastodon Mamut application.
  * <p>
  * It controls the creation of new views, and maintain a list of currently
- * opened views. It has a {@link #getProjectManager()} instance that can be used
- * to open or create Mastodon projects. It has also the main app-model for the
- * session.
+ * opened views, along with the managers that they may need.
  * 
  * @author Tobias Pietzsch
  * @author Jean-Yves Tinevez
@@ -149,11 +146,12 @@ public class WindowManager
 	private final MamutViews mamutViews;
 
 	/**
-	 * Creates a new, empty WindowManager instance using the specified context.
+	 * Creates new WindowManager.
 	 * 
-	 * @param context
-	 *            the context to use. Cannot be <code>null</code>.
-	 * @param globalActions
+	 * @param appModel
+	 *            the parent project model instance. This window manager
+	 *            instance will be a component of this project model.
+	 * 
 	 */
 	public WindowManager( final ProjectModel appModel )
 	{
@@ -568,11 +566,21 @@ public class WindowManager
 	}
 
 	/**
-	 * Classes that implement {@link BdvViewCreatedListener} get a notification
-	 * when a new {@link MamutViewBdv} instance is created.
+	 * Interface for listeners that are notified of the creation of views of the
+	 * specified class. Registered listeners will be notified when a view of the
+	 * specific class is created.
+	 * 
+	 * @param <T>
+	 *            the class of the view to listen for the creation of.
 	 */
 	public interface ViewCreatedListener< T extends MamutViewI >
 	{
+		/**
+		 * Called when a view of the class is created, just before it is shown.
+		 * 
+		 * @param view
+		 *            the view that was just created.
+		 */
 		void viewCreated( final T view );
 	}
 

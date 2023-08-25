@@ -106,7 +106,7 @@ public class MamutBranchView<
 
 	/**
 	 * Key that specifies settings specific to the branch-graph view in a common
-	 * view. Values are <code>Map<String, Object></code>.
+	 * view. Values are <code>Map&lt;String, Object&gt;</code>.
 	 */
 	public static final String BRANCH_GRAPH = "BranchGraph";
 
