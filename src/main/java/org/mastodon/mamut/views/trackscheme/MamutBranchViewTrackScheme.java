@@ -264,6 +264,8 @@ public class MamutBranchViewTrackScheme
 		model.getGraph().addVertexLabelListener(
 				v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
 
+		frame.getTrackschemePanel().getDisplay().overlays().add( colorBarOverlay );
+
 		// Time range and display refresh.
 		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
 		frame.getTrackschemePanel().graphChanged();
