@@ -38,6 +38,7 @@ import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureProjectionId;
+import org.scijava.listeners.Listeners;
 
 import bdv.viewer.OverlayRenderer;
 
@@ -144,6 +145,8 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private final Supplier< Color > bgColorSupplier;
 
+	private final Listeners.List< ColorBarOverlayListener > listeners = new Listeners.List<>();
+
 	/**
 	 * Space between the panel border and the overlay border. 4 elements: top,
 	 * left, bottom, right.
@@ -155,6 +158,22 @@ public class ColorBarOverlay implements OverlayRenderer
 		this.coloringModel = coloringModel;
 		this.bgColorSupplier = bgColorSupplier;
 		this.insets = new int[] { 15, 15, 15, 15 };
+	}
+
+	/**
+	 * Returns the listeners objects, that will be notified when the this color
+	 * bar overlay settings are changed.
+	 * 
+	 * @return the listeners list.
+	 */
+	public Listeners.List< ColorBarOverlayListener > listeners()
+	{
+		return listeners;
+	}
+
+	private void notifyListeners()
+	{
+		listeners.list.forEach( l -> l.colorBarOverlayChanged() );
 	}
 
 	@Override
@@ -414,12 +433,20 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	public void setVisible( final boolean visible )
 	{
-		this.visible = visible;
+		if ( this.visible != visible )
+		{
+			this.visible = visible;
+			notifyListeners();
+		}
 	}
 
 	public void setPosition( final Position position )
 	{
-		this.position = position;
+		if ( position != this.position )
+		{
+			this.position = position;
+			notifyListeners();
+		}
 	}
 
 	public void setInsets( final int top, final int left, final int bottom, final int right )
@@ -438,5 +465,10 @@ public class ColorBarOverlay implements OverlayRenderer
 	public Position getPosition()
 	{
 		return position;
+	}
+
+	public interface ColorBarOverlayListener
+	{
+		void colorBarOverlayChanged();
 	}
 }
