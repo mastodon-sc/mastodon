@@ -206,7 +206,8 @@ public class SharedBigDataViewerData
 	public void saveSettings( final String xmlFilename, final ViewerPanel viewer ) throws IOException
 	{
 		final Element root = new Element( "Settings" );
-		root.addContent( viewer.stateToXml() );
+		if ( viewer != null )
+			root.addContent( viewer.stateToXml() );
 		root.addContent( toXmlSetupAssignments() );
 		root.addContent( manualTransformation.toXml() );
 		root.addContent( bookmarks.toXml() );
