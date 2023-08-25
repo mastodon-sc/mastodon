@@ -301,7 +301,7 @@ public class MamutBranchViewTrackScheme
 		public TrackSchemeOverlay create(
 				final TrackSchemeGraph< ?, ? > graph,
 				final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
-				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+				final FocusModel< TrackSchemeVertex > focus,
 				final TrackSchemeOptions options )
 		{
 			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(), new PaintBranchGraph(),

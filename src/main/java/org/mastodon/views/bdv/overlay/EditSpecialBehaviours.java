@@ -39,10 +39,10 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.bdv.overlay.ScreenVertexMath.Ellipse;
 import org.scijava.plugin.Plugin;
@@ -123,7 +123,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final UndoPointMarker undo )
 	{
 		final EditSpecialBehaviours< V, E > eb =
@@ -145,7 +145,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final SelectionModel< V, E > selection;
 
-	private final FocusModel< V, E > focus;
+	private final FocusModel< V > focus;
 
 	private final UndoPointMarker undo;
 
@@ -156,7 +156,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final UndoPointMarker undo )
 	{
 		this.viewer = viewer;

@@ -130,7 +130,7 @@ public class DataDisplayStyleEditorPanel extends JPanel
 		final RefBimap< DummyEdge, DataEdge > edgeMap = new DataEdgeBimap<>( graph );
 		final HighlightModel< DataVertex, DataEdge > highlight =
 				new HighlightModelAdapter<>( new DefaultHighlightModel<>( idmap ), vertexMap, edgeMap );
-		final FocusModel< DataVertex, DataEdge > focus =
+		final FocusModel< DataVertex > focus =
 				new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
 		final SelectionModel< DataVertex, DataEdge > selection =
 				new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );

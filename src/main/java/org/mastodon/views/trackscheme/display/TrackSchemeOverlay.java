@@ -28,7 +28,6 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import bdv.viewer.OverlayRenderer;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -46,6 +45,8 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+
+import bdv.viewer.OverlayRenderer;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a
@@ -106,7 +107,7 @@ public class TrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListene
 
 	private final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight;
 
-	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
+	private final FocusModel< TrackSchemeVertex > focus;
 
 	private int currentTimepoint = 0;
 
@@ -149,7 +150,7 @@ public class TrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListene
 	public TrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final FocusModel< TrackSchemeVertex > focus,
 			final PaintDecorations paintDecorations,
 			final PaintGraph paintGraph,
 			final TrackSchemeOptions options )
@@ -427,7 +428,7 @@ public class TrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListene
 		public TrackSchemeOverlay create(
 				final TrackSchemeGraph< ?, ? > graph,
 				final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
-				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+				final FocusModel< TrackSchemeVertex > focus,
 				final TrackSchemeOptions options )
 		{
 			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(), new PaintGraph(), options );

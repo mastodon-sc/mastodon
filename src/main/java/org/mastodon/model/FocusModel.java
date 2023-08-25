@@ -28,7 +28,6 @@
  */
 package org.mastodon.model;
 
-import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.scijava.listeners.Listeners;
 
@@ -38,11 +37,8 @@ import org.scijava.listeners.Listeners;
  *
  * @param <V>
  *            type of model vertices.
- * @param <E>
- *            the of model edges.
  */
-// TODO: E parameter not needed
-public interface FocusModel< V extends Vertex< E >, E extends Edge< V > >
+public interface FocusModel< V extends Vertex< ? > >
 {
 	public void focusVertex( final V vertex );
 

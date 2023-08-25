@@ -120,7 +120,7 @@ public class MastodonUtils
 
 	private static void logFocusModel( final ProjectModel appModel )
 	{
-		final FocusModel< Spot, Link > focusModel = appModel.getFocusModel();
+		final FocusModel< Spot > focusModel = appModel.getFocusModel();
 		final ModelGraph graph = appModel.getModel().getGraph();
 		focusModel.listeners().add( () -> {
 			final Spot ref = graph.vertexRef();

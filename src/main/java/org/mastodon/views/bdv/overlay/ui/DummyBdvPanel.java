@@ -144,7 +144,7 @@ public class DummyBdvPanel extends JPanel
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 		final SpatioTemporalIndex< Spot > spatioTemporalIndex = model.getSpatioTemporalIndex();
 		final SelectionModel< Spot, Link > selection = new DefaultSelectionModel<>( graph, idmap );
-		final FocusModel< Spot, Link > focus = new DefaultFocusModel<>( idmap );
+		final FocusModel< Spot > focus = new DefaultFocusModel<>( idmap );
 		final DefaultHighlightModel< Spot, Link > highlight = new DefaultHighlightModel<>( idmap );
 		final GraphColorGenerator< Spot, Link > coloring = new DefaultGraphColorGenerator<>();
 		final BoundingSphereRadiusStatistics radiusStats = new BoundingSphereRadiusStatistics( model );

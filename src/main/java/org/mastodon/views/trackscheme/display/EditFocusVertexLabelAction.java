@@ -48,7 +48,6 @@ import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.util.KeyConfigUtils;
 import org.mastodon.views.trackscheme.ScreenTransform;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.scijava.plugin.Plugin;
@@ -103,7 +102,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction
 
 	private final FontMetrics fontMetrics;
 
-	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
+	private final FocusModel< TrackSchemeVertex > focus;
 
 	/**
 	 * current width of vertical header.
@@ -118,7 +117,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction
 	public static void install(
 			final Actions actions,
 			final TrackSchemePanel panel,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final FocusModel< TrackSchemeVertex > focus,
 			final UndoPointMarker undoPointMarker )
 	{
 		final EditFocusVertexLabelAction editFocusVertexLabelAction =
@@ -129,7 +128,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction
 	}
 
 	protected EditFocusVertexLabelAction(
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final FocusModel< TrackSchemeVertex > focus,
 			final UndoPointMarker undoPointMarker,
 			final TrackSchemePanel panel )
 	{

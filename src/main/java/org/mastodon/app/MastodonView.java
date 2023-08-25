@@ -85,7 +85,7 @@ public class MastodonView<
 
 	protected final HighlightModel< V, E > highlightModel;
 
-	protected final FocusModel< V, E > focusModel;
+	protected final FocusModel< V > focusModel;
 
 	protected final SelectionModel< V, E > selectionModel;
 

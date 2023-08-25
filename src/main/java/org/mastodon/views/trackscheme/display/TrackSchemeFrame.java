@@ -67,7 +67,7 @@ public class TrackSchemeFrame extends ViewFrame
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final FocusModel< TrackSchemeVertex > focus,
 			final TimepointModel timepointModel,
 			final FadingModel< TrackSchemeVertex, TrackSchemeEdge > fadingModel,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,

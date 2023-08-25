@@ -140,7 +140,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 					final ReadOnlyGraph< V, E > graph,
 					final NavigationHandler< V, E > navigation,
 					final SelectionModel< V, E > selection,
-					final FocusModel< V, E > focus,
+					final FocusModel< V > focus,
 					final JComponent cancelEntryFocusTarget )
 	{
 		final SearchVertexLabel< V, E > search =
@@ -175,7 +175,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 			final ReadOnlyGraph< V, E > graph,
 			final NavigationHandler< V, E > navigation,
 			final SelectionModel< V, E > selection,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final JComponent cancelFocusTarget )
 	{
 		searchPanel = new JPanel();
@@ -292,7 +292,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 
 		private final NavigationHandler< V, E > navigation;
 
-		private final FocusModel< V, E > focus;
+		private final FocusModel< V > focus;
 
 		private final SelectionModel< V, E > selection;
 
@@ -308,7 +308,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 				final ReadOnlyGraph< V, E > graph,
 				final NavigationHandler< V, E > navigation,
 				final SelectionModel< V, E > selection,
-				final FocusModel< V, E > focus )
+				final FocusModel< V > focus )
 		{
 			super( graph );
 			this.navigation = navigation;

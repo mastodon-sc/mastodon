@@ -30,10 +30,10 @@ package org.mastodon.views.trackscheme.display;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
@@ -160,7 +160,7 @@ public class TrackSchemeNavigationActions
 
 	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
-	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
+	private final FocusModel< TrackSchemeVertex > focus;
 
 	/**
 	 * Creates a new {@link TrackSchemeNavigationActions}.
@@ -179,7 +179,7 @@ public class TrackSchemeNavigationActions
 	public TrackSchemeNavigationActions(
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final FocusModel< TrackSchemeVertex > focus,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.graph = graph;

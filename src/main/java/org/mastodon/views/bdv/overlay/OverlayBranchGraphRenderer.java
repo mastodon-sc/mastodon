@@ -56,7 +56,7 @@ public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE 
 	public OverlayBranchGraphRenderer(
 			final OverlayGraph< BV, BE > graph,
 			final HighlightModel< BV, BE > highlight,
-			final FocusModel< BV, BE > focus,
+			final FocusModel< BV > focus,
 			final SelectionModel< BV, BE > selection,
 			final GraphColorGenerator< BV, BE > coloring )
 	{

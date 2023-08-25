@@ -304,7 +304,7 @@ public class MamutViewBdv
 					final OverlayGraphWrapper< Spot, Link > viewGraph,
 					final HighlightModel< OverlayVertexWrapper< Spot, Link >,
 							OverlayEdgeWrapper< Spot, Link > > highlightModel,
-					final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > focusModel,
+					final FocusModel< OverlayVertexWrapper< Spot, Link > > focusModel,
 					final SelectionModel< OverlayVertexWrapper< Spot, Link >,
 							OverlayEdgeWrapper< Spot, Link > > selectionModel,
 					final GraphColorGenerator< OverlayVertexWrapper< Spot, Link >,
