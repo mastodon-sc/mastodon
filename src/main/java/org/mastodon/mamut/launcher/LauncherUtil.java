@@ -167,11 +167,6 @@ public class LauncherUtil
 	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the
 	 *         image cannot be loaded and the user declined to substitute a
 	 *         dummy dataset.
-	 * @throws IOException
-	 *             if the project points to a regular image file for image data,
-	 *             and that file cannot be opened properly, or if there is a
-	 *             problem loading the model data, or if there is a problem
-	 *             reading the GUI state.
 	 */
 	public static final ProjectModel openWithDialog( final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
 	{
@@ -228,10 +223,19 @@ public class LauncherUtil
 	 * @return the loaded {@link ProjectModel}.
 	 * 
 	 */
-	public static synchronized ProjectModel openWithDialog( final String mastodonFile, final Context context, final Consumer< String > errorConsumer ) throws IOException, SpimDataException
+	public static synchronized ProjectModel openWithDialog( final String mastodonFile, final Context context, final Consumer< String > errorConsumer )
 	{
-		final MamutProject project = MamutProjectIO.load( mastodonFile );
-		return openWithDialog( project, context, errorConsumer );
+		MamutProject project = null;
+		try
+		{
+			project = MamutProjectIO.load( mastodonFile );
+			return openWithDialog( project, context, errorConsumer );
+		}
+		catch ( final IOException e )
+		{
+			errorConsumer.accept( getProblemDescription( project, e ) );
+		}
+		return null;
 	}
 
 	/**
@@ -239,7 +243,7 @@ public class LauncherUtil
 	 * <p>
 	 * If the image data cannot be loaded a dialog shows up telling the user
 	 * about the problem, and offering to start Mastodon on substituted dummy
-	 * image data. If the user declines, a {@link SpimDataException} is thrown.
+	 * image data.
 	 * <p>
 	 * The GUI state is restored.
 	 * 
@@ -250,15 +254,11 @@ public class LauncherUtil
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * 
 	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the
 	 *         image cannot be loaded and the user declined to substitute a
 	 *         dummy dataset.
-	 * @param errorConsumer
-	 *            a consumer that will receive an user-readable error message if
-	 *            something wrong happens.
 	 */
-	public static synchronized ProjectModel openWithDialog( final MamutProject project, final Context context, final Consumer< String > errorConsumer ) throws IOException, SpimDataException
+	public static synchronized ProjectModel openWithDialog( final MamutProject project, final Context context, final Consumer< String > errorConsumer )
 	{
 		return openWithDialog( project, context, null, errorConsumer );
 	}
