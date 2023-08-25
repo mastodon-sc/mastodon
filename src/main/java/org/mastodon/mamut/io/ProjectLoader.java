@@ -164,6 +164,9 @@ public class ProjectLoader
 		// Build app model.
 		final ProjectModel appModel = ProjectModel.create( context, model, imageData, project );
 
+		// Build the branch graph now.
+		appModel.getBranchGraphSync().sync();
+
 		// Restore GUI state.
 		if ( restoreGUIState )
 			loadGUI( project, appModel.getWindowManager() );
