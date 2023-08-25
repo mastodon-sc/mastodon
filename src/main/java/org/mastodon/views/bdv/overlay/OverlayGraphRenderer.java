@@ -114,7 +114,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	protected final HighlightModel< V, E > highlight;
 
-	protected final FocusModel< V, E > focus;
+	protected final FocusModel< V > focus;
 
 	protected final SelectionModel< V, E > selection;
 
@@ -127,7 +127,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
 			final HighlightModel< V, E > highlight,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final SelectionModel< V, E > selection,
 			final GraphColorGenerator< V, E > coloring )
 	{

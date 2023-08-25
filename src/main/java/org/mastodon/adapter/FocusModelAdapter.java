@@ -40,27 +40,22 @@ import org.mastodon.model.FocusModel;
  *
  * @param <V>
  *            vertex type of source graph.
- * @param <E>
- *            edge type of source graph.
  * @param <WV>
  *            vertex type of this wrapped {@link FocusModel}.
- * @param <WE>
- *            edge type of this wrapped {@link FocusModel}.
  *
  * @author Tobias Pietzsch
  */
-public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >,
-		WE extends Edge< WV > >
-		implements FocusModel< WV, WE >
+public class FocusModelAdapter< V extends Vertex< ? >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
+		implements FocusModel< WV >
 {
-	private final FocusModel< V, E > focus;
+	private final FocusModel< V > focus;
 
 	private final RefBimap< V, WV > vertexMap;
 
 	private final ForwardedListeners< FocusListener > listeners;
 
 	public FocusModelAdapter(
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final RefBimap< V, WV > vertexMap,
 			final RefBimap< E, WE > edgeMap )
 	{

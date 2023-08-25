@@ -297,12 +297,12 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return branchHighlightModel;
 	}
 
-	private static FocusModel< BranchSpot, BranchLink > branchFocusfocusModel( final ProjectModel appModel )
+	private static FocusModel< BranchSpot > branchFocusfocusModel( final ProjectModel appModel )
 	{
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		final FocusModel< Spot, Link > graphFocusModel = appModel.getFocusModel();
-		final FocusModel< BranchSpot, BranchLink > branchFocusfocusModel =
+		final FocusModel< Spot > graphFocusModel = appModel.getFocusModel();
+		final FocusModel< BranchSpot > branchFocusfocusModel =
 				new BranchGraphFocusAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphFocusModel );
 		return branchFocusfocusModel;
 	}

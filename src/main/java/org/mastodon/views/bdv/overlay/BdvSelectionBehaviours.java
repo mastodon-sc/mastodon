@@ -30,11 +30,11 @@ package org.mastodon.views.bdv.overlay;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
@@ -99,7 +99,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final NavigationHandler< V, E > navigation )
 	{
 		final BdvSelectionBehaviours< V, E > sb =
@@ -119,7 +119,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 
 	private final SelectionModel< V, E > selection;
 
-	private final FocusModel< V, E > focus;
+	private final FocusModel< V > focus;
 
 	private final NavigationHandler< V, E > navigation;
 
@@ -127,7 +127,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final NavigationHandler< V, E > navigation )
 	{
 		this.overlayGraph = overlayGraph;

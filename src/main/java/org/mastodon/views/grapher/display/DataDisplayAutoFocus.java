@@ -30,7 +30,6 @@ package org.mastodon.views.grapher.display;
 
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
-import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
@@ -43,11 +42,11 @@ import net.imglib2.RealPoint;
  * A {@code FocusModel} for Data that automatically focuses a vertex near the
  * center of the window if none is focused (on {@code getFocusedVertex()}).
  */
-public class DataDisplayAutoFocus implements FocusModel< DataVertex, DataEdge >, TransformListener< ScreenTransform >
+public class DataDisplayAutoFocus implements FocusModel< DataVertex >, TransformListener< ScreenTransform >
 {
 	private final DataGraphLayout< ?, ? > layout;
 
-	private final FocusModel< DataVertex, DataEdge > focus;
+	private final FocusModel< DataVertex > focus;
 
 	private final ScreenTransform screenTransform = new ScreenTransform();
 
@@ -55,7 +54,7 @@ public class DataDisplayAutoFocus implements FocusModel< DataVertex, DataEdge >,
 
 	public DataDisplayAutoFocus(
 			final DataGraphLayout< ?, ? > layout,
-			final FocusModel< DataVertex, DataEdge > focus )
+			final FocusModel< DataVertex > focus )
 	{
 		this.layout = layout;
 		this.focus = focus;

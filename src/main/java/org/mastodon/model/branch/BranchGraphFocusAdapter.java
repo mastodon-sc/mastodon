@@ -43,16 +43,16 @@ public class BranchGraphFocusAdapter<
 		BV extends Vertex< BE >,
 		BE extends Edge< BV > >
 		extends AbstractBranchGraphAdapter< V, E, BV, BE >
-		implements FocusModel< BV, BE >
+		implements FocusModel< BV >
 {
 
-	private final FocusModel< V, E > focus;
+	private final FocusModel< V > focus;
 
 	public BranchGraphFocusAdapter(
 			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
-			final FocusModel< V, E > focus )
+			final FocusModel< V > focus )
 	{
 		super( branchGraph, graph, idmap );
 		this.focus = focus;

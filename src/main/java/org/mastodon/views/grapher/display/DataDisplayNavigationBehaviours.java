@@ -34,11 +34,11 @@ import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.collection.RefSet;
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout;
@@ -127,7 +127,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 
 	private final DataDisplayOverlay graphOverlay;
 
-	private final FocusModel< DataVertex, DataEdge > focus;
+	private final FocusModel< DataVertex > focus;
 
 	private final ScreenTransform screenTransform;
 
@@ -155,7 +155,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 			final DataGraph< ?, ? > graph,
 			final DataGraphLayout< ?, ? > layout,
 			final DataDisplayOverlay graphOverlay,
-			final FocusModel< DataVertex, DataEdge > focus,
+			final FocusModel< DataVertex > focus,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
 			final SelectionModel< DataVertex, DataEdge > selection )
 	{

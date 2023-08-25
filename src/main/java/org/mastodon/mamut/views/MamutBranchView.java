@@ -166,8 +166,8 @@ public class MamutBranchView<
 		this.highlightModel = new HighlightModelAdapter<>( branchHighlightModel, vertexMap, edgeMap );
 
 		// Focus
-		final FocusModel< Spot, Link > graphFocusModel = appModel.getFocusModel();
-		final FocusModel< BranchSpot, BranchLink > branchFocusfocusModel =
+		final FocusModel< Spot > graphFocusModel = appModel.getFocusModel();
+		final FocusModel< BranchSpot > branchFocusfocusModel =
 				new BranchGraphFocusAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphFocusModel );
 		this.focusModel = new FocusModelAdapter<>( branchFocusfocusModel, vertexMap, edgeMap );
 

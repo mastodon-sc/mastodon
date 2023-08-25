@@ -46,23 +46,23 @@ import org.scijava.listeners.Listeners;
  *            the type of edges in the graph.
  */
 public class AutoNavigateFocusModel< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
-		implements FocusModel< V, E >
+		implements FocusModel< V >
 {
-	private final FocusModel< V, E > focus;
+	private final FocusModel< V > focus;
 
 	private final NavigationHandler< V, E > navigation;
 
 	private final TimepointModel timepointModel;
 
 	public AutoNavigateFocusModel(
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final NavigationHandler< V, E > navigation )
 	{
 		this( focus, navigation, null );
 	}
 
 	public AutoNavigateFocusModel(
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final NavigationHandler< V, E > navigation,
 			final TimepointModel timepointModel )
 	{

@@ -36,7 +36,6 @@ import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.scijava.ui.behaviour.util.Actions;
@@ -52,7 +51,7 @@ public class BranchTrackSchemeEditLabelAction
 			E extends Edge< V > > void install(
 					final Actions actions,
 					final TrackSchemePanel panel,
-					final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+					final FocusModel< TrackSchemeVertex > focus,
 					final UndoPointMarker undoPointMarker,
 					final BranchGraph< BV, BE, V, E > branchGraph )
 	{
@@ -75,7 +74,7 @@ public class BranchTrackSchemeEditLabelAction
 		private final BranchGraph< BV, BE, V, E > branchGraph;
 
 		protected BranchTrackSchemeEditLabelActionImp(
-				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+				final FocusModel< TrackSchemeVertex > focus,
 				final UndoPointMarker undoPointMarker,
 				final TrackSchemePanel panel,
 				final BranchGraph< BV, BE, V, E > branchGraph )

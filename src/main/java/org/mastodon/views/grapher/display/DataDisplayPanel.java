@@ -202,7 +202,7 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final DataGraph< V, E > graph,
 			final DataGraphLayout< V, E > layout,
 			final HighlightModel< DataVertex, DataEdge > highlight,
-			final FocusModel< DataVertex, DataEdge > focus,
+			final FocusModel< DataVertex > focus,
 			final SelectionModel< DataVertex, DataEdge > selection,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
 			final DataDisplayOptions optional )

@@ -191,7 +191,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			final Actions actions,
 			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final SelectionModel< V, E > selection )
 	{
 		final FocusActions< V, E > fa = new FocusActions<>( graph, lock, focus, selection );
@@ -224,14 +224,14 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 
 	private final ReentrantReadWriteLock lock;
 
-	private final FocusModel< V, E > focus;
+	private final FocusModel< V > focus;
 
 	private final SelectionModel< V, E > selection;
 
 	public FocusActions(
 			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final SelectionModel< V, E > selection )
 	{
 		this.graph = graph;

@@ -199,7 +199,7 @@ public class TrackSchemePanel extends JPanel implements
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final FocusModel< TrackSchemeVertex > focus,
 			final TimepointModel timepointModel,
 			final FadingModel< TrackSchemeVertex, TrackSchemeEdge > fadingModel,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
@@ -911,7 +911,7 @@ public class TrackSchemePanel extends JPanel implements
 			}
 		}
 
-		private void runCropAndScale( ScreenTransform transform )
+		private void runCropAndScale( final ScreenTransform transform )
 		{
 			layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight() );
 		}

@@ -80,7 +80,7 @@ public class Visibilities< V extends Vertex< E >, E extends Edge< V > >
 
 	private final SelectionModel< V, E > selectionModel;
 
-	private final FocusModel< V, E > focusModel;
+	private final FocusModel< V > focusModel;
 
 	private VisibilityMode currentMode;
 
@@ -120,7 +120,7 @@ public class Visibilities< V extends Vertex< E >, E extends Edge< V > >
 	public Visibilities(
 			final ReadOnlyGraph< V, E > graph,
 			final SelectionModel< V, E > selectionModel,
-			final FocusModel< V, E > focusModel,
+			final FocusModel< V > focusModel,
 			final ReentrantReadWriteLock lock )
 	{
 		this.graph = graph;
@@ -289,7 +289,7 @@ public class Visibilities< V extends Vertex< E >, E extends Edge< V > >
 	private class TrackOfFocusedVisibility implements Visibility< V, E >, FocusListener
 	{
 
-		private final FocusModel< V, E > focusModel;
+		private final FocusModel< V > focusModel;
 
 		private final ReadOnlyGraph< V, E > graph;
 
@@ -299,7 +299,7 @@ public class Visibilities< V extends Vertex< E >, E extends Edge< V > >
 
 		private final ReentrantReadWriteLock lock;
 
-		public TrackOfFocusedVisibility( final ReadOnlyGraph< V, E > graph, final FocusModel< V, E > focusModel,
+		public TrackOfFocusedVisibility( final ReadOnlyGraph< V, E > graph, final FocusModel< V > focusModel,
 				final ReentrantReadWriteLock lock )
 		{
 			this.graph = graph;

@@ -188,7 +188,7 @@ public class TableViewFrameBuilder
 
 		private final SelectionModel< VV, EE > selectionModel;
 
-		private final FocusModel< VV, EE > focusModel;
+		private final FocusModel< VV > focusModel;
 
 		private final HighlightModel< VV, EE > highlightModel;
 
@@ -632,7 +632,7 @@ public class TableViewFrameBuilder
 
 		private SelectionModel< V, E > selectionModel;
 
-		private FocusModel< V, E > focusModel;
+		private FocusModel< V > focusModel;
 
 		private HighlightModel< V, E > highlightModel;
 
@@ -719,7 +719,7 @@ public class TableViewFrameBuilder
 			return this;
 		}
 
-		public GraphTableBuilder< V, E > focusModel( final FocusModel< V, E > focusModel )
+		public GraphTableBuilder< V, E > focusModel( final FocusModel< V > focusModel )
 		{
 			this.focusModel = focusModel;
 			return this;

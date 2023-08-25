@@ -123,8 +123,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final RefBimap< DummyEdge, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( graph );
 		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight =
 				new HighlightModelAdapter<>( new DefaultHighlightModel<>( idmap ), vertexMap, edgeMap );
-		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus =
-				new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
+		final FocusModel< TrackSchemeVertex > focus = new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
 		final TimepointModel timepoint = new DefaultTimepointModel();
 		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection =
 				new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );

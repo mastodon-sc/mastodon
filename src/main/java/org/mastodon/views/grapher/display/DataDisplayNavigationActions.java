@@ -32,10 +32,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.graph.algorithm.traversal.UndirectedDepthFirstIterator;
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataVertex;
@@ -137,13 +137,13 @@ public class DataDisplayNavigationActions
 
 	private final SelectionModel< DataVertex, DataEdge > selection;
 
-	private final FocusModel< DataVertex, DataEdge > focus;
+	private final FocusModel< DataVertex > focus;
 
 	private final RefArrayList< DataVertex > siblings;
 
 	public DataDisplayNavigationActions(
 			final DataGraph< ?, ? > graph,
-			final FocusModel< DataVertex, DataEdge > focus,
+			final FocusModel< DataVertex > focus,
 			final SelectionModel< DataVertex, DataEdge > selection )
 	{
 		this.graph = graph;

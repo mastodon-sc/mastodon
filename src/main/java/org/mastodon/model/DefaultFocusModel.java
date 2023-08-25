@@ -44,7 +44,7 @@ import org.scijava.listeners.Listeners;
  *            the of model edges.
  */
 public class DefaultFocusModel< V extends Vertex< E >, E extends Edge< V > >
-		implements FocusModel< V, E >, GraphListener< V, E >
+		implements FocusModel< V >, GraphListener< V, E >
 {
 	private final GraphIdBimap< V, E > idmap;
 

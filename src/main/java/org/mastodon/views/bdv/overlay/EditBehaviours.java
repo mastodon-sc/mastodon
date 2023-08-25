@@ -31,10 +31,10 @@ package org.mastodon.views.bdv.overlay;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.collection.RefSet;
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.plugin.Plugin;
@@ -184,7 +184,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final UndoPointMarker undo,
 			final double minRadius )
 	{
@@ -210,7 +210,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final SelectionModel< V, E > selection;
 
-	private final FocusModel< V, E > focus;
+	private final FocusModel< V > focus;
 
 	private final UndoPointMarker undo;
 
@@ -221,7 +221,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final UndoPointMarker undo,
 			final double normalRadiusChange,
 			final double aBitRadiusChange,

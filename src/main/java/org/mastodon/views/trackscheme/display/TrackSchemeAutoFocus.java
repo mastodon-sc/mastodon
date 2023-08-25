@@ -28,15 +28,14 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import bdv.viewer.TransformListener;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.ScreenTransform;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.scijava.listeners.Listeners;
 
+import bdv.viewer.TransformListener;
 import net.imglib2.RealPoint;
 
 /**
@@ -44,11 +43,11 @@ import net.imglib2.RealPoint;
  * the center of the window if none is focused (on {@code getFocusedVertex()}).
  */
 public class TrackSchemeAutoFocus
-		implements FocusModel< TrackSchemeVertex, TrackSchemeEdge >, TransformListener< ScreenTransform >
+		implements FocusModel< TrackSchemeVertex >, TransformListener< ScreenTransform >
 {
 	private final LineageTreeLayout layout;
 
-	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
+	private final FocusModel< TrackSchemeVertex > focus;
 
 	private final ScreenTransform screenTransform = new ScreenTransform();
 
@@ -58,7 +57,7 @@ public class TrackSchemeAutoFocus
 
 	public TrackSchemeAutoFocus(
 			final LineageTreeLayout layout,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus )
+			final FocusModel< TrackSchemeVertex > focus )
 	{
 		this.layout = layout;
 		this.focus = focus;
