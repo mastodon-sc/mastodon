@@ -29,59 +29,59 @@
 package org.mastodon.model.branch;
 
 import org.mastodon.adapter.RefBimap;
-import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 
 /**
- * Maps a graph vertices to the edges in the branch graph they are linked to.
+ * Maps a graph vertices to the vertices in the branch graph they are linked to.
  * 
  * @author Jean-Yves Tinevez
  *
- * @param <E>
- *            the type of edges in the core graph.
- * @param <BE>
- *            the type of edges in the branch graph.
+ * @param <V>
+ *            the type of vertices in the core graph.
+ * @param <BV>
+ *            the type of vertices in the branch graph.
  */
-public class BranchGraphEdgeBimap< E extends Edge< ? >, BE extends Edge< ? > > implements RefBimap< E, BE >
+public class BranchGraphVertexBimap< V extends Vertex< ? >, BV extends Vertex< ? > > implements RefBimap< V, BV >
 {
 
-	private final BranchGraph< ?, BE, ?, E > branchGraph;
+	private final BranchGraph< BV, ?, V, ? > branchGraph;
 
-	private final ReadOnlyGraph< ?, E > graph;
+	private final ReadOnlyGraph< V, ? > graph;
 
-	public BranchGraphEdgeBimap( final BranchGraph< ?, BE, ?, E > branchGraph, final ReadOnlyGraph< ?, E > graph )
+	public BranchGraphVertexBimap( final BranchGraph< BV, ?, V, ? > branchGraph, final ReadOnlyGraph< V, ? > graph )
 	{
 		this.branchGraph = branchGraph;
 		this.graph = graph;
 	}
 
 	@Override
-	public E getLeft( final BE right )
+	public V getLeft( final BV right )
 	{
-		return right == null ? null : branchGraph.getLinkedEdge( right, reusableLeftRef( right ) );
+		return right == null ? null : branchGraph.getFirstLinkedVertex( right, reusableLeftRef( right ) );
 	}
 
 	@Override
-	public BE getRight( final E left, final BE ref )
+	public BV getRight( final V left, final BV ref )
 	{
-		return left == null ? null : branchGraph.getBranchEdge( left, ref );
+		return left == null ? null : branchGraph.getBranchVertex( left, ref );
 	}
 
 	@Override
-	public E reusableLeftRef( final BE ref )
+	public V reusableLeftRef( final BV ref )
 	{
-		return graph.edgeRef();
+		return graph.vertexRef();
 	}
 
 	@Override
-	public BE reusableRightRef()
+	public BV reusableRightRef()
 	{
-		return branchGraph.edgeRef();
+		return branchGraph.vertexRef();
 	}
 
 	@Override
-	public void releaseRef( final BE ref )
+	public void releaseRef( final BV ref )
 	{
 		branchGraph.releaseRef( ref );
 	}
