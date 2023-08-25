@@ -100,16 +100,33 @@ public class MamutViewBdvFactory extends AbstractMamutViewFactory< MamutViewBdv 
 
 	static void restoreBdvGuiState( final ViewerPanel viewerPanel, final Map< String, Object > guiState )
 	{
+
+		// Restore BDV state.
+		final Element stateEl = ( Element ) guiState.get( BDV_STATE_KEY );
+		if ( null != stateEl )
+			viewerPanel.stateFromXml( stateEl );
 		// Restore transform.
 		final AffineTransform3D tLoaded = ( AffineTransform3D ) guiState.get( BDV_TRANSFORM_KEY );
 		if ( null == tLoaded )
 			InitializeViewerState.initTransform( viewerPanel );
 		else
-			viewerPanel.state().setViewerTransform( tLoaded );
-		// Restore BDV state.
-		final Element stateEl = ( Element ) guiState.get( BDV_STATE_KEY );
-		if ( null != stateEl )
-			viewerPanel.stateFromXml( stateEl );
+			new Thread( () -> {
+				try
+				{
+					/*
+					 * If we don't wait a little bit, the BDV state, notably the
+					 * transform, is not restored properly. We put this in a
+					 * separate thread not to block the loading if we have many
+					 * BDV views.
+					 */
+					Thread.sleep( 100 );
+					viewerPanel.state().setViewerTransform( tLoaded );
+				}
+				catch ( final InterruptedException e )
+				{
+					e.printStackTrace();
+				}
+			} ).start();
 	}
 
 	@Override
