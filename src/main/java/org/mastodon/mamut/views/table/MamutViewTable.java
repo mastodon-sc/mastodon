@@ -253,9 +253,8 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		runOnClose.add( () -> featureModel.listeners().remove( coloringMenu ) );
 
 		// Handle track color generator.
-		final TrackGraphColorGenerator< Spot, Link > tgcg = new TrackGraphColorGenerator<>( appModel.getModel().getGraph() );
-		appModel.getModel().getGraph().addGraphChangeListener( tgcg );
-		runOnClose.add( () -> appModel.getModel().getGraph().removeGraphChangeListener( tgcg ) );
+		@SuppressWarnings( "unchecked" )
+		final TrackGraphColorGenerator< Spot, Link > tgcg = appModel.getWindowManager().getManager( TrackGraphColorGenerator.class );
 		// Adapt it so that is a color generator for the branch graph.
 		final Model m = appModel.getModel();
 		final GraphColorGeneratorAdapter< Spot, Link, BranchSpot, BranchLink > branchTgcg = new GraphColorGeneratorAdapter<>(
@@ -266,7 +265,6 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		@SuppressWarnings( "unchecked" )
 		final ColoringModelMain.ColoringChangedListener coloringChangedListener = () -> {
 			final GraphColorGenerator< BranchSpot, BranchLink > colorGenerator;
-			tgcg.pauseListener( true );
 			switch ( coloringModel.getColoringStyle() )
 			{
 			case BY_FEATURE:
@@ -276,7 +274,6 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				colorGenerator = new TagSetGraphColorGenerator<>( branchTagSetModel( appModel ), coloringModel.getTagSet() );
 				break;
 			case BY_TRACK:
-				tgcg.pauseListener( false );
 				colorGenerator = branchTgcg;
 				break;
 			case NONE:

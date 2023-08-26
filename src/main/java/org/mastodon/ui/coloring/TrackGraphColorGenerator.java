@@ -5,16 +5,14 @@ import org.mastodon.collection.RefIntMap;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.graph.Edge;
-import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 import org.mastodon.model.HasLabel;
 import org.mastodon.views.trackscheme.util.AlphanumCompare;
 
 public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E extends Edge< V > >
-		implements GraphColorGenerator< V, E >, GraphChangeListener
+		implements GraphColorGenerator< V, E >
 {
 
 	private final RefIntMap< V > cache;
@@ -25,34 +23,54 @@ public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E exten
 
 	private final RefList< V > toUpdate;
 
-	private final ReadOnlyGraph< V, E > graph;
+	private final ListenableReadOnlyGraph< V, E > graph;
 
-	private boolean pause;
+	private final RootProvider< V, E > rootsProvider;
 
-	public TrackGraphColorGenerator( final ReadOnlyGraph< V, E > graph )
+	private boolean rootsUpToDate;
+
+	public TrackGraphColorGenerator( final ListenableReadOnlyGraph< V, E > graph )
 	{
+		this.rootsProvider = new RootProvider<>( graph );
 		this.graph = graph;
 		this.cache = RefMaps.createRefIntMap( graph.vertices(), 0 );
 		this.lut = GlasbeyLut.create();
 		this.iterator = new InverseDepthFirstIterator<>( graph );
 		this.toUpdate = RefCollections.createRefList( graph.vertices() );
-		this.pause = false;
-		graphChanged();
+
+		rootsProvider.graphRebuilt();
+		graph.addGraphListener( rootsProvider );
+
+		rootsProvider.listeners().add( () -> rootsUpToDate = false );
+		rootsUpToDate = false;
+		rebuildRoots();
 	}
 
 	@Override
 	public int color( final V v )
 	{
+		// Should we clear the cache?
+		if ( !rootsUpToDate )
+			rebuildRoots();
+
+		// Do we know of a color already for this vertex?
 		if ( cache.containsKey( v ) )
 			return cache.get( v );
 
-		/*
-		 * Iterate until we find a spot with a color. The roots have already a
-		 * color by then, so at worst we will have to iterate depth-first,
-		 * upward, until we meet a root. Then we will return its color, but
-		 * before, we will store this color in all the vertices we have
-		 * encountered during iteration.
-		 */
+		return updateCache( v );
+	}
+
+	/**
+	 * Iterates until we find a spot with a color. The roots have already a
+	 * color by then, so at worst we will have to iterate depth-first, upward,
+	 * until we meet a root. Then we will return its color, but before, we will
+	 * store this color in all the vertices we have encountered during
+	 * iteration.
+	 */
+	private synchronized int updateCache( final V v )
+	{
+		if ( cache.containsKey( v ) )
+			return cache.get( v );
 		iterator.reset( v );
 		toUpdate.clear();
 		toUpdate.add( v );
@@ -81,30 +99,27 @@ public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E exten
 		return color( source );
 	}
 
-	@Override
-	public void graphChanged()
+	/**
+	 * Only one thread can regenerate the cache. If another one tries at the
+	 * same time, it is paused (synchronized keyword) and will access the new
+	 * value in the cache after the first has regenerated it.
+	 */
+	private synchronized void rebuildRoots()
 	{
-		if ( pause )
+		if ( rootsUpToDate )
 			return;
 
+		final RefList< V > sortedRoots = RefCollections.createRefList( graph.vertices() );
+		sortedRoots.addAll( rootsProvider.get() );
+		sortedRoots.sort( ( v1, v2 ) -> AlphanumCompare.compare( v1.getLabel(), v2.getLabel() ) );
 		cache.clear();
 		lut.reset();
-		final RefList< V > sortedRoots = RefCollections.createRefList( graph.vertices() );
-		sortedRoots.addAll( RootFinder.getRoots( graph ) );
-		sortedRoots.sort( ( v1, v2 ) -> AlphanumCompare.compare( v1.getLabel(), v2.getLabel() ) );
 		sortedRoots.forEach( r -> cache.put( r, lut.next() ) );
+		rootsUpToDate = true;
 	}
 
-	/**
-	 * If <code>true</code>, the track colors will not be regenerated when the
-	 * graph changes. This is intended to save a possibly costly operation when
-	 * this color generator is not used.
-	 * 
-	 * @param pause
-	 *            whether to pause regeneration of colors or not.
-	 */
-	public void pauseListener( final boolean pause )
+	public void close()
 	{
-		this.pause = pause;
+		graph.removeGraphListener( rootsProvider );
 	}
 }

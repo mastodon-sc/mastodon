@@ -57,11 +57,13 @@ import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.managers.StyleManagerFactory;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.model.tag.ui.TagSetDialog;
+import org.mastodon.ui.coloring.TrackGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
@@ -179,6 +181,9 @@ public class WindowManager
 		final MamutFeatureProjectionsManager featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 		managers.put( MamutFeatureProjectionsManager.class, featureProjectionsManager );
+		final TrackGraphColorGenerator< Spot, Link > trackGraphColorGenerator = new TrackGraphColorGenerator<>( model.getGraph() );
+		appModel.projectClosedListeners().add( () -> trackGraphColorGenerator.close() );
+		managers.put( TrackGraphColorGenerator.class, trackGraphColorGenerator );
 
 		/*
 		 * Discover and handle view factories

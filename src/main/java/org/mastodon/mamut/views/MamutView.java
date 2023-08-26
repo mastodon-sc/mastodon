@@ -199,12 +199,10 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
 
 		// Handle track color generator.
-		final TrackGraphColorGenerator< Spot, Link > tgcg = new TrackGraphColorGenerator<>( appModel.getModel().getGraph() );
-		appModel.getModel().getGraph().addGraphChangeListener( tgcg );
-		onClose( () -> appModel.getModel().getGraph().removeGraphChangeListener( tgcg ) );
+		@SuppressWarnings( "unchecked" )
+		final TrackGraphColorGenerator< Spot, Link > tgcg = appModel.getWindowManager().getManager( TrackGraphColorGenerator.class );
 
 		final ColoringModelMain.ColoringChangedListener coloringChangedListener = () -> {
-			tgcg.pauseListener( true );
 			final GraphColorGenerator< Spot, Link > colorGenerator;
 			switch ( coloringModel.getColoringStyle() )
 			{
@@ -215,7 +213,6 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 				colorGenerator = new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() );
 				break;
 			case BY_TRACK:
-				tgcg.pauseListener( false );
 				colorGenerator = tgcg;
 				break;
 			case NONE:
