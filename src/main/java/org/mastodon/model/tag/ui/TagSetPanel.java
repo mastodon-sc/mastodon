@@ -30,6 +30,7 @@ package org.mastodon.model.tag.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -67,6 +68,7 @@ public class TagSetPanel extends JPanel
 	public TagSetPanel( final TagSetStructure tagSetStructure )
 	{
 		super( new BorderLayout( 0, 0 ) );
+		setPreferredSize( new Dimension( 500, 200 ) );
 
 		this.tagSetStructure = tagSetStructure;
 		updateListeners = new Listeners.SynchronizedList<>();
@@ -98,7 +100,7 @@ public class TagSetPanel extends JPanel
 		splitPane.setResizeWeight( 0 );
 		splitPane.setContinuousLayout( true );
 		splitPane.setDividerSize( 10 );
-		splitPane.setDividerLocation( 300 );
+		splitPane.setDividerLocation( 220 );
 		splitPane.setBorder( new MatteBorder( 0, 0, 1, 0, Color.LIGHT_GRAY ) );
 		//		splitPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
