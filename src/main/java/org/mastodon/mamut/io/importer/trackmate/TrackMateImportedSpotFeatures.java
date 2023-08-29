@@ -30,6 +30,7 @@ package org.mastodon.mamut.io.importer.trackmate;
 
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
@@ -63,18 +64,19 @@ public class TrackMateImportedSpotFeatures extends TrackMateImportedFeatures< Sp
 	}
 
 	@Override
-	void store( final String key, final Dimension dimension, final String units,
-			final DoublePropertyMap< Spot > values )
+	public FeatureProjectionKey store( final String key, final Dimension dimension, final String units, final DoublePropertyMap< Spot > values )
 	{
-		super.store( key, dimension, units, values );
+		final FeatureProjectionKey projectionKey = super.store( key, dimension, units, values );
 		spec.getProjectionSpecs().add( new FeatureProjectionSpec( key, dimension ) );
+		return projectionKey;
 	}
 
 	@Override
-	void store( final String key, final Dimension dimension, final String units, final IntPropertyMap< Spot > values )
+	public FeatureProjectionKey store( final String key, final Dimension dimension, final String units, final IntPropertyMap< Spot > values )
 	{
-		super.store( key, dimension, units, values );
+		final FeatureProjectionKey projectionKey = super.store( key, dimension, units, values );
 		spec.getProjectionSpecs().add( new FeatureProjectionSpec( key, dimension ) );
+		return projectionKey;
 	}
 
 	@Override
