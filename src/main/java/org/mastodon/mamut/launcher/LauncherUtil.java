@@ -438,6 +438,7 @@ public class LauncherUtil
 		}
 
 		// Everything else.
+		e.printStackTrace();
 		return e.getMessage();
 	}
 
