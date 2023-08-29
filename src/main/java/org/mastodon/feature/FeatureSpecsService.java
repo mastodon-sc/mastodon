@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.app.plugin.PluginUtils;
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
@@ -42,7 +43,7 @@ import org.scijava.service.SciJavaService;
 /**
  * Helper class to discover and hold {@link FeatureSpec}s.
  */
-@Plugin( type = FeatureSpecsService.class )
+@Plugin( type = FeatureSpecsService.class, priority = Priority.EXTREMELY_LOW )
 public class FeatureSpecsService extends AbstractService implements SciJavaService
 {
 
