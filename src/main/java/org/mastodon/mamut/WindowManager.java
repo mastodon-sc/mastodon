@@ -213,8 +213,8 @@ public class WindowManager
 		/*
 		 * Extra settings pages.
 		 */
-		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
-		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager,
+		settings.addPage( new KeymapSettingsPage( "Settings > Keymap", keymapManager, descriptions ) );
+		settings.addPage( new FeatureColorModeConfigPage( "Settings > Feature Color Modes", featureColorModeManager,
 				featureProjectionsManager, "Spot", "Link" ) );
 		settings.pack();
 

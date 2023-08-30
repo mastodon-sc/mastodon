@@ -27,7 +27,7 @@ public class TrackSchemeStyleManagerFactory implements StyleManagerFactory< Trac
 	@Override
 	public SettingsPage createSettingsPage( final TrackSchemeStyleManager manager )
 	{
-		return new TrackSchemeStyleSettingsPage( "TrackScheme Styles", manager );
+		return new TrackSchemeStyleSettingsPage( "Settings > TrackScheme Styles", manager );
 	}
 
 	@Override

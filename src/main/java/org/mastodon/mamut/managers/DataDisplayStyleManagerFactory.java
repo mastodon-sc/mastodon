@@ -27,7 +27,7 @@ public class DataDisplayStyleManagerFactory implements StyleManagerFactory< Data
 	@Override
 	public SettingsPage createSettingsPage( final DataDisplayStyleManager manager )
 	{
-		return new DataDisplayStyleSettingsPage( "Grapher Styles", manager );
+		return new DataDisplayStyleSettingsPage( "Settings > Grapher Styles", manager );
 	}
 
 	@Override
