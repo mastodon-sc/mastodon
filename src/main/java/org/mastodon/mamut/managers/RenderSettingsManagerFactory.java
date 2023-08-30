@@ -27,7 +27,7 @@ public class RenderSettingsManagerFactory implements StyleManagerFactory< Render
 	@Override
 	public SettingsPage createSettingsPage( final RenderSettingsManager manager )
 	{
-		return new RenderSettingsConfigPage( "BDV Render Settings", manager );
+		return new RenderSettingsConfigPage( "Settings > BDV Render Settings", manager );
 	}
 
 	@Override
