@@ -36,10 +36,10 @@ import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.collection.ref.RefSetImp;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.util.TreeUtils;
 import org.mastodon.views.trackscheme.LexicographicalVertexOrder;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -59,15 +59,10 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 {
 
 	public static final String SHOW_TRACK_DOWNWARD = "ts show track downward";
-
 	public static final String SHOW_SELECTED_TRACKS = "ts show selected tracks";
-
 	public static final String SHOW_ALL_TRACKS = "ts show all tracks";
-
 	public static final String[] SHOW_TRACK_DOWNWARD_KEYS = { "ctrl PAGE_DOWN" };
-
 	public static final String[] SHOW_SELECTED_TRACKS_KEYS = { "ctrl SPACE" };
-
 	public static final String[] SHOW_ALL_TRACKS_KEYS = { "ctrl DELETE" };
 
 	/**
@@ -78,7 +73,7 @@ public class ShowSelectedTracksActions< V extends Vertex< E >, E extends Edge< V
 	{
 		public Descriptions()
 		{
-			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override
