@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,9 +30,8 @@ public abstract class AbstractStyleManagerYaml< M extends AbstractStyleManager< 
 	{
 		userStyles.clear();
 		final Set< String > names = builtinStyles.stream().map( S::getName ).collect( Collectors.toSet() );
-		try
+		try (final FileReader input = new FileReader( filename ))
 		{
-			final FileReader input = new FileReader( filename );
 			final Iterable< Object > objs = createYaml().loadAll( input );
 			String defaultStyleName = null;
 			@SuppressWarnings( "unchecked" )
@@ -71,8 +71,41 @@ public abstract class AbstractStyleManagerYaml< M extends AbstractStyleManager< 
 		{
 			System.out.println( "Settings file " + filename + " not found. Using builtin settings." );
 		}
+		catch ( final IOException e1 )
+		{
+			System.out.println( "Issues reading the settings file " + filename + ": " + e1.getMessage() );
+		}
 	}
 	
+	/**
+	 * Deal with possible legacy file.
+	 * <p>
+	 * Loads from the file if it exists, appends to the current user styles,
+	 * then deletes the legacy file.
+	 * 
+	 * @param legacyFilePath
+	 *            the path to the legacy file.
+	 */
+	protected void handleLegacyFile( final String legacyFilePath )
+	{
+		final File legacyFile = new File( legacyFilePath );
+		if ( legacyFile.exists() )
+		{
+			final ArrayList< S > currentStyles = new ArrayList<>( userStyles );
+			loadStyles( legacyFilePath );
+			userStyles.addAll( currentStyles );
+			try
+			{
+				Files.delete( legacyFile.toPath() );
+			}
+			catch ( final IOException e )
+			{
+				System.err.println( "Could not delete the legacy settings file: " + legacyFilePath );
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public void saveStyles( final String filename )
 	{
 		try
