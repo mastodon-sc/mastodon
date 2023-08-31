@@ -32,6 +32,8 @@ import java.io.File;
 import java.util.function.Consumer;
 
 import org.mastodon.app.MastodonAppModel;
+import org.mastodon.app.logging.MastodonLogger;
+import org.mastodon.app.logging.SysOutMastodonLogger;
 import org.mastodon.app.plugin.MastodonAppPluginModel;
 import org.mastodon.app.plugin.PluginUtils;
 import org.mastodon.mamut.io.ProjectActions;
@@ -79,6 +81,8 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 	private final Context context;
 
 	private final MamutProject project;
+
+	private MastodonLogger logger = new SysOutMastodonLogger();
 
 	private ProjectModel(
 			final Context context,
@@ -241,6 +245,21 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 		final int index = name.lastIndexOf( '.' );
 		name = ( index < 0 ) ? name : name.substring( 0, index );
 		return name;
+	}
+
+	public void setLogger( final MastodonLogger logger )
+	{
+		this.logger = logger;
+	}
+
+	/**
+	 * Exposes the logger used to report progress and events to the user.
+	 * 
+	 * @return a {@link MastodonLogger} instance.
+	 */
+	public MastodonLogger logger()
+	{
+		return logger;
 	}
 
 	public static ProjectModel create( final Context context, final Model model, final SharedBigDataViewerData imageData, final MamutProject project )

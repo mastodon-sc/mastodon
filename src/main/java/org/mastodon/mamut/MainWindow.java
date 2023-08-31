@@ -47,6 +47,8 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -75,6 +77,7 @@ import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeFactory;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.RunnableActionPair;
+import org.scijava.util.VersionUtils;
 
 import bdv.ui.keymap.Keymap;
 import net.miginfocom.swing.MigLayout;
@@ -209,6 +212,14 @@ public class MainWindow extends JFrame
 
 		// Register to when the project model is closed.
 		appModel.projectClosedListeners().add( () -> dispose() );
+
+		// Salutations.
+		final StringBuilder helloMsg = new StringBuilder();
+		helloMsg.append( "Mastodon v" + VersionUtils.getVersion( ProjectModel.class ) );
+		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern( "dd//MM/uuuu HH:mm:ss" );
+		helloMsg.append( "\nstarted on " + dtf.format( LocalDateTime.now() ) );
+		helloMsg.append( "\n------------------------------------" );
+		appModel.logger().info( helloMsg.toString(), appModel.logger().getLogSourceRoot() );
 	}
 
 	/**
@@ -326,6 +337,7 @@ public class MainWindow extends JFrame
 						// item( ProjectActions.EXPORT_MAMUT ),
 						//						separator(),
 						item( WindowManager.PREFERENCES_DIALOG ),
+						item( WindowManager.TOGGLE_LOG_DIALOG ),
 						separator(),
 						item( WindowManager.OPEN_ONLINE_DOCUMENTATION ) ) );
 	}

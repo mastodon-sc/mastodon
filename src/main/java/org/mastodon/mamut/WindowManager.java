@@ -101,16 +101,19 @@ public class WindowManager
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
+	public static final String TOGGLE_LOG_DIALOG = "toggle log";
 
 	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+	
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
+	static final String[] TOGGLE_LOG_DIALOG_KEYS = new String[] { "ctrl shift L" };
 
-	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
-	static final String[] NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 
 	public static final String DOCUMENTATION_URL = "https://mastodon.readthedocs.io/en/latest/";
 
@@ -133,6 +136,8 @@ public class WindowManager
 
 	private final JDialog featureComputationDialog;
 
+	private final MamutLogDialog logDialog;
+
 	private final PreferencesDialog settings;
 
 	/**
@@ -144,6 +149,7 @@ public class WindowManager
 	private final ProjectModel appModel;
 
 	private final MamutViews mamutViews;
+
 
 	/**
 	 * Creates new WindowManager.
@@ -201,13 +207,15 @@ public class WindowManager
 		keymapManager.getBuiltinStyles().forEach( augmentInputTriggerConfig );
 
 		/*
-		 * Actions to create dialogs.
+		 * Actions to show dialogs.
 		 */
 		final RunnableAction editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		final RunnableAction featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
+		final RunnableAction toggleLogAction = new RunnableAction( TOGGLE_LOG_DIALOG, this::toggleLog );
 		final RunnableAction openOnlineDocumentation = new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
 		projectActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		projectActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
+		projectActions.namedAction( toggleLogAction, TOGGLE_LOG_DIALOG_KEYS );
 		projectActions.namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
 		/*
@@ -219,12 +227,13 @@ public class WindowManager
 		settings.pack();
 
 		/*
-		 * Tag-set and feature computation dialogs
+		 * Tag-set, feature computation and logging dialogs
 		 */
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		tagSetDialog.setIconImages( TAGS_ICON );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
+		logDialog = new MamutLogDialog( null, appModel, toggleLogAction );
 
 		/*
 		 * Register windows.
@@ -232,6 +241,7 @@ public class WindowManager
 		registeredWindows.add( featureComputationDialog );
 		registeredWindows.add( tagSetDialog );
 		registeredWindows.add( settings );
+		registeredWindows.add( logDialog );
 		forEachWindow( w -> adjustTitle( w, appModel.getProjectName() ) );
 	}
 
@@ -268,6 +278,7 @@ public class WindowManager
 	 */
 	public synchronized < T extends MamutViewI > T createView( final Class< T > klass, final Map< String, Object > guiState )
 	{
+		appModel.logger().info( "Creating view " + klass.getSimpleName() );
 		// Get the right factory.
 		final MamutViewFactory< T > factory = mamutViews.getFactory( klass );
 
@@ -504,6 +515,14 @@ public class WindowManager
 	}
 
 	/**
+	 * Display the log window.
+	 */
+	public void toggleLog()
+	{
+		logDialog.setVisible( !logDialog.isVisible() );
+	}
+
+	/**
 	 * Close all opened views and dialogs.
 	 */
 	public void closeAllWindows()
@@ -610,6 +629,7 @@ public class WindowManager
 			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
 			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
 			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS, "Show the feature computation dialog." );
+			descriptions.add( TOGGLE_LOG_DIALOG, TOGGLE_LOG_DIALOG_KEYS, "Show / hide the log window." );
 			descriptions.add( OPEN_ONLINE_DOCUMENTATION, OPEN_ONLINE_DOCUMENTATION_KEYS, "Open a browser with the online documentation for Mastodon." );
 		}
 	}
