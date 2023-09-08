@@ -43,8 +43,10 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -403,19 +405,32 @@ public class FeatureTagTablePanel< O > extends JPanel
 		lastHeaderLine.add( "ID" );
 		columnClasses.add( Integer.class );
 		tableColumnModel.addColumn( new TableColumn( colIndex++ ) );
+
+		/*
+		 * Store the map feature spect -> projection list, so that we don't have
+		 * to call the projections() method several time.
+		 */
+		final Map< FeatureSpec< ?, ? >, List< FeatureProjection< ? > > > specToProjList = new HashMap<>();
+
 		// Units for feature columns.
 		for ( final FeatureSpec< ?, ? > fs : featureMap.keySet() )
 		{
-			final Feature< ? > feature = featureMap.get( fs );
-			if ( null == feature.projections() )
+			final String tooltip = "<html><p width=\"300\">" + fs.getInfo() + "</p></html>";
+			@SuppressWarnings( "rawtypes" )
+			final Feature feature = featureMap.get( fs );
+			@SuppressWarnings( "unchecked" )
+			final List< FeatureProjection< ? > > projections = ( feature.projections() == null )
+					? Collections.emptyList()
+					: new ArrayList<>( feature.projections() );
+			specToProjList.put( fs, projections );
+			if ( projections.isEmpty() )
 				continue;
-			final List< FeatureProjection< ? > > projections = new ArrayList<>( feature.projections() );
 			for ( final FeatureProjection< ? > projection : projections )
 			{
 				@SuppressWarnings( "unchecked" )
 				final FeatureProjection< O > fp = ( FeatureProjection< O > ) projection;
 				mapToProjections.add( fp );
-				mapToTooltip.add( "<html><p width=\"300\">" + fs.getInfo() + "</p></html>" );
+				mapToTooltip.add( tooltip );
 				final String units = fp.units();
 				lastHeaderLine.add( ( units == null || units.isEmpty() ) ? "" : "(" + units + ")" );
 				tableColumnModel.addColumn( new TableColumn( colIndex++ ) );
@@ -449,10 +464,9 @@ public class FeatureTagTablePanel< O > extends JPanel
 		{
 			final ColumnGroup featureGroup = new ColumnGroup( fs.getKey() );
 			featureGroup.setHeaderRenderer( headerRenderer );
-			final Feature< ? > feature = featureMap.get( fs );
-			if ( null == feature.projections() )
+			final List< FeatureProjection< ? > > projections = specToProjList.get( fs );
+			if ( projections.isEmpty() )
 				continue;
-			final List< FeatureProjection< ? > > projections = new ArrayList<>( feature.projections() );
 			if ( projections.size() == 1 && projections.iterator().next().getKey().toString().equals( fs.getKey().toString() ) )
 			{
 				final ColumnGroup projectionGroup = new ColumnGroup( " " );
