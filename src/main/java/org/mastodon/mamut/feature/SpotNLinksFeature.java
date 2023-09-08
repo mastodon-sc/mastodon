@@ -28,7 +28,9 @@
  */
 package org.mastodon.mamut.feature;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.mastodon.feature.Dimension;
@@ -47,13 +49,21 @@ public class SpotNLinksFeature implements Feature< Spot >
 
 	public static final String KEY = "Spot N links";
 
-	private static final String HELP_STRING = "Computes the number of links that touch a spot.";
+	private static final String HELP_STRING = "Number of outgoing and incoming links of a spot.";
 
-	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
+	public static final FeatureProjectionSpec N_LINKS_PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
+
+	public static final FeatureProjectionSpec N_OUTGOING_LINKS_PROJECTION_SPEC = new FeatureProjectionSpec( "N outgoing links" );
+
+	public static final FeatureProjectionSpec N_INCOMING_LINKS_PROJECTION_SPEC = new FeatureProjectionSpec( "N incoming links" );
 
 	public static final Spec SPEC = new Spec();
 
-	private final IntFeatureProjection< Spot > projection;
+	private final IntFeatureProjection< Spot > nLinksProjection;
+
+	private final IntFeatureProjection< Spot > nIncomingLinksProjection;
+
+	private final IntFeatureProjection< Spot > nOutgoingLinksProjection;
 
 	@Plugin( type = FeatureSpec.class )
 	public static class Spec extends FeatureSpec< SpotNLinksFeature, Spot >
@@ -66,25 +76,37 @@ public class SpotNLinksFeature implements Feature< Spot >
 					SpotNLinksFeature.class,
 					Spot.class,
 					Multiplicity.SINGLE,
-					PROJECTION_SPEC );
+					N_LINKS_PROJECTION_SPEC,
+					N_OUTGOING_LINKS_PROJECTION_SPEC,
+					N_INCOMING_LINKS_PROJECTION_SPEC );
 		}
 	}
 
 	public SpotNLinksFeature()
 	{
-		this.projection = new MyProjection();
+		this.nLinksProjection = new NLinkProjection();
+		this.nOutgoingLinksProjection = new NOutgoingLinkProjection();
+		this.nIncomingLinksProjection = new NIncomingLinkProjection();
 	}
 
 	@Override
 	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{
-		return projection.getKey().equals( key ) ? projection : null;
+		if ( nLinksProjection.getKey().equals( key ) )
+			return nLinksProjection;
+		else if ( nOutgoingLinksProjection.getKey().equals( key ) )
+			return nOutgoingLinksProjection;
+		else if ( nIncomingLinksProjection.getKey().equals( key ) )
+			return nIncomingLinksProjection;
+		else
+			return null;
 	}
 
 	@Override
 	public Set< FeatureProjection< Spot > > projections()
 	{
-		return Collections.singleton( projection );
+		return Collections.unmodifiableSet( new HashSet<>( Arrays.asList(
+				nLinksProjection, nOutgoingLinksProjection, nIncomingLinksProjection ) ) );
 	}
 
 	@Override
@@ -97,13 +119,13 @@ public class SpotNLinksFeature implements Feature< Spot >
 	public void invalidate( final Spot spot )
 	{}
 
-	private static final class MyProjection implements IntFeatureProjection< Spot >
+	private static final class NLinkProjection implements IntFeatureProjection< Spot >
 	{
 
 		@Override
 		public FeatureProjectionKey getKey()
 		{
-			return FeatureProjectionKey.key( PROJECTION_SPEC );
+			return FeatureProjectionKey.key( N_LINKS_PROJECTION_SPEC );
 		}
 
 		@Override
@@ -124,5 +146,61 @@ public class SpotNLinksFeature implements Feature< Spot >
 			return Dimension.NONE_UNITS;
 		}
 
+	}
+
+	private static final class NOutgoingLinkProjection implements IntFeatureProjection< Spot >
+	{
+
+		@Override
+		public FeatureProjectionKey getKey()
+		{
+			return FeatureProjectionKey.key( N_OUTGOING_LINKS_PROJECTION_SPEC );
+		}
+
+		@Override
+		public boolean isSet( final Spot obj )
+		{
+			return true;
+		}
+
+		@Override
+		public double value( final Spot obj )
+		{
+			return obj.outgoingEdges().size();
+		}
+
+		@Override
+		public String units()
+		{
+			return Dimension.NONE_UNITS;
+		}
+	}
+
+	private static final class NIncomingLinkProjection implements IntFeatureProjection< Spot >
+	{
+
+		@Override
+		public FeatureProjectionKey getKey()
+		{
+			return FeatureProjectionKey.key( N_INCOMING_LINKS_PROJECTION_SPEC );
+		}
+
+		@Override
+		public boolean isSet( final Spot obj )
+		{
+			return true;
+		}
+
+		@Override
+		public double value( final Spot obj )
+		{
+			return obj.incomingEdges().size();
+		}
+
+		@Override
+		public String units()
+		{
+			return Dimension.NONE_UNITS;
+		}
 	}
 }
