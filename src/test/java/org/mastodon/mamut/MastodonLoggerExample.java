@@ -24,8 +24,9 @@ public class MastodonLoggerExample
 			@Override
 			public void run()
 			{
-				try (Context context = new Context())
+				try
 				{
+					Context context = new Context();
 					final ProjectModel projectModel = ProjectLoader.open( "samples/drosophila_crop.mastodon", context );
 					final MainWindow frame = new MainWindow( projectModel );
 					frame.setVisible( true );
