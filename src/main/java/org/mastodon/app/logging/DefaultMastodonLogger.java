@@ -2,93 +2,52 @@ package org.mastodon.app.logging;
 
 import javax.swing.JPanel;
 
-import org.scijava.Context;
-import org.scijava.log.LogLevel;
+import org.scijava.log.DefaultLogger;
 import org.scijava.log.LogSource;
 
 /**
  * A default {@link MastodonLogger} that echoes messages and progress to a
  * {@link JPanel}. Suitable to be used in a GUI.
- * 
- * @author Jean-Yves Tinevez
  *
+ * @author Jean-Yves Tinevez
  */
-public class DefaultMastodonLogger implements MastodonLogger
+public class DefaultMastodonLogger extends DefaultLogger implements MastodonLogger, MastodonLogListener
 {
+	private final MastodonLogListener destination;
 
-	private final MastodonLogPanel mastodonLogPanel;
-
-	private final LogSource root = LogSource.newRoot();
-
-	private final LogSource unknownSource = root.subSource( "Unkown source" );
-
-	public DefaultMastodonLogger( final Context context )
+	public DefaultMastodonLogger( MastodonLogListener destination, LogSource source, int level )
 	{
-		mastodonLogPanel = new MastodonLogPanel( context );
-	}
-
-	public MastodonLogPanel getMastodonLogPanel()
-	{
-		return mastodonLogPanel;
+		super( destination, source, level );
+		this.destination = destination;
 	}
 
 	@Override
-	public LogSource getLogSourceRoot()
+	public MastodonLogger subLogger( String name, int level )
 	{
-		return root;
-	}
-
-	@Override
-	public void info( final String msg, final LogSource source )
-	{
-		log( msg, LogLevel.INFO, source );
-	}
-
-	@Override
-	public void info( final String msg )
-	{
-		info( msg, unknownSource );
-	}
-
-	@Override
-	public void error( final String msg, final LogSource source )
-	{
-		log( msg, LogLevel.ERROR, source );
-	}
-
-	@Override
-	public void error( final String msg )
-	{
-		error( msg, unknownSource );
-	}
-
-	@Override
-	public void log( final String msg, final int level, final LogSource source )
-	{
-		mastodonLogPanel.log( msg, level, source );
-	}
-
-	@Override
-	public void setStatus( final String status, final LogSource source )
-	{
-		mastodonLogPanel.setStatus( status, source );
+		return new DefaultMastodonLogger( this, getSource().subSource( name ), level );
 	}
 
 	@Override
 	public void setStatus( final String status )
 	{
-		mastodonLogPanel.setStatus( status, unknownSource );
-	}
-
-	@Override
-	public void setProgress( final double progress, final LogSource source )
-	{
-		mastodonLogPanel.setProgress( progress, source );
+		destination.onSetStatus( getSource(), status );
 	}
 
 	@Override
 	public void setProgress( final double progress )
 	{
-		mastodonLogPanel.setProgress( progress, unknownSource );
+		destination.onSetProgress( getSource(), progress );
+	}
+
+	@Override
+	public void onSetStatus( LogSource source, String status )
+	{
+		destination.onSetStatus( source, status );
+	}
+
+	@Override
+	public void onSetProgress( LogSource source, double progress )
+	{
+		destination.onSetProgress( source, progress );
 	}
 }

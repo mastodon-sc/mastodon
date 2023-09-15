@@ -37,8 +37,11 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 
 import org.mastodon.app.logging.DefaultMastodonLogger;
+import org.mastodon.app.logging.MastodonLogPanel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.Context;
+import org.scijava.log.LogLevel;
+import org.scijava.log.LogSource;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -71,9 +74,10 @@ public class MamutLogDialog extends JDialog
 	{
 		super( owner, "Log", false );
 		final Context context = projectModel.getContext();
-		final DefaultMastodonLogger logger = new DefaultMastodonLogger( context );
+		MastodonLogPanel loggingPanel = new MastodonLogPanel( context );
+		final DefaultMastodonLogger logger = new DefaultMastodonLogger( loggingPanel, LogSource.newRoot(), LogLevel.INFO );
 		projectModel.setLogger( logger );
-		getContentPane().add( logger.getMastodonLogPanel() );
+		getContentPane().add( loggingPanel );
 		setLocationRelativeTo( null );
 		pack();
 

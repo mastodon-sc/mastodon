@@ -11,7 +11,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.app.logging.MastodonLogger;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.scijava.Context;
-import org.scijava.log.LogSource;
 
 public class MastodonLoggerExample
 {
@@ -27,17 +26,17 @@ public class MastodonLoggerExample
 				try
 				{
 					Context context = new Context();
-					final ProjectModel projectModel = ProjectLoader.open( "samples/drosophila_crop.mastodon", context );
+					final ProjectModel projectModel = ProjectLoader.open( "/home/arzt/devel/mastodon/mastodon/src/test/resources/org/mastodon/mamut/examples/tiny/tiny-project.mastodon", context );
 					final MainWindow frame = new MainWindow( projectModel );
 					frame.setVisible( true );
 
 					// Send some messages.
 					projectModel.getWindowManager().toggleLog();
 					final MastodonLogger logger = projectModel.logger();
-					final LogSource source1 = logger.getLogSourceRoot().subSource( "the frame" );
-					final LogSource source2 = logger.getLogSourceRoot().subSource( "another one" );
+					final MastodonLogger loggerSource1 = logger.subLogger( "the frame" );
+					final MastodonLogger loggerSource2 = logger.subLogger( "another one" );
 					logger.info( "Hey man! " );
-					logger.info( "Check this! ", source1 );
+					loggerSource1.info( "Check this! " );
 
 					final Timer timer1 = new Timer();
 					final TimerTask t1 = new TimerTask()
@@ -48,15 +47,15 @@ public class MastodonLoggerExample
 						@Override
 						public void run()
 						{
-							logger.setProgress( ai.getAndIncrement() / 100., source1 );
+							loggerSource1.setProgress( ai.getAndIncrement() / 100. );
 							if ( ai.get() > 100 )
 							{
-								logger.error( "Oh no! I finished last!", source1 );
+								loggerSource1.error( "Oh no! I finished last!" );
 								timer1.cancel();
 							}
 						}
 					};
-					logger.setStatus( "Doing stuff", source1 );
+					loggerSource1.setStatus( "Doing stuff" );
 					timer1.scheduleAtFixedRate( t1, 100, 50 );
 
 					final Timer timer2 = new Timer();
@@ -68,15 +67,15 @@ public class MastodonLoggerExample
 						@Override
 						public void run()
 						{
-							logger.setProgress( ai.getAndIncrement() / 100., source2 );
+							loggerSource2.setProgress( ai.getAndIncrement() / 100. );
 							if ( ai.get() > 100 )
 							{
-								logger.info( "Other stuff done too.", source2 );
+								loggerSource2.info( "Other stuff done too." );
 								timer2.cancel();
 							}
 						}
 					};
-					logger.setStatus( "Doing later but faster", source2 );
+					loggerSource2.setStatus( "Doing later but faster" );
 					timer2.scheduleAtFixedRate( t2, 1000, 20 );
 				}
 				catch ( final Exception e )

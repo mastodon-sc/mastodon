@@ -13,7 +13,7 @@ import org.scijava.log.LogMessage;
 import org.scijava.log.LogSource;
 import org.scijava.ui.swing.console.LoggingPanel;
 
-public class MastodonLogPanel extends JPanel
+public class MastodonLogPanel extends JPanel implements MastodonLogListener
 {
 
 	private static final long serialVersionUID = 1L;
@@ -49,13 +49,15 @@ public class MastodonLogPanel extends JPanel
 		loggingPanel.messageLogged( new LogMessage( source, level, msg ) );
 	}
 
-	public void setStatus( final String status, final LogSource source )
+	@Override
+	public void onSetStatus( final LogSource source, final String status )
 	{
 		final JProgressBar pb = getProgressBar( source );
 		pb.setString( status );
 	}
 
-	public void setProgress( final double progress, final LogSource source )
+	@Override
+	public void onSetProgress( final LogSource source, final double progress )
 	{
 		if ( progress >= 1 )
 		{
@@ -64,6 +66,12 @@ public class MastodonLogPanel extends JPanel
 		}
 		final JProgressBar pb = getProgressBar( source );
 		pb.setValue( ( int ) ( 100 * progress ) );
+	}
+
+	@Override
+	public void messageLogged( final LogMessage message )
+	{
+		loggingPanel.messageLogged( message );
 	}
 
 	private void removeProgressBar( final LogSource source )

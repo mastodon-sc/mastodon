@@ -219,7 +219,7 @@ public class MainWindow extends JFrame
 		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern( "dd//MM/uuuu HH:mm:ss" );
 		helloMsg.append( "\nstarted on " + dtf.format( LocalDateTime.now() ) );
 		helloMsg.append( "\n------------------------------------" );
-		appModel.logger().info( helloMsg.toString(), appModel.logger().getLogSourceRoot() );
+		appModel.logger().info( helloMsg.toString() );
 	}
 
 	/**
