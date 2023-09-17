@@ -29,6 +29,8 @@
 package org.mastodon;
 
 import javax.swing.JFileChooser;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -52,24 +54,30 @@ public class StartMastodonOnProject
 
 	public static void launch( final String projectPath )
 	{
-		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-		try (Context context = new Context())
+		try
 		{
-			final ThreadService threadService = context.getService( ThreadService.class );
-			threadService.run( () -> {
-				try
-				{
-					final ProjectModel appModel = ProjectLoader.open( projectPath, context, true, false );
-					final MainWindow win = new MainWindow( appModel );
-					win.setVisible( true );
-					win.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-				}
-				catch ( final Exception e )
-				{
-					e.printStackTrace();
-				}
-			} );
+			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 		}
+		catch ( ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e )
+		{
+			e.printStackTrace();
+		}
+		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+		final Context context = new Context();
+		final ThreadService threadService = context.getService( ThreadService.class );
+		threadService.run( () -> {
+			try
+			{
+				final ProjectModel appModel = ProjectLoader.open( projectPath, context, true, false );
+				final MainWindow win = new MainWindow( appModel );
+				win.setVisible( true );
+				win.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+			}
+			catch ( final Exception e )
+			{
+				e.printStackTrace();
+			}
+		} );
 	}
 
 	private static String fileOpenDialog()

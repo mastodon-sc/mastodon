@@ -28,6 +28,9 @@
  */
 package org.mastodon;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import org.mastodon.mamut.launcher.MastodonLauncherCommand;
 import org.scijava.Context;
 import org.scijava.command.CommandService;
@@ -43,6 +46,15 @@ public class StartMastodonLauncher
 
 	public static void main( final String... args )
 	{
+		try
+		{
+			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+		}
+		catch ( ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e )
+		{
+			e.printStackTrace();
+		}
+		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 		@SuppressWarnings( "resource" )
 		final Context context = new Context();
 		final UIService uiService = context.service( UIService.class );
