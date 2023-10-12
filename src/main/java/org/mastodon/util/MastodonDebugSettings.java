@@ -35,6 +35,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -143,9 +144,9 @@ public interface MastodonDebugSettings
 		{
 			final DumperOptions dumperOptions = new DumperOptions();
 			dumperOptions.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
-			final Representer representer = new Representer();
+			final Representer representer = new Representer( new DumperOptions() );
 			representer.addClassTag( DebugSettingsImpl.class, new Tag( "!debugsettings" ) );
-			final Constructor constructor = new Constructor();
+			final Constructor constructor = new Constructor( new LoaderOptions() );
 			constructor.addTypeDescription( new TypeDescription( DebugSettingsImpl.class, "!debugsettings" ) );
 			return new Yaml( constructor, representer, dumperOptions );
 		}

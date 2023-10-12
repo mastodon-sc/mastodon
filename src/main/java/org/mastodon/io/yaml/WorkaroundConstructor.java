@@ -31,15 +31,17 @@ package org.mastodon.io.yaml;
 import java.util.List;
 import java.util.Map;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 
 public class WorkaroundConstructor extends Constructor
 {
-	public WorkaroundConstructor( final Class< ? > theRoot )
+
+	public WorkaroundConstructor( LoaderOptions loadingConfig )
 	{
-		super( theRoot );
+		super( loadingConfig );
 	}
 
 	@Override
