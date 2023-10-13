@@ -420,7 +420,7 @@ public class WindowManager
 	 *            the view class, must extend {@link MamutViewI}.
 	 * @return the list of view of specified class, or <code>null</code>.
 	 */
-	private < T extends MamutViewI > List< T > getViewList( final Class< T > klass )
+	public < T extends MamutViewI > List< T > getViewList( final Class< T > klass )
 	{
 		@SuppressWarnings( "unchecked" )
 		final List< T > list = ( List< T > ) openedViews.get( klass );
