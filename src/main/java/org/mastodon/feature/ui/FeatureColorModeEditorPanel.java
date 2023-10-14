@@ -31,6 +31,7 @@ package org.mastodon.feature.ui;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -52,8 +53,6 @@ import org.mastodon.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorMode.VertexColorMode;
 import org.mastodon.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.ui.coloring.feature.FeatureRangeCalculator;
-
-import com.itextpdf.text.Font;
 
 /**
  * JPanel to edit a single {@link FeatureColorMode}.
