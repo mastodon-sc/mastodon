@@ -42,22 +42,18 @@
 			<version>${mastodon-graph.version}</version>
 		</dependency>
 		
-		<!-- Fiji & ImageJ dependencies -->
+		<!-- BDV and spimdata dependecies -->
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
 		</dependency>
-		<!-- run time: brings in the original IJ1 window -->
-		<!--
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej-legacy</artifactId>
-		</dependency>		 -->
-		
-		<!-- BDV and spimdata dependecies -->
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>bigdataviewer_fiji</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
@@ -81,18 +77,7 @@
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-roi</artifactId>
 		</dependency>
-		
-		<!-- Open remote images dependencies -->
-		<dependency>
-			<groupId>org.embl.mobie</groupId>
-			<artifactId>mobie-io</artifactId>
-			<version>2.0.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-		</dependency>
-		
+				
 		<!-- Misc dependencies. -->
 		<dependency>
 			<groupId>com.opencsv</groupId>
@@ -102,18 +87,6 @@
 			<groupId>io.humble</groupId>
 			<artifactId>humble-video-all</artifactId>
 		</dependency>		
-
-		<!-- DnD from IDE -->
-		<!-- compile time: necessary dependency -->
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scijava-common</artifactId>
-		</dependency>
-		<!-- run time: makes the IOService somehow functional -->
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>IO_</artifactId>
-		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
@@ -182,7 +155,6 @@
 
 		<mastodon-collection.version>1.0.0-beta-25</mastodon-collection.version>
 		<mastodon-graph.version>1.0.0-beta-25</mastodon-graph.version>
-		<bigdataviewer-core.version>10.4.8</bigdataviewer-core.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
