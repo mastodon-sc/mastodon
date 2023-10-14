@@ -60,12 +60,10 @@ public class ProjectActions
 	{
 		final BasicErrorLogger errorLogger = new BasicErrorLogger( parentComponent );
 		final RunnableAction createProjectAction = new RunnableAction( CREATE_PROJECT, () -> LauncherUtil.createProjectWithDialog( context, parentComponent, errorLogger ) );
-		final RunnableAction createProjectFromUrlAction = new RunnableAction( CREATE_PROJECT_FROM_URL, () -> ProjectCreator.createProjectFromUrl( context, parentComponent, errorLogger ) );
 		final RunnableAction loadProjectAction = new RunnableAction( LOAD_PROJECT, () -> LauncherUtil.openWithDialog( context, parentComponent, errorLogger ) );
 		final RunnableAction importMamutAction = new RunnableAction( IMPORT_MAMUT, () -> ProjectImporter.openMamutWithDialog( parentComponent, context, errorLogger ) );
 
 		actions.namedAction( createProjectAction, CREATE_PROJECT_KEYS );
-		actions.namedAction( createProjectFromUrlAction, CREATE_PROJECT_FROM_URL_KEYS );
 		actions.namedAction( loadProjectAction, LOAD_PROJECT_KEYS );
 		actions.namedAction( importMamutAction, IMPORT_MAMUT_KEYS );
 	}
