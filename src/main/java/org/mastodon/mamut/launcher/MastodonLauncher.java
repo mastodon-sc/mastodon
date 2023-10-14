@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.launcher;
 
-import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -73,9 +72,7 @@ import org.scijava.util.VersionUtils;
 
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
-import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
-import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.registration.ViewRegistrations;
@@ -118,7 +115,6 @@ public class MastodonLauncher extends JFrame
 		gui.newMastodonProjectPanel.btnCreate.addActionListener( l -> createNewProject() );
 		gui.importTGMMPanel.btnImport.addActionListener( l -> importTgmm() );
 		gui.importSimiBioCellPanel.btnImport.addActionListener( l -> importSimi() );
-		gui.openRemoteURLPanel.btnCreate.addActionListener( l -> createProjectFromURL() );
 
 		getContentPane().add( gui );
 		setSize( 630, 660 );
@@ -476,78 +472,6 @@ public class MastodonLauncher extends JFrame
 	private void showHelpPanel()
 	{
 		gui.showPanel( LauncherGUI.WELCOME_PANEL_KEY );
-	}
-
-	private void createProjectFromURL()
-	{
-		gui.clearLog();
-		final String filepath = gui.openRemoteURLPanel.taFileSave.getText();
-		if ( filepath == null || filepath.isEmpty() )
-		{
-			gui.openRemoteURLPanel.log.setForeground( Color.RED );
-			gui.openRemoteURLPanel.log.setText( "Please specify a BDV file to write to." );
-			return;
-		}
-
-		final File file = new File( filepath );
-		if ( file.exists() && !file.canWrite() )
-		{
-			gui.openRemoteURLPanel.log.setForeground( Color.RED );
-			gui.openRemoteURLPanel.log.setText( "Target BDV file exists and cannot be overwritten." );
-			return;
-		}
-
-		final SpimData spimData = gui.openRemoteURLPanel.spimData;
-		if ( spimData == null )
-		{
-			gui.openRemoteURLPanel.log.setForeground( Color.RED );
-			gui.openRemoteURLPanel.log.setText( "Please specify an image URL first." );
-			return;
-		}
-
-		final EverythingDisablerAndReenabler disabler =
-				new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
-		disabler.disable();
-		new Thread( () -> {
-			try
-			{
-				gui.openRemoteURLPanel.log.setText( "Creating project..." );
-
-				/*
-				 * Save the XML file first.
-				 */
-				final XmlIoSpimData xmlIoSpimData = new XmlIoSpimData();
-				spimData.setBasePath( file.getParentFile() );
-				try
-				{
-					xmlIoSpimData.save( spimData, file.getAbsolutePath() );
-				}
-				catch ( final SpimDataException e )
-				{
-					gui.openRemoteURLPanel.log.setForeground( Color.RED );
-					gui.openRemoteURLPanel.log.setText( "<html>Problem save to BDV file.<p>" +
-							e.getMessage() + "</html>" );
-				}
-
-				/*
-				 * Open it as a new Mastodon project.
-				 */
-				final ProjectModel appModel = LauncherUtil.createProjectFromBdvFileWithDialog( file, context, gui, gui::error );
-				new MainWindow( appModel ).setVisible( true );
-
-				/*
-				 * We update the list of recent projects here so that only
-				 * projects that were successfully opened are added to the list.
-				 */
-				RecentProjectsPanel.recentProjects.add( file.getAbsolutePath() );
-
-				dispose();
-			}
-			finally
-			{
-				disabler.reenable();
-			}
-		} ).start();
 	}
 
 	private void importMaMuT()

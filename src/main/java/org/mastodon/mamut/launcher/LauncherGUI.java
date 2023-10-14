@@ -102,8 +102,6 @@ class LauncherGUI extends JPanel
 
 	final NewMastodonProjectPanel newMastodonProjectPanel;
 
-	final OpenRemoteURLPanel openRemoteURLPanel;
-
 	final LoggerPanel logger;
 
 	final ImportTGMMPanel importTGMMPanel;
@@ -212,9 +210,6 @@ class LauncherGUI extends JPanel
 
 		recentProjectsPanel = new RecentProjectsPanel( projectOpener );
 		centralPanel.add( recentProjectsPanel, RECENT_PROJECTS_KEY );
-
-		openRemoteURLPanel = new OpenRemoteURLPanel();
-		centralPanel.add( openRemoteURLPanel, NEW_FROM_URL_KEY );
 
 		importTGMMPanel = new ImportTGMMPanel();
 		centralPanel.add( importTGMMPanel, IMPORT_TGMM_KEY );
