@@ -314,7 +314,7 @@ public class WindowManager
 		// Register close listener.
 		view.onClose( () -> {
 			// Remove view from list of opened views.
-			getViewList( klass ).remove( view );
+			openedViews.get( klass ).remove( view );
 
 			if ( view instanceof HasContextChooser )
 			{
@@ -411,20 +411,23 @@ public class WindowManager
 	}
 
 	/**
-	 * Returns the list of opened mamut views of the specified type, or
-	 * <code>null</code> if a view of this type is not registered.
+	 * Returns the list of opened mamut views of the specified type. The list
+	 * can be empty if a view of this type is not registered, but is never
+	 * <code>null</code>.
 	 * 
 	 * @param <T>
 	 *            the view type, must extend {@link MamutViewI}.
 	 * @param klass
 	 *            the view class, must extend {@link MamutViewI}.
-	 * @return the list of view of specified class, or <code>null</code>.
+	 * @return a new, unmodified list of view of specified class.
 	 */
 	public < T extends MamutViewI > List< T > getViewList( final Class< T > klass )
 	{
 		@SuppressWarnings( "unchecked" )
 		final List< T > list = ( List< T > ) openedViews.get( klass );
-		return list;
+		if ( list == null )
+			return Collections.emptyList();
+		return Collections.unmodifiableList( list );
 	}
 
 	/**
@@ -438,11 +441,12 @@ public class WindowManager
 	 * @param <T>
 	 *            the type of the view to operate on.
 	 */
+	@SuppressWarnings( "unchecked" )
 	public < T extends MamutViewI > void forEachView( final Class< T > klass, final Consumer< T > action )
 	{
-		Optional.ofNullable( getViewList( klass ) )
+		Optional.ofNullable( openedViews.get( klass ) )
 				.orElse( Collections.emptyList() )
-				.forEach( action );
+				.forEach( ( Consumer< ? super MamutViewI > ) action );
 	}
 
 	/**
