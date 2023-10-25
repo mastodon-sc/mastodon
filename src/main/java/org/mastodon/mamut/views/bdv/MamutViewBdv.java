@@ -143,7 +143,6 @@ public class MamutViewBdv
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
 		frame.setIconImages( BDV_VIEW_ICON );
-		frame.setIconImages( BDV_VIEW_ICON );
 
 		MastodonFrameViewActions.install( viewActions, this );
 		BigDataViewerActionsMamut.install( viewActions, bdv );
