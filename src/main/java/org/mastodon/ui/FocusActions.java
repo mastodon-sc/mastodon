@@ -124,8 +124,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	{
 		public Descriptions()
 		{
-			// TODO grapher as well?
-			super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
 		}
 
 		@Override
