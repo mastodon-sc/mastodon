@@ -301,7 +301,7 @@ class MamutViewStateXMLSerialization
 				value = xmlToMap( el );
 				break;
 			default:
-				System.err.println( "Unknown GUI config parameter: " + key + " found in GUI file." );
+				System.out.println( "Unknown GUI config parameter: " + key + " found in GUI file." );
 				continue;
 			}
 			guiState.put( key, value );
