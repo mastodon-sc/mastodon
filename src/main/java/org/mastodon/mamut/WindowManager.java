@@ -444,9 +444,9 @@ public class WindowManager
 	@SuppressWarnings( "unchecked" )
 	public < T extends MamutViewI > void forEachView( final Class< T > klass, final Consumer< T > action )
 	{
-		Optional.ofNullable( openedViews.get( klass ) )
+		Optional.ofNullable( ( List< T > ) openedViews.get( klass ) )
 				.orElse( Collections.emptyList() )
-				.forEach( ( Consumer< ? super MamutViewI > ) action );
+				.forEach( action );
 	}
 
 	/**
