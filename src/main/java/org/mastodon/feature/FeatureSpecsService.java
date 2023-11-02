@@ -35,17 +35,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.app.plugin.PluginUtils;
-import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 
 /**
  * Helper class to discover and hold {@link FeatureSpec}s.
  */
-@Plugin( type = FeatureSpecsService.class, priority = Priority.EXTREMELY_LOW )
+@Plugin( type = FeatureSpecsService.class )
 public class FeatureSpecsService extends AbstractService implements SciJavaService
 {
+
+	// NB: The {@link PluginService} needs to be a {@link Parameter} so that
+	// it is initialized before the {@link FeatureSpecsService}.
+	@Parameter
+	private PluginService pluginService;
 
 	private final List< FeatureSpec< ?, ? > > specs = new ArrayList<>();
 
@@ -76,7 +82,7 @@ public class FeatureSpecsService extends AbstractService implements SciJavaServi
 	 */
 	private void discover()
 	{
-		PluginUtils.forEachDiscoveredPlugin( FeatureSpec.class, this::add, getContext() );
+		PluginUtils.forEachDiscoveredPlugin( FeatureSpec.class, this::add, pluginService.getContext() );
 	}
 
 	/**
