@@ -222,14 +222,18 @@ public class WindowManager
 		settings.addPage( new FeatureColorModeConfigPage( "Settings > Feature Color Modes", featureColorModeManager,
 				featureProjectionsManager, "Spot", "Link" ) );
 		settings.pack();
+		appModel.projectClosedListeners().add( settings::dispose );
 
 		/*
 		 * Tag-set and feature computation dialogs
 		 */
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		tagSetDialog.setIconImages( TAGS_ICON );
+		appModel.projectClosedListeners().add( tagSetDialog::dispose );
+
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
+		appModel.projectClosedListeners().add( featureComputationDialog::dispose );
 
 		/*
 		 * Register windows.
