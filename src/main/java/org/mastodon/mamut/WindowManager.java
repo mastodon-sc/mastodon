@@ -104,15 +104,10 @@ public class WindowManager
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
 
-	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
-	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
-
-	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
-	static final String[] NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 
 	public static final String DOCUMENTATION_URL = "https://mastodon.readthedocs.io/en/latest/";
 
