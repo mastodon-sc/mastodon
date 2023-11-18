@@ -34,7 +34,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
+import org.mastodon.mamut.launcher.LauncherUtil;
 import org.scijava.Context;
 import org.scijava.thread.ThreadService;
 
@@ -53,13 +55,14 @@ public class StartMastodonOnProject
 	public static void launch( final String projectPath )
 	{
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-		try (Context context = new Context())
+		try ( Context context = new Context() )
 		{
 			final ThreadService threadService = context.getService( ThreadService.class );
 			threadService.run( () -> {
 				try
 				{
-					final ProjectModel appModel = ProjectLoader.open( projectPath, context, true, false );
+					final MamutProject project = MamutProjectIO.load( projectPath );
+					final ProjectModel appModel = LauncherUtil.openWithDialog( project, context, null, System.out::println );
 					final MainWindow win = new MainWindow( appModel );
 					win.setVisible( true );
 					win.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );

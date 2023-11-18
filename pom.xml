@@ -77,6 +77,12 @@
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-roi</artifactId>
 		</dependency>
+
+		<!-- N5 dependencies. -->
+		<dependency>
+			<groupId>org.janelia.saalfeldlab</groupId>
+			<artifactId>n5-universe</artifactId>
+		</dependency>
 				
 		<!-- Misc dependencies. -->
 		<dependency>

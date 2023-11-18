@@ -7,6 +7,7 @@ import static org.mastodon.mamut.io.project.MamutProjectIO.MAMUTPROJECT_VERSION_
 import static org.mastodon.mamut.io.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATTRIBUTE_NAME;
 
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -128,25 +129,51 @@ public class ProjectSaver
 			 * a ref to what we will receive; we use a StringBuilder for that.
 			 */
 			final StringBuilder str = new StringBuilder();
-			SwingUtilities.invokeAndWait( new Runnable()
+			if ( EventQueue.isDispatchThread() )
 			{
-
-				@Override
-				public void run()
+				new Runnable()
 				{
-					final File file = FileChooser.chooseFile( true,
-							parentComponent,
-							projectRoot,
-							new ExtensionFileFilter( "mastodon" ),
-							"Save Mastodon Project",
-							FileChooser.DialogType.SAVE,
-							SelectionMode.FILES_ONLY,
-							SAVE_ICON_MEDIUM.getImage() );
-					if ( file == null )
-						return;
-					str.append( file.getAbsolutePath() );
-				}
-			} );
+					@Override
+					public void run()
+					{
+						final File file = FileChooser.chooseFile( true,
+								parentComponent,
+								projectRoot,
+								new ExtensionFileFilter( "mastodon" ),
+								"Save Mastodon Project",
+								FileChooser.DialogType.SAVE,
+								SelectionMode.FILES_ONLY,
+								SAVE_ICON_MEDIUM.getImage() );
+						if ( file == null )
+							return;
+						str.append( file.getAbsolutePath() );
+					}
+
+				}.run();
+			}
+			else
+			{
+				SwingUtilities.invokeAndWait( new Runnable()
+				{
+
+					@Override
+					public void run()
+					{
+						final File file = FileChooser.chooseFile( true,
+								parentComponent,
+								projectRoot,
+								new ExtensionFileFilter( "mastodon" ),
+								"Save Mastodon Project",
+								FileChooser.DialogType.SAVE,
+								SelectionMode.FILES_ONLY,
+								SAVE_ICON_MEDIUM.getImage() );
+						if ( file == null )
+							return;
+						str.append( file.getAbsolutePath() );
+					}
+				} );
+			}
+
 			if ( str.length() == 0 ) // Abort
 				return;
 
@@ -230,7 +257,7 @@ public class ProjectSaver
 
 		// Possibly update project root.
 		project.setProjectRoot( saveTo );
-		try (final MamutProject.ProjectWriter writer = project.openForWriting())
+		try ( final MamutProject.ProjectWriter writer = project.openForWriting() )
 		{
 			MamutProjectIO.save( project, writer );
 			final Model model = appModel.getModel();
@@ -295,7 +322,7 @@ public class ProjectSaver
 		guiRoot.addContent( windows );
 		final Document doc = new Document( guiRoot );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
-		try (OutputStream outputStream = writer.getGuiOutputStream())
+		try ( OutputStream outputStream = writer.getGuiOutputStream() )
 		{
 			xout.output( doc, outputStream );
 		}
@@ -313,7 +340,7 @@ public class ProjectSaver
 		if ( tmpDatasetXml == null )
 			return;
 
-		try (OutputStream out = projectWriter.getBackupDatasetXmlOutputStream())
+		try ( OutputStream out = projectWriter.getBackupDatasetXmlOutputStream() )
 		{
 			Files.copy( tmpDatasetXml.toPath(), out );
 		}

@@ -26,32 +26,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon;
+package org.mastodon.ui.util;
 
-import org.mastodon.mamut.io.loader.XmlIoN5UniverseImgLoader;
-import org.mastodon.mamut.launcher.MastodonLauncherCommand;
-import org.scijava.Context;
-import org.scijava.command.CommandService;
-import org.scijava.ui.UIService;
-
-import mpicbg.spim.data.generic.sequence.ImgLoaders;
-
-/**
- * Shows the ImageJ main window and Mastodon launcher.
- *
- * @author Matthias Arzt
- */
-public class StartMastodonLauncher
+public class HDF5FileFilter extends CombinedFileFilter
 {
-
-	public static void main( final String... args )
+	public HDF5FileFilter()
 	{
-		@SuppressWarnings( "resource" )
-		final Context context = new Context();
-		final UIService uiService = context.service( UIService.class );
-		ImgLoaders.registerManually( XmlIoN5UniverseImgLoader.class );
-		uiService.showUI();
-		final CommandService commandService = context.service( CommandService.class );
-		commandService.run( MastodonLauncherCommand.class, true );
+		super( new ExtensionFileFilter( "h5" ), new ExtensionFileFilter( "hdf5" ) );
 	}
 }
