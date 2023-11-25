@@ -58,8 +58,10 @@ import org.mastodon.ui.coloring.ColorBarOverlayMenu;
 import org.mastodon.ui.coloring.ColoringMenu;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.ColoringModelMain;
+import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.ui.coloring.TrackGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 
@@ -96,6 +98,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 *
 	 * @see #NO_COLORING_KEY
 	 * @see #TAG_SET_KEY
+	 * @see #TRACK_COLORING_KEY
+	 * 
 	 */
 	public static final String FEATURE_COLOR_MODE_KEY = "FeatureColorMode";
 
@@ -105,8 +109,19 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 *
 	 * @see #TAG_SET_KEY
 	 * @see #FEATURE_COLOR_MODE_KEY
+	 * @see #TRACK_COLORING_KEY
 	 */
 	public static final String NO_COLORING_KEY = "NoColoring";
+
+	/**
+	 * Key that specifies whether we use an automatic color scheme that assigns
+	 * the same color to all the spots and links of one track.
+	 *
+	 * @see #TAG_SET_KEY
+	 * @see #FEATURE_COLOR_MODE_KEY
+	 * @see #NO_COLORING_KEY
+	 */
+	public static final String TRACK_COLORING_KEY = "ColorByTrack";
 
 	/**
 	 * Key that specifies the name of the tag-set to use for coloring scheme
@@ -115,6 +130,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 *
 	 * @see #NO_COLORING_KEY
 	 * @see #FEATURE_COLOR_MODE_KEY
+	 * @see #TRACK_COLORING_KEY
 	 */
 	public static final String TAG_SET_KEY = "TagSet";
 
@@ -182,14 +198,30 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		featureModel.listeners().add( coloringMenu );
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
 
+		// Handle track color generator.
+		@SuppressWarnings( "unchecked" )
+		final TrackGraphColorGenerator< Spot, Link > tgcg = appModel.getWindowManager().getManager( TrackGraphColorGenerator.class );
+
 		final ColoringModelMain.ColoringChangedListener coloringChangedListener = () -> {
-			if ( coloringModel.noColoring() )
-				colorGeneratorAdapter.setColorGenerator( null );
-			else if ( coloringModel.getTagSet() != null )
-				colorGeneratorAdapter
-						.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
-			else if ( coloringModel.getFeatureColorMode() != null )
-				colorGeneratorAdapter.setColorGenerator( coloringModel.getFeatureGraphColorGenerator() );
+			final GraphColorGenerator< Spot, Link > colorGenerator;
+			switch ( coloringModel.getColoringStyle() )
+			{
+			case BY_FEATURE:
+				colorGenerator = coloringModel.getFeatureGraphColorGenerator();
+				break;
+			case BY_TAGSET:
+				colorGenerator = new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() );
+				break;
+			case BY_TRACK:
+				colorGenerator = tgcg;
+				break;
+			case NONE:
+				colorGenerator = null;
+				break;
+			default:
+				throw new IllegalArgumentException( "Unknown coloring style: " + coloringModel.getColoringStyle() );
+			}
+			colorGeneratorAdapter.setColorGenerator( colorGenerator );
 			refresh.run();
 		};
 		coloringModel.listeners().add( coloringChangedListener );

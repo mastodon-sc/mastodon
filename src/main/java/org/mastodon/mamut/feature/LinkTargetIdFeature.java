@@ -31,7 +31,7 @@ package org.mastodon.mamut.feature;
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.mastodon.feature.Dimension;
@@ -103,7 +103,7 @@ public class LinkTargetIdFeature implements Feature< Link >
 	@Override
 	public Set< FeatureProjection< Link > > projections()
 	{
-		final Set< FeatureProjection< Link > > projections = new HashSet<>();
+		final Set< FeatureProjection< Link > > projections = new LinkedHashSet<>();
 		projections.add( new SourceIdProjection( graph.vertexRef() ) );
 		projections.add( new TargetIdProjection( graph.vertexRef() ) );
 		return Collections.unmodifiableSet( projections );

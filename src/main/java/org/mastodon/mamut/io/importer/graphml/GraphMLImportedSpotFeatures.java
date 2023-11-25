@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.importer.trackmate;
+package org.mastodon.mamut.io.importer.graphml;
 
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
@@ -34,37 +34,38 @@ import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImportedFeatures;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
-public class TrackMateImportedLinkFeatures extends TrackMateImportedFeatures< Link >
+public class GraphMLImportedSpotFeatures extends TrackMateImportedFeatures< Spot >
 {
 
-	public static final String KEY = "TrackMate Link features";
+	public static final String KEY = "GraphML Spot features";
 
 	private static final String HELP_STRING =
-			"Stores the link feature values imported from a TrackMate or MaMuT file.";
+			"Stores the spot feature values imported from a GraphML file.";
 
 	private final Spec spec = new Spec();
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< TrackMateImportedLinkFeatures, Link >
+	public static class Spec extends FeatureSpec< GraphMLImportedSpotFeatures, Spot >
 	{
 		public Spec()
 		{
 			super(
 					KEY,
 					HELP_STRING,
-					TrackMateImportedLinkFeatures.class,
-					Link.class,
+					GraphMLImportedSpotFeatures.class,
+					Spot.class,
 					Multiplicity.SINGLE );
 		}
 	}
 
 	@Override
-	public FeatureProjectionKey store( final String key, final Dimension dimension, final String units, final DoublePropertyMap< Link > values )
+	public FeatureProjectionKey store( final String key, final Dimension dimension, final String units, final DoublePropertyMap< Spot > values )
 	{
 		final FeatureProjectionKey projectionKey = super.store( key, dimension, units, values );
 		spec.getProjectionSpecs().add( new FeatureProjectionSpec( key, dimension ) );
@@ -72,7 +73,7 @@ public class TrackMateImportedLinkFeatures extends TrackMateImportedFeatures< Li
 	}
 
 	@Override
-	public FeatureProjectionKey store( final String key, final Dimension dimension, final String units, final IntPropertyMap< Link > values )
+	public FeatureProjectionKey store( final String key, final Dimension dimension, final String units, final IntPropertyMap< Spot > values )
 	{
 		final FeatureProjectionKey projectionKey = super.store( key, dimension, units, values );
 		spec.getProjectionSpecs().add( new FeatureProjectionSpec( key, dimension ) );
@@ -80,7 +81,7 @@ public class TrackMateImportedLinkFeatures extends TrackMateImportedFeatures< Li
 	}
 
 	@Override
-	public FeatureSpec< ? extends Feature< Link >, Link > getSpec()
+	public FeatureSpec< ? extends Feature< Spot >, Spot > getSpec()
 	{
 		return spec;
 	}

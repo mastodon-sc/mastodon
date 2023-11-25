@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.importer.trackmate;
+package org.mastodon.mamut.io.importer.graphml;
 
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
@@ -34,30 +34,31 @@ import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.mamut.io.importer.trackmate.TrackMateImportedFeatures;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
-public class TrackMateImportedLinkFeatures extends TrackMateImportedFeatures< Link >
+public class GraphMLImportedLinkFeatures extends TrackMateImportedFeatures< Link >
 {
 
-	public static final String KEY = "TrackMate Link features";
+	public static final String KEY = "GraphML Link features";
 
 	private static final String HELP_STRING =
-			"Stores the link feature values imported from a TrackMate or MaMuT file.";
+			"Stores the link feature values imported from a GraphML file.";
 
 	private final Spec spec = new Spec();
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< TrackMateImportedLinkFeatures, Link >
+	public static class Spec extends FeatureSpec< GraphMLImportedLinkFeatures, Link >
 	{
 		public Spec()
 		{
 			super(
 					KEY,
 					HELP_STRING,
-					TrackMateImportedLinkFeatures.class,
+					GraphMLImportedLinkFeatures.class,
 					Link.class,
 					Multiplicity.SINGLE );
 		}

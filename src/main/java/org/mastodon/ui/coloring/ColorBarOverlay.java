@@ -36,6 +36,7 @@ import java.util.function.Supplier;
 
 import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
+import org.mastodon.ui.coloring.ColoringModel.ColoringStyle;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureProjectionId;
 import org.scijava.listeners.Listeners;
@@ -179,7 +180,7 @@ public class ColorBarOverlay implements OverlayRenderer
 	@Override
 	public void drawOverlays( final Graphics g )
 	{
-		if ( !visible || coloringModel.noColoring() )
+		if ( !visible || coloringModel.getColoringStyle() == ColoringStyle.NONE || coloringModel.getColoringStyle() == ColoringStyle.BY_TRACK )
 			return;
 
 		final FeatureColorMode featureColorMode = coloringModel.getFeatureColorMode();

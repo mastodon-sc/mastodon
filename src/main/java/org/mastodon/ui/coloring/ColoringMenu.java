@@ -42,6 +42,7 @@ import javax.swing.JSeparator;
 import org.mastodon.feature.FeatureModel.FeatureModelListener;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.ui.coloring.ColoringModel.ColoringStyle;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.util.HasSelectedState;
@@ -98,11 +99,15 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 			menu.add( new JSeparator() );
 
 		addColorAction( new ColorAction(
+				"By track",
+				() -> coloringModel.getColoringStyle() == ColoringStyle.BY_TRACK,
+				() -> true,
+				() -> coloringModel.colorByTrack() ) );
+		addColorAction( new ColorAction(
 				"None",
-				() -> coloringModel.noColoring(),
+				() -> coloringModel.getColoringStyle() == ColoringStyle.NONE,
 				() -> true,
 				() -> coloringModel.colorByNone() ) );
-
 	}
 
 	private void addColorAction( final ColorAction action )

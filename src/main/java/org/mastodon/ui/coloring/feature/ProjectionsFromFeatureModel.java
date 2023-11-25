@@ -90,7 +90,13 @@ public class ProjectionsFromFeatureModel implements Projections
 		if ( feature == null )
 			return null;
 
-		final FeatureProjectionSpec projectionSpec = featureSpec.getProjectionSpecs().stream()
+		/*
+		 * Regen feature spec from the feature we just found. This is to
+		 * accomodate features that are computed 'manually', and that might have
+		 * a feature spec that changes every-time they are computed.
+		 */
+		final FeatureSpec< ? extends Feature< T >, T > featureSpec2 = feature.getSpec();
+		final FeatureProjectionSpec projectionSpec = featureSpec2.getProjectionSpecs().stream()
 				.filter( spec -> spec.getKey().equals( id.getProjectionKey() ) )
 				.findFirst()
 				.orElse( null );

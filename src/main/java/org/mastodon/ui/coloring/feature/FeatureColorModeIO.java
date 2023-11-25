@@ -182,14 +182,14 @@ public class FeatureColorModeIO
 				s.setVertexFeatureProjection( ( FeatureProjectionId ) mapping.get( "vertexFeatureProjection" ) );
 				s.setVertexColorMap( getString( mapping, "vertexColorMap" ) );
 				@SuppressWarnings( "unchecked" )
-				final List< Double > vertexRange = ( List< Double > ) mapping.get( "vertexFeatureRange" );
-				s.setVertexRange( vertexRange.get( 0 ), vertexRange.get( 1 ) );
+				final List< Number > vertexRange = ( List< Number > ) mapping.get( "vertexFeatureRange" );
+				s.setVertexRange( vertexRange.get( 0 ).doubleValue(), vertexRange.get( 1 ).doubleValue() );
 				s.setEdgeColorMode( EdgeColorMode.valueOf( getString( mapping, "edgeColorMode" ) ) );
 				s.setEdgeFeatureProjection( ( FeatureProjectionId ) mapping.get( "edgeFeatureProjection" ) );
 				s.setEdgeColorMap( getString( mapping, "edgeColorMap" ) );
 				@SuppressWarnings( "unchecked" )
-				final List< Double > edgeRange = ( List< Double > ) mapping.get( "edgeFeatureRange" );
-				s.setEdgeRange( edgeRange.get( 0 ), edgeRange.get( 1 ) );
+				final List< Number > edgeRange = ( List< Number > ) mapping.get( "edgeFeatureRange" );
+				s.setEdgeRange( edgeRange.get( 0 ).doubleValue(), edgeRange.get( 1 ).doubleValue() );
 
 				return s;
 			}

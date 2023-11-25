@@ -28,16 +28,22 @@
  */
 package org.mastodon.mamut.feature;
 
-import org.mastodon.graph.algorithm.traversal.BreadthFirstCrossComponentSearch;
+import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefList;
+import org.mastodon.graph.algorithm.RootFinder;
+import org.mastodon.graph.algorithm.traversal.BreadthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
+import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.views.trackscheme.util.AlphanumCompare;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+
+import io.humble.ferry.AtomicInteger;
 
 @Plugin( type = MamutFeatureComputer.class )
 public class SpotTrackIDFeatureComputer implements MamutFeatureComputer
@@ -64,39 +70,40 @@ public class SpotTrackIDFeatureComputer implements MamutFeatureComputer
 		if ( graph.vertices().isEmpty() )
 			return;
 
-		final BreadthFirstCrossComponentSearch< Spot, Link > search =
-				new BreadthFirstCrossComponentSearch<>( graph, SearchDirection.UNDIRECTED );
-		final SearchListener< Spot, Link, BreadthFirstCrossComponentSearch< Spot, Link > > l =
-				new SearchListener< Spot, Link, BreadthFirstCrossComponentSearch< Spot, Link > >()
+		/*
+		 * Iterate over sorted roots, so that the track id has the same order
+		 * than in default TrackScheme.
+		 */
+		final AtomicInteger trackID = new AtomicInteger( 0 );
+		final RefList< Spot > sortedRoots = RefCollections.createRefList( graph.vertices() );
+		sortedRoots.addAll( RootFinder.getRoots( graph ) );
+		sortedRoots.sort( ( v1, v2 ) -> AlphanumCompare.compare( v1.getLabel(), v2.getLabel() ) );
+
+		final BreadthFirstSearch< Spot, Link > search = new BreadthFirstSearch<>( graph, SearchDirection.UNDIRECTED );
+		sortedRoots.forEach( r -> {
+			search.setTraversalListener( new SearchListener< Spot, Link, BreadthFirstSearch< Spot, Link > >()
+			{
+
+				@Override
+				public void processVertexLate( final Spot vertex, final BreadthFirstSearch< Spot, Link > search )
+				{}
+
+				@Override
+				public void processVertexEarly( final Spot vertex, final BreadthFirstSearch< Spot, Link > search )
 				{
+					output.map.set( vertex, trackID.get() );
+				}
 
-					private int id = 0;
+				@Override
+				public void processEdge( final Link edge, final Spot from, final Spot to, final BreadthFirstSearch< Spot, Link > search )
+				{}
 
-					@Override
-					public void processVertexLate( final Spot spot,
-							final BreadthFirstCrossComponentSearch< Spot, Link > search )
-					{}
-
-					@Override
-					public void processVertexEarly( final Spot spot,
-							final BreadthFirstCrossComponentSearch< Spot, Link > search )
-					{
-						output.map.set( spot, id );
-					}
-
-					@Override
-					public void processEdge( final Link link, final Spot source, final Spot target,
-							final BreadthFirstCrossComponentSearch< Spot, Link > search )
-					{}
-
-					@Override
-					public void crossComponent( final Spot endSpot, final Spot startSpot,
-							final BreadthFirstCrossComponentSearch< Spot, Link > search )
-					{
-						id++;
-					}
-				};
-		search.setTraversalListener( l );
-		search.start( graph.vertices().iterator().next() );
+				@Override
+				public void crossComponent( final Spot from, final Spot to, final BreadthFirstSearch< Spot, Link > search )
+				{}
+			} );
+			search.start( r );
+			trackID.incrementAndGet();
+		} );
 	}
 }

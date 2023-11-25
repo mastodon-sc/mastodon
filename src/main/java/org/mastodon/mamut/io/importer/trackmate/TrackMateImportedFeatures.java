@@ -58,20 +58,32 @@ public abstract class TrackMateImportedFeatures< O > implements Feature< O >
 		this.intPropertyMapMap = new HashMap<>();
 	}
 
-	void store( final String key, final Dimension dimension, final String units, final DoublePropertyMap< O > values )
+	public FeatureProjectionKey store( final String key, final Dimension dimension, final String units, final DoublePropertyMap< O > values )
 	{
 		final FeatureProjectionSpec spec = new FeatureProjectionSpec( key, dimension );
 		final FeatureProjectionKey fpkey = FeatureProjectionKey.key( spec );
 		projectionMap.put( fpkey, FeatureProjections.project( fpkey, values, units ) );
 		doublePropertyMapMap.put( fpkey, values );
+		return fpkey;
 	}
 
-	void store( final String key, final Dimension dimension, final String units, final IntPropertyMap< O > values )
+	public FeatureProjectionKey store( final String key, final Dimension dimension, final String units, final IntPropertyMap< O > values )
 	{
 		final FeatureProjectionSpec spec = new FeatureProjectionSpec( key, dimension );
 		final FeatureProjectionKey fpkey = FeatureProjectionKey.key( spec );
 		projectionMap.put( fpkey, FeatureProjections.project( fpkey, values, units ) );
 		intPropertyMapMap.put( fpkey, values );
+		return fpkey;
+	}
+
+	public DoublePropertyMap< O > getDoublePropertyMap( final FeatureProjectionKey key )
+	{
+		return doublePropertyMapMap.get( key );
+	}
+
+	public IntPropertyMap< O > getIntPropertyMap( final FeatureProjectionKey key )
+	{
+		return intPropertyMapMap.get( key );
 	}
 
 	@Override

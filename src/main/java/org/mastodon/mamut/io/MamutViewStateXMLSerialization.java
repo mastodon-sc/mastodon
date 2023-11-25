@@ -37,6 +37,7 @@ import static org.mastodon.mamut.views.MamutView.GROUP_HANDLE_ID_KEY;
 import static org.mastodon.mamut.views.MamutView.NO_COLORING_KEY;
 import static org.mastodon.mamut.views.MamutView.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.mamut.views.MamutView.TAG_SET_KEY;
+import static org.mastodon.mamut.views.MamutView.TRACK_COLORING_KEY;
 import static org.mastodon.mamut.views.MamutViewFactory.VIEW_TYPE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
@@ -265,6 +266,7 @@ class MamutViewStateXMLSerialization
 			case NO_COLORING_KEY:
 			case SETTINGS_PANEL_VISIBLE_KEY:
 			case COLORBAR_VISIBLE_KEY:
+			case TRACK_COLORING_KEY:
 				value = XmlHelpers.getBoolean( viewEl, key );
 				break;
 			case COLORBAR_POSITION_KEY:
@@ -299,7 +301,7 @@ class MamutViewStateXMLSerialization
 				value = xmlToMap( el );
 				break;
 			default:
-				System.err.println( "Unknown GUI config parameter: " + key + " found in GUI file." );
+				System.out.println( "Unknown GUI config parameter: " + key + " found in GUI file." );
 				continue;
 			}
 			guiState.put( key, value );

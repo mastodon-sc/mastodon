@@ -57,11 +57,13 @@ import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
 import org.mastodon.mamut.managers.StyleManagerFactory;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.model.tag.ui.TagSetDialog;
+import org.mastodon.ui.coloring.TrackGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
@@ -102,15 +104,10 @@ public class WindowManager
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
 
-	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
-	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
-
-	static final String[] NEW_BRANCH_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
-	static final String[] NEW_HIERARCHY_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 
 	public static final String DOCUMENTATION_URL = "https://mastodon.readthedocs.io/en/latest/";
 
@@ -179,6 +176,9 @@ public class WindowManager
 		final MamutFeatureProjectionsManager featureProjectionsManager = new MamutFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 		managers.put( MamutFeatureProjectionsManager.class, featureProjectionsManager );
+		final TrackGraphColorGenerator< Spot, Link > trackGraphColorGenerator = new TrackGraphColorGenerator<>( model.getGraph() );
+		appModel.projectClosedListeners().add( () -> trackGraphColorGenerator.close() );
+		managers.put( TrackGraphColorGenerator.class, trackGraphColorGenerator );
 
 		/*
 		 * Discover and handle view factories
@@ -444,9 +444,9 @@ public class WindowManager
 	@SuppressWarnings( "unchecked" )
 	public < T extends MamutViewI > void forEachView( final Class< T > klass, final Consumer< T > action )
 	{
-		Optional.ofNullable( openedViews.get( klass ) )
+		Optional.ofNullable( ( List< T > ) openedViews.get( klass ) )
 				.orElse( Collections.emptyList() )
-				.forEach( ( Consumer< ? super MamutViewI > ) action );
+				.forEach( action );
 	}
 
 	/**
