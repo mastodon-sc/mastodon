@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assume.assumeFalse;
 
 import java.awt.GraphicsEnvironment;
@@ -89,7 +90,7 @@ public class GarbageCollectionTest
 		try( Context context = new Context() ) {
 			final WeakReference< ModelGraph > modelGraph = openAndCloseMastodon( context );
 			GarbageCollectionUtils.triggerGarbageCollection();
-//			assertNull( "The garbage collection failed to clean ModelGraph.", modelGraph.get() );
+			assertNull( "The garbage collection failed to clean ModelGraph.", modelGraph.get() );
 		}
 	}
 
