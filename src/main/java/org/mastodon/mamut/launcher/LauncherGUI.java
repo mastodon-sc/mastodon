@@ -282,7 +282,7 @@ class LauncherGUI extends JPanel
 			final JLabel lblTobiasPietzsch = new JLabel( "<html><p align=\"center\">"
 					+ "Tobias Pietzsch & Jean-Yves Tinevez"
 					+ "<br> "
-					+ "Ko Sugawara & Mathias Arzt & Vladimír Ulman"
+					+ "Ko Sugawara & Matthias Arzt & Vladimír Ulman"
 					+ "</html>" );
 			final GridBagConstraints gbc_lblTobiasPietzsch = new GridBagConstraints();
 			gbc_lblTobiasPietzsch.anchor = GridBagConstraints.SOUTH;
