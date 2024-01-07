@@ -374,7 +374,7 @@ public class ProjectLoader
 			else
 				return copyBackupDatasetXmlToTmpFile( project );
 		}
-		catch ( final IOException e )
+		catch ( final IOException | NullPointerException e )
 		{
 			return null;
 		}
