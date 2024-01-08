@@ -110,8 +110,8 @@ public class ProjectActions
 	 */
 	public static void installAppActions( final Actions actions, final ProjectModel appModel, final Frame parentComponent )
 	{
-		final RunnableAction saveProjectAction = new RunnableAction( SAVE_PROJECT, () -> ProjectSaver.saveProject( appModel, parentComponent ) );
-		final RunnableAction saveProjectAsAction = new RunnableAction( SAVE_PROJECT_AS, () -> ProjectSaver.saveProjectAs( appModel, parentComponent ) );
+		final RunnableAction saveProjectAction = new RunnableAction( SAVE_PROJECT, runInNewThread( () -> ProjectSaver.saveProject( appModel, parentComponent ) ) );
+		final RunnableAction saveProjectAsAction = new RunnableAction( SAVE_PROJECT_AS, runInNewThread( () -> ProjectSaver.saveProjectAs( appModel, parentComponent ) ) );
 		final RunnableAction importTgmmAction = new RunnableAction( IMPORT_TGMM, () -> ProjectImporter.importTgmmDataWithDialog( appModel, parentComponent ) );
 		final RunnableAction importSimiAction = new RunnableAction( IMPORT_TGMM, () -> ProjectImporter.importSimiDataWithDialog( appModel, parentComponent ) );
 		final RunnableAction exportMamutAction = new RunnableAction( EXPORT_MAMUT, () -> ProjectExporter.exportMamut( appModel, parentComponent ) );
@@ -121,6 +121,22 @@ public class ProjectActions
 		actions.namedAction( importTgmmAction, IMPORT_TGMM_KEYS );
 		actions.namedAction( importSimiAction, IMPORT_SIMI_KEYS );
 		actions.namedAction( exportMamutAction, EXPORT_MAMUT_KEYS );
+	}
+
+	private static Runnable runInNewThread( Runnable o )
+	{
+		return () -> {
+			new Thread( () -> {
+				try
+				{
+					o.run();
+				}
+				catch ( Throwable t )
+				{
+					t.printStackTrace();
+				}
+			} ).start();
+		};
 	}
 
 	/*
