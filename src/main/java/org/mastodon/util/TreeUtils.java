@@ -37,6 +37,9 @@ import org.mastodon.collection.RefStack;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.pool.PoolCollectionWrapper;
 
 public class TreeUtils
 {
@@ -226,5 +229,31 @@ public class TreeUtils
 			if ( node.incomingEdges().isEmpty() )
 				roots.add( node );
 		return roots;
+	}
+
+	/**
+	 * Gets the minimum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * @param model the {@link Model}
+	 * @return the timepoint
+	 */
+	public static int getMinTimepoint( final Model model )
+	{
+		int minTimepoint = Integer.MAX_VALUE;
+		for ( Spot spot : model.getGraph().vertices() )
+			minTimepoint = Math.min( minTimepoint, spot.getTimepoint() );
+		return minTimepoint;
+	}
+
+	/**
+	 * Gets the maximum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * @param model the {@link Model}
+	 * @return the timepoint
+	 */
+	public static int getMaxTimepoint( final Model model )
+	{
+		int max = 0;
+		for ( Spot spot : model.getGraph().vertices() )
+			max = Math.max( max, spot.getTimepoint() );
+		return max;
 	}
 }
