@@ -1,8 +1,8 @@
 /*-
  * #%L
- * A Mastodon plugin data allows to show the embryo in Blender.
+ * Mastodon
  * %%
- * Copyright (C) 2022 - 2023 Matthias Arzt
+ * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:

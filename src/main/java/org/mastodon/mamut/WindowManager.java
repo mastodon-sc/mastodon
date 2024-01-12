@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2022 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -217,14 +217,18 @@ public class WindowManager
 		settings.addPage( new FeatureColorModeConfigPage( "Settings > Feature Color Modes", featureColorModeManager,
 				featureProjectionsManager, "Spot", "Link" ) );
 		settings.pack();
+		appModel.projectClosedListeners().add( settings::dispose );
 
 		/*
 		 * Tag-set and feature computation dialogs
 		 */
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		tagSetDialog.setIconImages( TAGS_ICON );
+		appModel.projectClosedListeners().add( tagSetDialog::dispose );
+
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureComputationDialog.setIconImages( FEATURES_ICON );
+		appModel.projectClosedListeners().add( featureComputationDialog::dispose );
 
 		/*
 		 * Register windows.

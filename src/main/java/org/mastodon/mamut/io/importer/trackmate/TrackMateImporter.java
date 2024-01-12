@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2022 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -86,6 +86,7 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.io.importer.ModelImporter;
 import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -161,8 +162,7 @@ public class TrackMateImporter
 				imageFile = makDummyImage( imageDataEl );
 			}
 		}
-
-		final MamutProject project = new MamutProject( null, imageFile );
+		final MamutProject project = MamutProjectIO.fromBdvFile( imageFile );
 
 		// Set project time and space units
 		final Element modelEl = root.getChild( MODEL_TAG );
