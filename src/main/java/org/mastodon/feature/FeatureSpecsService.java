@@ -37,8 +37,10 @@ import java.util.Map;
 import org.mastodon.app.plugin.PluginUtils;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
+import org.scijava.Priority;
 
 /**
  * Helper class to discover and hold {@link FeatureSpec}s.
