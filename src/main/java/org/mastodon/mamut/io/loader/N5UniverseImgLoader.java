@@ -29,19 +29,22 @@
 package org.mastodon.mamut.io.loader;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-
-import org.janelia.saalfeldlab.n5.DataBlock;
 import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
 import org.janelia.saalfeldlab.n5.N5Reader;
 import org.janelia.saalfeldlab.n5.universe.N5Factory;
+import org.janelia.saalfeldlab.n5.zarr.ZarrCompressor;
+import org.mastodon.mamut.io.loader.util.OmeZarrMultiscales;
+import org.mastodon.mamut.io.loader.util.OmeZarrMultiscalesAdapter;
+import org.mastodon.mamut.io.loader.util.ZarrAxes;
+import org.mastodon.mamut.io.loader.util.ZarrAxesAdapter;
+
+import com.google.gson.GsonBuilder;
+
 import bdv.AbstractViewerSetupImgLoader;
 import bdv.ViewerImgLoader;
 import bdv.cache.CacheControl;
@@ -64,13 +67,11 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.Volatile;
 import net.imglib2.cache.volatiles.CacheHints;
 import net.imglib2.cache.volatiles.LoadingStrategy;
-import net.imglib2.img.basictypeaccess.DataAccess;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.img.cell.CellImg;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.NativeType;
 import net.imglib2.util.Cast;
-import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 
 public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgLoader
@@ -106,11 +107,16 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
 
     public N5UniverseImgLoader( final String uri, final String dataset, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription )
     {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter( ZarrCompressor.class, ZarrCompressor.jsonAdapter );
+        gsonBuilder.registerTypeAdapter( ZarrAxes.class, new ZarrAxesAdapter() );
+        gsonBuilder.registerTypeAdapter( OmeZarrMultiscales.class, new OmeZarrMultiscalesAdapter() );
         this.factory = new N5Factory()
                 .cacheAttributes( true )
                 .hdf5DefaultBlockSize( 64 )
                 .zarrDimensionSeparator( "/" )
-                .zarrMapN5Attributes( true );
+                .zarrMapN5Attributes( true )
+                .gsonBuilder( gsonBuilder );
         this.url = uri;
         this.dataset = dataset.endsWith( "/" ) ? dataset : dataset + "/";
         this.seq = sequenceDescription;
@@ -316,14 +322,14 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
             {
                 final String pathName = getFullPathName( format.getPathName( setupId, timepointId, level ) );
                 final DatasetAttributes attributes = n5.getDatasetAttributes( pathName );
-                final long[] dimensions = attributes.getDimensions();
-                final int[] cellDimensions = attributes.getBlockSize();
+                final long[] dimensions = format.getDimensions( attributes, setupId );
+                final int[] cellDimensions = format.getCellDimensions( attributes, setupId );
                 final CellGrid grid = new CellGrid( dimensions, cellDimensions );
 
                 final int priority = numMipmapLevels() - 1 - level;
                 final CacheHints cacheHints = new CacheHints( loadingStrategy, priority, false );
 
-                final SimpleCacheArrayLoader< ? > loader = createCacheArrayLoader( n5, pathName );
+                final SimpleCacheArrayLoader< ? > loader = format.createCacheArrayLoader( pathName, setupId, timepointId, grid );
                 return cache.createImg( grid, timepointId, setupId, level, cacheHints, loader, type );
             }
             catch ( final IOException | N5Exception e )
@@ -334,150 +340,6 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                 return Views.interval(
                         new ConstantRandomAccessible<>( type.createVariable(), 3 ),
                         new FinalInterval( 1, 1, 1 ) );
-            }
-        }
-    }
-
-    private static class N5CacheArrayLoader< T, A extends DataAccess > implements SimpleCacheArrayLoader< A >
-    {
-        private final N5Reader n5;
-
-        private final String pathName;
-
-        private final DatasetAttributes attributes;
-
-        private final IntFunction< T > createPrimitiveArray;
-
-        private final Function< T, A > createVolatileArrayAccess;
-
-        N5CacheArrayLoader( final N5Reader n5, final String pathName, final DatasetAttributes attributes,
-                final DataTypeProperties< ?, ?, T, A > dataTypeProperties )
-        {
-            this( n5, pathName, attributes, dataTypeProperties.createPrimitiveArray(), dataTypeProperties.createVolatileArrayAccess() );
-        }
-
-        N5CacheArrayLoader( final N5Reader n5, final String pathName, final DatasetAttributes attributes,
-                final IntFunction< T > createPrimitiveArray,
-                final Function< T, A > createVolatileArrayAccess )
-        {
-            this.n5 = n5;
-            this.pathName = pathName;
-            this.attributes = attributes;
-            this.createPrimitiveArray = createPrimitiveArray;
-            this.createVolatileArrayAccess = createVolatileArrayAccess;
-        }
-
-        @Override
-        public A loadArray( final long[] gridPosition, final int[] cellDimensions ) throws IOException
-        {
-            final DataBlock< T > dataBlock;
-            try
-            {
-                dataBlock = Cast.unchecked( n5.readBlock( pathName, attributes, gridPosition ) );
-            }
-            catch ( final N5Exception e )
-            {
-                throw new IOException( e );
-            }
-            if ( dataBlock != null && Arrays.equals( dataBlock.getSize(), cellDimensions ) )
-            {
-                return createVolatileArrayAccess.apply( dataBlock.getData() );
-            }
-            else
-            {
-                final T data = createPrimitiveArray.apply( ( int ) Intervals.numElements( cellDimensions ) );
-                if ( dataBlock != null )
-                {
-                    final T src = dataBlock.getData();
-                    final int[] srcDims = dataBlock.getSize();
-                    final int[] pos = new int[ srcDims.length ];
-                    final int[] size = new int[ srcDims.length ];
-                    Arrays.setAll( size, d -> Math.min( srcDims[ d ], cellDimensions[ d ] ) );
-                    ndArrayCopy( src, srcDims, pos, data, cellDimensions, pos, size );
-                }
-                return createVolatileArrayAccess.apply( data );
-            }
-        }
-    }
-
-    public static SimpleCacheArrayLoader< ? > createCacheArrayLoader( final N5Reader n5, final String pathName ) throws IOException
-    {
-        final DatasetAttributes attributes;
-        try
-        {
-            attributes = n5.getDatasetAttributes( pathName );
-        }
-        catch ( final N5Exception e )
-        {
-            throw new IOException( e );
-        }
-        return new N5CacheArrayLoader<>( n5, pathName, attributes, DataTypeProperties.of( attributes.getDataType() ) );
-    }
-
-    /**
-     * Like `System.arrayCopy()` but for flattened nD arrays.
-     *
-     * @param src
-     * 		the (flattened) source array.
-     * @param srcSize
-     * 		dimensions of the source array.
-     * @param srcPos
-     * 		starting position in the source array.
-     * @param dest
-     * 		the (flattened destination array.
-     * @param destSize
-     * 		dimensions of the source array.
-     * @param destPos
-     * 		starting position in the destination data.
-     * @param size
-     * 		the number of array elements to be copied.
-     */
-    // TODO: This will be moved to a new imglib2-blk artifact later. Re-use it from there when that happens.
-    private static < T > void ndArrayCopy(
-            final T src, final int[] srcSize, final int[] srcPos,
-            final T dest, final int[] destSize, final int[] destPos,
-            final int[] size )
-    {
-        final int n = srcSize.length;
-        int srcStride = 1;
-        int destStride = 1;
-        int srcOffset = 0;
-        int destOffset = 0;
-        for ( int d = 0; d < n; ++d )
-        {
-            srcOffset += srcStride * srcPos[ d ];
-            srcStride *= srcSize[ d ];
-            destOffset += destStride * destPos[ d ];
-            destStride *= destSize[ d ];
-        }
-        ndArrayCopy( n - 1, src, srcSize, srcOffset, dest, destSize, destOffset, size );
-    }
-
-    private static < T > void ndArrayCopy(
-            final int d,
-            final T src, final int[] srcSize, final int srcPos,
-            final T dest, final int[] destSize, final int destPos,
-            final int[] size )
-    {
-        if ( d == 0 )
-            System.arraycopy( src, srcPos, dest, destPos, size[ d ] );
-        else
-        {
-            int srcStride = 1;
-            int destStride = 1;
-            for ( int dd = 0; dd < d; ++dd )
-            {
-                srcStride *= srcSize[ dd ];
-                destStride *= destSize[ dd ];
-            }
-
-            final int w = size[ d ];
-            for ( int x = 0; x < w; ++x )
-            {
-                ndArrayCopy( d - 1,
-                        src, srcSize, srcPos + x * srcStride,
-                        dest, destSize, destPos + x * destStride,
-                        size );
             }
         }
     }
