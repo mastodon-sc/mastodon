@@ -35,17 +35,33 @@
                     <id>0</id>
                     <name>0</name>
                 </Channel>
+                <Channel>
+                    <id>1</id>
+                    <name>1</name>
+                </Channel>
             </Attributes>
             <ViewSetup>
                 <id>0</id>
                 <name>Setup0</name>
-                <size>500 471 519</size>
+                <size>236 275 271</size>
                 <voxelSize>
                     <unit>micrometer</unit>
-                    <size>0.55 0.55 0.55</size>
+                    <size>0.3603981534640209 0.3603981534640209 0.5002025531914894</size>
                 </voxelSize>
                 <attributes>
                     <channel>0</channel>
+                </attributes>
+            </ViewSetup>
+            <ViewSetup>
+                <id>1</id>
+                <name>Setup1</name>
+                <size>236 275 271</size>
+                <voxelSize>
+                    <unit>micrometer</unit>
+                    <size>0.3603981534640209 0.3603981534640209 0.5002025531914894</size>
+                </voxelSize>
+                <attributes>
+                    <channel>1</channel>
                 </attributes>
             </ViewSetup>
         </ViewSetups>
@@ -54,14 +70,15 @@
             <last>0</last>
         </Timepoints>
         <ImageLoader format="bdv.n5.universe">
-            <Url>https://s3.embl.de/prospr-myosin.ome.zarr</Url>
+            <Url>https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0062A/6001240.zarr</Url>
             <Dataset>/</Dataset>
         </ImageLoader>
     </SequenceDescription>
     <ViewRegistrations>
         <ViewRegistration setup="0" timepoint="0">
             <ViewTransform type="affine">
-                <affine>0.55 0.0 0.0 0.0 0.0 0.55 0.0 0.0 0.0 0.0 0.55 0.0</affine>
+                <affine>0.3603981534640209 0.0 0.0 0.0 0.0 0.3603981534640209 0.0 0.0 0.0 0.0
+                    0.5002025531914894 0.0</affine>
             </ViewTransform>
         </ViewRegistration>
     </ViewRegistrations>
