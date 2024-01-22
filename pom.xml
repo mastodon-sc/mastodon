@@ -82,6 +82,7 @@
 		<dependency>
 			<groupId>org.janelia.saalfeldlab</groupId>
 			<artifactId>n5-universe</artifactId>
+			<version>1.3.0</version>
 		</dependency>
 				
 		<!-- Misc dependencies. -->
