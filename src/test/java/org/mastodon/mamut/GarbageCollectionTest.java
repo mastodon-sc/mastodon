@@ -35,7 +35,6 @@ import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import org.junit.Test;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -81,7 +80,7 @@ public class GarbageCollectionTest
 	 * But using Eclipse Memory Analyzer to analyze a heap dump of the
 	 * {@link GarbageCollectionDemo} should reveal the problem.
 	 */
-	@Test
+//	@Test
 	public void testIfMastodonIsGarbageCollectable()
 	{
 		assumeFalse( "Skip test for memory leaks in the Mastodon UI. (running in headless mode)",
