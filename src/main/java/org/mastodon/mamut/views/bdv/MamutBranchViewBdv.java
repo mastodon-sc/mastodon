@@ -49,6 +49,7 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.TimepointAndNumberOfSpotsPanel;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.BranchGraphModelOverlayProperties;
 import org.mastodon.mamut.model.Link;
@@ -209,6 +210,11 @@ public class MamutBranchViewBdv extends MamutBranchView<
 		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel,
 				navigationHandler );
 		OverlayActions.install( viewActions, viewer, tracksOverlay );
+
+		// Add the timepoint and number of spots panel.
+		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel =
+				new TimepointAndNumberOfSpotsPanel( this.timepointModel, model );
+		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
 		/*
 		 * We must make a search action using the underlying model graph,
