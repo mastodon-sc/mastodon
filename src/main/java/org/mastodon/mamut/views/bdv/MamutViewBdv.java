@@ -48,6 +48,7 @@ import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.TimepointAndNumberOfSpotsPanel;
 import org.mastodon.mamut.UndoActions;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -231,6 +232,11 @@ public class MamutViewBdv
 		final Runnable onCloseMIPDialog = RecordMaxProjectionMovieDialog.install( viewActions, bdv, tracksOverlay,
 				colorBarOverlay, appModel.getKeymap() );
 		onClose( onCloseMIPDialog );
+
+		// Add the timepoint and number of spots panel.
+		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel =
+				new TimepointAndNumberOfSpotsPanel( this.timepointModel, model );
+		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
 		/*
 		 * We must make a search action using the underlying model graph,
