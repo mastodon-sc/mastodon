@@ -43,7 +43,7 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-import io.humble.ferry.AtomicInteger;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Plugin( type = MamutFeatureComputer.class )
 public class SpotTrackIDFeatureComputer implements MamutFeatureComputer
