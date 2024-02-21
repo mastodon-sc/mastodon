@@ -53,17 +53,21 @@ import org.scijava.plugin.Plugin;
  * Represents the duration of a branch in the lineage tree, which in many cases
  * may be considered a proxy for the cell life cycle time and the displacement
  * of the cell between two consecutive divisions.
- * <p>
+ * <br>
+ * <br>
  * It is computed as the difference in timepoints between the last timepoint of
  * the branchspot and the last timepoint of the previous branchspot in the
  * lineage tree.
- * <p>
+ * <br>
+ * <br>
  * For roots, it is computed as the difference in timepoints between the last
  * timepoint of the branchspot and the first timepoint the previous branchspot
  * in the lineage tree.
- * <p>
+ * <br>
+ * <br>
  * Cf. following example:
- * <p>
+ * <br>
+ * <br>
  * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  *
  * <pre>
@@ -128,22 +132,24 @@ import org.scijava.plugin.Plugin;
  *    Spot( 0, X=1,00, Y=2,00, Z=3,00, tp=0 )
  *                      │
  *                      │
- *   Spot( 1, X=2,00, Y=4,00, Z=6,00, tp=1 )
+ *    Spot( 1, X=2,00, Y=4,00, Z=6,00, tp=1 )
  *                      │
  *                      │
- *   Spot( 2, X=3,00, Y=6,00, Z=9,00, tp=2 )
+ *    Spot( 2, X=3,00, Y=6,00, Z=9,00, tp=2 )
  *                      │
  *                      │
- *  Spot( 3, X=4,00, Y=8,00, Z=12,00, tp=3 )
+ *    Spot( 3, X=4,00, Y=8,00, Z=12,00, tp=3 )
  *                      │
  *                      │
- *  Spot( 4, X=5,00, Y=10,00, Z=15,00, tp=3 )
+ *    Spot( 4, X=5,00, Y=10,00, Z=15,00, tp=3 )
  * </pre>
  *
  * <strong>BranchSpot-Graph</strong>
- * <p>
+ * <br>
+ * <br>
  * branchSpot0
- * <p>
+ * <br>
+ * <br>
  * <strong>Duration</strong>
  * <ul>
  * <li>{@code branchSpot0 = 4}</li>
