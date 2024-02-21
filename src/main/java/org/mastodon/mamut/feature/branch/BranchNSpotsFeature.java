@@ -53,7 +53,8 @@ import org.scijava.plugin.Plugin;
  * be equivalent to {@link BranchDisplacementDurationFeature} (duration).
  * However, in situations where there are spots missing within a branch spot, this
  * may well be different.
- * <p>
+ * <br>
+ * <br>
  * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  *
  * <pre>
@@ -121,7 +122,8 @@ import org.scijava.plugin.Plugin;
  * </pre>
  *
  * <strong>Branch-Graph (i.e. Graph of BranchSpots)</strong>
- * <p>
+ * <br>
+ * <br>
  * branchSpot0
  *
  * <ul>
