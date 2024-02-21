@@ -63,8 +63,8 @@ import org.scijava.plugin.Plugin;
  * in the lineage tree.
  * <p>
  * Cf. following example:
- *
- * <h1>Model-Graph (i.e. Graph of Spots)</h1>
+ * <p>
+ * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  *
  * <pre>
  *                                                Spot( 0, X=1,00, Y=2,00, Z=3,00, tp=0 )
@@ -91,7 +91,7 @@ import org.scijava.plugin.Plugin;
  *                                               Spot( 10, X=11,00, Y=22,00, Z=33,00, tp=7 )  Spot( 7, X=8,00, Y=16,00, Z=24,00, tp=7 )
  * </pre>
  *
- * <h1>Branch-Graph (i.e. Graph of BranchSpots)</h1>
+ * <strong>Branch-Graph (i.e. Graph of BranchSpots)</strong>
  *
  * <pre>
  *                        branchSpotA
@@ -103,7 +103,7 @@ import org.scijava.plugin.Plugin;
  *                                  branchSpotD    branchSpotE
  * </pre>
  *
- * <h1>Duration</h1>
+ * <strong>Duration</strong>
  * <ul>
  * <li>{@code branchSpotA = 2}</li>
  * <li>{@code branchSpotB = 2}</li>
@@ -112,7 +112,7 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpotE = 3}</li>
  * </ul>
  *
- * <h1>Displacement</h1>
+ * <strong>Displacement</strong>
  * <ul>
  * <li>{@code branchSpot0 = Math.sqrt( 4+16+36 )}</li>
  * <li>{@code branchSpot1 = Math.sqrt( 4+16+36 )}</li>
@@ -122,7 +122,7 @@ import org.scijava.plugin.Plugin;
  * </ul>
  *
  *
- * <h1>Spot-Graph</h1>
+ * <strong>Spot-Graph</strong>
  *
  * <pre>
  *    Spot( 0, X=1,00, Y=2,00, Z=3,00, tp=0 )
@@ -140,14 +140,16 @@ import org.scijava.plugin.Plugin;
  *  Spot( 4, X=5,00, Y=10,00, Z=15,00, tp=3 )
  * </pre>
  *
- * <h1>BranchSpot-Graph</h1> branchSpot0
- *
- * <h1>Duration</h1>
+ * <strong>BranchSpot-Graph</strong>
+ * <p>
+ * branchSpot0
+ * <p>
+ * <strong>Duration</strong>
  * <ul>
  * <li>{@code branchSpot0 = 4}</li>
  * </ul>
  *
- * <h1>Displacement</h1>
+ * <strong>Displacement</strong>
  * <ul>
  * <li>{@code branchSpot0 = Math.sqrt(16+64+144)}</li>
  * </ul>

@@ -53,8 +53,8 @@ import org.scijava.plugin.Plugin;
  * be equivalent to {@link BranchDisplacementDurationFeature} (duration).
  * However, in situations where there are spots missing within a branch spot, this
  * may well be different.
- *
- * <h1>Model-Graph (i.e. Graph of Spots)</h1>
+ * <p>
+ * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  *
  * <pre>
  *                                                Spot( 0, X=1,00, Y=2,00, Z=3,00, tp=0 )
@@ -81,7 +81,7 @@ import org.scijava.plugin.Plugin;
  *                                               Spot( 10, X=11,00, Y=22,00, Z=33,00, tp=7 )  Spot( 7, X=8,00, Y=16,00, Z=24,00, tp=7 )
  * </pre>
  *
- * <h1>Branch-Graph (i.e. Graph of BranchSpots)</h1>
+ * <strong>Branch-Graph (i.e. Graph of BranchSpots)</strong>
  *
  * <pre>
  *                        branchSpotA
@@ -102,7 +102,7 @@ import org.scijava.plugin.Plugin;
  * </ul>
  *
  *
- * <h1>Model-Graph (i.e. Graph of Spots)</h1>
+ * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  *
  * <pre>
  *    Spot( 0, X=1,00, Y=2,00, Z=3,00, tp=0 )
@@ -120,14 +120,15 @@ import org.scijava.plugin.Plugin;
  *  Spot( 4, X=5,00, Y=10,00, Z=15,00, tp=3 )
  * </pre>
  *
- * <h1>Branch-Graph (i.e. Graph of BranchSpots)</h1>
- *   branchSpot0
+ * <strong>Branch-Graph (i.e. Graph of BranchSpots)</strong>
+ * <p>
+ * branchSpot0
  *
  * <ul>
  * <li>{@code branchSpot0 = 5}</li>
  * </ul>
  *
- * <h1>Model-Graph (i.e. Graph of Spots)</h1>
+ * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  * <pre>
  *                                                Spot( 0, X=1,00, Y=2,00, Z=3,00, tp=0 )
  *                                                                   │
@@ -152,7 +153,7 @@ import org.scijava.plugin.Plugin;
  *                                                                    │                                           │
  *                                               Spot( 10, X=11,00, Y=22,00, Z=33,00, tp=7 )  Spot( 7, X=8,00, Y=16,00, Z=24,00, tp=7 )
  * </pre>
- * <h1>Branch-Graph (i.e. Graph of BranchSpots)</h1>
+ * <strong>Branch-Graph (i.e. Graph of BranchSpots)</strong>
  * <pre>
  *                        branchSpotA
  * 	       ┌──────────────┴─────────────────┐
