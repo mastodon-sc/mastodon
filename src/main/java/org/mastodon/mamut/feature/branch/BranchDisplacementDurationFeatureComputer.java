@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.feature.branch;
 
+import net.imglib2.util.Util;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -94,19 +95,8 @@ public class BranchDisplacementDurationFeatureComputer implements MamutFeatureCo
 		// get target spot
 		final Spot target = branchGraph.getLastLinkedVertex( branchSpot, ref2 );
 
-		output.dispMap.set( branchSpot, distance( source, target ) );
+		output.dispMap.set( branchSpot, Util.distance( source, target ) );
 		output.durMap.set( branchSpot, duration( source, target ) );
-	}
-
-	private double distance( Spot source, Spot target )
-	{
-		double d2 = 0.;
-		for ( int d = 0; d < 3; d++ )
-		{
-			final double dx = source.getDoublePosition( d ) - target.getDoublePosition( d );
-			d2 += dx * dx;
-		}
-		return Math.sqrt( d2 );
 	}
 
 	private double duration( Spot source, Spot target )

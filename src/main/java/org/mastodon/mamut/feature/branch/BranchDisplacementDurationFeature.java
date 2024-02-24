@@ -53,18 +53,22 @@ import org.scijava.plugin.Plugin;
  * Represents the duration of a branch in the lineage tree, which in many cases
  * may be considered a proxy for the cell life cycle time and the displacement
  * of the cell between two consecutive divisions.
- * <p>
+ * <br>
+ * <br>
  * It is computed as the difference in timepoints between the last timepoint of
  * the branchspot and the last timepoint of the previous branchspot in the
  * lineage tree.
- * <p>
+ * <br>
+ * <br>
  * For roots, it is computed as the difference in timepoints between the last
  * timepoint of the branchspot and the first timepoint the previous branchspot
  * in the lineage tree.
- * <p>
+ * <br>
+ * <br>
  * Cf. following example:
- *
- * <h1>Model-Graph (i.e. Graph of Spots)</h1>
+ * <br>
+ * <br>
+ * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  *
  * <pre>
  *                                                Spot( 0, X=1,00, Y=2,00, Z=3,00, tp=0 )
@@ -91,7 +95,7 @@ import org.scijava.plugin.Plugin;
  *                                               Spot( 10, X=11,00, Y=22,00, Z=33,00, tp=7 )  Spot( 7, X=8,00, Y=16,00, Z=24,00, tp=7 )
  * </pre>
  *
- * <h1>Branch-Graph (i.e. Graph of BranchSpots)</h1>
+ * <strong>Branch-Graph (i.e. Graph of BranchSpots)</strong>
  *
  * <pre>
  *                        branchSpotA
@@ -103,7 +107,7 @@ import org.scijava.plugin.Plugin;
  *                                  branchSpotD    branchSpotE
  * </pre>
  *
- * <h1>Duration</h1>
+ * <strong>Duration</strong>
  * <ul>
  * <li>{@code branchSpotA = 2}</li>
  * <li>{@code branchSpotB = 2}</li>
@@ -112,7 +116,7 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpotE = 3}</li>
  * </ul>
  *
- * <h1>Displacement</h1>
+ * <strong>Displacement</strong>
  * <ul>
  * <li>{@code branchSpot0 = Math.sqrt( 4+16+36 )}</li>
  * <li>{@code branchSpot1 = Math.sqrt( 4+16+36 )}</li>
@@ -122,32 +126,36 @@ import org.scijava.plugin.Plugin;
  * </ul>
  *
  *
- * <h1>Spot-Graph</h1>
+ * <strong>Spot-Graph</strong>
  *
  * <pre>
  *    Spot( 0, X=1,00, Y=2,00, Z=3,00, tp=0 )
  *                      │
  *                      │
- *   Spot( 1, X=2,00, Y=4,00, Z=6,00, tp=1 )
+ *    Spot( 1, X=2,00, Y=4,00, Z=6,00, tp=1 )
  *                      │
  *                      │
- *   Spot( 2, X=3,00, Y=6,00, Z=9,00, tp=2 )
+ *    Spot( 2, X=3,00, Y=6,00, Z=9,00, tp=2 )
  *                      │
  *                      │
- *  Spot( 3, X=4,00, Y=8,00, Z=12,00, tp=3 )
+ *    Spot( 3, X=4,00, Y=8,00, Z=12,00, tp=3 )
  *                      │
  *                      │
- *  Spot( 4, X=5,00, Y=10,00, Z=15,00, tp=3 )
+ *    Spot( 4, X=5,00, Y=10,00, Z=15,00, tp=3 )
  * </pre>
  *
- * <h1>BranchSpot-Graph</h1> branchSpot0
- *
- * <h1>Duration</h1>
+ * <strong>BranchSpot-Graph</strong>
+ * <br>
+ * <br>
+ * branchSpot0
+ * <br>
+ * <br>
+ * <strong>Duration</strong>
  * <ul>
  * <li>{@code branchSpot0 = 4}</li>
  * </ul>
  *
- * <h1>Displacement</h1>
+ * <strong>Displacement</strong>
  * <ul>
  * <li>{@code branchSpot0 = Math.sqrt(16+64+144)}</li>
  * </ul>

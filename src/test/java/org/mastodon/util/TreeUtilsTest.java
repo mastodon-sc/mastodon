@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -174,5 +175,20 @@ public class TreeUtilsTest
 	private static < T > Set< T > createSet( final T... elements )
 	{
 		return new HashSet<>( Arrays.asList( elements ) );
+	}
+
+	@Test
+	public void testGetMinTimepoint()
+	{
+		assertEquals( 0, TreeUtils.getMinTimepoint( new ExampleGraph1().getModel() ) );
+		assertEquals( 0, TreeUtils.getMinTimepoint( new ExampleGraph2().getModel() ) );
+
+	}
+
+	@Test
+	public void testGetMaxTimepoint()
+	{
+		assertEquals( 3, TreeUtils.getMaxTimepoint( new ExampleGraph1().getModel() ) );
+		assertEquals( 7, TreeUtils.getMaxTimepoint( new ExampleGraph2().getModel() ) );
 	}
 }
