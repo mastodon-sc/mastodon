@@ -26,16 +26,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.model;
+package org.mastodon.mamut.model;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.ModelUtils;
-import org.mastodon.mamut.model.Spot;
+import java.awt.Color;
+import java.util.Arrays;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Test;
+import org.mastodon.util.TagHelper;
+import org.mastodon.util.TagSetUtils;
+
+/**
+ * Tests {@link ModelUtils}.
+ */
 public class ModelUtilsTest
 {
 	@Test
@@ -49,7 +54,7 @@ public class ModelUtilsTest
 		b.setLabel( "B" );
 		graph.addEdge( a, b ).init();
 		String actual = ModelUtils.dump( model );
-		String expexted = "Model -\n"
+		String expexted = "Model " + model + "\n"
 				+ "Spots:\n"
 				+ "       Id      Label   Frame          X          Y          Z    N incoming links    N outgoing links    Spot N links    Spot frame          X          Y          Z    Spot radius\n"
 				+ "                                (pixel)    (pixel)    (pixel)                                                                          (pixel)    (pixel)    (pixel)        (pixel)\n"
@@ -61,6 +66,40 @@ public class ModelUtilsTest
 				+ "                                                             (pixel)                                        (pixel/frame)\n"
 				+ "-------------------------------------------------------------------------------------------------------------------------\n"
 				+ "        0          0          1             1.0                  0.2               0.0               1.0              0.2\n";
-		assertEquals( expexted, actual.replaceFirst( "^Model.*", "Model -" ) );
+		assertEquals( expexted, actual );
+	}
+
+	@Test
+	public void testDumpWithTagSets()
+	{
+		Model model = new Model();
+		ModelGraph graph = model.getGraph();
+		Spot a = graph.addVertex().init( 0, new double[] { 1, 2, 3 }, 1 );
+		Spot b = graph.addVertex().init( 1, new double[] { 1, 2, 3.2 }, 1 );
+		a.setLabel( "A" );
+		b.setLabel( "B" );
+		Link edge = graph.addEdge( a, b ).init();
+		TagSetUtils.addNewTagSetToModel( model, "my tag set", Arrays.asList(
+				Pair.of( "tag1", Color.YELLOW.getRGB() ),
+				Pair.of( "tag2", Color.BLUE.getRGB() )
+		) );
+		TagHelper tag1 = new TagHelper( model, "my tag set", "tag1" );
+		tag1.tagSpot( a );
+		TagHelper tag2 = new TagHelper( model, "my tag set", "tag2" );
+		tag2.tagSpot( b );
+		tag2.tagLink( edge );
+		String actual = ModelUtils.dump( model, ModelUtils.DumpFlags.PRINT_TAGS );
+		String expected = "Spots:\n"
+				+ "       Id      Label   Frame          X          Y          Z  my tag set\n"
+				+ "                                (pixel)    (pixel)    (pixel)            \n"
+				+ "-------------------------------------------------------------------------\n"
+				+ "        0          A       0        1.0        2.0        3.0        tag1\n"
+				+ "        1          B       1        1.0        2.0        3.2        tag2\n"
+				+ "Links:\n"
+				+ "       Id  Source Id  Target Id  my tag set\n"
+				+ "                                           \n"
+				+ "-------------------------------------------\n"
+				+ "        0          0          1        tag2\n";
+		assertEquals( expected, actual );
 	}
 }

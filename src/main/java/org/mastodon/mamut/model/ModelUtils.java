@@ -29,7 +29,9 @@
 package org.mastodon.mamut.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -41,19 +43,29 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.mamut.feature.SpotTrackIDFeature;
+import org.mastodon.model.tag.ObjTagMap;
+import org.mastodon.model.tag.ObjTags;
+import org.mastodon.model.tag.TagSetModel;
+import org.mastodon.model.tag.TagSetStructure;
 
 public class ModelUtils
 {
+	public enum DumpFlags
+	{
+		PRINT_HASH,
+		PRINT_FEATURES,
+		PRINT_TAGS
+	}
 
 	/**
 	 * Returns a string representation of the specified model content as two
-	 * text table.
+	 * text tables.
 	 * <p>
-	 * The full model is printed.
-	 * 
-	 * @param model
-	 *            the model.
-	 * @return a String representation of the model.
+	 * The tables by default contain all spot and link properties as well
+	 * as the feature values.
+	 * <p>
+	 * There is also a method that {@link #dump(Model, DumpFlags...)}
+	 * allows to select which information to include in the table.
 	 */
 	public static final String dump( final Model model )
 	{
@@ -62,18 +74,44 @@ public class ModelUtils
 
 	/**
 	 * Returns a string representation of the specified model content as two
-	 * text table.
+	 * text tables.
 	 * <p>
-	 * The printed content is limited to the specified number of lines.
-	 * 
-	 * @param model
-	 *            the model.
-	 * @param maxLines
-	 *            the max number of rows to print in the two tables.
-	 * @return a String representation of the model.
+	 * Which information to include in the table can be changed using
+	 * {@link DumpFlags}.
+	 */
+	public static final String dump( final Model model, final DumpFlags... options )
+	{
+		return dump( model, Long.MAX_VALUE, options );
+	}
+
+	/**
+	 * Returns a string representation of the specified model content as two
+	 * text tables. The number of lines in each table is limeted to {@code maxLines}.
+	 * <p>
+	 * The tables by default contain all spot and link properties as well
+	 * as the feature values.
+	 * <p>
+	 * There is also a method that {@link #dump(Model, long, DumpFlags...)}
+	 * allows to select which information to include in the table.
 	 */
 	public static final String dump( final Model model, final long maxLines )
 	{
+		return dump( model, maxLines, DumpFlags.PRINT_HASH, DumpFlags.PRINT_FEATURES );
+	}
+
+	/**
+	 * Returns a string representation of the specified model content as two
+	 * text tables. The number of lines in each table is limeted to {@code maxLines}.
+	 * <p>
+	 * The printed content is limited to the specified number of lines.
+	 * <p>
+	 * Which information to include in the table can be changed using
+	 * {@link DumpFlags}.
+	 */
+	public static final String dump( final Model model, final long maxLines, final DumpFlags... options )
+	{
+		EnumSet< DumpFlags > optionsSet = EnumSet.noneOf( DumpFlags.class );
+		optionsSet.addAll( Arrays.asList( options ) );
 		final String spaceUnits = Optional.ofNullable( model.getSpaceUnits() ).orElse( "" );
 		final ModelGraph graph = model.getGraph();
 		final FeatureModel featureModel = model.getFeatureModel();
@@ -82,7 +120,8 @@ public class ModelUtils
 		featureSpecs.sort( Comparator.comparing( FeatureSpec::getKey ) );
 
 		final StringBuilder str = new StringBuilder();
-		str.append( "Model " + model + "\n" );
+		if ( optionsSet.contains( DumpFlags.PRINT_HASH ) )
+			str.append( "Model " ).append( model ).append( "\n" );
 		str.append( "Spots:\n" );
 
 		TablePrinter< Spot > spotsTable = new TablePrinter<>();
@@ -92,7 +131,10 @@ public class ModelUtils
 		spotsTable.defineColumn( 9, "X", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 0 ) ) );
 		spotsTable.defineColumn( 9, "Y", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 1 ) ) );
 		spotsTable.defineColumn( 9, "Z", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 2 ) ) );
-		addSpotFeatureColumns( featureSpecs, featureModel, spotsTable );
+		if ( optionsSet.contains( DumpFlags.PRINT_TAGS ) )
+			addTagColumns( spotsTable, model.getTagSetModel().getTagSetStructure(), model.getTagSetModel().getVertexTags() );
+		if ( optionsSet.contains( DumpFlags.PRINT_FEATURES ) )
+			addSpotFeatureColumns( featureSpecs, featureModel, spotsTable );
 
 		List< Spot > spots = getSortedSpots( graph, featureModel );
 		spotsTable.print( str, spots, maxLines );
@@ -106,11 +148,27 @@ public class ModelUtils
 		linkTable.defineColumn( 9, "Id", "", link -> Integer.toString( link.getInternalPoolIndex() ) );
 		linkTable.defineColumn( 9, "Source Id", "", link -> Integer.toString( link.getSource( ref ).getInternalPoolIndex() ) );
 		linkTable.defineColumn( 9, "Target Id", "", link -> Integer.toString( link.getTarget( ref ).getInternalPoolIndex() ) );
-		addLinkFeatureColumns( featureSpecs, featureModel, linkTable );
+		if ( optionsSet.contains( DumpFlags.PRINT_TAGS ) )
+			addTagColumns( linkTable, model.getTagSetModel().getTagSetStructure(), model.getTagSetModel().getEdgeTags() );
+		if ( optionsSet.contains( DumpFlags.PRINT_FEATURES ) )
+			addLinkFeatureColumns( featureSpecs, featureModel, linkTable );
 
 		linkTable.print( str, graph.edges(), maxLines );
 
 		return str.toString();
+	}
+
+	private static < T > void addTagColumns( TablePrinter< T > table, TagSetStructure tagSetStructure, ObjTags< T > tags )
+	{
+		for ( TagSetStructure.TagSet tagSet : tagSetStructure.getTagSets() )
+		{
+			String header = tagSet.getName();
+			ObjTagMap< T, TagSetStructure.Tag > tagSetTags = tags.tags( tagSet );
+			table.defineColumn( header.length(), header, "", spotOrLink -> {
+				TagSetStructure.Tag tag = tagSetTags.get( spotOrLink );
+				return tag == null ? "" : tag.label();
+			} );
+		}
 	}
 
 	private static void addSpotFeatureColumns( List< FeatureSpec< ?, ? > > featureSpecs, FeatureModel featureModel, TablePrinter< Spot > table )
