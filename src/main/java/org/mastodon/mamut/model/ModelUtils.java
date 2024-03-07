@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,18 +29,15 @@
 package org.mastodon.mamut.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.mamut.feature.SpotTrackIDFeature;
@@ -80,216 +77,172 @@ public class ModelUtils
 		final String spaceUnits = Optional.ofNullable( model.getSpaceUnits() ).orElse( "" );
 		final ModelGraph graph = model.getGraph();
 		final FeatureModel featureModel = model.getFeatureModel();
+		Spot ref = graph.vertexRef();
+		final List< FeatureSpec< ?, ? > > featureSpecs = new ArrayList<>( featureModel.getFeatureSpecs() );
+		featureSpecs.sort( Comparator.comparing( FeatureSpec::getKey ) );
 
 		final StringBuilder str = new StringBuilder();
-		str.append( "Model " + model.toString() + "\n" );
-
-		/*
-		 * Get feature specs and sort them by key.
-		 */
-
-		final List< FeatureSpec< ?, ? > > featureSpecs = new ArrayList<>( featureModel.getFeatureSpecs() );
-		featureSpecs.sort( ( fs1, fs2 ) -> fs1.getKey().compareTo( fs2.getKey() ) );
-
-		/*
-		 * Collect spot feature headers.
-		 */
-
-		final Map< FeatureProjectionKey, FeatureProjection< Spot > > sfs = new LinkedHashMap<>();
-		final List< Feature< Spot > > spotFeatures = new ArrayList<>();
-		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
-			if ( featureSpec.getTargetClass().equals( Spot.class ) )
-			{
-				@SuppressWarnings( "unchecked" )
-				final Feature< Spot > spotFeature = ( Feature< Spot > ) featureModel.getFeature( featureSpec );
-				spotFeatures.add( spotFeature );
-			}
-
-		// TODO if different features have same FeatureProjectionKey, map
-		// entries will be overridden!
-		for ( final Feature< Spot > feature : spotFeatures )
-		{
-			if ( feature.projections() == null )
-				continue;
-			for ( final FeatureProjection< Spot > projection : feature.projections() )
-				sfs.put( projection.getKey(), projection );
-		}
-
-		/*
-		 * Loop over all spots.
-		 */
-
+		str.append( "Model " + model + "\n" );
 		str.append( "Spots:\n" );
-		// Name line
-		final String h1a = String.format( "%9s  %9s  %6s  %9s  %9s  %9s",
-				"Id", "Label", "Frame", "X", "Y", "Z" );
-		str.append( h1a );
-		// Unit line
-		final StringBuilder unitLineSpots = new StringBuilder();
-		unitLineSpots.append( String.format( "%9s  %9s  %6s  %9s  %9s  %9s",
-				"", "", "", bracket( spaceUnits ), bracket( spaceUnits ), bracket( spaceUnits ) ) );
 
-		final int[] spotColumnHeaderWidth = new int[ sfs.size() ];
-		int i = 0;
-		for ( final FeatureProjectionKey pk : sfs.keySet() )
-		{
-			final String units = Optional.ofNullable( sfs.get( pk ).units() ).orElse( "" );
-			spotColumnHeaderWidth[ i ] = Math.max( pk.toString().length(), units.length() + 2 ) + 2;
-			str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", pk ) );
-			unitLineSpots.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", bracket( units ) ) );
-			i++;
-		}
+		TablePrinter< Spot > spotsTable = new TablePrinter<>();
+		spotsTable.defineColumn( 9, "Id", "", spot -> Integer.toString( spot.getInternalPoolIndex() ) );
+		spotsTable.defineColumn( 9, "Label", "", Spot::getLabel );
+		spotsTable.defineColumn( 6, "Frame", "", spot -> Integer.toString( spot.getTimepoint() ) );
+		spotsTable.defineColumn( 9, "X", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 0 ) ) );
+		spotsTable.defineColumn( 9, "Y", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 1 ) ) );
+		spotsTable.defineColumn( 9, "Z", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 2 ) ) );
+		addSpotFeatureColumns( featureSpecs, featureModel, spotsTable );
 
-		str.append( '\n' );
-		str.append( unitLineSpots.toString() );
-
-		str.append( '\n' );
-		final char[] sline = new char[ h1a.length() + Arrays.stream( spotColumnHeaderWidth ).sum()
-				+ 2 * spotColumnHeaderWidth.length ];
-		Arrays.fill( sline, '-' );
-		str.append( sline );
-		str.append( '\n' );
-
-		/*
-		 * Sort spots.
-		 */
-
-		final RefArrayList< Spot > spots =
-				new RefArrayList< Spot >( graph.vertices().getRefPool(), graph.vertices().size() );
-		spots.addAll( graph.vertices() );
-
-		// Do we have track id?
-		if ( featureSpecs.contains( SpotTrackIDFeature.SPEC ) )
-		{
-			final SpotTrackIDFeature trackID =
-					( SpotTrackIDFeature ) featureModel.getFeature( SpotTrackIDFeature.SPEC );
-			spots.sort( new Comparator< Spot >()
-			{
-
-				@Override
-				public int compare( final Spot o1, final Spot o2 )
-				{
-					final int track1 = trackID.get( o1 );
-					final int track2 = trackID.get( o2 );
-					if ( track1 == track2 )
-						return o1.getTimepoint() - o2.getTimepoint();
-
-					return track1 - track2;
-				}
-			} );
-		}
-		else
-		{
-			spots.sort( Comparator.comparingInt( Spot::getTimepoint ) );
-		}
-
-		long n = 0;
-		for ( final Spot spot : spots )
-		{
-			if ( n++ > maxLines )
-				break;
-
-			final String h1b = String.format( "%9d  %9s  %6d  %9.1f  %9.1f  %9.1f",
-					spot.getInternalPoolIndex(), spot.getLabel(), spot.getTimepoint(),
-					spot.getDoublePosition( 0 ), spot.getDoublePosition( 1 ), spot.getDoublePosition( 2 ) );
-
-			str.append( h1b );
-			i = 0;
-			for ( final FeatureProjectionKey pk : sfs.keySet() )
-			{
-				if ( sfs.get( pk ).isSet( spot ) )
-					if ( sfs.get( pk ) instanceof IntFeatureProjection )
-						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "d",
-								( int ) sfs.get( pk ).value( spot ) ) );
-					else
-						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f",
-								sfs.get( pk ).value( spot ) ) );
-				else
-					str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", "unset" ) );
-				i++;
-			}
-			str.append( '\n' );
-		}
+		List< Spot > spots = getSortedSpots( graph, featureModel );
+		spotsTable.print( str, spots, maxLines );
 
 		/*
 		 * Collect link feature headers.
 		 */
-
-		final Map< FeatureProjectionKey, FeatureProjection< Link > > lfs = new LinkedHashMap<>();
-		final List< Feature< Link > > linkFeatures = new ArrayList<>();
-		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
-			if ( featureSpec.getTargetClass().equals( Link.class ) )
-			{
-				@SuppressWarnings( "unchecked" )
-				final Feature< Link > linkFeature = ( Feature< Link > ) featureModel.getFeature( featureSpec );
-				linkFeatures.add( linkFeature );
-			}
-
-		for ( final Feature< Link > feature : linkFeatures )
-			for ( final FeatureProjection< Link > projection : feature.projections() )
-				lfs.put( projection.getKey(), projection );
-
-		/*
-		 * Loop over all links.
-		 */
-
 		str.append( "Links:\n" );
-		// Name line.
-		final String h2a = String.format( "%9s  %9s  %9s", "Id", "Source Id", "Target Id" );
-		str.append( h2a );
-		// Unit line
-		final StringBuilder unitLineLinks = new StringBuilder();
-		unitLineLinks.append( String.format( "%9s  %9s  %9s", "", "", "" ) );
 
-		final int[] linkColumnHeaderWidth = new int[ lfs.size() ];
-		i = 0;
-		for ( final FeatureProjectionKey pk : lfs.keySet() )
-		{
-			final String units = Optional.ofNullable( lfs.get( pk ).units() ).orElse( "" );
-			linkColumnHeaderWidth[ i ] = Math.max( pk.toString().length(), units.length() + 2 ) + 2;
-			str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", pk ) );
-			unitLineLinks.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", bracket( units ) ) );
-			i++;
-		}
+		TablePrinter< Link > linkTable = new TablePrinter<>();
+		linkTable.defineColumn( 9, "Id", "", link -> Integer.toString( link.getInternalPoolIndex() ) );
+		linkTable.defineColumn( 9, "Source Id", "", link -> Integer.toString( link.getSource( ref ).getInternalPoolIndex() ) );
+		linkTable.defineColumn( 9, "Target Id", "", link -> Integer.toString( link.getTarget( ref ).getInternalPoolIndex() ) );
+		addLinkFeatureColumns( featureSpecs, featureModel, linkTable );
 
-		str.append( '\n' );
-		str.append( unitLineLinks.toString() );
-
-		str.append( '\n' );
-		final char[] lline = new char[ h2a.length() + Arrays.stream( linkColumnHeaderWidth ).sum()
-				+ 2 * linkColumnHeaderWidth.length ];
-		Arrays.fill( lline, '-' );
-		str.append( lline );
-		str.append( '\n' );
-
-		n = 0;
-		final Spot ref = graph.vertexRef();
-		for ( final Link link : graph.edges() )
-		{
-			if ( n++ > maxLines )
-				break;
-
-			final String h1b = String.format( "%9d  %9d  %9d", link.getInternalPoolIndex(),
-					link.getSource( ref ).getInternalPoolIndex(), link.getTarget( ref ).getInternalPoolIndex() );
-			str.append( h1b );
-			i = 0;
-			for ( final FeatureProjectionKey pk : lfs.keySet() )
-			{
-				if ( lfs.get( pk ).isSet( link ) )
-					if ( sfs.get( pk ) instanceof IntFeatureProjection )
-						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "d",
-								( int ) lfs.get( pk ).value( link ) ) );
-					else
-						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + ".1f",
-								lfs.get( pk ).value( link ) ) );
-				else
-					str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", "unset" ) );
-				i++;
-			}
-			str.append( '\n' );
-		}
+		linkTable.print( str, graph.edges(), maxLines );
 
 		return str.toString();
+	}
+
+	private static void addSpotFeatureColumns( List< FeatureSpec< ?, ? > > featureSpecs, FeatureModel featureModel, TablePrinter< Spot > table )
+	{
+		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
+		{
+			if ( !featureSpec.getTargetClass().equals( Spot.class ) )
+				continue;
+
+			@SuppressWarnings( "unchecked" )
+			final Feature< Spot > feature = ( Feature< Spot > ) featureModel.getFeature( featureSpec );
+			if ( feature.projections() == null )
+				continue;
+
+			feature.projections().stream().sorted( Comparator.comparing( projection -> projection.getKey().toString() ) ).forEach( projection -> {
+				final String title = projection.getKey().toString();
+				final String unit = bracket( Optional.ofNullable( projection.units() ).orElse( "" ) );
+				final int width = Math.max( title.length(), unit.length() ) + 2;
+				table.defineColumn( width, title, unit, spot -> valueAsString( projection, spot, width ) );
+			} );
+		}
+	}
+
+	private static void addLinkFeatureColumns( List< FeatureSpec< ?, ? > > featureSpecs, FeatureModel featureModel, TablePrinter< Link > linkTable )
+	{
+		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
+		{
+			if ( !featureSpec.getTargetClass().equals( Link.class ) )
+				continue;
+
+			@SuppressWarnings( "unchecked" )
+			final Feature< Link > feature = ( Feature< Link > ) featureModel.getFeature( featureSpec );
+			if ( feature.projections() == null )
+				continue;
+
+			feature.projections().stream().sorted( Comparator.comparing( projection -> projection.getKey().toString() ) ).forEach( projection -> {
+				final String title = projection.getKey().toString();
+				final String unit = bracket( Optional.ofNullable( projection.units() ).orElse( "" ) );
+				final int width = Math.max( title.length(), unit.length() ) + 2;
+				linkTable.defineColumn( width, title, unit, link -> valueAsString( projection, link, width ) );
+			} );
+		}
+	}
+
+	private static RefArrayList< Spot > getSortedSpots( ModelGraph graph, FeatureModel featureModel )
+	{
+		final RefArrayList< Spot > spots = new RefArrayList<>( graph.vertices().getRefPool(), graph.vertices().size() );
+		spots.addAll( graph.vertices() );
+		spots.sort( getSpotComparator( featureModel ) );
+		return spots;
+	}
+
+	private static Comparator< Spot > getSpotComparator( FeatureModel featureModel )
+	{
+		if ( featureModel.getFeatureSpecs().contains( SpotTrackIDFeature.SPEC ) )
+		{
+			final SpotTrackIDFeature trackID = ( SpotTrackIDFeature ) featureModel.getFeature( SpotTrackIDFeature.SPEC );
+			return Comparator.comparing( trackID::get )
+					.thenComparing( Spot::getTimepoint )
+					.thenComparing( Spot::getInternalPoolIndex );
+		}
+		else
+			return Comparator.comparingInt( Spot::getTimepoint ).thenComparing( Spot::getInternalPoolIndex );
+	}
+
+	private static < T > String valueAsString( FeatureProjection< T > projection, T t, int width )
+	{
+		if ( projection.isSet( t ) )
+			if ( projection instanceof IntFeatureProjection )
+				return String.format( "%" + width + "d", ( int ) projection.value( t ) );
+			else
+				return String.format( "%" + width + ".1f", projection.value( t ) );
+		else
+			return String.format( "%" + width + "s", "unset" );
+	}
+
+	private static class TablePrinter< T >
+	{
+
+		private final List< Column< T > > columns = new ArrayList<>();
+
+		public void defineColumn( int width, String title, String unit, Function< T, String > toString )
+		{
+			columns.add( new Column<>( columns.isEmpty(), width, title, unit, toString ) );
+		}
+
+		public void print( StringBuilder str, Iterable< T > rows, long maxLines )
+		{
+			for ( Column< T > column : columns )
+				str.append( String.format( column.template, column.header ) );
+			str.append( '\n' );
+			for ( Column< T > column : columns )
+				str.append( String.format( column.template, column.unit ) );
+			str.append( '\n' );
+			int totalWidth = columns.stream().mapToInt( c -> c.width + 2 ).sum() - 2;
+			for ( int i = 0; i < totalWidth; i++ )
+				str.append( '-' );
+			str.append( '\n' );
+			long i = 0;
+			for ( T row : rows )
+			{
+				for ( Column< T > column : columns )
+					str.append( String.format( column.template, column.valueToString.apply( row ) ) );
+				str.append( '\n' );
+				i++;
+				if ( i >= maxLines )
+					break;
+			}
+		}
+	}
+
+	private static class Column< T >
+	{
+
+		private final int width;
+
+		private final String header;
+
+		private final String unit;
+
+		private final String template;
+
+		private final Function< T, String > valueToString;
+
+		private Column( boolean isFirst, int width, String header, String unit, Function< T, String > valueToString )
+		{
+			this.header = header;
+			this.unit = unit;
+			this.width = width;
+			this.template = ( isFirst ? "" : "  " ) + "%" + width + "s";
+			this.valueToString = valueToString;
+		}
 	}
 
 	private static final String bracket( final String str )
