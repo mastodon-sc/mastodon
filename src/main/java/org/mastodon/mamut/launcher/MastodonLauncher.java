@@ -539,7 +539,11 @@ public class MastodonLauncher extends JFrame
 					FileChooser.DialogType.LOAD,
 					SelectionMode.FILES_AND_DIRECTORIES );
 			if ( file == null )
+			{
+				gui.showPanel( LauncherGUI.RECENT_PROJECTS_KEY );
+				disabler.reenable();
 				return;
+			}
 		}
 		else
 		{
