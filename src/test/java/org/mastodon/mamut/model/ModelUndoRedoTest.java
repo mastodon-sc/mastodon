@@ -109,104 +109,100 @@ public class ModelUndoRedoTest
 	@Test
 	public void testUndoRedoOnEmptyModel()
 	{
-		final Model model = new Model();
-		testUndoRedo( model );
+		final UndoVerifier undoVerifier = new UndoVerifier( new Model() );
+		undoVerifier.makeChangesAndRecord();
+		undoVerifier.undoAndVerifyCorrectness();
+		undoVerifier.redoAndVerifyCorrectness();
 	}
 
-	/**
-	 * This method makes various changes to the graph and the tag set model. The
-	 * changes are divided into several steps, and at each step, an undo point is
-	 * set. Then, the undo and redo methods are called to test if the model is
-	 * restored to the intended state.
-	 */
-	private static void testUndoRedo( final Model model )
+	private static class UndoVerifier
 	{
+
+		final Model model;
+
 		final List< String > states = new ArrayList<>();
-		makeVariousChangesAndRecordUndoPoints( model, states );
-		undoAllRecordedPointsAndVerifyCorrectness( model, states );
-		redoAllRecordedPointsAndVerifyCorrectness( model, states );
-	}
 
-	private static void makeVariousChangesAndRecordUndoPoints( final Model model, final List< String > states )
-	{
-		final ModelGraph graph = model.getGraph();
-		// add spot A
-		final Spot a = graph.addVertex().init( 2, new double[] { 1, 2, 3 }, 1.5 );
-		a.setLabel( "spot A" );
-		setUndoPointAndRecordState( model, states );
+		public UndoVerifier( final Model model ) {this.model = model;}
 
-		// add spot B
-		final Spot b = graph.addVertex().init( 3, new double[] { 1, 2, 4 }, 1.7 );
-		b.setLabel( "spot B" );
-		setUndoPointAndRecordState( model, states );
-
-		// add edge
-		final Link edge = graph.addEdge( a, b ).init();
-		setUndoPointAndRecordState( model, states );
-
-		// add tag set
-		final TagSetStructure.TagSet tagset = TagSetUtils.addNewTagSetToModel( model, "tag set 1", Arrays.asList(
-				Pair.of( "tag1", Color.red.getRGB() ),
-				Pair.of( "tag2", Color.green.getRGB() ) ) );
-		final TagSetStructure.Tag tag1 = tagset.getTags().get( 0 );
-		final TagSetStructure.Tag tag2 = tagset.getTags().get( 1 );
-		TagSetUtils.tagSpot( model, tagset, tag1, a );
-		TagSetUtils.tagSpot( model, tagset, tag2, b );
-		TagSetUtils.tagLinks( model, tagset, tag1, Collections.singletonList( edge ) );
-		setUndoPointAndRecordState( model, states );
-
-		// change label
-		a.setLabel( "A0" );
-		b.setLabel( "B0" );
-		setUndoPointAndRecordState( model, states );
-
-		// change tag
-		TagSetUtils.tagSpot( model, tagset, tag2, a );
-		setUndoPointAndRecordState( model, states );
-
-		// change covariance
-		final double[][] cov = { { 2, 0.1, 0 }, { 0.1, 2.5, 0 }, { 0, 0, 2.1 } };
-		a.setCovariance( cov );
-		setUndoPointAndRecordState( model, states );
-
-		// change spot position
-		b.setPosition( new double[] { 2.1, 2.3, 2.2 } );
-		setUndoPointAndRecordState( model, states );
-
-		// remove spot B
-		graph.remove( b );
-		setUndoPointAndRecordState( model, states );
-	}
-
-	public static void setUndoPointAndRecordState( final Model model, final List< String > states )
-	{
-		model.setUndoPoint();
-		states.add( modelAsString( model ) );
-	}
-
-	public static void undoAllRecordedPointsAndVerifyCorrectness( final Model model, final List< String > states )
-	{
-		for ( int i = states.size() - 1; i > 0; i-- )
+		public void makeChangesAndRecord()
 		{
-			assertEquals( states.get( i ), modelAsString( model ) );
-			model.undo();
-		}
-		assertEquals( states.get( 0 ), modelAsString( model ) );
-	}
+			final ModelGraph graph = model.getGraph();
+			// add spot A
+			final Spot a = graph.addVertex().init( 2, new double[] { 1, 2, 3 }, 1.5 );
+			a.setLabel( "spot A" );
+			recordStep();
 
-	public static void redoAllRecordedPointsAndVerifyCorrectness( final Model model, final List< String > states )
-	{
-		assertEquals( states.get( 0 ), modelAsString( model ) );
-		for ( int i = 1; i < states.size(); i++ )
+			// add spot B
+			final Spot b = graph.addVertex().init( 3, new double[] { 1, 2, 4 }, 1.7 );
+			b.setLabel( "spot B" );
+			recordStep();
+
+			// add edge
+			final Link edge = graph.addEdge( a, b ).init();
+			recordStep();
+
+			// add tag set
+			final TagSetStructure.TagSet tagset = TagSetUtils.addNewTagSetToModel( model, "tag set 1", Arrays.asList(
+					Pair.of( "tag1", Color.red.getRGB() ),
+					Pair.of( "tag2", Color.green.getRGB() ) ) );
+			final TagSetStructure.Tag tag1 = tagset.getTags().get( 0 );
+			final TagSetStructure.Tag tag2 = tagset.getTags().get( 1 );
+			TagSetUtils.tagSpot( model, tagset, tag1, a );
+			TagSetUtils.tagSpot( model, tagset, tag2, b );
+			TagSetUtils.tagLinks( model, tagset, tag1, Collections.singletonList( edge ) );
+			recordStep();
+
+			// change label
+			a.setLabel( "A0" );
+			b.setLabel( "B0" );
+			recordStep();
+
+			// change tag
+			TagSetUtils.tagSpot( model, tagset, tag2, a );
+			recordStep();
+
+			// change covariance
+			final double[][] cov = { { 2, 0.1, 0 }, { 0.1, 2.5, 0 }, { 0, 0, 2.1 } };
+			a.setCovariance( cov );
+			recordStep();
+
+			// change spot position
+			b.setPosition( new double[] { 2.1, 2.3, 2.2 } );
+			recordStep();
+
+			// remove spot B
+			graph.remove( b );
+			recordStep();
+		}
+
+		private void recordStep()
 		{
-			model.redo();
-			assertEquals( states.get( i ), modelAsString( model ) );
+			model.setUndoPoint();
+			states.add( modelAsString( model ) );
 		}
-	}
 
-	private static String modelAsString( final Model model )
-	{
-		return ModelUtils.dump( model, ModelUtils.DumpFlags.PRINT_TAGS );
+		public void undoAndVerifyCorrectness()
+		{
+			for ( int i = states.size() - 2; i >= 0; i-- )
+			{
+				model.undo();
+				assertEquals( states.get( i ), modelAsString( model ) );
+			}
+		}
+
+		public void redoAndVerifyCorrectness()
+		{
+			for ( int i = 1; i < states.size(); i++ )
+			{
+				model.redo();
+				assertEquals( states.get( i ), modelAsString( model ) );
+			}
+		}
+
+		private static String modelAsString( final Model model )
+		{
+			return ModelUtils.dump( model, ModelUtils.DumpFlags.PRINT_TAGS );
+		}
 	}
 
 	/**
@@ -223,18 +219,38 @@ public class ModelUndoRedoTest
 	public void testUndoRedoAfterModelImporter()
 	{
 		final Model model = new Model();
-		// Fill the undo-redo history with many different entries:
-		makeVariousChangesAndRecordUndoPoints( model, new ArrayList<>() );
+
+		// Fill the undo-redo history with many different entries. All these changes have to be properly cleared during the import operation.
+		new UndoVerifier( model ).makeChangesAndRecord();
 		addFourSpotGraph( model );
-		// Reset the model by running the ModelImporter / Simulate an import operation:
-		new ModelImporter( model )
-		{{
-			this.startImport();
-			addThreeSpotGraph( model );
-			this.finishImport();
-		}};
+
+		// Simulate import operation, this will reset the model and the undo-redo history.
+		new Importer( model ).run();
+
 		// Test if the undo and redo still work as expected:
-		testUndoRedo( model );
+		final UndoVerifier undoVerifier = new UndoVerifier( model );
+		undoVerifier.makeChangesAndRecord();
+		undoVerifier.undoAndVerifyCorrectness();
+		undoVerifier.redoAndVerifyCorrectness();
+	}
+
+	private class Importer extends ModelImporter
+	{
+
+		private final Model model;
+
+		public Importer( final Model model )
+		{
+			super( model );
+			this.model = model;
+		}
+
+		private void run()
+		{
+			startImport(); // Calls pauseListeners() and clear() on the ModelGraph and TagSetModel.
+			addThreeSpotGraph( model ); // simulate some data import
+			finishImport(); // Calls resumeListeners() and notifyGraphChanged(). resumeListeners() effectively clears the undo-redo history.
+		}
 	}
 
 	/**
