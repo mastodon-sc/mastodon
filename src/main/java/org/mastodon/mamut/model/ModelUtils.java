@@ -45,15 +45,31 @@ import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.mamut.feature.SpotTrackIDFeature;
 import org.mastodon.model.tag.ObjTagMap;
 import org.mastodon.model.tag.ObjTags;
-import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
 
 public class ModelUtils
 {
 	public enum DumpFlags
 	{
+		/**
+		 * If this flag is provided, {@link #dump(Model, DumpFlags...)} will include
+		 * the string returned by {@link Model#toString()} and hence the value of
+		 * {@link Model#hashCode()}. This can be useful to associate the "dump" with
+		 * a specific model instance. But it comes at the cost of making the output
+		 * less predictable.
+		 */
 		PRINT_HASH,
+
+		/**
+		 * If this flag is provided, {@link #dump(Model, DumpFlags...)} will include
+		 * the values stored in th {@link Model#getFeatureModel() feature model}.
+		 */
 		PRINT_FEATURES,
+
+		/**
+		 * If this flag is provided, {@link #dump(Model, DumpFlags...)} will include
+		 * the tags stored in the {@link Model#getTagSetModel() tag set model}.
+		 */
 		PRINT_TAGS
 	}
 
@@ -64,7 +80,7 @@ public class ModelUtils
 	 * The tables by default contain all spot and link properties as well
 	 * as the feature values.
 	 * <p>
-	 * There is also a method that {@link #dump(Model, DumpFlags...)}
+	 * There is also a method {@link #dump(Model, DumpFlags...)} that
 	 * allows to select which information to include in the table.
 	 */
 	public static final String dump( final Model model )
@@ -75,9 +91,8 @@ public class ModelUtils
 	/**
 	 * Returns a string representation of the specified model content as two
 	 * text tables.
-	 * <p>
-	 * Which information to include in the table can be changed using
-	 * {@link DumpFlags}.
+	 * @param model The model to generate the dump for.
+	 * @param options Which information to include in the tables can be changed using {@link DumpFlags}.
 	 */
 	public static final String dump( final Model model, final DumpFlags... options )
 	{
@@ -86,13 +101,15 @@ public class ModelUtils
 
 	/**
 	 * Returns a string representation of the specified model content as two
-	 * text tables. The number of lines in each table is limeted to {@code maxLines}.
+	 * text tables. The number of lines in each table is limited to {@code maxLines}.
 	 * <p>
 	 * The tables by default contain all spot and link properties as well
 	 * as the feature values.
 	 * <p>
-	 * There is also a method that {@link #dump(Model, long, DumpFlags...)}
+	 * There is also a method {@link #dump(Model, long, DumpFlags...)} that
 	 * allows to select which information to include in the table.
+	 *
+	 * @param maxLines the max number of rows to print in the two tables.
 	 */
 	public static final String dump( final Model model, final long maxLines )
 	{
@@ -101,12 +118,10 @@ public class ModelUtils
 
 	/**
 	 * Returns a string representation of the specified model content as two
-	 * text tables. The number of lines in each table is limeted to {@code maxLines}.
-	 * <p>
-	 * The printed content is limited to the specified number of lines.
-	 * <p>
-	 * Which information to include in the table can be changed using
-	 * {@link DumpFlags}.
+	 * text tables.
+	 * @param model The model to generate the dump for.
+	 * @param maxLines the max number of rows to print in the two tables.
+	 * @param options Which information to include in the tables can be changed using {@link DumpFlags}.
 	 */
 	public static final String dump( final Model model, final long maxLines, final DumpFlags... options )
 	{
@@ -303,7 +318,7 @@ public class ModelUtils
 		}
 	}
 
-	private static final String bracket( final String str )
+	private static String bracket( final String str )
 	{
 		return str.isEmpty() ? "" : "(" + str + ")";
 	}
