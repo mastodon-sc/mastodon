@@ -241,13 +241,13 @@ public class ModelUtils
 
 	private static < T > String valueAsString( FeatureProjection< T > projection, T t, int width )
 	{
-		if ( projection.isSet( t ) )
-			if ( projection instanceof IntFeatureProjection )
-				return String.format( Locale.US, "%" + width + "d", ( int ) projection.value( t ) );
-			else
-				return String.format( Locale.US, "%" + width + ".1f", projection.value( t ) );
-		else
+		if ( !projection.isSet( t ) )
 			return String.format( Locale.US, "%" + width + "s", "unset" );
+
+		if ( projection instanceof IntFeatureProjection )
+			return String.format( Locale.US, "%" + width + "d", ( int ) projection.value( t ) );
+		else
+			return String.format( Locale.US, "%" + width + ".1f", projection.value( t ) );
 	}
 
 	private static class TablePrinter< T >
