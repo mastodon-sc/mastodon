@@ -35,6 +35,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.mastodon.collection.ref.RefArrayList;
@@ -126,20 +127,29 @@ public class ModelUtils
 	 */
 	public static final String dump( final Model model, final long maxLines, final DumpFlags... options )
 	{
-		EnumSet< DumpFlags > optionsSet = EnumSet.noneOf( DumpFlags.class );
-		optionsSet.addAll( Arrays.asList( options ) );
-		final String spaceUnits = Optional.ofNullable( model.getSpaceUnits() ).orElse( "" );
-		final ModelGraph graph = model.getGraph();
+		Set< DumpFlags > optionsSet = EnumSet.copyOf( Arrays.asList( options ) );
 		final FeatureModel featureModel = model.getFeatureModel();
-		Spot ref = graph.vertexRef();
 		final List< FeatureSpec< ?, ? > > featureSpecs = new ArrayList<>( featureModel.getFeatureSpecs() );
 		featureSpecs.sort( Comparator.comparing( FeatureSpec::getKey ) );
 
 		final StringBuilder str = new StringBuilder();
 		if ( optionsSet.contains( DumpFlags.PRINT_HASH ) )
 			str.append( "Model " ).append( model ).append( "\n" );
-		str.append( "Spots:\n" );
 
+		str.append( "Spots:\n" );
+		addSpotsTable( model, maxLines, optionsSet, featureSpecs, str );
+
+		str.append( "Links:\n" );
+		addLinksTable( model, maxLines, optionsSet, featureSpecs, str );
+
+		return str.toString();
+	}
+
+	private static void addSpotsTable( Model model, long maxLines, Set< DumpFlags > optionsSet, List< FeatureSpec< ?, ? > > featureSpecs, StringBuilder str )
+	{
+		final String spaceUnits = Optional.ofNullable( model.getSpaceUnits() ).orElse( "" );
+		final ModelGraph graph = model.getGraph();
+		final FeatureModel featureModel = model.getFeatureModel();
 		TablePrinter< Spot > spotsTable = new TablePrinter<>();
 		spotsTable.defineColumn( 9, "Id", "", spot -> Integer.toString( spot.getInternalPoolIndex() ) );
 		spotsTable.defineColumn( 9, "Label", "", Spot::getLabel );
@@ -150,29 +160,29 @@ public class ModelUtils
 		if ( optionsSet.contains( DumpFlags.PRINT_TAGS ) )
 			addTagColumns( spotsTable, model.getTagSetModel().getTagSetStructure(), model.getTagSetModel().getVertexTags() );
 		if ( optionsSet.contains( DumpFlags.PRINT_FEATURES ) )
-			addSpotFeatureColumns( featureSpecs, featureModel, spotsTable );
+			addFeatureColumns( featureSpecs, featureModel, spotsTable, Spot.class );
 
 		List< Spot > spots = getSortedSpots( graph, featureModel );
 		spotsTable.print( str, spots, maxLines );
+	}
 
-		/*
-		 * Collect link feature headers.
-		 */
-		str.append( "Links:\n" );
-
+	private static void addLinksTable( Model model, long maxLines, Set< DumpFlags > optionsSet, List< FeatureSpec< ?, ? > > featureSpecs, StringBuilder str )
+	{
+		final ModelGraph graph = model.getGraph();
+		final FeatureModel featureModel = model.getFeatureModel();
 		TablePrinter< Link > linkTable = new TablePrinter<>();
 		linkTable.defineColumn( 9, "Id", "", link -> Integer.toString( link.getInternalPoolIndex() ) );
+		final Spot ref = graph.vertexRef();
 		linkTable.defineColumn( 9, "Source Id", "", link -> Integer.toString( link.getSource( ref ).getInternalPoolIndex() ) );
 		linkTable.defineColumn( 9, "Target Id", "", link -> Integer.toString( link.getTarget( ref ).getInternalPoolIndex() ) );
 		if ( optionsSet.contains( DumpFlags.PRINT_TAGS ) )
 			addTagColumns( linkTable, model.getTagSetModel().getTagSetStructure(), model.getTagSetModel().getEdgeTags() );
 		if ( optionsSet.contains( DumpFlags.PRINT_FEATURES ) )
-			addLinkFeatureColumns( featureSpecs, featureModel, linkTable );
+			addFeatureColumns( featureSpecs, featureModel, linkTable, Link.class );
 
 		linkTable.print( str, graph.edges(), maxLines );
-
-		return str.toString();
 	}
+
 
 	private static < T > void addTagColumns( TablePrinter< T > table, TagSetStructure tagSetStructure, ObjTags< T > tags )
 	{
@@ -187,15 +197,15 @@ public class ModelUtils
 		}
 	}
 
-	private static void addSpotFeatureColumns( List< FeatureSpec< ?, ? > > featureSpecs, FeatureModel featureModel, TablePrinter< Spot > table )
+	private static < T > void addFeatureColumns( List< FeatureSpec< ?, ? > > featureSpecs, FeatureModel featureModel, TablePrinter< T > table, Class< T > targetClass )
 	{
 		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
 		{
-			if ( !featureSpec.getTargetClass().equals( Spot.class ) )
+			if ( !featureSpec.getTargetClass().equals( targetClass ) )
 				continue;
 
 			@SuppressWarnings( "unchecked" )
-			final Feature< Spot > feature = ( Feature< Spot > ) featureModel.getFeature( featureSpec );
+			final Feature< T > feature = ( Feature< T > ) featureModel.getFeature( featureSpec );
 			if ( feature.projections() == null )
 				continue;
 
@@ -203,28 +213,7 @@ public class ModelUtils
 				final String title = projection.getKey().toString();
 				final String unit = bracket( Optional.ofNullable( projection.units() ).orElse( "" ) );
 				final int width = Math.max( title.length(), unit.length() ) + 2;
-				table.defineColumn( width, title, unit, spot -> valueAsString( projection, spot, width ) );
-			} );
-		}
-	}
-
-	private static void addLinkFeatureColumns( List< FeatureSpec< ?, ? > > featureSpecs, FeatureModel featureModel, TablePrinter< Link > linkTable )
-	{
-		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
-		{
-			if ( !featureSpec.getTargetClass().equals( Link.class ) )
-				continue;
-
-			@SuppressWarnings( "unchecked" )
-			final Feature< Link > feature = ( Feature< Link > ) featureModel.getFeature( featureSpec );
-			if ( feature.projections() == null )
-				continue;
-
-			feature.projections().stream().sorted( Comparator.comparing( projection -> projection.getKey().toString() ) ).forEach( projection -> {
-				final String title = projection.getKey().toString();
-				final String unit = bracket( Optional.ofNullable( projection.units() ).orElse( "" ) );
-				final int width = Math.max( title.length(), unit.length() ) + 2;
-				linkTable.defineColumn( width, title, unit, link -> valueAsString( projection, link, width ) );
+				table.defineColumn( width, title, unit, spotOrLink -> valueAsString( projection, spotOrLink, width ) );
 			} );
 		}
 	}
