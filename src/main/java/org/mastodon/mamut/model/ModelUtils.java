@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -143,9 +144,9 @@ public class ModelUtils
 		spotsTable.defineColumn( 9, "Id", "", spot -> Integer.toString( spot.getInternalPoolIndex() ) );
 		spotsTable.defineColumn( 9, "Label", "", Spot::getLabel );
 		spotsTable.defineColumn( 6, "Frame", "", spot -> Integer.toString( spot.getTimepoint() ) );
-		spotsTable.defineColumn( 9, "X", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 0 ) ) );
-		spotsTable.defineColumn( 9, "Y", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 1 ) ) );
-		spotsTable.defineColumn( 9, "Z", bracket( spaceUnits ), spot -> String.format( "%9.1f", spot.getDoublePosition( 2 ) ) );
+		spotsTable.defineColumn( 9, "X", bracket( spaceUnits ), spot -> String.format( Locale.US, "%9.1f", spot.getDoublePosition( 0 ) ) );
+		spotsTable.defineColumn( 9, "Y", bracket( spaceUnits ), spot -> String.format( Locale.US, "%9.1f", spot.getDoublePosition( 1 ) ) );
+		spotsTable.defineColumn( 9, "Z", bracket( spaceUnits ), spot -> String.format( Locale.US, "%9.1f", spot.getDoublePosition( 2 ) ) );
 		if ( optionsSet.contains( DumpFlags.PRINT_TAGS ) )
 			addTagColumns( spotsTable, model.getTagSetModel().getTagSetStructure(), model.getTagSetModel().getVertexTags() );
 		if ( optionsSet.contains( DumpFlags.PRINT_FEATURES ) )
@@ -253,11 +254,11 @@ public class ModelUtils
 	{
 		if ( projection.isSet( t ) )
 			if ( projection instanceof IntFeatureProjection )
-				return String.format( "%" + width + "d", ( int ) projection.value( t ) );
+				return String.format( Locale.US, "%" + width + "d", ( int ) projection.value( t ) );
 			else
-				return String.format( "%" + width + ".1f", projection.value( t ) );
+				return String.format( Locale.US, "%" + width + ".1f", projection.value( t ) );
 		else
-			return String.format( "%" + width + "s", "unset" );
+			return String.format( Locale.US, "%" + width + "s", "unset" );
 	}
 
 	private static class TablePrinter< T >
@@ -273,10 +274,10 @@ public class ModelUtils
 		public void print( StringBuilder str, Iterable< T > rows, long maxLines )
 		{
 			for ( Column< T > column : columns )
-				str.append( String.format( column.template, column.header ) );
+				str.append( String.format( Locale.US, column.template, column.header ) );
 			str.append( '\n' );
 			for ( Column< T > column : columns )
-				str.append( String.format( column.template, column.unit ) );
+				str.append( String.format( Locale.US, column.template, column.unit ) );
 			str.append( '\n' );
 			int totalWidth = columns.stream().mapToInt( c -> c.width + 2 ).sum() - 2;
 			for ( int i = 0; i < totalWidth; i++ )
@@ -286,7 +287,7 @@ public class ModelUtils
 			for ( T row : rows )
 			{
 				for ( Column< T > column : columns )
-					str.append( String.format( column.template, column.valueToString.apply( row ) ) );
+					str.append( String.format( Locale.US, column.template, column.valueToString.apply( row ) ) );
 				str.append( '\n' );
 				i++;
 				if ( i >= maxLines )
