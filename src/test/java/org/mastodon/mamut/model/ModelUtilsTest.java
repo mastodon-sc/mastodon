@@ -46,15 +46,15 @@ public class ModelUtilsTest
 	@Test
 	public void testDump()
 	{
-		Model model = new Model();
-		ModelGraph graph = model.getGraph();
-		Spot a = graph.addVertex().init( 0, new double[] { 1, 2, 3 }, 1 );
-		Spot b = graph.addVertex().init( 1, new double[] { 1, 2, 3.2 }, 1 );
+		final Model model = new Model();
+		final ModelGraph graph = model.getGraph();
+		final Spot a = graph.addVertex().init( 0, new double[] { 1, 2, 3 }, 1 );
+		final Spot b = graph.addVertex().init( 1, new double[] { 1, 2, 3.2 }, 1 );
 		a.setLabel( "A" );
 		b.setLabel( "B" );
 		graph.addEdge( a, b ).init();
-		String actual = ModelUtils.dump( model );
-		String expexted = "Model " + model + "\n"
+		final String actual = ModelUtils.dump( model );
+		final String expexted = "Model " + model + "\n"
 				+ "Spots:\n"
 				+ "       Id      Label   Frame          X          Y          Z    N incoming links    N outgoing links    Spot N links    Spot frame          X          Y          Z    Spot radius\n"
 				+ "                                (pixel)    (pixel)    (pixel)                                                                          (pixel)    (pixel)    (pixel)        (pixel)\n"
@@ -72,24 +72,24 @@ public class ModelUtilsTest
 	@Test
 	public void testDumpWithTagSets()
 	{
-		Model model = new Model();
-		ModelGraph graph = model.getGraph();
-		Spot a = graph.addVertex().init( 0, new double[] { 1, 2, 3 }, 1 );
-		Spot b = graph.addVertex().init( 1, new double[] { 1, 2, 3.2 }, 1 );
+		final Model model = new Model();
+		final ModelGraph graph = model.getGraph();
+		final Spot a = graph.addVertex().init( 0, new double[] { 1, 2, 3 }, 1 );
+		final Spot b = graph.addVertex().init( 1, new double[] { 1, 2, 3.2 }, 1 );
 		a.setLabel( "A" );
 		b.setLabel( "B" );
-		Link edge = graph.addEdge( a, b ).init();
+		final Link edge = graph.addEdge( a, b ).init();
 		TagSetUtils.addNewTagSetToModel( model, "my tag set", Arrays.asList(
 				Pair.of( "tag1", Color.YELLOW.getRGB() ),
 				Pair.of( "tag2", Color.BLUE.getRGB() )
 		) );
-		TagHelper tag1 = new TagHelper( model, "my tag set", "tag1" );
+		final TagHelper tag1 = new TagHelper( model, "my tag set", "tag1" );
 		tag1.tagSpot( a );
-		TagHelper tag2 = new TagHelper( model, "my tag set", "tag2" );
+		final TagHelper tag2 = new TagHelper( model, "my tag set", "tag2" );
 		tag2.tagSpot( b );
 		tag2.tagLink( edge );
-		String actual = ModelUtils.dump( model, ModelUtils.DumpFlags.PRINT_TAGS );
-		String expected = "Spots:\n"
+		final String actual = ModelUtils.dump( model, ModelUtils.DumpFlags.PRINT_TAGS );
+		final String expected = "Spots:\n"
 				+ "       Id      Label   Frame          X          Y          Z  my tag set\n"
 				+ "                                (pixel)    (pixel)    (pixel)            \n"
 				+ "-------------------------------------------------------------------------\n"

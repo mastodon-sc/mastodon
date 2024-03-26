@@ -127,7 +127,7 @@ public class ModelUtils
 	 */
 	public static final String dump( final Model model, final long maxLines, final DumpFlags... options )
 	{
-		Set< DumpFlags > optionsSet = EnumSet.copyOf( Arrays.asList( options ) );
+		final Set< DumpFlags > optionsSet = EnumSet.copyOf( Arrays.asList( options ) );
 		final FeatureModel featureModel = model.getFeatureModel();
 		final List< FeatureSpec< ?, ? > > featureSpecs = new ArrayList<>( featureModel.getFeatureSpecs() );
 		featureSpecs.sort( Comparator.comparing( FeatureSpec::getKey ) );
@@ -145,12 +145,12 @@ public class ModelUtils
 		return str.toString();
 	}
 
-	private static void addSpotsTable( Model model, long maxLines, Set< DumpFlags > optionsSet, List< FeatureSpec< ?, ? > > featureSpecs, StringBuilder str )
+	private static void addSpotsTable( final Model model, final long maxLines, final Set< DumpFlags > optionsSet, final List< FeatureSpec< ?, ? > > featureSpecs, final StringBuilder str )
 	{
 		final String spaceUnits = Optional.ofNullable( model.getSpaceUnits() ).orElse( "" );
 		final ModelGraph graph = model.getGraph();
 		final FeatureModel featureModel = model.getFeatureModel();
-		TablePrinter< Spot > spotsTable = new TablePrinter<>();
+		final TablePrinter< Spot > spotsTable = new TablePrinter<>();
 		spotsTable.defineColumn( 9, "Id", "", spot -> Integer.toString( spot.getInternalPoolIndex() ) );
 		spotsTable.defineColumn( 9, "Label", "", Spot::getLabel );
 		spotsTable.defineColumn( 6, "Frame", "", spot -> Integer.toString( spot.getTimepoint() ) );
@@ -162,15 +162,15 @@ public class ModelUtils
 		if ( optionsSet.contains( DumpFlags.PRINT_FEATURES ) )
 			addFeatureColumns( featureSpecs, featureModel, spotsTable, Spot.class );
 
-		List< Spot > spots = getSortedSpots( graph, featureModel );
+		final List< Spot > spots = getSortedSpots( graph, featureModel );
 		spotsTable.print( str, spots, maxLines );
 	}
 
-	private static void addLinksTable( Model model, long maxLines, Set< DumpFlags > optionsSet, List< FeatureSpec< ?, ? > > featureSpecs, StringBuilder str )
+	private static void addLinksTable( final Model model, final long maxLines, final Set< DumpFlags > optionsSet, final List< FeatureSpec< ?, ? > > featureSpecs, final StringBuilder str )
 	{
 		final ModelGraph graph = model.getGraph();
 		final FeatureModel featureModel = model.getFeatureModel();
-		TablePrinter< Link > linkTable = new TablePrinter<>();
+		final TablePrinter< Link > linkTable = new TablePrinter<>();
 		linkTable.defineColumn( 9, "Id", "", link -> Integer.toString( link.getInternalPoolIndex() ) );
 		final Spot ref = graph.vertexRef();
 		linkTable.defineColumn( 9, "Source Id", "", link -> Integer.toString( link.getSource( ref ).getInternalPoolIndex() ) );
@@ -183,21 +183,20 @@ public class ModelUtils
 		linkTable.print( str, graph.edges(), maxLines );
 	}
 
-
-	private static < T > void addTagColumns( TablePrinter< T > table, TagSetStructure tagSetStructure, ObjTags< T > tags )
+	private static < T > void addTagColumns( final TablePrinter< T > table, final TagSetStructure tagSetStructure, final ObjTags< T > tags )
 	{
-		for ( TagSetStructure.TagSet tagSet : tagSetStructure.getTagSets() )
+		for ( final TagSetStructure.TagSet tagSet : tagSetStructure.getTagSets() )
 		{
-			String header = tagSet.getName();
-			ObjTagMap< T, TagSetStructure.Tag > tagSetTags = tags.tags( tagSet );
+			final String header = tagSet.getName();
+			final ObjTagMap< T, TagSetStructure.Tag > tagSetTags = tags.tags( tagSet );
 			table.defineColumn( header.length(), header, "", spotOrLink -> {
-				TagSetStructure.Tag tag = tagSetTags.get( spotOrLink );
+				final TagSetStructure.Tag tag = tagSetTags.get( spotOrLink );
 				return tag == null ? "" : tag.label();
 			} );
 		}
 	}
 
-	private static < T > void addFeatureColumns( List< FeatureSpec< ?, ? > > featureSpecs, FeatureModel featureModel, TablePrinter< T > table, Class< T > targetClass )
+	private static < T > void addFeatureColumns( final List< FeatureSpec< ?, ? > > featureSpecs, final FeatureModel featureModel, final TablePrinter< T > table, final Class< T > targetClass )
 	{
 		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
 		{
@@ -218,7 +217,7 @@ public class ModelUtils
 		}
 	}
 
-	private static RefArrayList< Spot > getSortedSpots( ModelGraph graph, FeatureModel featureModel )
+	private static RefArrayList< Spot > getSortedSpots( final ModelGraph graph, final FeatureModel featureModel )
 	{
 		final RefArrayList< Spot > spots = new RefArrayList<>( graph.vertices().getRefPool(), graph.vertices().size() );
 		spots.addAll( graph.vertices() );
@@ -226,7 +225,7 @@ public class ModelUtils
 		return spots;
 	}
 
-	private static Comparator< Spot > getSpotComparator( FeatureModel featureModel )
+	private static Comparator< Spot > getSpotComparator( final FeatureModel featureModel )
 	{
 		if ( featureModel.getFeatureSpecs().contains( SpotTrackIDFeature.SPEC ) )
 		{
@@ -239,7 +238,7 @@ public class ModelUtils
 			return Comparator.comparingInt( Spot::getTimepoint ).thenComparing( Spot::getInternalPoolIndex );
 	}
 
-	private static < T > String valueAsString( FeatureProjection< T > projection, T t, int width )
+	private static < T > String valueAsString( final FeatureProjection< T > projection, final T t, final int width )
 	{
 		if ( !projection.isSet( t ) )
 			return String.format( Locale.US, "%" + width + "s", "unset" );
@@ -255,27 +254,27 @@ public class ModelUtils
 
 		private final List< Column< T > > columns = new ArrayList<>();
 
-		public void defineColumn( int width, String title, String unit, Function< T, String > toString )
+		public void defineColumn( final int width, final String title, final String unit, final Function< T, String > toString )
 		{
 			columns.add( new Column<>( columns.isEmpty(), width, title, unit, toString ) );
 		}
 
-		public void print( StringBuilder str, Iterable< T > rows, long maxLines )
+		public void print( final StringBuilder str, final Iterable< T > rows, final long maxLines )
 		{
-			for ( Column< T > column : columns )
+			for ( final Column< T > column : columns )
 				str.append( String.format( Locale.US, column.template, column.header ) );
 			str.append( '\n' );
-			for ( Column< T > column : columns )
+			for ( final Column< T > column : columns )
 				str.append( String.format( Locale.US, column.template, column.unit ) );
 			str.append( '\n' );
-			int totalWidth = columns.stream().mapToInt( c -> c.width + 2 ).sum() - 2;
+			final int totalWidth = columns.stream().mapToInt( c -> c.width + 2 ).sum() - 2;
 			for ( int i = 0; i < totalWidth; i++ )
 				str.append( '-' );
 			str.append( '\n' );
 			long i = 0;
-			for ( T row : rows )
+			for ( final T row : rows )
 			{
-				for ( Column< T > column : columns )
+				for ( final Column< T > column : columns )
 					str.append( String.format( Locale.US, column.template, column.valueToString.apply( row ) ) );
 				str.append( '\n' );
 				i++;
@@ -298,7 +297,7 @@ public class ModelUtils
 
 		private final Function< T, String > valueToString;
 
-		private Column( boolean isFirst, int width, String header, String unit, Function< T, String > valueToString )
+		private Column( final boolean isFirst, final int width, final String header, final String unit, final Function< T, String > valueToString )
 		{
 			this.header = header;
 			this.unit = unit;
