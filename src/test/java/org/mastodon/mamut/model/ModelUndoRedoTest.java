@@ -55,14 +55,14 @@ public class ModelUndoRedoTest
 	@Test
 	public void testUndoRedo()
 	{
-		Model model = new Model();
-		ModelGraph graph = model.getGraph();
+		final Model model = new Model();
+		final ModelGraph graph = model.getGraph();
 		model.setUndoPoint();
-		Spot a = graph.addVertex().init( 0, new double[ 3 ], 1 );
+		final Spot a = graph.addVertex().init( 0, new double[ 3 ], 1 );
 		a.setLabel( "A" );
 		model.setUndoPoint();
 		assertEquals( "A", graphAsString( graph ) );
-		Spot b = graph.addVertex().init( 0, new double[ 3 ], 1 );
+		final Spot b = graph.addVertex().init( 0, new double[ 3 ], 1 );
 		b.setLabel( "B" );
 		model.setUndoPoint();
 		assertEquals( "A, B", graphAsString( graph ) );
@@ -86,17 +86,17 @@ public class ModelUndoRedoTest
 	/**
 	 * Returns a readable sting representation of the graph.
 	 */
-	private String graphAsString( ModelGraph graph )
+	private String graphAsString( final ModelGraph graph )
 	{
-		List< String > spots = new ArrayList<>();
-		for ( Spot spot : graph.vertices() )
+		final List< String > spots = new ArrayList<>();
+		for ( final Spot spot : graph.vertices() )
 			spots.add( spot.getLabel() );
 		Collections.sort( spots );
-		List< String > links = new ArrayList<>();
-		for ( Link link : graph.edges() )
+		final List< String > links = new ArrayList<>();
+		for ( final Link link : graph.edges() )
 			links.add( link.getSource().getLabel() + "->" + link.getTarget().getLabel() );
 		Collections.sort( links );
-		StringJoiner joiner = new StringJoiner( ", " );
+		final StringJoiner joiner = new StringJoiner( ", " );
 		spots.forEach( joiner::add );
 		links.forEach( joiner::add );
 		return joiner.toString();
@@ -109,7 +109,7 @@ public class ModelUndoRedoTest
 	@Test
 	public void testUndoRedoOnEmptyModel()
 	{
-		Model model = new Model();
+		final Model model = new Model();
 		testUndoRedo( model );
 	}
 
@@ -119,7 +119,7 @@ public class ModelUndoRedoTest
 	 * set. Then, the undo and redo methods are called to test if the model is
 	 * restored to the intended state.
 	 */
-	private static void testUndoRedo( Model model )
+	private static void testUndoRedo( final Model model )
 	{
 		final List< String > states = new ArrayList<>();
 		makeVariousChangesAndRecordUndoPoints( model, states );
@@ -127,29 +127,29 @@ public class ModelUndoRedoTest
 		redoAllRecordedPointsAndVerifyCorrectness( model, states );
 	}
 
-	private static void makeVariousChangesAndRecordUndoPoints( Model model, List< String > states )
+	private static void makeVariousChangesAndRecordUndoPoints( final Model model, final List< String > states )
 	{
-		ModelGraph graph = model.getGraph();
+		final ModelGraph graph = model.getGraph();
 		// add spot A
-		Spot a = graph.addVertex().init( 2, new double[] { 1, 2, 3 }, 1.5 );
+		final Spot a = graph.addVertex().init( 2, new double[] { 1, 2, 3 }, 1.5 );
 		a.setLabel( "spot A" );
 		setUndoPointAndRecordState( model, states );
 
 		// add spot B
-		Spot b = graph.addVertex().init( 3, new double[] { 1, 2, 4 }, 1.7 );
+		final Spot b = graph.addVertex().init( 3, new double[] { 1, 2, 4 }, 1.7 );
 		b.setLabel( "spot B" );
 		setUndoPointAndRecordState( model, states );
 
 		// add edge
-		Link edge = graph.addEdge( a, b ).init();
+		final Link edge = graph.addEdge( a, b ).init();
 		setUndoPointAndRecordState( model, states );
 
 		// add tag set
-		TagSetStructure.TagSet tagset = TagSetUtils.addNewTagSetToModel( model, "tag set 1", Arrays.asList(
+		final TagSetStructure.TagSet tagset = TagSetUtils.addNewTagSetToModel( model, "tag set 1", Arrays.asList(
 				Pair.of( "tag1", Color.red.getRGB() ),
 				Pair.of( "tag2", Color.green.getRGB() ) ) );
-		TagSetStructure.Tag tag1 = tagset.getTags().get( 0 );
-		TagSetStructure.Tag tag2 = tagset.getTags().get( 1 );
+		final TagSetStructure.Tag tag1 = tagset.getTags().get( 0 );
+		final TagSetStructure.Tag tag2 = tagset.getTags().get( 1 );
 		TagSetUtils.tagSpot( model, tagset, tag1, a );
 		TagSetUtils.tagSpot( model, tagset, tag2, b );
 		TagSetUtils.tagLinks( model, tagset, tag1, Collections.singletonList( edge ) );
@@ -165,7 +165,7 @@ public class ModelUndoRedoTest
 		setUndoPointAndRecordState( model, states );
 
 		// change covariance
-		double[][] cov = { { 2, 0.1, 0 }, { 0.1, 2.5, 0 }, { 0, 0, 2.1 } };
+		final double[][] cov = { { 2, 0.1, 0 }, { 0.1, 2.5, 0 }, { 0, 0, 2.1 } };
 		a.setCovariance( cov );
 		setUndoPointAndRecordState( model, states );
 
@@ -178,13 +178,13 @@ public class ModelUndoRedoTest
 		setUndoPointAndRecordState( model, states );
 	}
 
-	public static void setUndoPointAndRecordState( Model model, List< String > states )
+	public static void setUndoPointAndRecordState( final Model model, final List< String > states )
 	{
 		model.setUndoPoint();
 		states.add( modelAsString( model ) );
 	}
 
-	public static void undoAllRecordedPointsAndVerifyCorrectness( Model model, List< String > states )
+	public static void undoAllRecordedPointsAndVerifyCorrectness( final Model model, final List< String > states )
 	{
 		for ( int i = states.size() - 1; i > 0; i-- )
 		{
@@ -194,7 +194,7 @@ public class ModelUndoRedoTest
 		assertEquals( states.get( 0 ), modelAsString( model ) );
 	}
 
-	public static void redoAllRecordedPointsAndVerifyCorrectness( Model model, List< String > states )
+	public static void redoAllRecordedPointsAndVerifyCorrectness( final Model model, final List< String > states )
 	{
 		assertEquals( states.get( 0 ), modelAsString( model ) );
 		for ( int i = 1; i < states.size(); i++ )
@@ -204,7 +204,7 @@ public class ModelUndoRedoTest
 		}
 	}
 
-	private static String modelAsString( Model model )
+	private static String modelAsString( final Model model )
 	{
 		return ModelUtils.dump( model, ModelUtils.DumpFlags.PRINT_TAGS );
 	}
@@ -222,7 +222,7 @@ public class ModelUndoRedoTest
 	@Test
 	public void testUndoRedoAfterModelImporter()
 	{
-		Model model = new Model();
+		final Model model = new Model();
 		// Fill the undo-redo history with many different entries:
 		makeVariousChangesAndRecordUndoPoints( model, new ArrayList<>() );
 		addFourSpotGraph( model );
@@ -240,14 +240,14 @@ public class ModelUndoRedoTest
 	/**
 	 * Adds three spots and two edges to the model.
 	 */
-	private void addThreeSpotGraph( Model model )
+	private void addThreeSpotGraph( final Model model )
 	{
-		ModelGraph graph = model.getGraph();
-		Spot a = graph.addVertex().init( 0, new double[] { 1, 0, 0 }, 1 );
+		final ModelGraph graph = model.getGraph();
+		final Spot a = graph.addVertex().init( 0, new double[] { 1, 0, 0 }, 1 );
 		a.setLabel( "A" );
-		Spot b = graph.addVertex().init( 1, new double[] { 0, 2, 0 }, 1 );
+		final Spot b = graph.addVertex().init( 1, new double[] { 0, 2, 0 }, 1 );
 		b.setLabel( "B" );
-		Spot c = graph.addVertex().init( 1, new double[] { 0, 0, 3 }, 1 );
+		final Spot c = graph.addVertex().init( 1, new double[] { 0, 0, 3 }, 1 );
 		c.setLabel( "C" );
 		graph.addEdge( a, b ).init();
 		graph.addEdge( a, c ).init();
@@ -257,16 +257,16 @@ public class ModelUndoRedoTest
 	/**
 	 * Adds four spots and three edges to the model.
 	 */
-	private void addFourSpotGraph( Model model )
+	private void addFourSpotGraph( final Model model )
 	{
-		ModelGraph graph = model.getGraph();
-		Spot a = graph.addVertex().init( 0, new double[] { 1, 2, 3 }, 1 );
+		final ModelGraph graph = model.getGraph();
+		final Spot a = graph.addVertex().init( 0, new double[] { 1, 2, 3 }, 1 );
 		a.setLabel( "A" );
-		Spot b = graph.addVertex().init( 1, new double[] { 2, 2, 3 }, 1 );
+		final Spot b = graph.addVertex().init( 1, new double[] { 2, 2, 3 }, 1 );
 		b.setLabel( "B" );
-		Spot c = graph.addVertex().init( 2, new double[] { 3, 2, 3 }, 1 );
+		final Spot c = graph.addVertex().init( 2, new double[] { 3, 2, 3 }, 1 );
 		c.setLabel( "C" );
-		Spot d = graph.addVertex().init( 3, new double[] { 4, 2, 3 }, 1 );
+		final Spot d = graph.addVertex().init( 3, new double[] { 4, 2, 3 }, 1 );
 		d.setLabel( "D" );
 		graph.addEdge( a, b ).init();
 		graph.addEdge( b, c ).init();
