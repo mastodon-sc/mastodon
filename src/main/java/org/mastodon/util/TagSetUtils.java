@@ -28,7 +28,9 @@
  */
 package org.mastodon.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -36,6 +38,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.tag.ObjTagMap;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
@@ -350,5 +353,33 @@ public class TagSetUtils
 			if ( tagLabel.equals( tag.label() ) )
 				return tag;
 		throw new NoSuchElementException( "Did not find a tag with the given label: " + tagLabel );
+	}
+
+	/**
+	 * Returns the names of all tag sets in the model.
+	 * @param model the model to get the tag-set model from.
+	 * @return the names of all tag sets in the model.
+	 */
+	public static List< String > getTagSetNames( final Model model )
+	{
+		List< String > tagSetNames = new ArrayList<>();
+		model.getTagSetModel().getTagSetStructure().getTagSets().forEach( tagSet -> tagSetNames.add( tagSet.getName() ) );
+		return tagSetNames;
+	}
+
+	/**
+	 * Gets the tag label of the first spot in the given branchSpot within the given tagSet.
+	 * @param model the model to which the branch belongs
+	 * @param branchSpot the branch spot
+	 * @param tagSet the tag set
+	 * @return the tag label
+	 */
+	public static String getTagLabel( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet )
+	{
+		if ( model == null || branchSpot == null || tagSet == null )
+			return null;
+		Spot first = TreeUtils.getFirstSpot( model, branchSpot );
+		TagSetStructure.Tag tag = TagSetUtils.getBranchTag( model, tagSet, first );
+		return tag == null ? null : tag.label();
 	}
 }
