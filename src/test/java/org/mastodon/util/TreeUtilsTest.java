@@ -191,4 +191,14 @@ public class TreeUtilsTest
 		assertEquals( 3, TreeUtils.getMaxTimepoint( new ExampleGraph1().getModel() ) );
 		assertEquals( 7, TreeUtils.getMaxTimepoint( new ExampleGraph2().getModel() ) );
 	}
+
+	@Test
+	public void testGetFirstSpot()
+	{
+		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
+		assertEquals( exampleGraph1.spot0, TreeUtils.getFirstSpot( exampleGraph1.getModel(), exampleGraph1.branchSpotA ) );
+
+		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
+		assertEquals( exampleGraph2.spot5, TreeUtils.getFirstSpot( exampleGraph2.getModel(), exampleGraph2.branchSpotD ) );
+	}
 }
