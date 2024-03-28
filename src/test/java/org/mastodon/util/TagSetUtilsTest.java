@@ -38,9 +38,13 @@ import org.mastodon.model.tag.TagSetStructure;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class TagSetUtilsTest
@@ -109,5 +113,37 @@ public class TagSetUtilsTest
 		assertTrue( taggedSpots.contains( exampleGraph2.spot2 ) );
 		// 3 links are tagged: spot0 -> spot1, spot2 -> spot3, spot2 -> spot11
 		assertEquals( 3, model.getTagSetModel().getEdgeTags().getTaggedWith( tag0 ).size() );
+	}
+
+	@Test
+	public void testGetTagSetNames()
+	{
+		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
+		String tagSetName1 = "TagSet1";
+		String tagSetName2 = "TagSet2";
+		String tagSetName3 = "TagSet2";
+		Collection< Pair< String, Integer > > emptyTagsAndColors = Collections.emptyList();
+		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName1, emptyTagsAndColors );
+		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName2, emptyTagsAndColors );
+		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName3, emptyTagsAndColors );
+		Collection< String > tagSetNames = TagSetUtils.getTagSetNames( exampleGraph1.getModel() );
+		List< String > expected = Arrays.asList( tagSetName1, tagSetName2, tagSetName3 );
+		assertEquals( expected, tagSetNames );
+	}
+
+	@Test
+	public void testGetTagLabel()
+	{
+		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
+		String tagSetName = "TagSet";
+		Pair< String, Integer > tag0 = Pair.of( "Tag", 0 );
+		Collection< Pair< String, Integer > > tagAndColor = Collections.singletonList( tag0 );
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), tagSetName, tagAndColor );
+		TagSetStructure.Tag tag = tagSet.getTags().get( 0 );
+		TagSetUtils.tagBranch( exampleGraph2.getModel(), tagSet, tag, exampleGraph2.spot5 );
+		assertEquals( tag.label(), TagSetUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, tagSet ) );
+		assertNull( TagSetUtils.getTagLabel( null, exampleGraph2.branchSpotD, tagSet ) );
+		assertNull( TagSetUtils.getTagLabel( exampleGraph2.getModel(), null, tagSet ) );
+		assertNull( TagSetUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, null ) );
 	}
 }
