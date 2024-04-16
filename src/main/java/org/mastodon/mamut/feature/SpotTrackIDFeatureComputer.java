@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2014 - 2024 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-import io.humble.ferry.AtomicInteger;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Plugin( type = MamutFeatureComputer.class )
 public class SpotTrackIDFeatureComputer implements MamutFeatureComputer

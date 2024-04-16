@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2014 - 2024 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,6 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.pool.PoolCollectionWrapper;
 
 public class TreeUtils
 {
@@ -239,7 +238,7 @@ public class TreeUtils
 	public static int getMinTimepoint( final Model model )
 	{
 		int minTimepoint = Integer.MAX_VALUE;
-		for ( Spot spot : model.getGraph().vertices() )
+		for ( final Spot spot : model.getGraph().vertices() )
 			minTimepoint = Math.min( minTimepoint, spot.getTimepoint() );
 		return minTimepoint;
 	}
@@ -252,7 +251,7 @@ public class TreeUtils
 	public static int getMaxTimepoint( final Model model )
 	{
 		int max = 0;
-		for ( Spot spot : model.getGraph().vertices() )
+		for ( final Spot spot : model.getGraph().vertices() )
 			max = Math.max( max, spot.getTimepoint() );
 		return max;
 	}

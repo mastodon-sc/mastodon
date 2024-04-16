@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2014 - 2024 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -67,6 +67,7 @@ public class DefaultFeatureRangeCalculator< O > implements FeatureRangeCalculato
 
 		final DoubleSummaryStatistics stats = objs.stream()
 				.filter( projection::isSet )
+				.filter( object -> !Double.isNaN( projection.value( object ) ) )
 				.mapToDouble( projection::value )
 				.summaryStatistics();
 		return new double[] { stats.getMin(), stats.getMax() };

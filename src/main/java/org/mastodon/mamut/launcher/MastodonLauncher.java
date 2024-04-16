@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2014 - 2024 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -539,7 +539,11 @@ public class MastodonLauncher extends JFrame
 					FileChooser.DialogType.LOAD,
 					SelectionMode.FILES_AND_DIRECTORIES );
 			if ( file == null )
+			{
+				gui.showPanel( LauncherGUI.RECENT_PROJECTS_KEY );
+				disabler.reenable();
 				return;
+			}
 		}
 		else
 		{

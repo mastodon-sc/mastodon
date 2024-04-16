@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2014 - 2024 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,9 +30,11 @@ package org.mastodon.mamut.feature.branch.exampleGraph;
 
 import javax.annotation.Nonnull;
 
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 
@@ -70,6 +72,12 @@ public abstract class AbstractExampleGraph
 		return modelBranchGraph.getBranchVertex( spot, modelBranchGraph.vertexRef() );
 	}
 
+	public BranchLink getBranchLink( @Nonnull Link link )
+	{
+		rebuiltGraphIfRequired();
+		return modelBranchGraph.getBranchEdge( link, modelBranchGraph.edgeRef() );
+	}
+
 	private void rebuiltGraphIfRequired()
 	{
 		if ( ! branchGraphRequiresRebuild )
@@ -87,9 +95,10 @@ public abstract class AbstractExampleGraph
 		return spot;
 	}
 
-	protected void addEdge( @Nonnull Spot source, @Nonnull Spot target )
+	protected Link addEdge( @Nonnull Spot source, @Nonnull Spot target )
 	{
-		modelGraph.addEdge( source, target );
+		Link link = modelGraph.addEdge( source, target );
 		branchGraphRequiresRebuild = true;
+		return link;
 	}
 }

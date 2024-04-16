@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2023 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2014 - 2024 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -282,7 +282,9 @@ class LauncherGUI extends JPanel
 			final JLabel lblTobiasPietzsch = new JLabel( "<html><p align=\"center\">"
 					+ "Tobias Pietzsch & Jean-Yves Tinevez"
 					+ "<br> "
-					+ "Ko Sugawara & Matthias Arzt & Vladimír Ulman"
+					+ "Ko Sugawara & Matthias Arzt"
+					+ "<br>"
+					+ "Vladimír Ulman & Stefan Hahmann"
 					+ "</html>" );
 			final GridBagConstraints gbc_lblTobiasPietzsch = new GridBagConstraints();
 			gbc_lblTobiasPietzsch.anchor = GridBagConstraints.SOUTH;
