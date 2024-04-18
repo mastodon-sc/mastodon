@@ -63,9 +63,19 @@ package org.mastodon.mamut.io.loader;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import org.janelia.saalfeldlab.n5.N5URI;
 import org.jdom2.Element;
+
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
 
 import mpicbg.spim.data.XmlHelpers;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
@@ -109,7 +119,43 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
             url = XmlHelpers.loadPath( elem, URL, basePath ).toString();
         }
         final String dataset = XmlHelpers.getText( elem, DATASET );
-        return new N5UniverseImgLoader( url, dataset, sequenceDescription );
+        try
+        {
+            N5UniverseImgLoader imgLoader = new N5UniverseImgLoader( url, dataset, sequenceDescription );
+            if ( imgLoader.validate() )
+            {
+                return imgLoader;
+            }
+            else
+            {
+                // use DefaultAWSCredentialsProviderChain
+                imgLoader = new N5UniverseImgLoader( url, dataset, sequenceDescription, null );
+                if ( imgLoader.validate() )
+                {
+                    return imgLoader;
+                }
+                else
+                {
+                    // use BasicAWSCredentials
+                    final AWSCredentials credentials = getCredentials();
+                    if ( credentials == null )
+                        throw new RuntimeException( "No credentials provided" );
+                    imgLoader = new N5UniverseImgLoader( url, dataset, sequenceDescription, credentials );
+                    if ( imgLoader.validate() )
+                    {
+                        return imgLoader;
+                    }
+                    else
+                    {
+                        throw new RuntimeException( "Could not create N5UniverseImgLoader with credentials" );
+                    }
+                }
+            }
+        }
+        catch ( final Throwable e )
+        {
+            throw new RuntimeException( e );
+        }
     }
 
     private static boolean hasSchema( final String url )
@@ -124,6 +170,34 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
         catch ( URISyntaxException ignored )
         {}
         return scheme != null;
+    }
+
+    private AWSCredentials getCredentials()
+    {
+        final JLabel lblUsername = new JLabel( "Username" );
+        final JTextField textFieldUsername = new JTextField();
+        final JLabel lblPassword = new JLabel( "Password" );
+        final JPasswordField passwordField = new JPasswordField();
+        final Object[] ob = { lblUsername, textFieldUsername, lblPassword, passwordField };
+        final int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
+
+        if ( result == JOptionPane.OK_OPTION )
+        {
+            final String username = textFieldUsername.getText();
+            final char[] password = passwordField.getPassword();
+            try
+            {
+                return new BasicAWSCredentials( username, String.valueOf( password ) );
+            }
+            finally
+            {
+                Arrays.fill( password, '0' );
+            }
+        }
+        else
+        {
+            return null;
+        }
     }
 
 }

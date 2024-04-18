@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -29,7 +31,7 @@
 	</licenses>
 
 	<dependencies>
-		
+
 		<!-- Mastodon dependencies -->
 		<dependency>
 			<groupId>org.mastodon</groupId>
@@ -41,7 +43,7 @@
 			<artifactId>mastodon-graph</artifactId>
 			<version>${mastodon-graph.version}</version>
 		</dependency>
-		
+
 		<!-- BDV and spimdata dependecies -->
 		<dependency>
 			<groupId>sc.fiji</groupId>
@@ -63,7 +65,7 @@
 			<groupId>cisd</groupId>
 			<artifactId>jhdf5</artifactId>
 		</dependency>
-		
+
 		<!-- ImgLib2 dependencies -->
 		<dependency>
 			<groupId>org.scijava</groupId>
@@ -82,9 +84,19 @@
 		<dependency>
 			<groupId>org.janelia.saalfeldlab</groupId>
 			<artifactId>n5-universe</artifactId>
-			<version>1.3.2-SNAPSHOT</version>
+			<version>1.4.2</version>
 		</dependency>
-				
+		<dependency>
+			<groupId>org.janelia.saalfeldlab</groupId>
+			<artifactId>n5-google-cloud</artifactId>
+			<version>4.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.janelia.saalfeldlab</groupId>
+			<artifactId>n5-aws-s3</artifactId>
+			<version>4.1.3-SNAPSHOT</version>
+		</dependency>
+
 		<!-- Misc dependencies. -->
 		<dependency>
 			<groupId>com.opencsv</groupId>
@@ -93,12 +105,18 @@
 		<dependency>
 			<groupId>io.humble</groupId>
 			<artifactId>humble-video-all</artifactId>
-		</dependency>		
+		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.webcompere</groupId>
+			<artifactId>system-stubs-junit4</artifactId>
+			<version>2.1.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -111,7 +129,7 @@
 			<artifactId>MaMuT</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 
 	</dependencies>
 
@@ -197,17 +215,23 @@
 		<contributor>
 			<name>Ko Sugawara</name>
 			<url>https://github.com/ksugar</url>
-			<properties><id>ksugar</id></properties>
+			<properties>
+				<id>ksugar</id>
+			</properties>
 		</contributor>
 		<contributor>
 			<name>Matthias Arzt</name>
 			<url>https://github.com/maarzt</url>
-			<properties><id>maarzt</id></properties>
+			<properties>
+				<id>maarzt</id>
+			</properties>
 		</contributor>
 		<contributor>
 			<name>Vladimír Ulman</name>
 			<url>https://github.com/xulman</url>
-			<properties><id>xulman</id></properties>
+			<properties>
+				<id>xulman</id>
+			</properties>
 		</contributor>
 	</contributors>
 

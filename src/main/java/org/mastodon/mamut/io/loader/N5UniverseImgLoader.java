@@ -67,14 +67,23 @@ import java.util.Map;
 import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
+import org.janelia.saalfeldlab.n5.N5KeyValueReader;
 import org.janelia.saalfeldlab.n5.N5Reader;
+import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Reader;
 import org.janelia.saalfeldlab.n5.universe.N5Factory;
 import org.janelia.saalfeldlab.n5.zarr.ZarrCompressor;
+import org.janelia.saalfeldlab.n5.zarr.ZarrKeyValueReader;
+import org.mastodon.mamut.io.loader.adapter.N5HDF5ReaderToViewerImgLoaderAdapter;
+import org.mastodon.mamut.io.loader.adapter.N5KeyValueReaderToViewerImgLoaderAdapter;
+import org.mastodon.mamut.io.loader.adapter.ZarrKeyValueReaderToViewerImgLoaderAdapter;
+import org.mastodon.mamut.io.loader.adapter.N5ReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.util.OmeZarrMultiscales;
 import org.mastodon.mamut.io.loader.util.OmeZarrMultiscalesAdapter;
 import org.mastodon.mamut.io.loader.util.ZarrAxes;
 import org.mastodon.mamut.io.loader.util.ZarrAxesAdapter;
 
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.AWSCredentials;
 import com.google.gson.GsonBuilder;
 
 import bdv.AbstractViewerSetupImgLoader;
@@ -106,6 +115,9 @@ import net.imglib2.type.NativeType;
 import net.imglib2.util.Cast;
 import net.imglib2.view.Views;
 
+/**
+ * {@link ViewerImgLoader} for N5/OME-Zarr/HDF5 image data using {@link N5Reader}.
+ */
 public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgLoader
 {
     private N5Reader n5;
@@ -126,7 +138,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         return dataset;
     }
 
-    private BdvN5UniverseFormat format;
+    private N5ReaderToViewerImgLoaderAdapter< ? > adapter;
 
     // TODO: it would be good if this would not be needed
     //       find available setups from the n5
@@ -136,6 +148,27 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
      * Maps setup id to {@link SetupImgLoader}.
      */
     private final Map< Integer, SetupImgLoader< ?, ? > > setupImgLoaders = new HashMap<>();
+
+    /**
+     * Create a new {@link N5UniverseImgLoader} for the given URI and dataset.
+     * @param uri
+     * @param dataset
+     * @param sequenceDescription
+     * @param s3Credentials use the {@link DefaultAWSCredentialsProviderChain} if null
+     */
+    public N5UniverseImgLoader( final String uri, final String dataset, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
+            final AWSCredentials s3Credentials )
+    {
+        this( uri, dataset, sequenceDescription );
+        if ( s3Credentials == null )
+        {
+            this.factory = this.factory.s3UseCredentials();
+        }
+        else
+        {
+            this.factory = this.factory.s3UseCredentials( s3Credentials );
+        }
+    }
 
     public N5UniverseImgLoader( final String uri, final String dataset, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription )
     {
@@ -181,6 +214,42 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         requestedSharedQueue = createdSharedQueue;
     }
 
+    private N5ReaderToViewerImgLoaderAdapter< ? extends N5Reader > getAdapter()
+    {
+        if ( n5 instanceof N5HDF5Reader )
+        {
+            return new N5HDF5ReaderToViewerImgLoaderAdapter( ( N5HDF5Reader ) n5, dataset );
+        }
+        else if ( n5 instanceof ZarrKeyValueReader )
+        {
+            return new ZarrKeyValueReaderToViewerImgLoaderAdapter( ( ZarrKeyValueReader ) n5, dataset );
+        }
+        else if ( n5 instanceof N5KeyValueReader )
+        {
+            return new N5KeyValueReaderToViewerImgLoaderAdapter( ( N5KeyValueReader ) n5, dataset );
+        }
+        else
+        {
+            throw new UnsupportedOperationException( "Unsupported format'" );
+        }
+    }
+
+    /**
+     * Validate if the n5 is readable.
+     */
+    public boolean validate()
+    {
+        try
+        {
+            open();
+            return true;
+        }
+        catch ( Throwable e )
+        {
+            return false;
+        }
+    }
+
     private void open()
     {
         if ( !isOpen )
@@ -193,7 +262,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                 try
                 {
                     this.n5 = factory.openReader( url );
-                    this.format = new BdvN5UniverseFormat( n5, dataset );
+                    this.adapter = getAdapter();
                     int maxNumLevels = 0;
                     final List< ? extends BasicViewSetup > setups = seq.getViewSetupsOrdered();
                     for ( final BasicViewSetup setup : setups )
@@ -257,7 +326,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
     private < T extends NativeType< T >, V extends Volatile< T > & NativeType< V > > SetupImgLoader< T, V >
             createSetupImgLoader( final int setupId ) throws IOException
     {
-        DataType dataType = format.getSetupDataType( setupId );
+        DataType dataType = adapter.getSetupDataType( setupId );
         return new SetupImgLoader<>( setupId, Cast.unchecked( DataTypeProperties.of( dataType ) ) );
     }
 
@@ -287,7 +356,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         {
             super( type, volatileType );
             this.setupId = setupId;
-            mipmapResolutions = format.getMipmapResolutions( setupId );
+            mipmapResolutions = adapter.getMipmapResolutions( setupId );
             mipmapTransforms = new AffineTransform3D[ mipmapResolutions.length ];
             for ( int level = 0; level < mipmapResolutions.length; level++ )
                 mipmapTransforms[ level ] = MipmapTransforms.getMipmapTransformDefault( mipmapResolutions[ level ] );
@@ -310,7 +379,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         {
             try
             {
-                final String pathName = getFullPathName( format.getPathName( setupId, timepointId, level ) );
+                final String pathName = getFullPathName( adapter.getPathNameFromSetupTimepointLevel( setupId, timepointId, level ) );
                 final DatasetAttributes attributes = n5.getDatasetAttributes( pathName );
                 return new FinalDimensions( attributes.getDimensions() );
             }
@@ -352,16 +421,16 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         {
             try
             {
-                final String pathName = getFullPathName( format.getPathName( setupId, timepointId, level ) );
+                final String pathName = getFullPathName( adapter.getPathNameFromSetupTimepointLevel( setupId, timepointId, level ) );
                 final DatasetAttributes attributes = n5.getDatasetAttributes( pathName );
-                final long[] dimensions = format.getDimensions( attributes, setupId );
-                final int[] cellDimensions = format.getCellDimensions( attributes, setupId );
+                final long[] dimensions = adapter.getDimensions( attributes, setupId );
+                final int[] cellDimensions = adapter.getCellDimensions( attributes, setupId );
                 final CellGrid grid = new CellGrid( dimensions, cellDimensions );
 
                 final int priority = numMipmapLevels() - 1 - level;
                 final CacheHints cacheHints = new CacheHints( loadingStrategy, priority, false );
 
-                final SimpleCacheArrayLoader< ? > loader = format.createCacheArrayLoader( pathName, setupId, timepointId, grid );
+                final SimpleCacheArrayLoader< ? > loader = adapter.createCacheArrayLoader( pathName, setupId, timepointId, grid );
                 return cache.createImg( grid, timepointId, setupId, level, cacheHints, loader, type );
             }
             catch ( final IOException | N5Exception e )
