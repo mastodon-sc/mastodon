@@ -447,6 +447,11 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
 
     private String getFullPathName( final String pathName )
     {
-        return dataset + pathName;
+        String fullPathName = dataset + pathName;
+        while ( fullPathName.contains( "//" ) )
+        {
+            fullPathName = fullPathName.replace( "//", "/" );
+        }
+        return fullPathName;
     }
 }
