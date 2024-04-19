@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -31,7 +29,7 @@
 	</licenses>
 
 	<dependencies>
-
+		
 		<!-- Mastodon dependencies -->
 		<dependency>
 			<groupId>org.mastodon</groupId>
@@ -130,7 +128,6 @@
 			<scope>test</scope>
 		</dependency>
 
-
 	</dependencies>
 
 	<build>
@@ -215,23 +212,17 @@
 		<contributor>
 			<name>Ko Sugawara</name>
 			<url>https://github.com/ksugar</url>
-			<properties>
-				<id>ksugar</id>
-			</properties>
+			<properties><id>ksugar</id></properties>
 		</contributor>
 		<contributor>
 			<name>Matthias Arzt</name>
 			<url>https://github.com/maarzt</url>
-			<properties>
-				<id>maarzt</id>
-			</properties>
+			<properties><id>maarzt</id></properties>
 		</contributor>
 		<contributor>
 			<name>Vladimír Ulman</name>
 			<url>https://github.com/xulman</url>
-			<properties>
-				<id>xulman</id>
-			</properties>
+			<properties><id>xulman</id></properties>
 		</contributor>
 	</contributors>
 

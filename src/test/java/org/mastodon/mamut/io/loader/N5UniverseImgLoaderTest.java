@@ -1,7 +1,6 @@
 package org.mastodon.mamut.io.loader;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
 
