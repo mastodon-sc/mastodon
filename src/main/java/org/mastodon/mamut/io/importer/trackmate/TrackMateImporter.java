@@ -376,7 +376,7 @@ public class TrackMateImporter
 						pos[ 1 ] = Double.parseDouble( spotEl.getAttributeValue( POSITION_Y_FEATURE_NAME ) );
 						pos[ 2 ] = Double.parseDouble( spotEl.getAttributeValue( POSITION_Z_FEATURE_NAME ) );
 						final double radius = Double.parseDouble( spotEl.getAttributeValue( RADIUS_FEATURE_NAME ) );
-						final int frame = Integer.parseInt( spotEl.getAttributeValue( FRAME_FEATURE_NAME ) );
+						final int frame = ( int ) Double.parseDouble( spotEl.getAttributeValue( FRAME_FEATURE_NAME ) );
 						final int id = Integer.parseInt( spotEl.getAttributeValue( ID_FEATURE_NAME ) );
 						final String label = spotEl.getAttributeValue( LABEL_FEATURE_NAME );
 
