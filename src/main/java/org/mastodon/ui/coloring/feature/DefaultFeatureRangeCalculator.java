@@ -67,6 +67,7 @@ public class DefaultFeatureRangeCalculator< O > implements FeatureRangeCalculato
 
 		final DoubleSummaryStatistics stats = objs.stream()
 				.filter( projection::isSet )
+				.filter( object -> !Double.isNaN( projection.value( object ) ) )
 				.mapToDouble( projection::value )
 				.summaryStatistics();
 		return new double[] { stats.getMin(), stats.getMax() };
