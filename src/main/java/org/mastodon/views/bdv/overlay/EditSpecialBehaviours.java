@@ -475,7 +475,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				// Create new vertex under click location.
 				source.getCovariance( mat );
 				final int timepoint = viewer.state().getCurrentTimepoint();
-				overlayGraph.addVertex( target ).init( timepoint, pos, mat );
+				V vertex = overlayGraph.addVertex( target ).init( timepoint, pos, mat );
 
 				// Link it to source vertex. Careful for oriented edge.
 				if ( forward )
@@ -489,6 +489,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				overlay.paintGhostLink = true;
 				overlay.paintGhostVertex = true;
 				overlayGraph.notifyGraphChanged();
+				if ( FOCUS_EDITED_SPOT )
+					focus.focusVertex( vertex );
 
 				lock.readLock().lock();
 				lock.writeLock().unlock();
