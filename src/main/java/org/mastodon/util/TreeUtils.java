@@ -263,11 +263,8 @@ public class TreeUtils
 	 * @param branchSpot the {@link BranchSpot} to query
 	 * @return the first {@link Spot}
 	 */
-	public static Spot getFirstSpot( final Model model, final BranchSpot branchSpot )
+	public static Spot getFirstSpot( final Model model, final BranchSpot branchSpot, final Spot ref )
 	{
-		Spot ref = model.getGraph().vertexRef();
-		Spot first = model.getBranchGraph().getFirstLinkedVertex( branchSpot, ref );
-		model.getGraph().releaseRef( ref );
-		return first;
+		return model.getBranchGraph().getFirstLinkedVertex( branchSpot, ref );
 	}
 }
