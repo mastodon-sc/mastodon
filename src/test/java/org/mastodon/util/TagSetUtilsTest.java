@@ -141,9 +141,11 @@ public class TagSetUtilsTest
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), tagSetName, tagAndColor );
 		TagSetStructure.Tag tag = tagSet.getTags().get( 0 );
 		TagSetUtils.tagBranch( exampleGraph2.getModel(), tagSet, tag, exampleGraph2.spot5 );
-		assertEquals( tag.label(), TagSetUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, tagSet ) );
-		assertNull( TagSetUtils.getTagLabel( null, exampleGraph2.branchSpotD, tagSet ) );
-		assertNull( TagSetUtils.getTagLabel( exampleGraph2.getModel(), null, tagSet ) );
-		assertNull( TagSetUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, null ) );
+		Spot ref = exampleGraph2.getModel().getGraph().vertexRef();
+		assertEquals( tag.label(), TagSetUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, tagSet, ref ) );
+		assertNull( TagSetUtils.getTagLabel( null, exampleGraph2.branchSpotD, tagSet, ref ) );
+		assertNull( TagSetUtils.getTagLabel( exampleGraph2.getModel(), null, tagSet, ref ) );
+		assertNull( TagSetUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, null, ref ) );
+		exampleGraph2.getModel().getGraph().releaseRef( ref );
 	}
 }
