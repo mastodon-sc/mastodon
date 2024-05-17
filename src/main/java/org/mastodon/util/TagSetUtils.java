@@ -374,11 +374,11 @@ public class TagSetUtils
 	 * @param tagSet the tag set
 	 * @return the tag label
 	 */
-	public static String getTagLabel( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet )
+	public static String getTagLabel( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet, final Spot ref )
 	{
 		if ( model == null || branchSpot == null || tagSet == null )
 			return null;
-		Spot first = TreeUtils.getFirstSpot( model, branchSpot );
+		Spot first = TreeUtils.getFirstSpot( model, branchSpot, ref );
 		TagSetStructure.Tag tag = TagSetUtils.getBranchTag( model, tagSet, first );
 		return tag == null ? null : tag.label();
 	}
