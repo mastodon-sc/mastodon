@@ -33,6 +33,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
@@ -63,6 +64,7 @@ import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.ui.EditTagActions;
+import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
@@ -183,6 +185,7 @@ public class MamutViewTrackScheme
 				appModel.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(),
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
+		ExportViewActions.install( viewActions, frame.getTrackschemePanel(), frame, "TrackScheme" );
 
 		// Timepoint and number of spots.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model );
@@ -208,6 +211,10 @@ public class MamutViewTrackScheme
 		MainWindow.addMenus( menu, actionMap );
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						separator(),
+						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),
+						item( ExportViewActions.EXPORT_VIEW_TO_PNG ) ),
 				viewMenu(
 						colorMenu( coloringMenuHandle ),
 						colorbarMenu( colorbarMenuHandle ),
