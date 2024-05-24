@@ -260,6 +260,7 @@ public class DatasetPathDialog extends JDialog
 
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+		setLocationRelativeTo( null );
 	}
 
 	private void close()
@@ -389,6 +390,7 @@ public class DatasetPathDialog extends JDialog
 			getContentPane().add( content );
 			pack();
 			setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+			setLocationRelativeTo( owner );
 			setVisible( true );
 		}
 
