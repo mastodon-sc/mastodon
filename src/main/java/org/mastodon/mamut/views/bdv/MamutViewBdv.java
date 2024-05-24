@@ -63,6 +63,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
@@ -259,6 +260,8 @@ public class MamutViewBdv
 		viewer.timePointListeners().add( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
+		ExportViewActions.install( viewActions, frame.getViewerPanel(), frame, "BDV" );
+
 		final RenderSettingsManager renderSettingsManager = appModel.getWindowManager().getManager( RenderSettingsManager.class );
 		final RenderSettings renderSettings = renderSettingsManager.getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
@@ -284,7 +287,10 @@ public class MamutViewBdv
 						item( BigDataViewerActions.SAVE_SETTINGS ),
 						separator(),
 						item( RecordMovieDialog.RECORD_MOVIE_DIALOG ),
-						item( RecordMaxProjectionMovieDialog.RECORD_MIP_MOVIE_DIALOG ) ),
+						item( RecordMaxProjectionMovieDialog.RECORD_MIP_MOVIE_DIALOG ),
+						separator(),
+						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),
+						item( ExportViewActions.EXPORT_VIEW_TO_PNG ) ),
 				viewMenu(
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
