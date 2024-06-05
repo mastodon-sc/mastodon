@@ -232,12 +232,16 @@ public class TreeUtils
 	}
 
 	/**
-	 * Gets the minimum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * Gets the minimum time point in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * <br>
+	 * If the model is empty, returns 0.
 	 * @param model the {@link Model}
 	 * @return the timepoint
 	 */
 	public static int getMinTimepoint( final Model model )
 	{
+		if ( model.getGraph().vertices().isEmpty() )
+			return 0;
 		int minTimepoint = Integer.MAX_VALUE;
 		for ( final Spot spot : model.getGraph().vertices() )
 			minTimepoint = Math.min( minTimepoint, spot.getTimepoint() );
