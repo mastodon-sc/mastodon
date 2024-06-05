@@ -249,7 +249,9 @@ public class TreeUtils
 	}
 
 	/**
-	 * Gets the maximum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * Gets the maximum time point in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * <br>
+	 * If the model is empty, returns 0.
 	 * @param model the {@link Model}
 	 * @return the timepoint
 	 */

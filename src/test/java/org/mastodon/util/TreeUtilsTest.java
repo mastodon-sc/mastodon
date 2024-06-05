@@ -191,6 +191,7 @@ public class TreeUtilsTest
 	{
 		assertEquals( 3, TreeUtils.getMaxTimepoint( new ExampleGraph1().getModel() ) );
 		assertEquals( 7, TreeUtils.getMaxTimepoint( new ExampleGraph2().getModel() ) );
+		assertEquals( 0, TreeUtils.getMaxTimepoint( new Model() ) );
 	}
 
 	@Test
