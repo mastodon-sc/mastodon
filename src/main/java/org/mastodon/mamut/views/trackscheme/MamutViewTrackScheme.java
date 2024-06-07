@@ -73,6 +73,7 @@ import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
@@ -268,6 +269,9 @@ public class MamutViewTrackScheme
 		// Give focus to the display so that it can receive key presses
 		// immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
+
+		// TODO
+		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
 	}
 
 	@Override
