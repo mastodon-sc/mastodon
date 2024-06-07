@@ -28,6 +28,8 @@
  */
 package org.mastodon.mamut.io.project;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +38,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -333,29 +337,37 @@ public class MamutProject
 
 	private class WriteToDirectory implements ProjectWriter
 	{
+		private final File pendingDirectory;
+
+		private WriteToDirectory()
+		{
+			pendingDirectory = new File( projectRoot.getParent(), projectRoot.getName() + "_pending" );
+			if ( !pendingDirectory.exists() )
+				pendingDirectory.mkdir();
+		}
 
 		@Override
 		public OutputStream getProjectXmlOutputStream() throws FileNotFoundException
 		{
-			return new FileOutputStream( new File( projectRoot, PROJECT_FILE_NAME ) );
+			return new FileOutputStream( new File( pendingDirectory, PROJECT_FILE_NAME ) );
 		}
 
 		@Override
 		public OutputStream getRawModelOutputStream() throws FileNotFoundException
 		{
-			return new FileOutputStream( new File( projectRoot, RAW_MODEL_FILE_NAME ) );
+			return new FileOutputStream( new File( pendingDirectory, RAW_MODEL_FILE_NAME ) );
 		}
 
 		@Override
 		public OutputStream getRawTagsOutputStream() throws FileNotFoundException
 		{
-			return new FileOutputStream( new File( projectRoot, RAW_TAGS_FILE_NAME ) );
+			return new FileOutputStream( new File( pendingDirectory, RAW_TAGS_FILE_NAME ) );
 		}
 
 		@Override
 		public OutputStream getFeatureOutputStream( final String featureKey ) throws IOException
 		{
-			final File featureFolder = new File( projectRoot, FEATURE_FOLDER_NAME );
+			final File featureFolder = new File( pendingDirectory, FEATURE_FOLDER_NAME );
 			if ( !featureFolder.exists() )
 				featureFolder.mkdir();
 			return new FileOutputStream( new File( featureFolder, featureKey + ".raw" ) );
@@ -364,27 +376,34 @@ public class MamutProject
 		@Override
 		public OutputStream getGuiOutputStream() throws IOException
 		{
-			return new FileOutputStream( new File( projectRoot, GUI_FILE_NAME ) );
+			return new FileOutputStream( new File( pendingDirectory, GUI_FILE_NAME ) );
 		}
 
 		@Override
 		public OutputStream getBackupDatasetXmlOutputStream() throws IOException
 		{
-			return new FileOutputStream( new File( projectRoot, BACKUP_DATASET_XML_FILE_NAME ) );
+			return new FileOutputStream( new File( pendingDirectory, BACKUP_DATASET_XML_FILE_NAME ) );
 		}
 
 		@Override
 		public void close() throws IOException
-		{}
+		{
+			FileUtils.deleteDirectory( projectRoot );
+			Files.move( pendingDirectory.toPath(), projectRoot.toPath(), StandardCopyOption.REPLACE_EXISTING );
+		}
 	}
 
 	private class WriteToZip implements ProjectWriter
 	{
 		private final WriteZip zip;
 
-		WriteToZip() throws IOException
+		private final File pendingFile;
+
+		private WriteToZip() throws IOException
 		{
-			zip = new WriteZip( projectRoot );
+			String suffix = "_pending";
+			pendingFile = new File( projectRoot.getParent(), projectRoot.getName() + suffix );
+			zip = new WriteZip( pendingFile );
 		}
 
 		@Override
@@ -427,6 +446,7 @@ public class MamutProject
 		public void close() throws IOException
 		{
 			zip.close();
+			Files.move( pendingFile.toPath(), projectRoot.toPath(), StandardCopyOption.REPLACE_EXISTING );
 		}
 	}
 }
