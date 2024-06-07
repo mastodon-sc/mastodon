@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.ScrollPaneConstants;
@@ -50,6 +52,7 @@ import org.scijava.ui.behaviour.io.gui.InputTriggerPanelEditor;
 import org.scijava.ui.behaviour.io.gui.TagPanelEditor;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel.ConfigChangeListener;
 import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.RunnableAction;
 
 public class CommandFinderPanel extends JPanel
 {
@@ -64,7 +67,7 @@ public class CommandFinderPanel extends JPanel
 
 	private final Listeners.List< ConfigChangeListener > modelChangedListeners;
 
-	private final JTextField textFieldFilter;
+	final JTextField textFieldFilter;
 
 	private final JPanel panelEditor;
 
@@ -114,6 +117,7 @@ public class CommandFinderPanel extends JPanel
 		panelFilter.add( horizontalStrut_1 );
 
 		textFieldFilter = new JTextField();
+		textFieldFilter.addActionListener( e -> runFromFilter() );
 		panelFilter.add( textFieldFilter );
 		textFieldFilter.setColumns( 10 );
 		textFieldFilter.getDocument().addDocumentListener( new DocumentListener()
@@ -252,7 +256,14 @@ public class CommandFinderPanel extends JPanel
 		tableBindings.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
 		tableBindings.setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 
-		btnApply.addActionListener( ( e ) -> run() );
+		// Run when the user press enter and a row is selected
+		final KeyStroke enter = KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 );
+		final String solve = "Run command";
+		tableBindings.getInputMap( JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ).put( enter, solve );
+		tableBindings.getActionMap().put( solve, new RunnableAction( solve, this::runSelection ) );
+
+		// Run when the user presses the button
+		btnApply.addActionListener( ( e ) -> runSelection() );
 
 		configToModel();
 		tableBindings.getRowSorter().toggleSortOrder( 0 );
@@ -262,7 +273,16 @@ public class CommandFinderPanel extends JPanel
 		scrollPane.setViewportView( tableBindings );
 	}
 
-	private void run()
+	private void runFromFilter()
+	{
+		final int nFiltered = tableBindings.getRowSorter().getViewRowCount();
+		if ( nFiltered != 1 )
+			return;
+
+		runRow( 0 );
+	}
+
+	private void runSelection()
 	{
 		final int viewRow = tableBindings.getSelectedRow();
 		if ( viewRow < 0 )
@@ -270,7 +290,11 @@ public class CommandFinderPanel extends JPanel
 			SwingUtilities.getWindowAncestor( this ).setVisible( false );
 			return;
 		}
+		runRow( viewRow );
+	}
 
+	private void runRow( final int viewRow )
+	{
 		final int modelRow = tableBindings.convertRowIndexToModel( viewRow );
 		final MyTableRow row = tableModel.rows.get( modelRow );
 		final String action = row.getName();
