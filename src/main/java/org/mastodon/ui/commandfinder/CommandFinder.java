@@ -1,13 +1,18 @@
 package org.mastodon.ui.commandfinder;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import org.mastodon.app.ui.CloseWindowActions;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeyConfigScopes;
@@ -51,12 +56,25 @@ public class CommandFinder
 		this.dialog = new JDialog( parent, "Command finder" );
 
 		final Map< Command, String > commandMap = buildCommandDescriptions( actions.getActionMap(), keyConfigContexts );
-		final CommandFinderPanel panel = new CommandFinderPanel( appModel.getKeymap().getConfig(), commandMap, actions );
+		final CommandFinderPanel gui = new CommandFinderPanel( appModel.getKeymap().getConfig(), commandMap, actions );
 
-		dialog.getContentPane().add( panel );
+		dialog.getContentPane().add( gui );
 		dialog.pack();
 		dialog.setLocationByPlatform( true );
 		dialog.setLocationRelativeTo( null );
+		dialog.addComponentListener( new ComponentAdapter()
+		{
+			@Override
+			public void componentShown( final ComponentEvent e )
+			{
+				gui.textFieldFilter.requestFocusInWindow();
+			}
+		} );
+		// Close with escape.
+		final ActionMap am = dialog.getRootPane().getActionMap();
+		final InputMap im = dialog.getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+		final Actions actionsDialog = new Actions( im, am, null, keyConfigContexts );
+		CloseWindowActions.install( actionsDialog, dialog );
 	}
 
 	/*
