@@ -183,6 +183,7 @@ public class MamutViewTrackScheme
 				appModel.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(),
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
+		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
 
 		// Timepoint and number of spots.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model );
@@ -261,9 +262,6 @@ public class MamutViewTrackScheme
 		// Give focus to the display so that it can receive key presses
 		// immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
-
-		// TODO
-		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
 	}
 
 	@Override
