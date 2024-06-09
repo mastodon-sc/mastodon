@@ -99,11 +99,12 @@ public class CommandFinder
 	 * Discovers and build the command description map.
 	 * 
 	 * @param actionMap
-	 *            if not <code>null</code>, the command descriptions will be
-	 *            filtered to only include the commands present in the specified
-	 *            action map.
+	 *            the command descriptions will be filtered to only include the
+	 *            commands present in the specified action map.
 	 * @param keyConfigContexts
-	 * @return the command descriptions map.
+	 *            the command descriptions will be filtered to only include
+	 *            those with the context in the specified array.
+	 * @return the command descriptions map as a new map.
 	 */
 	private Map< Command, String > buildCommandDescriptions( final ActionMap actionMap, final String[] keyConfigContexts )
 	{
@@ -112,8 +113,6 @@ public class CommandFinder
 		builder.discoverProviders();
 		final CommandDescriptions cd = builder.build();
 		final Map< Command, String > map = cd.createCommandDescriptionsMap();
-		if ( actionMap == null )
-			return map;
 
 		// Build list of commands in the action map.
 		final Object[] objs = actionMap.allKeys();
@@ -130,7 +129,6 @@ public class CommandFinder
 		final Map< Command, String > filteredMap = new HashMap<>( allKeys.length );
 		for ( final Command command : map.keySet() )
 		{
-
 			if ( Arrays.binarySearch( contexts, command.getContext() ) < 0 )
 				continue;
 
