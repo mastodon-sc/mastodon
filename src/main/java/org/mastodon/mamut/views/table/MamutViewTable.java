@@ -87,6 +87,7 @@ import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.ui.coloring.TrackGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
@@ -183,6 +184,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		// Table actions.
 		MastodonFrameViewActions.install( viewActions, this );
 		TableViewActions.install( viewActions, frame );
+		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
 
 		// Menus
 		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), projectModel.getKeymap(), CONTEXTS );

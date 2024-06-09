@@ -73,6 +73,7 @@ import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BdvContextProvider;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
@@ -233,6 +234,7 @@ public class MamutViewBdv
 		final Runnable onCloseMIPDialog = RecordMaxProjectionMovieDialog.install( viewActions, bdv, tracksOverlay,
 				colorBarOverlay, appModel.getKeymap() );
 		onClose( onCloseMIPDialog );
+		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
 
 		// Add the timepoint and number of spots panel.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel =
