@@ -64,6 +64,7 @@ import org.mastodon.ui.coloring.ColoringModelMain;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
@@ -180,6 +181,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				appModel.getSelectionModel(), viewGraph.getLock(), dataDisplayPanel, dataDisplayPanel.getDisplay(),
 				model );
 		DataDisplayZoom.install( viewBehaviours, dataDisplayPanel );
+		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
 
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
 				focusModel, dataDisplayPanel );
