@@ -1,6 +1,7 @@
 package org.mastodon.mamut.views.grapher;
 
-import net.imglib2.loops.LoopBuilder;
+import java.util.function.BiConsumer;
+
 import org.apache.commons.lang3.function.TriFunction;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
@@ -14,6 +15,7 @@ import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
@@ -25,7 +27,7 @@ import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.FeatureGraphConfig;
 import org.mastodon.views.grapher.display.FeatureSpecPair;
 
-import java.util.function.BiConsumer;
+import net.imglib2.loops.LoopBuilder;
 
 public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge >
 		implements HasContextChooser< Spot >, HasColoringModel, HasColorBarOverlay
@@ -52,17 +54,19 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		grapherInitializer.installActions( viewActions, viewBehaviours );
 		grapherInitializer.addSearchPanel( viewActions );
 
-		TriFunction< ViewMenuBuilder.JMenuHandle, GraphColorGeneratorAdapter< Spot, Link, DataVertex, DataEdge >,
+		final TriFunction< ViewMenuBuilder.JMenuHandle, GraphColorGeneratorAdapter< Spot, Link, DataVertex, DataEdge >,
 				DataDisplayPanel< Spot, Link >, ColoringModel > colorModelRegistration = ( menuHandle, coloringAdaptor,
 						panel ) -> registerColoring( coloringAdaptor, menuHandle, panel::entitiesAttributesChanged );
-		LoopBuilder.TriConsumer< ColorBarOverlay, ViewMenuBuilder.JMenuHandle, DataDisplayPanel< Spot, Link > > colorBarRegistration =
+		final LoopBuilder.TriConsumer< ColorBarOverlay, ViewMenuBuilder.JMenuHandle, DataDisplayPanel< Spot, Link > > colorBarRegistration =
 				( overlay, menuHandle, panel ) -> registerColorbarOverlay( overlay, menuHandle, panel::repaint );
-		BiConsumer< ViewMenuBuilder.JMenuHandle, DataDisplayPanel< Spot, Link > > tagSetMenuRegistration =
+		final BiConsumer< ViewMenuBuilder.JMenuHandle, DataDisplayPanel< Spot, Link > > tagSetMenuRegistration =
 				( menuHandle, panel ) -> registerTagSetMenu( menuHandle, panel::entitiesAttributesChanged );
 
 		grapherInitializer.addMenusAndRegisterColors( colorModelRegistration, colorBarRegistration, tagSetMenuRegistration,
 				keyConfigContexts );
 		grapherInitializer.layout();
+
+		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
 	}
 
 	private static FeatureGraphConfig getFeatureGraphConfig()
