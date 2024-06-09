@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -117,9 +118,11 @@ public class CommandFinderPanel extends JPanel
 		panelFilter.add( horizontalStrut_1 );
 
 		textFieldFilter = new JTextField();
-		textFieldFilter.addActionListener( e -> runFromFilter() );
 		panelFilter.add( textFieldFilter );
 		textFieldFilter.setColumns( 10 );
+		// Run action when the user presses enter.
+		textFieldFilter.addActionListener( e -> runFromFilter() );
+		// Filter when a key is pressed.
 		textFieldFilter.getDocument().addDocumentListener( new DocumentListener()
 		{
 
@@ -139,6 +142,19 @@ public class CommandFinderPanel extends JPanel
 			public void changedUpdate( final DocumentEvent e )
 			{
 				filterRows();
+			}
+		} );
+		// Move to the list with UP and DOWN array key.
+		textFieldFilter.addKeyListener( new KeyAdapter()
+		{
+			@Override
+			public void keyPressed( final KeyEvent e )
+			{
+				final int keyCode = e.getKeyCode();
+				if ( keyCode == KeyEvent.VK_UP )
+					goToLastInList();
+				else if ( keyCode == KeyEvent.VK_DOWN )
+					goToFirstInList();
 			}
 		} );
 
@@ -271,6 +287,24 @@ public class CommandFinderPanel extends JPanel
 			tableBindings.getSelectionModel().setSelectionInterval( 0, 0 );
 
 		scrollPane.setViewportView( tableBindings );
+	}
+
+	private void goToFirstInList()
+	{
+		selectAndShowViewRow( 0 );
+	}
+
+	private void goToLastInList()
+	{
+		final int nFiltered = tableBindings.getRowSorter().getViewRowCount();
+		selectAndShowViewRow( nFiltered - 1 );
+	}
+
+	private void selectAndShowViewRow( final int row )
+	{
+		tableBindings.getSelectionModel().setSelectionInterval( row, row );
+		tableBindings.requestFocusInWindow();
+		tableBindings.scrollRectToVisible( tableBindings.getCellRect( row, row, true ) );
 	}
 
 	private void runFromFilter()
