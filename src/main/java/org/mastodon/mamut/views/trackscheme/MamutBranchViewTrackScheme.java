@@ -191,7 +191,15 @@ public class MamutBranchViewTrackScheme
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel,
 				frame.getTrackschemePanel() );
 		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme Branch" );
-		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
+		CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.parent( frame )
+				.installOn( viewActions );
 
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions,
 				TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
