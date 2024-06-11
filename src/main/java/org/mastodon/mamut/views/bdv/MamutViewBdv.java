@@ -234,15 +234,6 @@ public class MamutViewBdv
 		final Runnable onCloseMIPDialog = RecordMaxProjectionMovieDialog.install( viewActions, bdv, tracksOverlay,
 				colorBarOverlay, appModel.getKeymap() );
 		onClose( onCloseMIPDialog );
-		CommandFinder.build()
-				.context( appModel.getContext() )
-				.inputTriggerConfig( appModel.getKeymap().getConfig() )
-				.keyConfigContexts( keyConfigContexts )
-				.register( viewActions )
-				.register( appModel.getModelActions() )
-				.register( appModel.getProjectActions() )
-				.parent( frame )
-				.installOn( viewActions );
 
 		// Add the timepoint and number of spots panel.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel =
@@ -287,6 +278,17 @@ public class MamutViewBdv
 
 		// Notifies context provider that context changes when visibility mode changes.
 		tracksOverlay.getVisibilities().getVisibilityListeners().add( contextProvider::notifyContextChanged );
+
+		// Command finder.
+		CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.parent( frame )
+				.installOn( viewActions );
 
 		MainWindow.addMenus( menu, actionMap );
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
