@@ -46,11 +46,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.InputTrigger;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.gui.Command;
-import org.scijava.ui.behaviour.io.gui.InputTriggerPanelEditor;
 import org.scijava.ui.behaviour.io.gui.TagPanelEditor;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel.ConfigChangeListener;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -355,11 +355,11 @@ public class CommandFinderPanel extends JPanel
 		final int modelRow = tableBindings.convertRowIndexToModel( viewRow );
 		final MyTableRow row = tableModel.rows.get( modelRow );
 		final String action = row.getName();
-		final InputTrigger trigger = row.getTrigger();
+		final List< InputTrigger > triggers = row.getTrigger();
 		final List< String > contexts = row.getContexts();
 		final String description = actionDescriptions.get( new Command( action, contexts.get( 0 ) ) );
 		labelCommandName.setText( action );
-		keybindingEditor.setText( trigger.toString() );
+		keybindingEditor.setText( StringUtils.join( triggers, ", " ) );
 		textAreaDescription.setText( description );
 		textAreaDescription.setCaretPosition( 0 );
 	}
@@ -370,7 +370,7 @@ public class CommandFinderPanel extends JPanel
 		tableBindings.setModel( tableModel );
 
 		tableRowSorter = new TableRowSorter<>( tableModel );
-		tableRowSorter.setComparator( 1, InputTriggerComparator );
+		tableRowSorter.setComparator( 1, InputTriggersComparator );
 		tableBindings.setRowSorter( tableRowSorter );
 		filterRows();
 
@@ -456,11 +456,21 @@ public class CommandFinderPanel extends JPanel
 				while ( j < rowsUnmerged.size() && MyTableRowComparator.compare( rowsUnmerged.get( j ), rowA ) == 0 )
 					++j;
 
+				// Merge contexts.
 				final Set< String > contexts = new HashSet<>();
 				for ( int k = i; k < j; ++k )
 					contexts.addAll( rowsUnmerged.get( k ).getContexts() );
+				final List< String > contextsList = new ArrayList<>( contexts );
+				contextsList.sort( null );
 
-				rows.add( new MyTableRow( rowA.getName(), rowA.getTrigger(), contexts ) );
+				// Merge triggers.
+				final Set< InputTrigger > triggers = new HashSet<>();
+				for ( int k = i; k < j; ++k )
+					triggers.addAll( rowsUnmerged.get( k ).getTrigger() );
+				final List< InputTrigger > triggersList = new ArrayList<>( triggers );
+				triggersList.sort( InputTriggerComparator );
+
+				rows.add( new MyTableRow( rowA.getName(), triggersList, contextsList ) );
 
 				i = j;
 			}
@@ -558,19 +568,19 @@ public class CommandFinderPanel extends JPanel
 	{
 		private final String name;
 
-		private final InputTrigger trigger;
+		private final List< InputTrigger > triggers;
 
 		private final List< String > contexts;
 
 		public MyTableRow( final String name, final InputTrigger trigger, final String context )
 		{
-			this( name, trigger, Collections.singletonList( context ) );
+			this( name, Collections.singletonList( trigger ), Collections.singletonList( context ) );
 		}
 
-		public MyTableRow( final String name, final InputTrigger trigger, final Collection< String > contexts )
+		public MyTableRow( final String name, final List< InputTrigger > triggers, final Collection< String > contexts )
 		{
 			this.name = name;
-			this.trigger = trigger;
+			this.triggers = triggers;
 			this.contexts = new ArrayList<>( contexts );
 		}
 
@@ -579,9 +589,9 @@ public class CommandFinderPanel extends JPanel
 			return name;
 		}
 
-		public InputTrigger getTrigger()
+		public List< InputTrigger > getTrigger()
 		{
-			return trigger;
+			return triggers;
 		}
 
 		public List< String > getContexts()
@@ -601,7 +611,7 @@ public class CommandFinderPanel extends JPanel
 
 			if ( !name.equals( that.name ) )
 				return false;
-			if ( !trigger.equals( that.trigger ) )
+			if ( !triggers.equals( that.triggers ) )
 				return false;
 			return contexts.equals( that.contexts );
 		}
@@ -610,7 +620,7 @@ public class CommandFinderPanel extends JPanel
 		public int hashCode()
 		{
 			int result = name.hashCode();
-			result = 31 * result + trigger.hashCode();
+			result = 31 * result + triggers.hashCode();
 			result = 31 * result + contexts.hashCode();
 			return result;
 		}
@@ -620,7 +630,7 @@ public class CommandFinderPanel extends JPanel
 		{
 			return "MyTableRow{" +
 					"name='" + name + '\'' +
-					", trigger=" + trigger +
+					", trigger=" + triggers +
 					", contexts=" + contexts +
 					'}';
 		}
@@ -635,16 +645,7 @@ public class CommandFinderPanel extends JPanel
 			if ( cn != 0 )
 				return cn;
 
-			return compare( o1.trigger, o2.trigger );
-		}
-
-		private int compare( final InputTrigger o1, final InputTrigger o2 )
-		{
-			if ( o1 == InputTrigger.NOT_MAPPED )
-				return o2 == InputTrigger.NOT_MAPPED ? 0 : 1;
-			if ( o2 == InputTrigger.NOT_MAPPED )
-				return -1;
-			return o1.toString().compareTo( o2.toString() );
+			return 0;
 		}
 	};
 
@@ -661,14 +662,28 @@ public class CommandFinderPanel extends JPanel
 		}
 	};
 
-	private static final class MyBindingsRenderer extends InputTriggerPanelEditor implements TableCellRenderer
+	private static final Comparator< List< InputTrigger > > InputTriggersComparator = new Comparator< List< InputTrigger > >()
+	{
+		@Override
+		public int compare( final List< InputTrigger > o1, final List< InputTrigger > o2 )
+		{
+			if ( o1.equals( Collections.singletonList( InputTrigger.NOT_MAPPED ) ) )
+				return 1;
+			if ( o2.equals( Collections.singletonList( InputTrigger.NOT_MAPPED ) ) )
+				return -1;
+
+			return StringUtils.join( o1, ", " ).compareTo( StringUtils.join( o2, ", " ) );
+		}
+	};
+
+	private static final class MyBindingsRenderer extends MultiInputTriggerPanelEditor implements TableCellRenderer
 	{
 
 		private static final long serialVersionUID = 1L;
 
 		public MyBindingsRenderer()
 		{
-			super( false );
+			super();
 		}
 
 		@Override
@@ -684,16 +699,17 @@ public class CommandFinderPanel extends JPanel
 			setForeground( isSelected ? table.getSelectionForeground() : table.getForeground() );
 			setBackground( isSelected ? table.getSelectionBackground() : table.getBackground() );
 
-			final InputTrigger input = ( InputTrigger ) value;
-			if ( null != input )
+			@SuppressWarnings( "unchecked" )
+			final List< InputTrigger > inputs = ( List< InputTrigger > ) value;
+			if ( null != inputs )
 			{
-				setInputTrigger( input );
-				final String val = input.toString();
+				setInputTriggers( inputs );
+				final String val = StringUtils.join( inputs, ", " );
 				setToolTipText( val );
 			}
 			else
 			{
-				setInputTrigger( InputTrigger.NOT_MAPPED );
+				setInputTriggers( Collections.singletonList( InputTrigger.NOT_MAPPED ) );
 				setToolTipText( "No binding" );
 			}
 			return this;
