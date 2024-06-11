@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,13 +53,14 @@ import org.scijava.ui.behaviour.io.gui.Command;
 import org.scijava.ui.behaviour.io.gui.InputTriggerPanelEditor;
 import org.scijava.ui.behaviour.io.gui.TagPanelEditor;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel.ConfigChangeListener;
-import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
 public class CommandFinderPanel extends JPanel
 {
 
 	private static final long serialVersionUID = 1L;
+
+	private final Consumer< String > runAction;
 
 	private final InputTriggerConfig config;
 
@@ -86,14 +88,16 @@ public class CommandFinderPanel extends JPanel
 
 	private JLabel keybindingEditor;
 
-	private final Actions actions;
-
-	public CommandFinderPanel( final InputTriggerConfig config, final Map< Command, String > commandDescriptions, final Actions actions )
+	public CommandFinderPanel(
+			final Consumer< String > runAction,
+			final Map< Command, String > commandMap,
+			final InputTriggerConfig config
+			)
 	{
+		this.runAction = runAction;
 		this.config = config;
-		this.actionDescriptions = commandDescriptions;
-		this.actions = actions;
-		this.commands = commandDescriptions.keySet();
+		this.actionDescriptions = commandMap;
+		this.commands = commandMap.keySet();
 		this.modelChangedListeners = new Listeners.SynchronizedList<>();
 
 		/*
@@ -331,9 +335,9 @@ public class CommandFinderPanel extends JPanel
 	{
 		final int modelRow = tableBindings.convertRowIndexToModel( viewRow );
 		final MyTableRow row = tableModel.rows.get( modelRow );
-		final String action = row.getName();
+		final String actionName = row.getName();
 
-		actions.getActionMap().get( action ).actionPerformed( null );
+		runAction.accept( actionName );
 		SwingUtilities.getWindowAncestor( this ).setVisible( false );
 	}
 
