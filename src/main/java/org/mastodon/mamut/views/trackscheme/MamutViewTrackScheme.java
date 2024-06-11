@@ -210,6 +210,7 @@ public class MamutViewTrackScheme
 				.register( viewActions )
 				.register( appModel.getModelActions() )
 				.register( appModel.getProjectActions() )
+				.register( appModel.getPlugins().getPluginActions() )
 				.parent( frame )
 				.installOn( viewActions );
 
