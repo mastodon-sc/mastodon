@@ -187,15 +187,6 @@ public class MamutViewTrackScheme
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
 		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme" );
-		CommandFinder.build()
-				.context( appModel.getContext() )
-				.inputTriggerConfig( appModel.getKeymap().getConfig() )
-				.keyConfigContexts( keyConfigContexts )
-				.register( viewActions )
-				.register( appModel.getModelActions() )
-				.register( appModel.getProjectActions() )
-				.parent( frame )
-				.installOn( viewActions );
 
 		// Timepoint and number of spots.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model );
@@ -210,6 +201,17 @@ public class MamutViewTrackScheme
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
 		frame.getTrackschemePanel().getNavigationBehaviours().install( viewBehaviours );
 		frame.getTrackschemePanel().getTransformEventHandler().install( viewBehaviours );
+
+		// Command finder.
+		CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.parent( frame )
+				.installOn( viewActions );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();

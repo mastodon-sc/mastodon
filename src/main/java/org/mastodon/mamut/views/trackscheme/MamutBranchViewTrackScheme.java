@@ -191,15 +191,6 @@ public class MamutBranchViewTrackScheme
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel,
 				frame.getTrackschemePanel() );
 		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme Branch" );
-		CommandFinder.build()
-				.context( appModel.getContext() )
-				.inputTriggerConfig( appModel.getKeymap().getConfig() )
-				.keyConfigContexts( keyConfigContexts )
-				.register( viewActions )
-				.register( appModel.getModelActions() )
-				.register( appModel.getProjectActions() )
-				.parent( frame )
-				.installOn( viewActions );
 
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions,
 				TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
@@ -220,6 +211,17 @@ public class MamutBranchViewTrackScheme
 			}
 			frame.getTrackschemePanel().graphChanged();
 		} );
+
+		// Command finder.
+		CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.parent( frame )
+				.installOn( viewActions );
 
 		// Menus.
 		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), appModel.getKeymap(), keyConfigContexts );
