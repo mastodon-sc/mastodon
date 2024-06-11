@@ -213,7 +213,7 @@ public class MamutBranchViewTrackScheme
 		} );
 
 		// Command finder.
-		CommandFinder.build()
+		final CommandFinder cf = CommandFinder.build()
 				.context( appModel.getContext() )
 				.inputTriggerConfig( appModel.getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
@@ -223,6 +223,7 @@ public class MamutBranchViewTrackScheme
 				.register( appModel.getPlugins().getPluginActions() )
 				.parent( frame )
 				.installOn( viewActions );
+		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 
 		// Menus.
 		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), appModel.getKeymap(), keyConfigContexts );
