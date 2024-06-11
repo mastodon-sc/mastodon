@@ -203,7 +203,7 @@ public class MamutViewTrackScheme
 		frame.getTrackschemePanel().getTransformEventHandler().install( viewBehaviours );
 
 		// Command finder.
-		CommandFinder.build()
+		final CommandFinder cf = CommandFinder.build()
 				.context( appModel.getContext() )
 				.inputTriggerConfig( appModel.getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
@@ -213,6 +213,7 @@ public class MamutViewTrackScheme
 				.register( appModel.getPlugins().getPluginActions() )
 				.parent( frame )
 				.installOn( viewActions );
+		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();

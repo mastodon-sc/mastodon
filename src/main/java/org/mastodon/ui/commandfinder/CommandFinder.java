@@ -84,6 +84,11 @@ public class CommandFinder
 		CloseWindowActions.install( actionsDialog, dialog );
 	}
 
+	public JDialog getDialog()
+	{
+		return dialog;
+	}
+
 	/**
 	 * Runs the 'first' action of behavior we can find with the specified name.
 	 * 
@@ -191,10 +196,11 @@ public class CommandFinder
 			return cf;
 		}
 
-		public void installOn( final Actions installOn )
+		public CommandFinder installOn( final Actions installOn )
 		{
 			final CommandFinder cf = get();
 			installOn.namedAction( new ToggleDialogAction( SHOW_COMMAND_FINDER, cf.dialog ), SHOW_COMMAND_FINDER_KEYS );
+			return cf;
 		}
 
 		/**
