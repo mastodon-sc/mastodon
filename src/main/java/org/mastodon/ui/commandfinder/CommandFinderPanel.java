@@ -10,6 +10,8 @@ import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -281,6 +283,17 @@ public class CommandFinderPanel extends JPanel
 		final String solve = "Run command";
 		tableBindings.getInputMap( JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ).put( enter, solve );
 		tableBindings.getActionMap().put( solve, new RunnableAction( solve, this::runSelection ) );
+
+		// Run when the user double-clicks on a row
+		tableBindings.addMouseListener( new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked( final MouseEvent e )
+			{
+				if ( e.getClickCount() == 2 )
+					runSelection();
+			}
+		} );
 
 		// Run when the user presses the button
 		btnApply.addActionListener( ( e ) -> runSelection() );
