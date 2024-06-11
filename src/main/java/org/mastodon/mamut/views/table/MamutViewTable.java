@@ -191,6 +191,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				.register( viewActions )
 				.register( appModel.getModelActions() )
 				.register( appModel.getProjectActions() )
+				.register( appModel.getPlugins().getPluginActions() )
 				.parent( frame )
 				.installOn( viewActions );
 
