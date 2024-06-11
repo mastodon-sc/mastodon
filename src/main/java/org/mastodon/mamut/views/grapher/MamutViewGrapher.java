@@ -66,7 +66,15 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				keyConfigContexts );
 		grapherInitializer.layout();
 
-		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
+		CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.parent( frame )
+				.installOn( viewActions );
 	}
 
 	private static FeatureGraphConfig getFeatureGraphConfig()

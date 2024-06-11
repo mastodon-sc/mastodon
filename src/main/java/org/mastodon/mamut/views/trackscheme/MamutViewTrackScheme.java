@@ -187,7 +187,15 @@ public class MamutViewTrackScheme
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
 		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme" );
-		CommandFinder.install( viewActions, appModel, frame, keyConfigContexts );
+		CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.parent( frame )
+				.installOn( viewActions );
 
 		// Timepoint and number of spots.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model );
