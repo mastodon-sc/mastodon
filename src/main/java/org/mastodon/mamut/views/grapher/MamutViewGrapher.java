@@ -192,7 +192,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		dataDisplayPanel.getTransformEventHandler().install( viewBehaviours );
 
 		// Command finder.
-		CommandFinder.build()
+		final CommandFinder cf = CommandFinder.build()
 				.context( appModel.getContext() )
 				.inputTriggerConfig( appModel.getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
@@ -202,6 +202,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				.register( appModel.getPlugins().getPluginActions() )
 				.parent( frame )
 				.installOn( viewActions );
+		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 
 		/*
 		 * Menus

@@ -277,7 +277,7 @@ public class MamutViewBdv
 		tracksOverlay.getVisibilities().getVisibilityListeners().add( contextProvider::notifyContextChanged );
 
 		// Command finder.
-		CommandFinder.build()
+		final CommandFinder cf = CommandFinder.build()
 				.context( appModel.getContext() )
 				.inputTriggerConfig( appModel.getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
@@ -287,6 +287,7 @@ public class MamutViewBdv
 				.register( appModel.getPlugins().getPluginActions() )
 				.parent( frame )
 				.installOn( viewActions );
+		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 
 		MainWindow.addMenus( menu, actionMap );
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
