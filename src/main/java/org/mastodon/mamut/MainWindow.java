@@ -226,6 +226,7 @@ public class MainWindow extends JFrame
 		CommandFinder.build()
 				.context( appModel.getContext() )
 				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
 				.keyConfigContext( KeyConfigContexts.MASTODON )
 				.register( appModel.getModelActions() )
 				.register( appModel.getProjectActions() )
