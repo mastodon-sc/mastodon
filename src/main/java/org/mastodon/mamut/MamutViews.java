@@ -102,7 +102,7 @@ public class MamutViews
 		return ( MamutViewFactory< T > ) factories.get( klass );
 	}
 
-	CommandDescriptionProvider getCommandDescriptions()
+	public CommandDescriptionProvider getCommandDescriptions()
 	{
 		return new CommandDescriptionProvider( KeyConfigScopes.MAMUT, KeyConfigContexts.MASTODON )
 		{
