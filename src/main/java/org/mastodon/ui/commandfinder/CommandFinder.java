@@ -139,6 +139,8 @@ public class CommandFinder
 
 		private final List< Actions > acs = new ArrayList<>();
 
+		private final List< CommandDescriptionProvider > descriptionProviders = new ArrayList<>();
+
 		private JFrame parent;
 
 		private final Set< String > keyConfigContexts = new HashSet<>();
@@ -148,6 +150,7 @@ public class CommandFinder
 		private Context context;
 
 		private Listeners< UpdateListener > updateListeners;
+
 
 		public Builder context( final Context context )
 		{
@@ -217,6 +220,12 @@ public class CommandFinder
 			return this;
 		}
 
+		public Builder descriptionProvider( final CommandDescriptionProvider descriptionsProvider )
+		{
+			this.descriptionProviders.add( descriptionsProvider );
+			return this;
+		}
+
 		public CommandFinder installOn( final Actions installOn )
 		{
 			final CommandFinder cf = get();
@@ -245,15 +254,18 @@ public class CommandFinder
 		 */
 		private Map< Command, String > buildCommandDescriptions()
 		{
-			final CommandDescriptionsBuilder builder = new CommandDescriptionsBuilder();
-			context.inject( builder );
-			builder.discoverProviders();
-			final CommandDescriptions cd = builder.build();
-			final Map< Command, String > map = cd.createCommandDescriptionsMap();
-			
 			// Copy and sort key contexts.
 			final String[] contexts = Arrays.copyOf( keyConfigContexts.toArray( new String[] {} ), keyConfigContexts.size() );
 			Arrays.sort( contexts );
+
+			final CommandDescriptionsBuilder builder = new CommandDescriptionsBuilder();
+			context.inject( builder );
+			builder.discoverProviders();
+			for ( final CommandDescriptionProvider cdp : descriptionProviders )
+				builder.addManually( cdp, contexts );
+			final CommandDescriptions cd = builder.build();
+			final Map< Command, String > map = cd.createCommandDescriptionsMap();
+			
 
 			// Create new command map, filtered.
 			final Map< Command, String > filteredMap = new HashMap<>();
