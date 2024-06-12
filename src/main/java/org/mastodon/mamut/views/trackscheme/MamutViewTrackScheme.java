@@ -211,6 +211,7 @@ public class MamutViewTrackScheme
 				.register( appModel.getModelActions() )
 				.register( appModel.getProjectActions() )
 				.register( appModel.getPlugins().getPluginActions() )
+				.modificationListeners( appModel.getKeymap().updateListeners() )
 				.parent( frame )
 				.installOn( viewActions );
 		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );

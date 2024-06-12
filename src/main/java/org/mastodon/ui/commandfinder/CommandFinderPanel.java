@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -98,8 +99,8 @@ public class CommandFinderPanel extends JPanel
 	{
 		this.runAction = runAction;
 		this.config = config;
-		this.actionDescriptions = commandMap;
-		this.commands = commandMap.keySet();
+		this.actionDescriptions = new HashMap<>( commandMap );
+		this.commands = new HashSet<>( actionDescriptions.keySet() );
 		this.modelChangedListeners = new Listeners.SynchronizedList<>();
 
 		/*
@@ -375,6 +376,15 @@ public class CommandFinderPanel extends JPanel
 		keybindingEditor.setText( StringUtils.join( triggers, ", " ) );
 		textAreaDescription.setText( description );
 		textAreaDescription.setCaretPosition( 0 );
+	}
+
+	public void setCommandDescriptions( final Map< Command, String > cds )
+	{
+		actionDescriptions.clear();
+		commands.clear();
+		actionDescriptions.putAll( cds );
+		commands.addAll( actionDescriptions.keySet() );
+		configToModel();
 	}
 
 	private void configToModel()
