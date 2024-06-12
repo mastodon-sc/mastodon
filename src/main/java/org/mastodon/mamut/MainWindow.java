@@ -230,6 +230,7 @@ public class MainWindow extends JFrame
 				.register( appModel.getModelActions() )
 				.register( appModel.getProjectActions() )
 				.register( appModel.getPlugins().getPluginActions() )
+				.modificationListeners( appModel.getKeymap().updateListeners() )
 				.parent( this )
 				.installOn( mwActions );
 	}
