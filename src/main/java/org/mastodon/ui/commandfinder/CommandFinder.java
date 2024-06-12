@@ -40,7 +40,7 @@ public class CommandFinder
 
 	public static final String SHOW_COMMAND_FINDER = "show command finder";
 
-	private static final String[] SHOW_COMMAND_FINDER_KEYS = new String[] { "ctrl shift F" };
+	private static final String[] SHOW_COMMAND_FINDER_KEYS = new String[] { "ctrl shift F", "meta shift F" };
 
 	private final JDialog dialog;
 
@@ -130,7 +130,7 @@ public class CommandFinder
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( SHOW_COMMAND_FINDER, SHOW_COMMAND_FINDER_KEYS, "Shows the command finder dialog." );
+			descriptions.add( SHOW_COMMAND_FINDER, SHOW_COMMAND_FINDER_KEYS, "Show the command finder dialog." );
 		}
 	}
 
@@ -221,6 +221,8 @@ public class CommandFinder
 		{
 			final CommandFinder cf = get();
 			installOn.namedAction( new ToggleDialogAction( SHOW_COMMAND_FINDER, cf.dialog ), SHOW_COMMAND_FINDER_KEYS );
+			register( installOn );
+			cf.getGui().setCommandDescriptions( buildCommandDescriptions() );
 			return cf;
 		}
 
@@ -248,7 +250,7 @@ public class CommandFinder
 			builder.discoverProviders();
 			final CommandDescriptions cd = builder.build();
 			final Map< Command, String > map = cd.createCommandDescriptionsMap();
-
+			
 			// Copy and sort key contexts.
 			final String[] contexts = Arrays.copyOf( keyConfigContexts.toArray( new String[] {} ), keyConfigContexts.size() );
 			Arrays.sort( contexts );
@@ -268,8 +270,9 @@ public class CommandFinder
 				// Build list of commands in the action map.
 				final ActionMap actionMap = ac.getActionMap();
 				final Object[] objs = actionMap.allKeys();
-				for ( int i = 0; i < objs.length; i++ )
-					allKeySet.add( ( String ) objs[ i ] );
+				if ( objs != null )
+					for ( int i = 0; i < objs.length; i++ )
+						allKeySet.add( ( String ) objs[ i ] );
 			}
 			final String[] allKeys = allKeySet.toArray( new String[] {} );
 			Arrays.sort( allKeys );
