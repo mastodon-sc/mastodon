@@ -23,17 +23,17 @@ import org.mastodon.app.ui.CloseWindowActions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.scijava.Context;
+import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.gui.Command;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionsBuilder;
 import org.scijava.ui.behaviour.util.Actions;
-import org.scijava.ui.behaviour.util.Behaviours;
 
 import bdv.tools.ToggleDialogAction;
+import bdv.ui.keymap.Keymap.UpdateListener;
 
 public class CommandFinder
 {
@@ -45,6 +45,8 @@ public class CommandFinder
 	private final JDialog dialog;
 
 	private final List< Actions > acs;
+
+	private final CommandFinderPanel gui;
 
 	public static Builder build()
 	{
@@ -62,7 +64,7 @@ public class CommandFinder
 		this.dialog = new JDialog( parent, "Command finder" );
 
 		final Consumer< String > runner = ( actionName ) -> run( actionName );
-		final CommandFinderPanel gui = new CommandFinderPanel( runner, commandMap, config );
+		this.gui = new CommandFinderPanel( runner, commandMap, config );
 
 		dialog.getContentPane().add( gui );
 		dialog.pack();
@@ -82,6 +84,11 @@ public class CommandFinder
 		final InputMap im = dialog.getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
 		final Actions actionsDialog = new Actions( im, am, null, keyConfigContexts );
 		CloseWindowActions.install( actionsDialog, dialog );
+	}
+
+	public CommandFinderPanel getGui()
+	{
+		return gui;
 	}
 
 	public JDialog getDialog()
@@ -132,8 +139,6 @@ public class CommandFinder
 
 		private final List< Actions > acs = new ArrayList<>();
 
-		private final List< Behaviours > bhs = new ArrayList<>();
-
 		private JFrame parent;
 
 		private final Set< String > keyConfigContexts = new HashSet<>();
@@ -141,6 +146,8 @@ public class CommandFinder
 		private InputTriggerConfig config;
 
 		private Context context;
+
+		private Listeners< UpdateListener > updateListeners;
 
 		public Builder context( final Context context )
 		{
@@ -193,7 +200,21 @@ public class CommandFinder
 					commandDescriptions,
 					keyConfigContexts.toArray( new String[] {} ),
 					parent );
+			// Refresh the command list it it changes.
+			if ( updateListeners != null )
+			{
+				updateListeners.add( () -> {
+					final Map< Command, String > cds = buildCommandDescriptions();
+					cf.getGui().setCommandDescriptions( cds );
+				} );
+			}
 			return cf;
+		}
+
+		public Builder modificationListeners( final Listeners< UpdateListener > updateListeners )
+		{
+			this.updateListeners = updateListeners;
+			return this;
 		}
 
 		public CommandFinder installOn( final Actions installOn )
@@ -249,12 +270,6 @@ public class CommandFinder
 				final Object[] objs = actionMap.allKeys();
 				for ( int i = 0; i < objs.length; i++ )
 					allKeySet.add( ( String ) objs[ i ] );
-			}
-			// Loop over behaviors.
-			for ( final Behaviours bh : bhs )
-			{
-				final BehaviourMap behaviourMap = bh.getBehaviourMap();
-				allKeySet.addAll( behaviourMap.getAllBindings().keySet() );
 			}
 			final String[] allKeys = allKeySet.toArray( new String[] {} );
 			Arrays.sort( allKeys );
