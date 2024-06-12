@@ -188,6 +188,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				.context( appModel.getContext() )
 				.inputTriggerConfig( appModel.getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
+				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
 				.register( viewActions )
 				.register( appModel.getModelActions() )
 				.register( appModel.getProjectActions() )

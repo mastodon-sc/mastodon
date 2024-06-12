@@ -216,6 +216,7 @@ public class MamutBranchViewTrackScheme
 		final CommandFinder cf = CommandFinder.build()
 				.context( appModel.getContext() )
 				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
 				.keyConfigContexts( keyConfigContexts )
 				.register( viewActions )
 				.register( appModel.getModelActions() )

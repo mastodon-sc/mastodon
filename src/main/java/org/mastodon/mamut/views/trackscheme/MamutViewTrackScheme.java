@@ -207,6 +207,7 @@ public class MamutViewTrackScheme
 				.context( appModel.getContext() )
 				.inputTriggerConfig( appModel.getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
+				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
 				.register( viewActions )
 				.register( appModel.getModelActions() )
 				.register( appModel.getProjectActions() )
