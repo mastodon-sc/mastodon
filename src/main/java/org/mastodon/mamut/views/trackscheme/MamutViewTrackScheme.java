@@ -144,6 +144,7 @@ public class MamutViewTrackScheme
 				new AutoNavigateFocusModel<>( focusModel, navigationHandler, timepointModel );
 
 		final RootsModel< TrackSchemeVertex > rootsModel = new DefaultRootsModel<>( model.getGraph(), viewGraph );
+		onClose( () -> rootsModel.close() );
 
 		final FadingModelAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > fadingModelAdapter =
 				new FadingModelAdapter<>( null, viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
