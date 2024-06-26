@@ -9,6 +9,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImgToVirtualStack;
 import net.imglib2.type.numeric.real.FloatType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.project.MamutProject;
@@ -27,6 +28,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ProjectLoaderTest
 {
+	@Ignore( "The run time of this test is too long for a unit test that is run on every build." )
 	@Test
 	public void testLoadAndCloseProjectGarbageCollection() throws IOException, SpimDataException
 	{
