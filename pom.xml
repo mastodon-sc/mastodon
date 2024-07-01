@@ -86,7 +86,12 @@
 		<dependency>
 			<groupId>io.humble</groupId>
 			<artifactId>humble-video-all</artifactId>
-		</dependency>		
+		</dependency>
+		<!-- export of panels to svg -->
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreesvg</artifactId>
+		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>

@@ -33,6 +33,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.branchColorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
@@ -66,6 +67,7 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.EditTagActions;
+import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
@@ -187,6 +189,7 @@ public class MamutBranchViewTrackScheme
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel,
 				frame.getTrackschemePanel() );
+		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme Branch" );
 
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions,
 				TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
@@ -219,6 +222,10 @@ public class MamutBranchViewTrackScheme
 		MainWindow.addMenus( menu, actionMap );
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						separator(),
+						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),
+						item( ExportViewActions.EXPORT_VIEW_TO_PNG ) ),
 				viewMenu(
 						branchColorMenu( coloringMenuHandle ),
 						colorbarMenu( colorbarMenuHandle ),

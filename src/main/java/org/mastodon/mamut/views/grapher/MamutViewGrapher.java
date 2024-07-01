@@ -33,6 +33,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
@@ -57,6 +58,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.views.MamutView;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.ui.EditTagActions;
+import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
@@ -180,6 +182,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				appModel.getSelectionModel(), viewGraph.getLock(), dataDisplayPanel, dataDisplayPanel.getDisplay(),
 				model );
 		DataDisplayZoom.install( viewBehaviours, dataDisplayPanel );
+		ExportViewActions.install( viewActions, dataDisplayPanel.getDisplay(), frame, frame.getTitle() );
 
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
 				focusModel, dataDisplayPanel );
@@ -203,6 +206,9 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		MainWindow.addMenus( menu, actionMap );
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),
+						item( ExportViewActions.EXPORT_VIEW_TO_PNG ) ),
 				viewMenu(
 						colorMenu( coloringMenuHandle ),
 						colorbarMenu( colorbarMenuHandle ),
