@@ -1,11 +1,12 @@
 package org.mastodon.ui;
 
+import java.awt.Component;
+
+import javax.swing.JFrame;
+
 import org.mastodon.ui.util.ExportUtils;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class ExportViewActions
 {
@@ -21,18 +22,18 @@ public class ExportViewActions
 
 	private final RunnableAction exportToPngAction;
 
-	public static void install( final Actions actions, final JPanel jPanel, final JFrame jFrame,
+	public static void install( final Actions actions, final Component comp, final JFrame frame,
 			final String name )
 	{
-		new ExportViewActions( jPanel, jFrame, name ).install( actions );
+		new ExportViewActions( comp, frame, name ).install( actions );
 	}
 
-	private ExportViewActions( final JPanel jPanel, final JFrame jFrame, final String name )
+	private ExportViewActions( final Component comp, final JFrame frame, final String name )
 	{
 		exportToSvgAction = new RunnableAction( EXPORT_VIEW_TO_SVG, () -> ExportUtils.chooseFileAndExport(
-				ExportUtils.SVG_EXTENSION, file -> ExportUtils.exportSvg( file, jPanel ), name, jFrame ) );
+				ExportUtils.SVG_EXTENSION, file -> ExportUtils.exportSvg( file, comp ), name, frame ) );
 		exportToPngAction = new RunnableAction( EXPORT_VIEW_TO_PNG, () -> ExportUtils.chooseFileAndExport(
-				ExportUtils.PNG_EXTENSION, file -> ExportUtils.exportPng( file, jPanel ), name, jFrame ) );
+				ExportUtils.PNG_EXTENSION, file -> ExportUtils.exportPng( file, comp ), name, frame ) );
 	}
 
 	private void install( final Actions actions )
