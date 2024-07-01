@@ -1,12 +1,6 @@
 package org.mastodon.ui.util;
 
-import org.jfree.graphics2d.svg.SVGGraphics2D;
-import org.jfree.graphics2d.svg.SVGUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageIO;
-import javax.swing.JComponent;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Graphics2D;
@@ -17,6 +11,13 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
+
+import javax.imageio.ImageIO;
+
+import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for exporting JComponents as PNG or SVG files.
@@ -37,43 +38,49 @@ public class ExportUtils
 	private static final int PRINT_RESOLUTION = 600;
 
 	/**
-	 * Export the given JComponent as PNG to the specified file.
-	 * @param file the file to export to
-	 * @param paintComponent the component to export
+	 * Export the given Component as PNG to the specified file.
+	 * 
+	 * @param file
+	 *            the file to export to
+	 * @param paintComponent
+	 *            the component to export
 	 */
-	public static void exportPng( final File file, final JComponent paintComponent )
+	public static void exportPng( final File file, final Component paintComponent )
 	{
-		int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-		double scale = PRINT_RESOLUTION / ( double ) screenResolution;
-		BufferedImage image = new BufferedImage( ( int ) ( paintComponent.getWidth() * scale ),
+		final int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
+		final double scale = PRINT_RESOLUTION / ( double ) screenResolution;
+		final BufferedImage image = new BufferedImage( ( int ) ( paintComponent.getWidth() * scale ),
 				( int ) ( paintComponent.getHeight() * scale ), BufferedImage.TYPE_INT_RGB );
-		Graphics2D g = image.createGraphics();
+		final Graphics2D g = image.createGraphics();
 		g.setTransform( AffineTransform.getScaleInstance( scale, scale ) );
 		paintComponent.paint( g );
 		try
 		{
 			ImageIO.write( image, PNG_EXTENSION, file );
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{
 			logger.error( "Could not export trackscheme as PNG to File: {}.", file.getAbsolutePath(), e );
 		}
 	}
 
 	/**
-	 * Export the given JComponent as SVG to the specified file.
-	 * @param file the file to export to
-	 * @param paintComponent the component to export
+	 * Export the given Component as SVG to the specified file.
+	 * 
+	 * @param file
+	 *            the file to export to
+	 * @param paintComponent
+	 *            the component to export
 	 */
-	public static void exportSvg( final File file, final JComponent paintComponent )
+	public static void exportSvg( final File file, final Component paintComponent )
 	{
-		SVGGraphics2D g2 = new SVGGraphics2D( paintComponent.getWidth(), paintComponent.getHeight() );
+		final SVGGraphics2D g2 = new SVGGraphics2D( paintComponent.getWidth(), paintComponent.getHeight() );
 		paintComponent.paint( g2 );
 		try
 		{
 			SVGUtils.writeToSVG( file, g2.getSVGElement() );
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{
 			logger.error( "Could not export trackscheme as SVG to File: {}.", file.getAbsolutePath(), e );
 		}
@@ -89,7 +96,7 @@ public class ExportUtils
 	public static void chooseFileAndExport( final String extension, final Consumer< File > exportFunction, final String name,
 			final Container parentComponent )
 	{
-		File chosenFile = FileChooser.chooseFile( parentComponent, name + "." + extension, new ExtensionFileFilter( extension ),
+		final File chosenFile = FileChooser.chooseFile( parentComponent, name + "." + extension, new ExtensionFileFilter( extension ),
 				"Save " + name + " to " + extension, FileChooser.DialogType.SAVE );
 		if ( chosenFile != null )
 		{
@@ -104,7 +111,7 @@ public class ExportUtils
 		{
 			Desktop.getDesktop().open( chosenFile );
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{
 			logger.error( "Could not open file: {}", chosenFile.getAbsolutePath(), e );
 		}
