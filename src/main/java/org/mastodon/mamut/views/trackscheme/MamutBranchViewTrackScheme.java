@@ -189,7 +189,7 @@ public class MamutBranchViewTrackScheme
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel,
 				frame.getTrackschemePanel() );
-		ExportViewActions.install( viewActions, frame.getTrackschemePanel(), frame, "TrackScheme Branch" );
+		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme Branch" );
 
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions,
 				TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );

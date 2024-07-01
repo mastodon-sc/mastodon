@@ -184,7 +184,7 @@ public class MamutViewTrackScheme
 				appModel.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(),
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
-		ExportViewActions.install( viewActions, frame.getTrackschemePanel(), frame, "TrackScheme" );
+		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme" );
 
 		// Timepoint and number of spots.
 		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model );

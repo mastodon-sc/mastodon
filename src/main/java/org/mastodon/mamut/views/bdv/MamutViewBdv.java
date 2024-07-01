@@ -260,7 +260,7 @@ public class MamutViewBdv
 		viewer.timePointListeners().add( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
-		ExportViewActions.install( viewActions, frame.getViewerPanel(), frame, "BDV" );
+		ExportViewActions.install( viewActions, frame.getViewerPanel().getDisplayComponent(), frame, "BDV" );
 
 		final RenderSettingsManager renderSettingsManager = appModel.getWindowManager().getManager( RenderSettingsManager.class );
 		final RenderSettings renderSettings = renderSettingsManager.getForwardDefaultStyle();
