@@ -167,7 +167,7 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 	@Override
 	public String getLabel()
 	{
-		if ( pool.label.isSet( this ) )
+		if ( isLabelSet() )
 			return pool.label.get( this );
 		else
 			return Integer.toString( getInternalPoolIndex() );
@@ -177,6 +177,11 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 	public void setLabel( final String label )
 	{
 		pool.label.set( this, label );
+	}
+
+	public boolean isLabelSet()
+	{
+		return pool.label.isSet( this );
 	}
 
 	@Override
