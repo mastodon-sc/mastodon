@@ -207,6 +207,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
+						separator(),
 						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),
 						item( ExportViewActions.EXPORT_VIEW_TO_PNG ) ),
 				viewMenu(
