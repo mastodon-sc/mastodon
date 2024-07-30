@@ -64,7 +64,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -73,7 +72,6 @@ import javax.swing.JTextField;
 import org.janelia.saalfeldlab.n5.N5URI;
 import org.jdom2.Element;
 
-import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 
@@ -90,6 +88,8 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
     public static final String URL = "Url";
 
     public static final String DATASET = "Dataset";
+
+    private static AWSCredentials credentials = null;
 
     @Override
     public Element toXml( N5UniverseImgLoader imgLoader, File basePath )
@@ -137,7 +137,8 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
                 else
                 {
                     // use BasicAWSCredentials
-                    final AWSCredentials credentials = getCredentials();
+                    if ( credentials == null )
+                        credentials = getCredentials();
                     if ( credentials == null )
                         throw new RuntimeException( "No credentials provided" );
                     imgLoader = new N5UniverseImgLoader( url, dataset, sequenceDescription, credentials );
@@ -147,7 +148,18 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
                     }
                     else
                     {
-                        throw new RuntimeException( "Could not create N5UniverseImgLoader with credentials" );
+                        credentials = getCredentials();
+                        if ( credentials == null )
+                            throw new RuntimeException( "No credentials provided" );
+                        imgLoader = new N5UniverseImgLoader( url, dataset, sequenceDescription, credentials );
+                        if ( imgLoader.validate() )
+                        {
+                            return imgLoader;
+                        }
+                        else
+                        {
+                            throw new RuntimeException( "Could not create N5UniverseImgLoader with credentials" );
+                        }
                     }
                 }
             }
