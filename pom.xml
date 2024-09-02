@@ -10,7 +10,7 @@
 
 	<groupId>org.mastodon</groupId>
 	<artifactId>mastodon</artifactId>
-	<version>1.0.0-beta-30-SNAPSHOT</version>
+	<version>1.0.0-beta-31-SNAPSHOT</version>
 
 	<name>Mastodon</name>
 	<description>Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.</description>
@@ -104,6 +104,11 @@
 			<groupId>io.humble</groupId>
 			<artifactId>humble-video-all</artifactId>
 		</dependency>
+		<!-- export of panels to svg -->
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreesvg</artifactId>
+		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
@@ -175,8 +180,8 @@
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
-		<mastodon-collection.version>1.0.0-beta-26-SNAPSHOT</mastodon-collection.version>
-		<mastodon-graph.version>1.0.0-beta-25</mastodon-graph.version>
+		<mastodon-collection.version>1.0.0-beta-26</mastodon-collection.version>
+		<mastodon-graph.version>1.0.0-beta-26</mastodon-graph.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>

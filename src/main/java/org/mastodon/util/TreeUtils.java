@@ -39,6 +39,7 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchSpot;
 
 public class TreeUtils
 {
@@ -231,12 +232,16 @@ public class TreeUtils
 	}
 
 	/**
-	 * Gets the minimum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * Gets the minimum time point in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * <br>
+	 * If the model is empty, returns 0.
 	 * @param model the {@link Model}
 	 * @return the timepoint
 	 */
 	public static int getMinTimepoint( final Model model )
 	{
+		if ( model.getGraph().vertices().isEmpty() )
+			return 0;
 		int minTimepoint = Integer.MAX_VALUE;
 		for ( final Spot spot : model.getGraph().vertices() )
 			minTimepoint = Math.min( minTimepoint, spot.getTimepoint() );
@@ -244,7 +249,9 @@ public class TreeUtils
 	}
 
 	/**
-	 * Gets the maximum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * Gets the maximum time point in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * <br>
+	 * If the model is empty, returns 0.
 	 * @param model the {@link Model}
 	 * @return the timepoint
 	 */
@@ -254,5 +261,16 @@ public class TreeUtils
 		for ( final Spot spot : model.getGraph().vertices() )
 			max = Math.max( max, spot.getTimepoint() );
 		return max;
+	}
+
+	/**
+	 * Gets the first {@link Spot} within the given {@link BranchSpot}.
+	 * @param model the {@link Model} to which the {@link BranchSpot} belongs
+	 * @param branchSpot the {@link BranchSpot} to query
+	 * @return the first {@link Spot}
+	 */
+	public static Spot getFirstSpot( final Model model, final BranchSpot branchSpot, final Spot ref )
+	{
+		return model.getBranchGraph().getFirstLinkedVertex( branchSpot, ref );
 	}
 }

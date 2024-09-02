@@ -376,7 +376,7 @@ public class TrackMateImporter
 						pos[ 1 ] = Double.parseDouble( spotEl.getAttributeValue( POSITION_Y_FEATURE_NAME ) );
 						pos[ 2 ] = Double.parseDouble( spotEl.getAttributeValue( POSITION_Z_FEATURE_NAME ) );
 						final double radius = Double.parseDouble( spotEl.getAttributeValue( RADIUS_FEATURE_NAME ) );
-						final int frame = Integer.parseInt( spotEl.getAttributeValue( FRAME_FEATURE_NAME ) );
+						final int frame = ( int ) Double.parseDouble( spotEl.getAttributeValue( FRAME_FEATURE_NAME ) );
 						final int id = Integer.parseInt( spotEl.getAttributeValue( ID_FEATURE_NAME ) );
 						final String label = spotEl.getAttributeValue( LABEL_FEATURE_NAME );
 
@@ -423,6 +423,18 @@ public class TrackMateImporter
 						final Spot source = idToSpotIDmap.get( sourceID, sourceRef );
 						final int targetID = Integer.parseInt( edgeEl.getAttributeValue( EDGE_TARGET_ATTRIBUTE ) );
 						final Spot target = idToSpotIDmap.get( targetID, targetRef );
+
+						if ( source == null )
+						{
+							// TODO Echo warnings in a logger instead of sysout.
+							System.out.println( "Could not find spot with ID " + sourceID + " - skipping edge " + sourceID + " → " + targetID );
+							continue;
+						}
+						if ( target == null )
+						{
+							System.out.println( "Could not find spot with ID " + targetID + " - skipping edge " + sourceID + " → " + targetID );
+							continue;
+						}
 
 						// Protect against link time inversion.
 						final Link link;

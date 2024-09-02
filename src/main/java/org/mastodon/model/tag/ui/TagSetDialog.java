@@ -89,7 +89,6 @@ public class TagSetDialog extends JDialog
 			@Override
 			public void setTagSetStructure( final TagSetStructure tagSetStructure )
 			{
-				System.out.println( "TagSetDialog.setTagSetStructure" );
 				model.setTagSetStructure( tagSetStructure );
 				undoPointMarker.setUndoPoint();
 			}

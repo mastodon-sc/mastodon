@@ -320,6 +320,8 @@ public class MainWindow extends JFrame
 						item( ProjectActions.SAVE_PROJECT ),
 						item( ProjectActions.SAVE_PROJECT_AS ),
 						separator(),
+						item( ProjectActions.FIX_DATASET_PATH ),
+						separator(),
 						// item( ProjectActions.IMPORT_TGMM ),
 						// item( ProjectActions.IMPORT_SIMI ),
 						// item( ProjectActions.IMPORT_MAMUT ),
