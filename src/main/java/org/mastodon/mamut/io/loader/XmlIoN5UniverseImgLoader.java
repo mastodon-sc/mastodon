@@ -121,7 +121,17 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
         final String dataset = XmlHelpers.getText( elem, DATASET );
         try
         {
-            N5UniverseImgLoader imgLoader = new N5UniverseImgLoader( url, dataset, sequenceDescription );
+            N5UniverseImgLoader imgLoader;
+            if ( credentials != null )
+            {
+                // use stored BasicAWSCredentials
+                imgLoader = new N5UniverseImgLoader( url, dataset, sequenceDescription, credentials );
+            }
+            else
+            {
+                // try anonymous access
+                imgLoader = new N5UniverseImgLoader( url, dataset, sequenceDescription );
+            }
             if ( imgLoader.validate() )
             {
                 return imgLoader;
@@ -148,6 +158,7 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
                     }
                     else
                     {
+                        // for some reason, credentials are not valid
                         credentials = getCredentials();
                         if ( credentials == null )
                             throw new RuntimeException( "No credentials provided" );
