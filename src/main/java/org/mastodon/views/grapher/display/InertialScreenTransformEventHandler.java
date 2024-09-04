@@ -31,8 +31,8 @@ package org.mastodon.views.grapher.display;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout.LayoutListener;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
@@ -298,25 +298,50 @@ public class InertialScreenTransformEventHandler
 	@Override
 	public synchronized void layoutChanged( final DataGraphLayout< ?, ? > layout )
 	{
+		final double minX = layout.getCurrentLayoutMinX();
+		final double maxX = layout.getCurrentLayoutMaxX();
+		final double minY = layout.getCurrentLayoutMinY();
+		final double maxY = layout.getCurrentLayoutMaxY();
+		layoutChanged( minX, maxX, minY, maxY );
+	}
+
+	/**
+	 * Updates the handler so that it accommodates data contained in the
+	 * specified bounds.
+	 *
+	 * @param minX
+	 *            min X bound.
+	 * @param maxX
+	 *            max X bound.
+	 * @param minY
+	 *            min Y bound.
+	 * @param maxY
+	 *            max Y bound.
+	 */
+	protected synchronized void layoutChanged(
+			double minX,
+			double maxX,
+			double minY,
+			double maxY )
+	{
+		this.boundXMin = minX - boundXLayoutBorder;
+		this.boundXMax = maxX + boundXLayoutBorder;
+		this.boundYMin = minY - boundYLayoutBorder;
+		this.boundYMax = maxY + boundYLayoutBorder;
+
 		final ScreenTransform transform = transformState.get();
-
-		boundXMin = layout.getCurrentLayoutMinX() - boundXLayoutBorder;
-		boundXMax = layout.getCurrentLayoutMaxX() + boundXLayoutBorder;
-		boundYMin = layout.getCurrentLayoutMinY() - boundYLayoutBorder;
-		boundYMax = layout.getCurrentLayoutMaxY() + boundYLayoutBorder;
-
-		if ( boundXMax - boundXMin < minScaleX )
+		if ( maxX - minX < minScaleX )
 		{
-			final double c = ( boundXMax + boundXMin ) / 2;
-			boundXMin = c - minScaleX / 2;
-			boundXMax = c + minScaleX / 2;
+			final double c = ( maxX + minX ) / 2;
+			minX = c - minScaleX / 2;
+			maxX = c + minScaleX / 2;
 		}
 		updateMaxSizeX( transform.getScreenWidth() );
-		if ( boundYMax - boundYMin < minScaleX )
+		if ( maxY - minY < minScaleX )
 		{
-			final double c = ( boundYMax + boundYMin ) / 2;
-			boundYMin = c - minScaleX / 2;
-			boundYMax = c + minScaleX / 2;
+			final double c = ( maxY + minY ) / 2;
+			minY = c - minScaleX / 2;
+			maxY = c + minScaleX / 2;
 		}
 		updateMaxSizeY( transform.getScreenHeight() );
 
