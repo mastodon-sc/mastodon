@@ -82,7 +82,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< V > contextChooser,
-			final DataDisplayOptions optional )
+			final DataDisplayOptions< DataVertex, DataEdge > optional )
 	{
 		super( "Grapher" );
 

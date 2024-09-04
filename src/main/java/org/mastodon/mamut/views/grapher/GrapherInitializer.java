@@ -123,9 +123,8 @@ public class GrapherInitializer< V extends Vertex< E > & HasTimepoint & HasLabel
 		coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
 		// Options
-		final DataDisplayOptions options = DataDisplayOptions.options()
-				.shareKeyPressedEvents( appModel.getKeyPressedManager() )
-				.style( forwardDefaultStyle )
+		final DataDisplayOptions< DataVertex, DataEdge > options = DataDisplayOptions.options();
+		options.shareKeyPressedEvents( appModel.getKeyPressedManager() ).style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
 
 		// Navigation

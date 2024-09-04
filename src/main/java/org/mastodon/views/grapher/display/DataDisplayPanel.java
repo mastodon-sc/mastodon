@@ -205,14 +205,14 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final FocusModel< DataVertex > focus,
 			final SelectionModel< DataVertex, DataEdge > selection,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
-			final DataDisplayOptions optional )
+			final DataDisplayOptions< DataVertex, DataEdge > optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.layout = layout;
 		this.selection = selection;
 
-		final Values options = optional.values;
+		final Values< DataVertex, DataEdge > options = optional.values;
 		animationMilleseconds = options.getAnimationDurationMillis();
 
 		/*
