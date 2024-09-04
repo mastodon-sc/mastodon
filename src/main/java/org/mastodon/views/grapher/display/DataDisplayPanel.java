@@ -225,6 +225,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		screenTransform.listeners().add( this );
 		transformEventHandler = new InertialScreenTransformEventHandler( screenTransform );
 
+		setPreferredSize( new Dimension( w, h ) );
+
 		/*
 		 * Make this instance listen to data graph and UI objects.
 		 */
