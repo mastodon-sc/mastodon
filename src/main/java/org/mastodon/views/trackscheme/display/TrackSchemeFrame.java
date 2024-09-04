@@ -123,8 +123,14 @@ public class TrackSchemeFrame extends ViewFrame
 		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
 		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addHandler( mouseAndKeyHandler );
-		setLocation( optional.values.getX(), optional.values.getY() );
 		setIconImages( TRACKSCHEME_VIEW_ICON );
+
+		final int x = optional.values.getX();
+		final int y = optional.values.getY();
+		if ( x <= 0 && y <= 0 )
+			setLocationRelativeTo( null );
+		else
+			setLocation( x, y );
 	}
 
 	public TrackSchemePanel getTrackschemePanel()

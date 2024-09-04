@@ -199,9 +199,9 @@ public class DataDisplayOptions< V extends Vertex< E >, E extends Edge< V > >
 
 		private int y = 0;
 
-		private int width = 700;
+		private int width = 400;
 
-		private int height = 450;
+		private int height = 400;
 
 		private long animationDurationMillis = 500;
 

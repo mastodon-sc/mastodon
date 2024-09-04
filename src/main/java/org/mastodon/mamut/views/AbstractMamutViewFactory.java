@@ -240,11 +240,6 @@ public abstract class AbstractMamutViewFactory< T extends MamutViewI > implement
 		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
 		if ( null != pos )
 			frame.setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
-		else
-		{
-			frame.setSize( 650, 400 );
-			frame.setLocationRelativeTo( null );
-		}
 	}
 
 	private static void restoreGroupHandle( final GroupHandle groupHandle, final Map< String, Object > guiState )
