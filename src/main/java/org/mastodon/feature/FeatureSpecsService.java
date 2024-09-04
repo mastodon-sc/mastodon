@@ -40,12 +40,11 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
-import org.scijava.Priority;
 
 /**
  * Helper class to discover and hold {@link FeatureSpec}s.
  */
-@Plugin( type = FeatureSpecsService.class, priority = Priority.EXTREMELY_LOW )
+@Plugin( type = FeatureSpecsService.class )
 public class FeatureSpecsService extends AbstractService implements SciJavaService
 {
 
