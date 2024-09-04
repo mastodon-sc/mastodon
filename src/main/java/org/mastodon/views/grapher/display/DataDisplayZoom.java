@@ -32,13 +32,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.model.HasLabel;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 import org.mastodon.views.trackscheme.display.TrackSchemeZoom;
@@ -65,9 +66,10 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		extends AbstractNamedBehaviour
 		implements DragBehaviour, OffsetAxesListener, TransformListener< ScreenTransform >
 {
-	private static final String TOGGLE_ZOOM = "box zoom";
 
-	private static final String[] TOGGLE_ZOOM_KEYS = new String[] { "Z" };
+	public static final String TOGGLE_ZOOM = "box zoom";
+
+	public static final String[] TOGGLE_ZOOM_KEYS = new String[] { "Z" };
 
 	/*
 	 * Command descriptions for all provided commands
@@ -90,7 +92,7 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E
 	public static < V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > void
 			install( final Behaviours behaviours, final DataDisplayPanel< V, E > panel )
 	{
-		final DataDisplayZoom< V, E > zoom = new DataDisplayZoom<>( panel );
+		final DataDisplayZoom< V, E > zoom = new DataDisplayZoom<>( panel, panel.getTransformEventHandler() );
 
 		// Create and register overlay.
 		zoom.transformChanged( panel.getScreenTransform().get() );
@@ -107,7 +109,7 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E
 
 	public static final Color ZOOM_GRAPH_OVERLAY_COLOR = Color.BLUE.darker();
 
-	private final DataDisplayPanel< V, E > panel;
+	private final JPanel panel;
 
 	private final InertialScreenTransformEventHandler transformEventHandler;
 
@@ -119,11 +121,11 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E
 
 	private final ZoomOverlay overlay;
 
-	private DataDisplayZoom( final DataDisplayPanel< V, E > panel )
+	private DataDisplayZoom( final JPanel panel, final InertialScreenTransformEventHandler transformEventHandler )
 	{
 		super( TOGGLE_ZOOM );
 		this.panel = panel;
-		this.transformEventHandler = panel.getTransformEventHandler();
+		this.transformEventHandler = transformEventHandler;
 
 		dragging = false;
 		screenTransform = new ScreenTransform();
