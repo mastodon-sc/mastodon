@@ -200,6 +200,9 @@ public class MastodonIcons
 	 * Images icons for JFrames and dialogs.
 	 */
 
+	public static final List< Image > BVV_VIEW_ICON = Arrays
+			.asList( new Image[] { BVV_ICON_SMALL.getImage(), BVV_ICON_MEDIUM.getImage(), BVV_ICON_LARGE.getImage() } );
+
 	public static final List< Image > BDV_VIEW_ICON = Arrays
 			.asList( new Image[] { BDV_ICON_SMALL.getImage(), BDV_ICON_MEDIUM.getImage(), BDV_ICON_LARGE.getImage() } );
 
