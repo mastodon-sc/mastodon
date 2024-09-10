@@ -77,12 +77,11 @@ import org.mastodon.mamut.io.loader.adapter.N5HDF5ReaderToViewerImgLoaderAdapter
 import org.mastodon.mamut.io.loader.adapter.N5KeyValueReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.ZarrKeyValueReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.N5ReaderToViewerImgLoaderAdapter;
-import org.mastodon.mamut.io.loader.util.OmeZarrMultiscales;
-import org.mastodon.mamut.io.loader.util.OmeZarrMultiscalesAdapter;
-import org.mastodon.mamut.io.loader.util.ZarrAxes;
-import org.mastodon.mamut.io.loader.util.ZarrAxesAdapter;
+import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales;
+import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscalesAdapter;
+import org.mastodon.mamut.io.loader.util.mobie.ZarrAxes;
+import org.mastodon.mamut.io.loader.util.mobie.ZarrAxesAdapter;
 
-import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.google.gson.GsonBuilder;
 

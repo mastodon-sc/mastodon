@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.io.loader.adapter;
 
-import static org.mastodon.mamut.io.loader.util.OmeZarrMultiscales.MULTI_SCALE_KEY;
+import static org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales.MULTI_SCALE_KEY;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,9 +39,9 @@ import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
 import org.janelia.saalfeldlab.n5.zarr.ZarrKeyValueReader;
-import org.mastodon.mamut.io.loader.util.N5OMEZarrCacheArrayLoader;
-import org.mastodon.mamut.io.loader.util.OmeZarrMultiscales;
-import org.mastodon.mamut.io.loader.util.ZarrAxes;
+import org.mastodon.mamut.io.loader.util.mobie.N5OMEZarrCacheArrayLoader;
+import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales;
+import org.mastodon.mamut.io.loader.util.mobie.ZarrAxes;
 
 import bdv.img.cache.SimpleCacheArrayLoader;
 import bdv.img.n5.BdvN5Format;

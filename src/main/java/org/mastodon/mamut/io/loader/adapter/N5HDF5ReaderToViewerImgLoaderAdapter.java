@@ -29,7 +29,7 @@
 package org.mastodon.mamut.io.loader.adapter;
 
 import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Reader;
-import org.mastodon.mamut.io.loader.util.N5CacheArrayLoader;
+import org.mastodon.mamut.io.loader.util.mobie.N5CacheArrayLoader;
 
 import bdv.img.cache.SimpleCacheArrayLoader;
 import bdv.img.n5.BdvN5Format;

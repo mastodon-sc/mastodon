@@ -34,7 +34,7 @@ import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
 import org.janelia.saalfeldlab.n5.N5KeyValueReader;
-import org.mastodon.mamut.io.loader.util.N5CacheArrayLoader;
+import org.mastodon.mamut.io.loader.util.mobie.N5CacheArrayLoader;
 
 import bdv.img.cache.SimpleCacheArrayLoader;
 import bdv.img.n5.BdvN5Format;
