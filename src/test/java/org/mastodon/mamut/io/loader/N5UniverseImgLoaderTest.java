@@ -15,8 +15,6 @@ import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.scijava.Context;
 
-import com.amazonaws.SdkClientException;
-
 import mpicbg.spim.data.SpimDataException;
 
 public class N5UniverseImgLoaderTest

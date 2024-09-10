@@ -214,7 +214,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         requestedSharedQueue = createdSharedQueue;
     }
 
-    private N5ReaderToViewerImgLoaderAdapter< ? extends N5Reader > getAdapter()
+    public static N5ReaderToViewerImgLoaderAdapter< ? extends N5Reader > getAdapter( final N5Reader n5, final String dataset )
     {
         if ( n5 instanceof N5HDF5Reader )
         {
@@ -262,7 +262,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                 try
                 {
                     this.n5 = factory.openReader( url );
-                    this.adapter = getAdapter();
+                    this.adapter = getAdapter( n5, dataset );
                     int maxNumLevels = 0;
                     final List< ? extends BasicViewSetup > setups = seq.getViewSetupsOrdered();
                     for ( final BasicViewSetup setup : setups )

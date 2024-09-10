@@ -192,6 +192,10 @@ public class ZarrKeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToVie
         try
         {
             OmeZarrMultiscales multiscale = setupToMultiscale.get( setupId );
+            if ( multiscale == null )
+            {
+                throw new IOException( "Multiscale not found for setup " + setupId );
+            }
             mipmapResolutions = new double[ multiscale.datasets.length ][];
 
             long[] dimensionsOfLevel0 = setupToAttributes.get( setupId ).getDimensions();

@@ -61,6 +61,25 @@ public interface N5ReaderToViewerImgLoaderAdapter< T extends N5Reader >
 
     String getPathNameFromSetupTimepointLevel( final int setupId, final int timepointId, final int level );
 
+    default int getNumSetups()
+    {
+        int numSetups = 0;
+        while ( true )
+        {
+            try
+            {
+                if ( getMipmapResolutions( numSetups ) == null )
+                    break;
+            }
+            catch ( IOException e )
+            {
+                break;
+            }
+            numSetups++;
+        }
+        return numSetups;
+    }
+
     default String getFullPathName( final String pathName )
     {
         return getDataset() + pathName;

@@ -1,14 +1,11 @@
-import static org.mastodon.mamut.io.loader.util.OmeZarrMultiscales.MULTI_SCALE_KEY;
+import static org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales.MULTI_SCALE_KEY;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
-import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Reader;
 import org.janelia.saalfeldlab.n5.zarr.ZarrKeyValueReader;
-import org.mastodon.mamut.io.loader.util.OmeZarrMultiscales;
+import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales;
 import org.janelia.saalfeldlab.n5.universe.N5Factory;
 
 public class N5Zarr
@@ -25,6 +22,6 @@ public class N5Zarr
                 .openReader( n5Url );
         ( ( ZarrKeyValueReader ) n5 ).getAttributesFromContainer( n5Dataset, ".zgroup" );
         OmeZarrMultiscales[] multiscales = n5.getAttribute( n5Dataset, MULTI_SCALE_KEY, OmeZarrMultiscales[].class );
-
+        System.out.println( Arrays.toString( multiscales ) );
     }
 }
