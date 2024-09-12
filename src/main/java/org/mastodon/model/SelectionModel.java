@@ -166,4 +166,6 @@ public interface SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	public void resumeListeners();
 
 	public void pauseListeners();
+
+	boolean areListenersPaused();
 }
