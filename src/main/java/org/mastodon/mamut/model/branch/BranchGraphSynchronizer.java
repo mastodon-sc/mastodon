@@ -55,10 +55,13 @@ public class BranchGraphSynchronizer implements GraphChangeListener
 		this.bg = bg;
 		this.lock = readLock;
 		this.listeners = new Listeners.SynchronizedList<>();
+		this.uptodate = true;
 	}
 
 	public void sync()
 	{
+		if ( uptodate )
+			return;
 		lock.lock();
 		try
 		{
