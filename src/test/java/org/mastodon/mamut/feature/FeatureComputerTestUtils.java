@@ -43,7 +43,9 @@ public class FeatureComputerTestUtils
 	public static < T > Feature< T > getFeature( Context context, Model model, FeatureSpec< ? extends Feature< T >, T > spec )
 	{
 		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, model );
-		return Cast.unchecked( featureComputerService.compute( true, spec ).get( spec ) );
+		Feature< ? > feature = featureComputerService.compute( true, spec ).get( spec );
+		model.getFeatureModel().declareFeature( feature );
+		return Cast.unchecked( feature );
 	}
 
 	public static < T > FeatureProjection< T > getFeatureProjection( Context context, Model model,
