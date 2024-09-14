@@ -38,6 +38,10 @@ import java.util.Map;
 import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
+import org.janelia.saalfeldlab.n5.universe.N5DatasetDiscoverer;
+import org.janelia.saalfeldlab.n5.universe.N5TreeNode;
+import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadata;
 import org.janelia.saalfeldlab.n5.zarr.ZarrKeyValueReader;
 import org.mastodon.mamut.io.loader.util.mobie.N5OMEZarrCacheArrayLoader;
 import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales;
@@ -265,6 +269,18 @@ public class ZarrKeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToVie
     public String getPathNameFromSetupTimepointLevel( int setupId, int timepointId, int level )
     {
         return getPathNameLevel( setupId, level );
+    }
+
+    @Override
+    public OmeNgffMetadata getMetadata()
+    {
+        final N5TreeNode node = N5DatasetDiscoverer.discover( getN5Reader() );
+        final N5Metadata meta = node.getMetadata();
+        if ( meta instanceof OmeNgffMetadata )
+        {
+            return ( OmeNgffMetadata ) meta;
+        }
+        return null;
     }
 
 }

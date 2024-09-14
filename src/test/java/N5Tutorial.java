@@ -7,6 +7,7 @@ import org.janelia.saalfeldlab.n5.N5Reader;
 import org.janelia.saalfeldlab.n5.N5Writer;
 import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
 import org.janelia.saalfeldlab.n5.universe.N5Factory;
+import org.janelia.saalfeldlab.n5.universe.metadata.SpatialMultiscaleMetadata;
 import org.janelia.saalfeldlab.n5.zarr.ZarrCompressor;
 import org.mastodon.mamut.io.loader.N5UniverseImgLoader;
 import org.mastodon.mamut.io.loader.adapter.N5ReaderToViewerImgLoaderAdapter;
@@ -17,7 +18,10 @@ import org.mastodon.mamut.io.loader.util.mobie.ZarrAxesAdapter;
 
 import com.google.gson.GsonBuilder;
 
+import net.imglib2.Dimensions;
+import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 public class N5Tutorial
@@ -37,9 +41,16 @@ public class N5Tutorial
                 .gsonBuilder( gsonBuilder )
                 .openReader( n5Url );
 
-        final String n5Dataset = "/";
+        final String n5Dataset = "/mitosis/";
         final N5ReaderToViewerImgLoaderAdapter< ? extends N5Reader > adapter = N5UniverseImgLoader.getAdapter( n5, n5Dataset );
-        System.out.println( adapter.getNumSetups() );
+        final SpatialMultiscaleMetadata< ? > metadata = adapter.getMetadata();
+        final long x = metadata.getChildrenMetadata()[ 0 ].getAttributes().getDimensions()[ 0 ];
+        final long y = metadata.getChildrenMetadata()[ 0 ].getAttributes().getDimensions()[ 1 ];
+        final long z = metadata.getChildrenMetadata()[ 0 ].getAttributes().getDimensions()[ 2 ];
+        final Dimensions imageSize = new FinalDimensions( x, y, z );
+        final AffineTransform3D transform = metadata.spatialTransform3d();
+        System.out.println( imageSize.toString() );
+        System.out.println( transform.toString() );
         final String pathName = adapter.getFullPathName( adapter.getPathNameFromSetupTimepointLevel( 0, 0, 0 ) );
         final DatasetAttributes attributes = n5.getDatasetAttributes( pathName );
 

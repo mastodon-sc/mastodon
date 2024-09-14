@@ -29,11 +29,10 @@
 package org.mastodon.mamut.io.loader.adapter;
 
 import java.io.IOException;
-
 import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Reader;
-
+import org.janelia.saalfeldlab.n5.universe.metadata.SpatialMultiscaleMetadata;
 import bdv.img.cache.SimpleCacheArrayLoader;
 import net.imglib2.img.cell.CellGrid;
 
@@ -60,6 +59,8 @@ public interface N5ReaderToViewerImgLoaderAdapter< T extends N5Reader >
     String getPathNameFromSetupTimepoint( final int setupId, final int timepointId );
 
     String getPathNameFromSetupTimepointLevel( final int setupId, final int timepointId, final int level );
+
+    SpatialMultiscaleMetadata< ? > getMetadata();
 
     default int getNumSetups()
     {

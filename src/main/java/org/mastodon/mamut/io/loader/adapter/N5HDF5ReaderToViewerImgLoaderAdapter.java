@@ -29,6 +29,7 @@
 package org.mastodon.mamut.io.loader.adapter;
 
 import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Reader;
+import org.janelia.saalfeldlab.n5.universe.metadata.SpatialMultiscaleMetadata;
 import org.mastodon.mamut.io.loader.util.mobie.N5CacheArrayLoader;
 
 import bdv.img.cache.SimpleCacheArrayLoader;
@@ -152,5 +153,11 @@ public class N5HDF5ReaderToViewerImgLoaderAdapter implements N5ReaderToViewerImg
     public String getPathNameFromSetupTimepointLevel( int setupId, int timepointId, int level )
     {
         return String.format( "t%05d/s%02d/%d/cells", timepointId, setupId, level );
+    }
+
+    @Override
+    public SpatialMultiscaleMetadata< ? > getMetadata()
+    {
+        throw new UnsupportedOperationException( "Not supported" );
     }
 }

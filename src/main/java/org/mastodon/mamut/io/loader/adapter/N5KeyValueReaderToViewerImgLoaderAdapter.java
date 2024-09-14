@@ -29,11 +29,14 @@
 package org.mastodon.mamut.io.loader.adapter;
 
 import java.io.IOException;
-
 import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
 import org.janelia.saalfeldlab.n5.N5KeyValueReader;
+import org.janelia.saalfeldlab.n5.universe.N5DatasetDiscoverer;
+import org.janelia.saalfeldlab.n5.universe.N5TreeNode;
+import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.N5MultiScaleMetadata;
 import org.mastodon.mamut.io.loader.util.mobie.N5CacheArrayLoader;
 
 import bdv.img.cache.SimpleCacheArrayLoader;
@@ -142,6 +145,39 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
     public String getPathNameFromSetupTimepointLevel( int setupId, int timepointId, int level )
     {
         return String.format( "setup%d/timepoint%d/s%d", setupId, timepointId, level );
+    }
+
+    private N5Metadata getMetadataRecursively( final N5TreeNode node )
+    {
+        N5Metadata meta = node.getMetadata();
+        if ( meta instanceof N5MultiScaleMetadata )
+        {
+            return meta;
+        }
+        for ( final N5TreeNode child : node.childrenList() )
+        {
+            meta = getMetadataRecursively( child );
+            if ( meta instanceof N5MultiScaleMetadata )
+            {
+                return meta;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public N5MultiScaleMetadata getMetadata()
+    {
+        final N5TreeNode node = N5DatasetDiscoverer.discover( getN5Reader() );
+        N5Metadata meta = node.getMetadata();
+        if ( meta == null )
+        {
+            meta = getMetadataRecursively( node );
+        }
+        if ( meta instanceof N5MultiScaleMetadata )
+            return ( N5MultiScaleMetadata ) meta;
+        else
+            return null;
     }
 
 }
