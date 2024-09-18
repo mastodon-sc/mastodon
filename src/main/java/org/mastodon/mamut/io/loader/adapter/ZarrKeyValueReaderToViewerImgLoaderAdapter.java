@@ -32,16 +32,20 @@ import static org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales.MULTI_S
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
 import org.janelia.saalfeldlab.n5.universe.N5DatasetDiscoverer;
 import org.janelia.saalfeldlab.n5.universe.N5TreeNode;
+import org.janelia.saalfeldlab.n5.universe.metadata.N5GenericSingleScaleMetadataParser;
 import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadataParser;
 import org.janelia.saalfeldlab.n5.zarr.ZarrKeyValueReader;
 import org.mastodon.mamut.io.loader.util.mobie.N5OMEZarrCacheArrayLoader;
 import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales;
@@ -137,10 +141,10 @@ public class ZarrKeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToVie
         this.n5 = n5;
         this.dataset = dataset;
         int setupId = -1;
-        final OmeZarrMultiscales[] multiscales = n5.getAttribute( "", MULTI_SCALE_KEY, OmeZarrMultiscales[].class );
+        final OmeZarrMultiscales[] multiscales = n5.getAttribute( dataset, MULTI_SCALE_KEY, OmeZarrMultiscales[].class );
         for ( OmeZarrMultiscales multiscale : multiscales )
         {
-            final DatasetAttributes attributes = n5.getDatasetAttributes( multiscale.datasets[ 0 ].path );
+            final DatasetAttributes attributes = n5.getDatasetAttributes( dataset + multiscale.datasets[ 0 ].path );
             long nC = 1;
             if ( multiscale.axes.hasChannels() )
             {
@@ -207,7 +211,7 @@ public class ZarrKeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToVie
 
             for ( int level = 1; level < mipmapResolutions.length; level++ )
             {
-                long[] dimensions = n5.getDatasetAttributes( getPathNameLevel( setupId, level ) ).getDimensions();
+                long[] dimensions = n5.getDatasetAttributes( getFullPathName( getPathNameLevel( setupId, level ) ) ).getDimensions();
                 mipmapResolutions[ level ] = new double[ 3 ];
                 for ( int d = 0; d < 2; d++ )
                 {
@@ -274,8 +278,30 @@ public class ZarrKeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToVie
     @Override
     public OmeNgffMetadata getMetadata()
     {
-        final N5TreeNode node = N5DatasetDiscoverer.discover( getN5Reader() );
-        final N5Metadata meta = node.getMetadata();
+        final N5DatasetDiscoverer discoverer = new N5DatasetDiscoverer( n5,
+                Executors.newCachedThreadPool(),
+                Collections.singletonList( new N5GenericSingleScaleMetadataParser() ),
+                Collections.singletonList( new OmeNgffMetadataParser() ) );
+        N5TreeNode root = null;
+        try
+        {
+            root = discoverer.discoverAndParseRecursive( "" );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+
+        final N5TreeNode metaNode = root.getDescendant( dataset )
+                .filter( node -> {
+                    return node.getMetadata() != null;
+                } )
+                .get();
+        if ( metaNode == null )
+        {
+            return null;
+        }
+        final N5Metadata meta = metaNode.getMetadata();
         if ( meta instanceof OmeNgffMetadata )
         {
             return ( OmeNgffMetadata ) meta;

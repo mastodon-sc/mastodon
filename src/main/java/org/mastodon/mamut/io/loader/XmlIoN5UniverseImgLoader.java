@@ -98,9 +98,16 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
         elem.setAttribute( IMGLOADER_FORMAT_ATTRIBUTE_NAME, "bdv.n5.universe" );
         elem.setAttribute( "version", "1.0" );
         String url = imgLoader.getUrl();
-        if ( hasSchema( url ) )
+        String scheme = getScheme( url );
+        if ( scheme == null )
         {
+            // url is a path
             elem.addContent( XmlHelpers.pathElement( URL, new File( url ), basePath ) );
+        }
+        else if ( scheme.equals( "file" ) )
+        {
+            // remove "file:" prefix
+            elem.addContent( XmlHelpers.pathElement( URL, new File( url.substring( "file:".length() ) ), basePath ) );
         }
         else
         {
@@ -114,7 +121,7 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
     public N5UniverseImgLoader fromXml( Element elem, File basePath, AbstractSequenceDescription< ?, ?, ? > sequenceDescription )
     {
         String url = XmlHelpers.getText( elem, URL );
-        if ( !hasSchema( url ) )
+        if ( getScheme( url ) == null )
         {
             url = XmlHelpers.loadPath( elem, URL, basePath ).toString();
         }
@@ -177,22 +184,22 @@ public class XmlIoN5UniverseImgLoader implements XmlIoBasicImgLoader< N5Universe
         }
         catch ( final Throwable e )
         {
+            credentials = null;
             throw new RuntimeException( e );
         }
     }
 
-    private static boolean hasSchema( final String url )
+    private static String getScheme( final String url )
     {
         String scheme = null;
         try
         {
             final URI encodedUri = N5URI.encodeAsUri( url );
             scheme = encodedUri.getScheme();
-
         }
         catch ( URISyntaxException ignored )
         {}
-        return scheme != null;
+        return scheme;
     }
 
     private AWSCredentials getCredentials()

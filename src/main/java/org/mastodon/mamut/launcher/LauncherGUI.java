@@ -102,6 +102,8 @@ class LauncherGUI extends JPanel
 
 	final NewMastodonProjectPanel newMastodonProjectPanel;
 
+	final NewFromUrlPanel newFromUrlPanel;
+
 	final LoggerPanel logger;
 
 	final ImportTGMMPanel importTGMMPanel;
@@ -207,6 +209,9 @@ class LauncherGUI extends JPanel
 
 		newMastodonProjectPanel = new NewMastodonProjectPanel( "New Mastodon project", "create" );
 		centralPanel.add( newMastodonProjectPanel, NEW_MASTODON_PROJECT_KEY );
+
+		newFromUrlPanel = new NewFromUrlPanel( "New From URL", "create" );
+		centralPanel.add( newFromUrlPanel, NEW_FROM_URL_KEY );
 
 		recentProjectsPanel = new RecentProjectsPanel( projectOpener );
 		centralPanel.add( recentProjectsPanel, RECENT_PROJECTS_KEY );
@@ -350,6 +355,7 @@ class LauncherGUI extends JPanel
 	{
 		log( string, NORMAL_COLOR );
 	}
+
 	public void log( final String message, final Color color )
 	{
 		final StyleContext sc = StyleContext.getDefaultStyleContext();
