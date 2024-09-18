@@ -207,6 +207,13 @@
 			<url>https://github.com/xulman</url>
 			<properties><id>xulman</id></properties>
 		</contributor>
+		<contributor>
+			<name>Stefan Hahmann</name>
+			<url>https://github.com/stefanhahmann</url>
+			<properties>
+				<id>stefanhahmann</id>
+			</properties>
+		</contributor>
 	</contributors>
 
 	<repositories>
