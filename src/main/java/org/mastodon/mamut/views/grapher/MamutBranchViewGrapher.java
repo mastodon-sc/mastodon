@@ -53,6 +53,7 @@ import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.FeatureGraphConfig;
 import org.mastodon.views.grapher.display.FeatureGraphConfig.GraphDataItemsSource;
 import org.mastodon.views.grapher.display.FeatureSpecPair;
+import org.mastodon.views.grapher.display.InertialScreenTransformEventHandler;
 
 import java.util.Iterator;
 import java.util.function.BiConsumer;
@@ -75,6 +76,9 @@ public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSp
 		grapherInitializer = new GrapherInitializer<>( viewGraph, appModel, selectionModel, navigationHandler, focusModel, highlightModel,
 				getGroupHandle() );
 		grapherInitializer.getFrame().setTitle( "Grapher Branch" );
+		InertialScreenTransformEventHandler handler = grapherInitializer.getFrame().getDataDisplayPanel().getTransformEventHandler();
+		handler.setMinScaleX( 0.1d );
+		handler.setMinScaleY( 0.1d );
 		grapherInitializer.setOnClose( this );
 		grapherInitializer.initFeatureConfig( getFeatureGraphConfig() );
 		setFrame( grapherInitializer.getFrame() ); // this creates viewActions and viewBehaviours thus must be called before installActions

@@ -274,6 +274,16 @@ public class InertialScreenTransformEventHandler
 		updateTransformScreenSize();
 	}
 
+	public void setMinScaleY( final double minScaleY )
+	{
+		this.minScaleY = minScaleY;
+	}
+
+	public void setMinScaleX( final double minScaleX )
+	{
+		this.minScaleX = minScaleX;
+	}
+
 	private void updateTransformScreenSize()
 	{
 		final ScreenTransform transform = transformState.get();
