@@ -126,12 +126,12 @@ public class InertialScreenTransformEventHandler
 	/**
 	 * Sets the maximal zoom level in X.
 	 */
-	private static final double MIN_SIBLINGS_ON_CANVAS = 4;
+	private static final double DEFAULT_MIN_SCALE_X = 4;
 
 	/**
 	 * Sets the maximal zoom level in Y.
 	 */
-	private static final double MIN_TIMEPOINTS_ON_CANVAS = 4;
+	private static final double DEFAULT_MIN_SCALE_Y = 4;
 
 	private static final double EPSILON = 0.0000000001;
 
@@ -289,18 +289,18 @@ public class InertialScreenTransformEventHandler
 		boundYMin = layout.getCurrentLayoutMinY() - boundYLayoutBorder;
 		boundYMax = layout.getCurrentLayoutMaxY() + boundYLayoutBorder;
 
-		if ( boundXMax - boundXMin < MIN_SIBLINGS_ON_CANVAS )
+		if ( boundXMax - boundXMin < DEFAULT_MIN_SCALE_X )
 		{
 			final double c = ( boundXMax + boundXMin ) / 2;
-			boundXMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
-			boundXMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
+			boundXMin = c - DEFAULT_MIN_SCALE_X / 2;
+			boundXMax = c + DEFAULT_MIN_SCALE_X / 2;
 		}
 		updateMaxSizeX( transform.getScreenWidth() );
-		if ( boundYMax - boundYMin < MIN_SIBLINGS_ON_CANVAS )
+		if ( boundYMax - boundYMin < DEFAULT_MIN_SCALE_X )
 		{
 			final double c = ( boundYMax + boundYMin ) / 2;
-			boundYMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
-			boundYMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
+			boundYMin = c - DEFAULT_MIN_SCALE_X / 2;
+			boundYMax = c + DEFAULT_MIN_SCALE_X / 2;
 		}
 		updateMaxSizeY( transform.getScreenHeight() );
 
@@ -331,11 +331,11 @@ public class InertialScreenTransformEventHandler
 		boundYMin = layoutMinY - boundYLayoutBorder;
 		boundYMax = layoutMaxY + boundYLayoutBorder;
 
-		if ( boundYMax - boundYMin < MIN_TIMEPOINTS_ON_CANVAS )
+		if ( boundYMax - boundYMin < DEFAULT_MIN_SCALE_Y )
 		{
 			final double c = ( boundYMax + boundYMin ) / 2;
-			boundYMin = c - MIN_TIMEPOINTS_ON_CANVAS / 2;
-			boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
+			boundYMin = c - DEFAULT_MIN_SCALE_Y / 2;
+			boundYMax = c + DEFAULT_MIN_SCALE_Y / 2;
 		}
 
 		updateMaxSizeY( transformState.get().getScreenHeight() );
@@ -345,7 +345,7 @@ public class InertialScreenTransformEventHandler
 	{
 		ConstrainScreenTransform.constrainTransform(
 				transform,
-				MIN_SIBLINGS_ON_CANVAS, MIN_TIMEPOINTS_ON_CANVAS,
+				DEFAULT_MIN_SCALE_X, DEFAULT_MIN_SCALE_Y,
 				maxSizeX, maxSizeY,
 				boundXMin, boundXMax, boundYMin, boundYMax,
 				borderRatioX, borderRatioY,
@@ -374,12 +374,12 @@ public class InertialScreenTransformEventHandler
 
 	private boolean hasMinSizeX( final ScreenTransform transform )
 	{
-		return ConstrainScreenTransform.hasMinSizeX( transform, MIN_SIBLINGS_ON_CANVAS + EPSILON );
+		return ConstrainScreenTransform.hasMinSizeX( transform, DEFAULT_MIN_SCALE_X + EPSILON );
 	}
 
 	private boolean hasMinSizeY( final ScreenTransform transform )
 	{
-		return ConstrainScreenTransform.hasMinSizeY( transform, MIN_TIMEPOINTS_ON_CANVAS + EPSILON );
+		return ConstrainScreenTransform.hasMinSizeY( transform, DEFAULT_MIN_SCALE_Y + EPSILON );
 	}
 
 	private boolean hasMaxSizeX( final ScreenTransform transform )
@@ -507,7 +507,7 @@ public class InertialScreenTransformEventHandler
 			{
 				if ( zoomIn )
 				{
-					if ( !hasMinSizeY( transform ) )
+					if ( !hasMinSizeY( transform ) || true )
 						transform.zoomY( dScale, y );
 				}
 				else
