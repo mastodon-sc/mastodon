@@ -76,6 +76,20 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	{
 		return vertexPool.label.propertyChangeListeners().add( listener );
 	}
+	
+	/**
+	 * Register a {@link PropertyChangeListener} that will be notified when
+	 * a {@code Spot}s covariance is changed.
+	 *
+	 * @param listener
+	 *            the listener to register.
+	 * @return {@code true} if the listener was successfully registered.
+	 *         {@code false} if it was already registered.
+	 */
+	public boolean addCovarianceLabelListener( final PropertyChangeListener< Spot > listener )
+	{
+		return vertexPool.covariance.propertyChangeListeners().add( listener );
+	}
 
 	/**
 	 * Removes the specified {@link PropertyChangeListener} from the set of
@@ -90,4 +104,19 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	{
 		return vertexPool.label.propertyChangeListeners().remove( listener );
 	}
+	
+	/**
+	 * Removes the specified {@link PropertyChangeListener} from the set of
+	 * vertex covariance listeners.
+	 *
+	 * @param listener
+	 *            the listener to remove.
+	 * @return {@code true} if the listener was present in the listeners of this
+	 *         model and was successfully removed.
+	 */
+	public boolean removeVertexCovarianceListener( final PropertyChangeListener< Spot > listener )
+	{
+		return vertexPool.covariance.propertyChangeListeners().remove( listener );
+	}
+}
 }
