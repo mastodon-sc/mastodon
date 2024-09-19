@@ -265,7 +265,7 @@ public class SharedBigDataViewerData
 		return elem;
 	}
 
-	private void restoreFromXmlSetupAssignments( final Element parent )
+	public void restoreFromXmlSetupAssignments( final Element parent )
 	{
 		final Element elemSetupAssignments = parent.getChild( "SetupAssignments" );
 		if ( elemSetupAssignments == null )
