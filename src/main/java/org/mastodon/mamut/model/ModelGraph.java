@@ -119,4 +119,4 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 		return vertexPool.covariance.propertyChangeListeners().remove( listener );
 	}
 }
-}
+
