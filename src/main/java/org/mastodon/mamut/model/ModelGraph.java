@@ -86,7 +86,7 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	 * @return {@code true} if the listener was successfully registered.
 	 *         {@code false} if it was already registered.
 	 */
-	public boolean addCovarianceLabelListener( final PropertyChangeListener< Spot > listener )
+	public boolean addVertexCovarianceListener( final PropertyChangeListener< Spot > listener )
 	{
 		return vertexPool.covariance.propertyChangeListeners().add( listener );
 	}
