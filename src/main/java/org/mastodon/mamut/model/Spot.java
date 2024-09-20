@@ -29,6 +29,7 @@
 package org.mastodon.mamut.model;
 
 import org.mastodon.model.AbstractSpot;
+import org.mastodon.model.HasCovariance;
 import org.mastodon.model.HasLabel;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
@@ -39,7 +40,7 @@ import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
  *
  * @author Tobias Pietzsch
  */
-public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedElement, ModelGraph > implements HasLabel
+public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedElement, ModelGraph > implements HasLabel, HasCovariance
 {
 	private final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( 3 );
 
@@ -145,11 +146,13 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 		return this;
 	}
 
+	@Override
 	public void getCovariance( final double[][] cov )
 	{
 		getCovarianceInternal( cov );
 	}
 
+	@Override
 	public void setCovariance( final double[][] cov )
 	{
 		pool.covariance.notifyBeforePropertyChange( this );
