@@ -31,14 +31,14 @@ package org.mastodon.views.bdv.overlay;
 import org.mastodon.model.NavigationListener;
 import org.mastodon.ui.NavigationEtiquette;
 
-import bdv.viewer.ViewerPanel;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 
 public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		implements NavigationListener< V, E >
 {
-	private final ViewerPanel panel;
+	private final AbstractViewerPanel panel;
 
 	private final OverlayGraph< V, E > graph;
 
@@ -47,7 +47,7 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 	private NavigationBehaviour< V, E > navigationBehaviour;
 
 	public OverlayNavigation(
-			final ViewerPanel panel,
+			final AbstractViewerPanel panel,
 			final OverlayGraph< V, E > graph )
 	{
 		this.panel = panel;
@@ -84,7 +84,7 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 	{
 		// Always move in T.
 		final int tp = vertex.getTimepoint();
-		panel.setTimepoint( tp );
+		panel.state().setCurrentTimepoint( tp );
 
 		final AffineTransform3D currentTransform = panel.state().getViewerTransform();
 		final double[] target = navigationBehaviour.navigateToVertex( vertex, currentTransform );
@@ -105,7 +105,7 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 		final V ref = graph.vertexRef();
 		final int tp = edge.getTarget( ref ).getTimepoint();
 		graph.releaseRef( ref );
-		panel.setTimepoint( tp );
+		panel.state().setCurrentTimepoint( tp );
 
 		final AffineTransform3D currentTransform = panel.state().getViewerTransform();
 		final double[] target = navigationBehaviour.navigateToEdge( edge, currentTransform );
