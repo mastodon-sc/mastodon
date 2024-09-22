@@ -189,6 +189,7 @@ public class MamutViewBdv
 						selectionModel,
 						coloring );
 
+		viewer.getDisplay().overlays().add( colorBarOverlay );
 		viewer.getDisplay().overlays().add( tracksOverlay );
 		viewer.renderTransformListeners().add( tracksOverlay );
 		viewer.timePointListeners().add( tracksOverlay );
