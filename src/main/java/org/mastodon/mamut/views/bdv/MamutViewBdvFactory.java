@@ -39,8 +39,11 @@ import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 import bdv.tools.InitializeViewerState;
+import bdv.viewer.AbstractViewerPanel;
+import bdv.viewer.SynchronizedViewerState;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.ViewerState;
+import bdv.viewer.state.XmlIoViewerState;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
@@ -115,10 +118,12 @@ public class MamutViewBdvFactory extends AbstractMamutViewFactory< MamutViewBdv 
 		restoreBdvGuiState( view.getViewerPanelMamut(), guiState );
 	}
 
-	static void getBdvGuiState( final ViewerPanel viewerPanel, final Map< String, Object > guiState )
+	public static void getBdvGuiState( final AbstractViewerPanel viewerPanel, final Map< String, Object > guiState )
 	{
 		// Viewer state.
-		final Element stateEl = viewerPanel.stateToXml();
+		@SuppressWarnings( "deprecation" )
+		final bdv.viewer.state.ViewerState deprecatedState = new bdv.viewer.state.ViewerState( ( SynchronizedViewerState ) viewerPanel.state() );
+		final Element stateEl = new XmlIoViewerState().toXml( deprecatedState );
 		guiState.put( BDV_STATE_KEY, stateEl );
 		// Transform.
 		final AffineTransform3D t = new AffineTransform3D();
@@ -126,13 +131,18 @@ public class MamutViewBdvFactory extends AbstractMamutViewFactory< MamutViewBdv 
 		guiState.put( BDV_TRANSFORM_KEY, t );
 	}
 
-	static void restoreBdvGuiState( final ViewerPanel viewerPanel, final Map< String, Object > guiState )
+	public static void restoreBdvGuiState( final AbstractViewerPanel viewerPanel, final Map< String, Object > guiState )
 	{
 
 		// Restore BDV state.
 		final Element stateEl = ( Element ) guiState.get( BDV_STATE_KEY );
 		if ( null != stateEl )
-			viewerPanel.stateFromXml( stateEl );
+		{
+			final XmlIoViewerState io = new XmlIoViewerState();
+			@SuppressWarnings( "deprecation" )
+			final bdv.viewer.state.ViewerState deprecatedState = new bdv.viewer.state.ViewerState( ( SynchronizedViewerState ) viewerPanel.state() );
+			io.restoreFromXml( stateEl.getChild( io.getTagName() ), deprecatedState );
+		}
 		// Restore transform.
 		final AffineTransform3D tLoaded = ( AffineTransform3D ) guiState.get( BDV_TRANSFORM_KEY );
 		if ( null == tLoaded )
