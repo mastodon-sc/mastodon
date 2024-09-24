@@ -163,9 +163,33 @@ public interface SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public Listeners< SelectionListener > listeners();
 
-	public void resumeListeners();
+	/**
+	 * Pauses the selection listeners. While paused, no listener that are contained in {@link #listeners()} will be notified
+	 * of selection changes.
+	 * <br>
+	 * However, this {@link SelectionModel} may record changes in selection state, and listeners may be notified of such a change, when the listeners are resumed with {@link #resumeListeners()}.
+	 * <br>
+	 * Changes the state of {@link #areListenersPaused()} to {@code true}.
+	 * <br>
+	 * Call {@link #resumeListeners()} to resume the listeners.
+	 */
+	void pauseListeners();
 
-	public void pauseListeners();
+	/**
+	 * Unpauses the selection listeners. All listeners that are contained in {@link #listeners()} will be notified of selection changes again.
+	 * <br>
+	 * If this {@link SelectionModel} has recorded changes in selection state while the listeners were paused, listeners will be notified of these changes.
+	 * <br>
+	 * Changes the state of {@link #areListenersPaused()} to {@code false}.
+	 */
+	void resumeListeners();
 
+	/**
+	 * Checks if the selection listeners are paused.
+	 * <br>
+	 * When paused, no listener that are contained in {@link #listeners()} will be notified of selection changes.
+	 *
+	 * @return {@code true} if the listeners are paused, {@code false} otherwise.
+	 */
 	boolean areListenersPaused();
 }
