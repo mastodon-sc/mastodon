@@ -26,15 +26,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.loader.util;
+package org.mastodon.mamut.io.loader.util.credentials;
 
-public enum AWSCredentials
+import com.amazonaws.auth.AWSCredentials;
+
+public enum AWSCredentialsManager
 {
     INSTANCE;
 
-    public AWSCredentials getInstance()
+    private AWSCredentials credentials;
+
+    public static AWSCredentialsManager getInstance()
     {
         return INSTANCE;
+    }
+
+    public void setCredentials( final AWSCredentials credentials )
+    {
+        this.credentials = credentials;
+    }
+
+    public AWSCredentials getCredentials()
+    {
+        return credentials;
     }
 
 }

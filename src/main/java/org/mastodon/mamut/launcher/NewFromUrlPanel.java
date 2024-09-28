@@ -33,10 +33,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -44,20 +47,34 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.janelia.saalfeldlab.n5.N5Exception;
+import org.janelia.saalfeldlab.n5.N5Reader;
+import org.janelia.saalfeldlab.n5.N5URI;
 import org.janelia.saalfeldlab.n5.bdv.N5ViewerCreator;
 import org.janelia.saalfeldlab.n5.bdv.N5ViewerTreeCellRenderer;
 import org.janelia.saalfeldlab.n5.ij.N5Importer;
+import org.janelia.saalfeldlab.n5.metadata.N5ViewerMultichannelMetadata;
 import org.janelia.saalfeldlab.n5.ui.DatasetSelectorDialog;
+import org.janelia.saalfeldlab.n5.universe.N5Factory;
+import org.janelia.saalfeldlab.n5.universe.N5Factory.StorageFormat;
+import org.janelia.saalfeldlab.n5.universe.metadata.MultiscaleMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.N5SingleScaleMetadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.axes.AxisUtils;
+import org.janelia.saalfeldlab.n5.universe.metadata.axes.DefaultAxisMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.NgffSingleScaleAxesMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadata;
 import org.mastodon.mamut.io.loader.N5UniverseImgLoader;
+import org.mastodon.mamut.io.loader.util.credentials.AWSCredentialsManager;
+import org.mastodon.mamut.io.loader.util.credentials.AWSCredentialsTools;
 
 import bdv.spimdata.SequenceDescriptionMinimal;
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
+import ij.IJ;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.generic.sequence.BasicImgLoader;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
@@ -70,6 +87,7 @@ import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.Dimensions;
 import net.imglib2.FinalDimensions;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.util.Pair;
 
 class NewFromUrlPanel extends JPanel
 {
@@ -128,7 +146,7 @@ class NewFromUrlPanel extends JPanel
 			xmlFile = null;
 			final ExecutorService exec = Executors.newFixedThreadPool( ij.Prefs.getThreads() );
 			final DatasetSelectorDialog dialog = new DatasetSelectorDialog(
-					new N5Importer.N5ViewerReaderFun(),
+					new N5ViewerReaderFun(),
 					new N5Importer.N5BasePathFun(),
 					lastOpenedContainer,
 					N5ViewerCreator.n5vGroupParsers,
@@ -140,97 +158,119 @@ class NewFromUrlPanel extends JPanel
 
 			dialog.run( selection -> {
 				N5Metadata metadata = selection.metadata.get( 0 );
+				long[] dimensions = null;
+				double[] scales = null;
+				String[] axisLabels = null;
+				String unit = null;
+				AffineTransform3D calib = null;
+				int x = 1;
+				int y = 1;
+				int z = 1;
+				int c = 1;
+				int t = 1;
+				double sx = 1.0;
+				double sy = 1.0;
+				double sz = 1.0;
 				if ( metadata instanceof OmeNgffMetadata )
 				{
-					final NgffSingleScaleAxesMetadata topLevelChildMetadata =
+					final NgffSingleScaleAxesMetadata setup0Level0Metadata =
 							( ( OmeNgffMetadata ) metadata ).multiscales[ 0 ].getChildrenMetadata()[ 0 ];
-					final long[] dimensions = topLevelChildMetadata.getAttributes().getDimensions();
-					final double[] scales = topLevelChildMetadata.getScale();
-					final String[] axisLabels = topLevelChildMetadata.getAxisLabels();
-					int x = 1;
-					int y = 1;
-					int z = 1;
-					int c = 1;
-					int t = 1;
-					double sx = 1.0;
-					double sy = 1.0;
-					double sz = 1.0;
-					String unit = ( ( OmeNgffMetadata ) metadata ).unit();
+					dimensions = setup0Level0Metadata.getAttributes().getDimensions();
+					scales = setup0Level0Metadata.getScale();
+					axisLabels = setup0Level0Metadata.getAxisLabels();
+					unit = setup0Level0Metadata.unit();
 					if ( unit == null || unit.isEmpty() )
 						unit = "pixel";
-					for ( int i = 0; i < axisLabels.length; i++ )
+					calib = setup0Level0Metadata.spatialTransform3d();
+				}
+				else if ( metadata instanceof N5ViewerMultichannelMetadata )
+				{
+					c = ( ( N5ViewerMultichannelMetadata ) metadata ).getChildrenMetadata().length;
+					final MultiscaleMetadata< ? > setup0Metadata =
+							( ( N5ViewerMultichannelMetadata ) metadata ).getChildrenMetadata()[ 0 ];
+					final N5SingleScaleMetadata setup0Level0Metadata = ( N5SingleScaleMetadata ) setup0Metadata.getChildrenMetadata()[ 0 ];
+					dimensions = setup0Level0Metadata.getAttributes().getDimensions();
+					scales = setup0Level0Metadata.getPixelResolution();
+					final DefaultAxisMetadata axes = AxisUtils.defaultN5ViewerAxes( ( setup0Level0Metadata ) );
+					axisLabels = axes.getAxisLabels();
+					unit = setup0Level0Metadata.unit();
+					if ( unit == null || unit.isEmpty() )
+						unit = "pixel";
+					calib = setup0Level0Metadata.spatialTransform3d();
+				}
+				final AffineTransform3D calibFinal = calib.copy();
+
+				for ( int i = 0; i < axisLabels.length; i++ )
+				{
+					if ( axisLabels[ i ].toLowerCase().equals( "x" ) )
 					{
-						if ( axisLabels[ i ].toLowerCase().equals( "x" ) )
-						{
-							x = ( int ) dimensions[ i ];
-							sx = scales[ i ];
-						}
-						else if ( axisLabels[ i ].toLowerCase().equals( "y" ) )
-						{
-							y = ( int ) dimensions[ i ];
-							sy = scales[ i ];
-						}
-						else if ( axisLabels[ i ].toLowerCase().equals( "z" ) )
-						{
-							z = ( int ) dimensions[ i ];
-							sz = scales[ i ];
-						}
-						else if ( axisLabels[ i ].toLowerCase().equals( "c" ) )
-							c = ( int ) dimensions[ i ];
-						else if ( axisLabels[ i ].toLowerCase().equals( "t" ) )
-							t = ( int ) dimensions[ i ];
+						x = ( int ) dimensions[ i ];
+						sx = scales[ i ];
 					}
-					final Dimensions imageSize = new FinalDimensions( x, y, z );
-					final AffineTransform3D calib = ( ( OmeNgffMetadata ) metadata ).spatialTransform3d();
-					final TimePoints timepoints = new TimePoints(
-							IntStream.range( 0, t ).mapToObj( TimePoint::new ).collect( Collectors.toList() ) );
-					final Map< Integer, BasicViewSetup > setups = new HashMap<>();
-					final VoxelDimensions voxelDimensions = new FinalVoxelDimensions( unit, sx, sy, sz );
-					for ( int i = 0; i < c; i++ )
-						setups.put( i, new BasicViewSetup( i, String.format( "channel %d", i ), imageSize, voxelDimensions ) );
-					final BasicImgLoader imgLoader =
-							new N5UniverseImgLoader( selection.n5.getURI().toString(), metadata.getPath(), null );
-					final SequenceDescriptionMinimal sequenceDescription =
-							new SequenceDescriptionMinimal( timepoints, setups, imgLoader, null );
-					final ViewRegistrations viewRegistrations = new ViewRegistrations(
-							IntStream.range( 0, t )
-									.boxed()
-									.flatMap( tp -> IntStream.range( 0, setups.size() )
-											.mapToObj( setup -> new ViewRegistration( tp, setup, calib ) ) )
-									.collect( Collectors.toList() )
-					);
-
-					final JFileChooser fileChooser = new JFileChooser();
-					fileChooser.setDialogTitle( "Save BigDataViewer XML File" );
-					final FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter( "XML Files", "xml" );
-					fileChooser.setFileFilter( xmlFilter );
-					int userSelection = fileChooser.showSaveDialog( null );
-					if ( userSelection == JFileChooser.APPROVE_OPTION )
+					else if ( axisLabels[ i ].toLowerCase().equals( "y" ) )
 					{
-						File fileToSave = fileChooser.getSelectedFile();
+						y = ( int ) dimensions[ i ];
+						sy = scales[ i ];
+					}
+					else if ( axisLabels[ i ].toLowerCase().equals( "z" ) )
+					{
+						z = ( int ) dimensions[ i ];
+						sz = scales[ i ];
+					}
+					else if ( axisLabels[ i ].toLowerCase().equals( "c" ) )
+						c = ( int ) dimensions[ i ];
+					else if ( axisLabels[ i ].toLowerCase().equals( "t" ) )
+						t = ( int ) dimensions[ i ];
+				}
+				final Dimensions imageSize = new FinalDimensions( x, y, z );
+				final TimePoints timepoints = new TimePoints(
+						IntStream.range( 0, t ).mapToObj( TimePoint::new ).collect( Collectors.toList() ) );
+				final Map< Integer, BasicViewSetup > setups = new HashMap<>();
+				final VoxelDimensions voxelDimensions = new FinalVoxelDimensions( unit, sx, sy, sz );
+				for ( int i = 0; i < c; i++ )
+					setups.put( i, new BasicViewSetup( i, String.format( "channel %d", i ), imageSize, voxelDimensions ) );
+				final BasicImgLoader imgLoader =
+						new N5UniverseImgLoader( selection.n5.getURI().toString(), metadata.getPath(), null );
+				final SequenceDescriptionMinimal sequenceDescription =
+						new SequenceDescriptionMinimal( timepoints, setups, imgLoader, null );
+				final ViewRegistrations viewRegistrations = new ViewRegistrations(
+						IntStream.range( 0, t )
+								.boxed()
+								.flatMap( tp -> IntStream.range( 0, setups.size() )
+										.mapToObj( setup -> new ViewRegistration( tp, setup, calibFinal ) ) )
+								.collect( Collectors.toList() )
+				);
 
-						// Ensure the file has the .xml extension
-						if ( !fileToSave.getAbsolutePath().endsWith( ".xml" ) )
-						{
-							fileToSave = new File( fileToSave.getAbsolutePath() + ".xml" );
-						}
+				final JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle( "Save BigDataViewer XML File" );
+				final FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter( "XML Files", "xml" );
+				fileChooser.setFileFilter( xmlFilter );
+				int userSelection = fileChooser.showSaveDialog( null );
+				if ( userSelection == JFileChooser.APPROVE_OPTION )
+				{
+					File fileToSave = fileChooser.getSelectedFile();
 
-						final SpimDataMinimal spimData =
-								new SpimDataMinimal( fileToSave.getParentFile(), sequenceDescription, viewRegistrations );
+					// Ensure the file has the .xml extension
+					if ( !fileToSave.getAbsolutePath().endsWith( ".xml" ) )
+					{
+						fileToSave = new File( fileToSave.getAbsolutePath() + ".xml" );
+					}
 
-						try
-						{
-							new XmlIoSpimDataMinimal().save( spimData, fileToSave.getAbsolutePath() );
-						}
-						catch ( SpimDataException e )
-						{
-							e.printStackTrace();
-						}
+					final SpimDataMinimal spimData =
+							new SpimDataMinimal( fileToSave.getParentFile(), sequenceDescription, viewRegistrations );
 
-						if ( checkBDVFile( fileToSave ) )
-						{
-							xmlFile = fileToSave;
-						}
+					try
+					{
+						new XmlIoSpimDataMinimal().save( spimData, fileToSave.getAbsolutePath() );
+					}
+					catch ( SpimDataException e )
+					{
+						e.printStackTrace();
+					}
+
+					if ( checkBDVFile( fileToSave ) )
+					{
+						xmlFile = fileToSave;
 					}
 
 				}
@@ -267,5 +307,79 @@ class NewFromUrlPanel extends JPanel
 			labelInfo.setText( "<html>Invalid BDV xml file.<p>" + e.getMessage() + "</html>" );
 			return false;
 		}
+	}
+
+	public static class N5ViewerReaderFun implements Function< String, N5Reader >
+	{
+
+		public String message;
+
+		@Override
+		public N5Reader apply( final String n5UriOrPath )
+		{
+			if ( n5UriOrPath == null || n5UriOrPath.isEmpty() )
+				return null;
+
+			String rootPath = null;
+			if ( n5UriOrPath.contains( "?" ) )
+			{
+				try
+				{
+					// need to strip off storage format for n5uri to correctly remove query;
+					final Pair< StorageFormat, URI > fmtUri = N5Factory.StorageFormat.parseUri( n5UriOrPath );
+					final StorageFormat format = fmtUri.getA();
+
+					final N5URI n5uri = new N5URI( URI.create( fmtUri.getB().toString() ) );
+					// add the format prefix back if it was present
+					rootPath = format == null ? n5uri.getContainerPath() : format.toString().toLowerCase() + ":" + n5uri.getContainerPath();
+				}
+				catch ( final URISyntaxException e )
+				{
+					SwingUtilities.invokeLater(
+							() -> IJ.error( "Invalid URI", "The URI is not valid or cre: " + n5UriOrPath ) );
+				}
+			}
+
+			if ( rootPath == null )
+				rootPath = upToLastExtension( n5UriOrPath );
+
+			N5Factory factory = new N5Factory().cacheAttributes( true );
+			try
+			{
+				return factory.openReader( rootPath );
+			}
+			catch ( final Exception e )
+			{}
+			// Use credentials
+			if ( AWSCredentialsManager.getInstance().getCredentials() == null )
+				AWSCredentialsManager.getInstance().setCredentials( AWSCredentialsTools.getBasicAWSCredentials() );
+			factory = factory.s3UseCredentials( AWSCredentialsManager.getInstance().getCredentials() );
+			try
+			{
+				return factory.openReader( rootPath );
+			}
+			catch ( final N5Exception e )
+			{
+				AWSCredentialsManager.getInstance().setCredentials( null );
+				IJ.handleException( e );
+			}
+			return null;
+		}
+	}
+
+	private static String upToLastExtension( final String path )
+	{
+
+		final int i = path.lastIndexOf( '.' );
+		if ( i >= 0 )
+		{
+			final int j = path.substring( i ).indexOf( '/' );
+			if ( j >= 0 )
+				return path.substring( 0, i + j );
+			else
+				return path;
+		}
+		else
+			return path;
 	}
 }

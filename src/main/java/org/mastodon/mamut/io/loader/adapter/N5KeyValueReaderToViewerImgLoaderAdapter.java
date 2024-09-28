@@ -29,18 +29,27 @@
 package org.mastodon.mamut.io.loader.adapter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
 import org.janelia.saalfeldlab.n5.N5KeyValueReader;
+import org.janelia.saalfeldlab.n5.N5Reader;
+import org.janelia.saalfeldlab.n5.bdv.N5ViewerCreator;
+import org.janelia.saalfeldlab.n5.metadata.N5ViewerMultichannelMetadata;
 import org.janelia.saalfeldlab.n5.universe.N5DatasetDiscoverer;
 import org.janelia.saalfeldlab.n5.universe.N5TreeNode;
+import org.janelia.saalfeldlab.n5.universe.metadata.MultiscaleMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.N5MultiScaleMetadata;
 import org.mastodon.mamut.io.loader.util.mobie.N5CacheArrayLoader;
 
 import bdv.img.cache.SimpleCacheArrayLoader;
-import bdv.img.n5.BdvN5Format;
 import bdv.img.n5.DataTypeProperties;
 import net.imglib2.img.cell.CellGrid;
 
@@ -51,10 +60,24 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
 
     private final String dataset;
 
+    private final N5ViewerMultichannelMetadata metadata;
+
+    private final Map< Integer, List< DatasetAttributes > > setupToAttributesList = new HashMap<>();
+
     public N5KeyValueReaderToViewerImgLoaderAdapter( final N5KeyValueReader n5, final String dataset )
     {
         this.n5 = n5;
         this.dataset = dataset;
+        this.metadata = getMetadata( n5 );
+        for ( int i = 0; i < metadata.getChildrenMetadata().length; i++ )
+        {
+            MultiscaleMetadata< ? > setupMetadata = metadata.getChildrenMetadata()[ i ];
+            final List< DatasetAttributes > attributesList = Arrays.stream( setupMetadata.getChildrenMetadata() )
+                    .sorted()
+                    .map( levelMetadata -> levelMetadata.getAttributes() )
+                    .collect( Collectors.toList() );
+            setupToAttributesList.put( i, attributesList );
+        }
     }
 
     @Override
@@ -72,92 +95,72 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
     @Override
     public DataType getSetupDataType( int setupId ) throws IOException
     {
-        DataType dataType = null;
-        try
-        {
-            final String pathName = getFullPathName( getPathNameFromSetup( setupId ) );
-            dataType = n5.getAttribute( pathName, BdvN5Format.DATA_TYPE_KEY, DataType.class );
-        }
-        catch ( final N5Exception e )
-        {
-            throw new IOException( e );
-        }
-        return dataType;
+        return setupToAttributesList.get( setupId ).get( 0 ).getDataType();
     }
 
     @Override
     public double[][] getMipmapResolutions( int setupId ) throws IOException
     {
-        double[][] mipmapResolutions = null;
-        try
+        final List< DatasetAttributes > attributesList = setupToAttributesList.get( setupId );
+        if ( attributesList == null || attributesList.isEmpty() )
+            return null;
+        double[][] mipmapResolutions = new double[ attributesList.size() ][];
+        long[] dimensionsOfLevel0 = attributesList.get( 0 ).getDimensions();
+        for ( int level = 0; level < attributesList.size(); level++ )
         {
-            final String pathName = getFullPathName( getPathNameFromSetup( setupId ) );
-            mipmapResolutions = n5.getAttribute( pathName, BdvN5Format.DOWNSAMPLING_FACTORS_KEY, double[][].class );
-        }
-        catch ( final N5Exception e )
-        {
-            throw new IOException( e );
+            long[] dimensions = attributesList.get( level ).getDimensions();
+            mipmapResolutions[ level ] = new double[ 3 ];
+            for ( int d = 0; d < 2; d++ )
+            {
+                mipmapResolutions[ level ][ d ] = Math.round( 1.0 * dimensionsOfLevel0[ d ] / dimensions[ d ] );
+            }
+            mipmapResolutions[ level ][ 2 ] =
+                    attributesList.get( level ).getNumDimensions() == 3 ? Math.round( 1.0 * dimensionsOfLevel0[ 2 ] / dimensions[ 2 ] )
+                            : 1.0;
         }
         return mipmapResolutions;
     }
 
     @Override
-    public long[] getDimensions( DatasetAttributes attributes, int setupId )
+    public long[] getDimensions( int setupId, int timepointId, int level )
     {
+        final DatasetAttributes attributes = setupToAttributesList.get( setupId ).get( level );
         return attributes.getDimensions();
     }
 
     @Override
-    public int[] getCellDimensions( DatasetAttributes attributes, int setupId )
+    public int[] getCellDimensions( int setupId, int timepointId, int level )
     {
+        final DatasetAttributes attributes = setupToAttributesList.get( setupId ).get( level );
         return attributes.getBlockSize();
-    }
-
-    @Override
-    public SimpleCacheArrayLoader< ? > createCacheArrayLoader( String pathName, int setupId, int timepointId, CellGrid grid )
-            throws IOException
-    {
-        final DatasetAttributes attributes;
-        try
-        {
-            attributes = n5.getDatasetAttributes( pathName );
-        }
-        catch ( final N5Exception e )
-        {
-            throw new IOException( e );
-        }
-        return new N5CacheArrayLoader<>( n5, pathName, attributes, DataTypeProperties.of( attributes.getDataType() ) );
-    }
-
-    @Override
-    public String getPathNameFromSetup( int setupId )
-    {
-        return String.format( "setup%d", setupId );
-    }
-
-    @Override
-    public String getPathNameFromSetupTimepoint( int setupId, int timepointId )
-    {
-        return String.format( "setup%d/timepoint%d", setupId, timepointId );
     }
 
     @Override
     public String getPathNameFromSetupTimepointLevel( int setupId, int timepointId, int level )
     {
-        return String.format( "setup%d/timepoint%d/s%d", setupId, timepointId, level );
+        return String.format( "c%d/s%d", setupId, level );
     }
 
-    private N5Metadata getMetadataRecursively( final N5TreeNode node )
+    @Override
+    public SimpleCacheArrayLoader< ? > createCacheArrayLoader( int setupId, int timepointId, int level, CellGrid grid )
+            throws IOException
+    {
+        String pathName = getFullPathName( String.format( "c%d/s%d", setupId, level ) );
+        DatasetAttributes attributes = setupToAttributesList.get( setupId ).get( level );
+        return new N5CacheArrayLoader<>( n5, pathName, attributes, DataTypeProperties.of( attributes.getDataType() ) );
+    }
+
+    private static N5Metadata getMetadataRecursively( final N5TreeNode node )
     {
         N5Metadata meta = node.getMetadata();
-        if ( meta instanceof N5MultiScaleMetadata )
+        if ( meta instanceof N5ViewerMultichannelMetadata )
         {
             return meta;
         }
         for ( final N5TreeNode child : node.childrenList() )
         {
             meta = getMetadataRecursively( child );
-            if ( meta instanceof N5MultiScaleMetadata )
+            if ( meta != null )
             {
                 return meta;
             }
@@ -165,19 +168,34 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
         return null;
     }
 
-    @Override
-    public N5MultiScaleMetadata getMetadata()
+    private static N5ViewerMultichannelMetadata getMetadata( final N5Reader n5 )
     {
-        final N5TreeNode node = N5DatasetDiscoverer.discover( getN5Reader() );
-        N5Metadata meta = node.getMetadata();
-        if ( meta == null )
+        N5TreeNode node = null;
+        final N5DatasetDiscoverer discoverer = new N5DatasetDiscoverer(
+                n5,
+                Executors.newCachedThreadPool(),
+                Arrays.asList( N5ViewerCreator.n5vParsers ),
+                Arrays.asList( N5ViewerCreator.n5vGroupParsers )
+        );
+        try
         {
-            meta = getMetadataRecursively( node );
+            node = discoverer.discoverAndParseRecursive( "" );
         }
-        if ( meta instanceof N5MultiScaleMetadata )
-            return ( N5MultiScaleMetadata ) meta;
-        else
+        catch ( final IOException e )
+        {}
+        if ( node == null )
             return null;
+        N5Metadata meta = getMetadataRecursively( node );
+        if ( meta instanceof N5ViewerMultichannelMetadata )
+            return ( N5ViewerMultichannelMetadata ) meta;
+        else
+            throw new N5Exception( "No N5ViewerMultichannelMetadata found" );
+    }
+
+    @Override
+    public N5ViewerMultichannelMetadata getMetadata()
+    {
+        return metadata;
     }
 
 }

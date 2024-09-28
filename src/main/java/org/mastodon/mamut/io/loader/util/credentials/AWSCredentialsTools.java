@@ -26,58 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.loader.adapter;
+package org.mastodon.mamut.io.loader.util.credentials;
 
-import java.io.IOException;
-import org.janelia.saalfeldlab.n5.DataType;
-import org.janelia.saalfeldlab.n5.N5Reader;
-import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
-import bdv.img.cache.SimpleCacheArrayLoader;
-import net.imglib2.img.cell.CellGrid;
+import java.util.Arrays;
 
-public interface N5ReaderToViewerImgLoaderAdapter< T extends N5Reader >
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
+import com.amazonaws.auth.BasicAWSCredentials;
+
+public class AWSCredentialsTools
 {
-
-    String getDataset();
-
-    T getN5Reader();
-
-    DataType getSetupDataType( final int setupId ) throws IOException;
-
-    double[][] getMipmapResolutions( final int setupId ) throws IOException;
-
-    long[] getDimensions( int setupId, int timepointId, int level );
-
-    int[] getCellDimensions( int setupId, int timepointId, int level );
-
-    String getPathNameFromSetupTimepointLevel( int setupId, int timepointId, int level );
-
-    SimpleCacheArrayLoader< ? > createCacheArrayLoader( int setupId, int timepointId, int level, CellGrid grid )
-            throws IOException;
-
-    N5Metadata getMetadata();
-
-    default int getNumSetups()
+    public static BasicAWSCredentials getBasicAWSCredentials()
     {
-        int numSetups = 0;
-        while ( true )
+        final JLabel lblUsername = new JLabel( "Username" );
+        final JTextField textFieldUsername = new JTextField();
+        final JLabel lblPassword = new JLabel( "Password" );
+        final JPasswordField passwordField = new JPasswordField();
+        final Object[] ob = { lblUsername, textFieldUsername, lblPassword, passwordField };
+        final int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
+
+        if ( result == JOptionPane.OK_OPTION )
         {
+            final String username = textFieldUsername.getText();
+            final char[] password = passwordField.getPassword();
             try
             {
-                if ( getMipmapResolutions( numSetups ) == null )
-                    break;
+                return new BasicAWSCredentials( username, String.valueOf( password ) );
             }
-            catch ( IOException e )
+            finally
             {
-                break;
+                Arrays.fill( password, '0' );
             }
-            numSetups++;
         }
-        return numSetups;
+        else
+        {
+            return null;
+        }
     }
 
-    default String getFullPathName( final String pathName )
-    {
-        return ( getDataset() + pathName ).replaceAll( "^/+", "/" );
-    }
 }

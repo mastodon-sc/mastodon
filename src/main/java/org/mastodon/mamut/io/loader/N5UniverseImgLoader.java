@@ -61,6 +61,7 @@
 package org.mastodon.mamut.io.loader;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,8 @@ import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Reader;
 import org.janelia.saalfeldlab.n5.universe.N5Factory;
 import org.janelia.saalfeldlab.n5.zarr.ZarrCompressor;
 import org.janelia.saalfeldlab.n5.zarr.ZarrKeyValueReader;
+import org.mastodon.mamut.io.img.cache.MastodonSimpleCacheArrayLoader;
+import org.mastodon.mamut.io.img.cache.MastodonVolatileGlobalCellCache;
 import org.mastodon.mamut.io.loader.adapter.N5HDF5ReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.N5KeyValueReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.ZarrKeyValueReaderToViewerImgLoaderAdapter;
@@ -83,6 +86,7 @@ import org.mastodon.mamut.io.loader.util.mobie.ZarrAxes;
 import org.mastodon.mamut.io.loader.util.mobie.ZarrAxesAdapter;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.google.gson.GsonBuilder;
 
 import bdv.AbstractViewerSetupImgLoader;
@@ -90,7 +94,6 @@ import bdv.ViewerImgLoader;
 import bdv.cache.CacheControl;
 import bdv.cache.SharedQueue;
 import bdv.img.cache.SimpleCacheArrayLoader;
-import bdv.img.cache.VolatileGlobalCellCache;
 import bdv.img.n5.DataTypeProperties;
 import bdv.util.ConstantRandomAccessible;
 import bdv.util.MipmapTransforms;
@@ -105,8 +108,11 @@ import net.imglib2.FinalDimensions;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.Volatile;
+import net.imglib2.cache.CacheLoader;
 import net.imglib2.cache.volatiles.CacheHints;
 import net.imglib2.cache.volatiles.LoadingStrategy;
+import net.imglib2.img.basictypeaccess.DataAccess;
+import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.img.cell.CellImg;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -195,7 +201,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
 
     private SharedQueue createdSharedQueue;
 
-    private VolatileGlobalCellCache cache;
+    private MastodonVolatileGlobalCellCache cache;
 
     private int requestedNumFetcherThreads = -1;
 
@@ -213,7 +219,8 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         requestedSharedQueue = createdSharedQueue;
     }
 
-    public static N5ReaderToViewerImgLoaderAdapter< ? extends N5Reader > getAdapter( final N5Reader n5, final String dataset )
+    public static N5ReaderToViewerImgLoaderAdapter< ? extends N5Reader > getAdapter( final N5Reader n5, final String dataset,
+            final AbstractSequenceDescription< ?, ?, ? > seq )
     {
         if ( n5 instanceof N5HDF5Reader )
         {
@@ -261,7 +268,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                 try
                 {
                     this.n5 = factory.openReader( url );
-                    this.adapter = getAdapter( n5, dataset );
+                    this.adapter = getAdapter( n5, dataset, seq );
                     int maxNumLevels = 0;
                     final List< ? extends BasicViewSetup > setups = seq.getViewSetupsOrdered();
                     for ( final BasicViewSetup setup : setups )
@@ -278,7 +285,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                     final SharedQueue queue = requestedSharedQueue != null
                             ? requestedSharedQueue
                             : ( createdSharedQueue = new SharedQueue( numFetcherThreads, maxNumLevels ) );
-                    cache = new VolatileGlobalCellCache( queue );
+                    cache = new MastodonVolatileGlobalCellCache( queue );
                 }
                 catch ( final IOException e )
                 {
@@ -420,17 +427,42 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         {
             try
             {
-                final String pathName = getFullPathName( adapter.getPathNameFromSetupTimepointLevel( setupId, timepointId, level ) );
-                final DatasetAttributes attributes = n5.getDatasetAttributes( pathName );
-                final long[] dimensions = adapter.getDimensions( attributes, setupId );
-                final int[] cellDimensions = adapter.getCellDimensions( attributes, setupId );
+                final long[] dimensions = adapter.getDimensions( setupId, timepointId, level );
+                final int[] cellDimensions = adapter.getCellDimensions( setupId, timepointId, level );
                 final CellGrid grid = new CellGrid( dimensions, cellDimensions );
 
                 final int priority = numMipmapLevels() - 1 - level;
                 final CacheHints cacheHints = new CacheHints( loadingStrategy, priority, false );
 
-                final SimpleCacheArrayLoader< ? > loader = adapter.createCacheArrayLoader( pathName, setupId, timepointId, grid );
-                return cache.createImg( grid, timepointId, setupId, level, cacheHints, loader, type );
+                final SimpleCacheArrayLoader< ? > cacheArrayLoader =
+                        adapter.createCacheArrayLoader( setupId, timepointId, level, grid );
+                final CacheLoader< Long, Cell< ? > > loader = key -> {
+                    final int n = grid.numDimensions();
+                    long[] cellMin = new long[ n ];
+                    int[] cellDims = new int[ n ];
+                    final long[] cellGridPosition = new long[ n ];
+                    grid.getCellDimensions( key, cellMin, cellDims );
+                    grid.getCellGridPositionFlat( key, cellGridPosition );
+                    cellDims = Arrays.stream( cellDims ).limit( 3 ).toArray();
+                    cellMin = Arrays.stream( cellMin ).limit( 3 ).toArray();
+                    DataAccess dataAccess = null;
+                    if ( adapter instanceof N5ReaderToViewerImgLoaderAdapter && n == 4 )
+                    {
+                        dataAccess = ( ( MastodonSimpleCacheArrayLoader< ? > ) cacheArrayLoader ).loadArrayAtTimepoint( cellGridPosition,
+                                cellDims, timepointId );
+                    }
+                    else
+                    {
+                        dataAccess = cacheArrayLoader.loadArray( cellGridPosition, cellDims );
+                    }
+                    return new Cell<>( cellDims, cellMin, dataAccess );
+                };
+                final CellGrid imgGrid = new CellGrid(
+                        Arrays.stream( dimensions ).limit( 3 ).toArray(),
+                        Arrays.stream( cellDimensions ).limit( 3 ).toArray()
+                );
+                return cache.createImg( imgGrid, timepointId, setupId, level, cacheHints, loader, cacheArrayLoader.getEmptyArrayCreator(),
+                        type );
             }
             catch ( final IOException | N5Exception e )
             {

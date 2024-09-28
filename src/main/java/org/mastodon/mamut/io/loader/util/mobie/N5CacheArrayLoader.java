@@ -65,14 +65,14 @@ import org.janelia.saalfeldlab.n5.DataBlock;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
 import org.janelia.saalfeldlab.n5.N5Reader;
+import org.mastodon.mamut.io.img.cache.MastodonSimpleCacheArrayLoader;
 
-import bdv.img.cache.SimpleCacheArrayLoader;
 import bdv.img.n5.DataTypeProperties;
 import net.imglib2.img.basictypeaccess.DataAccess;
 import net.imglib2.util.Cast;
 import net.imglib2.util.Intervals;
 
-public class N5CacheArrayLoader< T, A extends DataAccess > implements SimpleCacheArrayLoader< A >
+public class N5CacheArrayLoader< T, A extends DataAccess > implements MastodonSimpleCacheArrayLoader< A >
 {
     private final N5Reader n5;
 
@@ -104,6 +104,12 @@ public class N5CacheArrayLoader< T, A extends DataAccess > implements SimpleCach
     @Override
     public A loadArray( final long[] gridPosition, final int[] cellDimensions ) throws IOException
     {
+        return loadArrayAtTimepoint( gridPosition, cellDimensions, -1 );
+    }
+
+    @Override
+    public A loadArrayAtTimepoint( final long[] gridPosition, final int[] cellDimensions, int timepoint ) throws IOException
+    {
         final DataBlock< T > dataBlock;
         try
         {
@@ -124,10 +130,19 @@ public class N5CacheArrayLoader< T, A extends DataAccess > implements SimpleCach
             {
                 final T src = dataBlock.getData();
                 final int[] srcDims = dataBlock.getSize();
-                final int[] pos = new int[ srcDims.length ];
+                final int[] dstDims = new int[ srcDims.length ];
+                Arrays.fill( dstDims, 1 );
+                for ( int d = 0; d < cellDimensions.length; ++d )
+                    dstDims[ d ] = cellDimensions[ d ];
+                final int[] srcPos = new int[ srcDims.length ];
+                final int[] dstPos = new int[ srcDims.length ];
                 final int[] size = new int[ srcDims.length ];
-                Arrays.setAll( size, d -> Math.min( srcDims[ d ], cellDimensions[ d ] ) );
-                ndArrayCopy( src, srcDims, pos, data, cellDimensions, pos, size );
+                if ( srcDims.length == 4 && timepoint >= 0 )
+                {
+                    srcPos[ srcDims.length - 1 ] = timepoint % srcDims[ srcDims.length - 1 ];
+                }
+                Arrays.setAll( size, d -> Math.min( srcDims[ d ], dstDims[ d ] ) );
+                ndArrayCopy( src, srcDims, srcPos, data, dstDims, dstPos, size );
             }
             return createVolatileArrayAccess.apply( data );
         }

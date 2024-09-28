@@ -30,9 +30,9 @@ package org.mastodon.mamut.io.loader.adapter;
 
 import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Reader;
 import org.janelia.saalfeldlab.n5.universe.metadata.SpatialMultiscaleMetadata;
+import org.mastodon.mamut.io.img.cache.MastodonSimpleCacheArrayLoader;
 import org.mastodon.mamut.io.loader.util.mobie.N5CacheArrayLoader;
 
-import bdv.img.cache.SimpleCacheArrayLoader;
 import bdv.img.n5.BdvN5Format;
 import bdv.img.n5.DataTypeProperties;
 
@@ -110,21 +110,26 @@ public class N5HDF5ReaderToViewerImgLoaderAdapter implements N5ReaderToViewerImg
     }
 
     @Override
-    public long[] getDimensions( DatasetAttributes attributes, int setupId )
+    public long[] getDimensions( int setupId, int timepointId, int level )
     {
+        final String pathName = getFullPathName( getPathNameFromSetupTimepointLevel( setupId, timepointId, level ) );
+        final DatasetAttributes attributes = n5.getDatasetAttributes( pathName );
         return attributes.getDimensions();
     }
 
     @Override
-    public int[] getCellDimensions( DatasetAttributes attributes, int setupId )
+    public int[] getCellDimensions( int setupId, int timepointId, int level )
     {
+        final String pathName = getFullPathName( getPathNameFromSetupTimepointLevel( setupId, timepointId, level ) );
+        final DatasetAttributes attributes = n5.getDatasetAttributes( pathName );
         return attributes.getBlockSize();
     }
 
     @Override
-    public SimpleCacheArrayLoader< ? > createCacheArrayLoader( String pathName, int setupId, int timepointId, CellGrid grid )
+    public MastodonSimpleCacheArrayLoader< ? > createCacheArrayLoader( int setupId, int timepointId, int level, CellGrid grid )
             throws IOException
     {
+        final String pathName = getFullPathName( getPathNameFromSetupTimepointLevel( setupId, timepointId, level ) );
         final DatasetAttributes attributes;
         try
         {
@@ -137,19 +142,16 @@ public class N5HDF5ReaderToViewerImgLoaderAdapter implements N5ReaderToViewerImg
         return new N5CacheArrayLoader<>( n5, pathName, attributes, DataTypeProperties.of( attributes.getDataType() ) );
     }
 
-    @Override
     public String getPathNameFromSetup( int setupId )
     {
         return String.format( "s%02d", setupId );
     }
 
-    @Override
     public String getPathNameFromSetupTimepoint( int setupId, int timepointId )
     {
         return String.format( "t%05d/s%02d", timepointId, setupId );
     }
 
-    @Override
     public String getPathNameFromSetupTimepointLevel( int setupId, int timepointId, int level )
     {
         return String.format( "t%05d/s%02d/%d/cells", timepointId, setupId, level );

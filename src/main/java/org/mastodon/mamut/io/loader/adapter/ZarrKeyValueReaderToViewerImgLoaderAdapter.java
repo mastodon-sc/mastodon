@@ -228,45 +228,41 @@ public class ZarrKeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToVie
         return mipmapResolutions;
     }
 
-    @Override
-    public long[] getDimensions( DatasetAttributes attributes, int setupId )
+    private DatasetAttributes getDatasetAttributes( int setupId, int level ) throws N5Exception
     {
+        return n5.getDatasetAttributes( getFullPathName( getPathNameLevel( setupId, level ) ) );
+    }
+
+    @Override
+    public long[] getDimensions( int setupId, int timepointId, int level )
+    {
+        final DatasetAttributes attributes = getDatasetAttributes( setupId, level );
         return getSpatialDimensions( setupId, attributes ).dimensionsAsLongArray();
     }
 
     @Override
-    public int[] getCellDimensions( DatasetAttributes attributes, int setupId )
+    public int[] getCellDimensions( int setupId, int timepointId, int level )
     {
+        final DatasetAttributes attributes = getDatasetAttributes( setupId, level );
         return getBlockSize( setupId, attributes );
     }
 
     @Override
-    public SimpleCacheArrayLoader< ? > createCacheArrayLoader( String pathName, int setupId, int timepointId, CellGrid grid )
+    public SimpleCacheArrayLoader< ? > createCacheArrayLoader( int setupId, int timepointId, int level, CellGrid grid )
             throws IOException
     {
         final DatasetAttributes attributes;
         try
         {
-            attributes = n5.getDatasetAttributes( pathName );
+            attributes = getDatasetAttributes( setupId, level );
         }
         catch ( final N5Exception e )
         {
             throw new IOException( e );
         }
+        final String pathName = getFullPathName( getPathNameLevel( setupId, level ) );
         return new N5OMEZarrCacheArrayLoader<>( n5, pathName, setupToChannel.get( setupId ), timepointId, attributes, grid,
                 setupToMultiscale.get( setupId ).axes );
-    }
-
-    @Override
-    public String getPathNameFromSetup( int setupId )
-    {
-        return setupToPathname.get( setupId );
-    }
-
-    @Override
-    public String getPathNameFromSetupTimepoint( int setupId, int timepointId )
-    {
-        return "";
     }
 
     @Override
