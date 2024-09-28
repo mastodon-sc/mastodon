@@ -245,6 +245,9 @@ class NewFromUrlPanel extends JPanel
 				fileChooser.setDialogTitle( "Save BigDataViewer XML File" );
 				final FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter( "XML Files", "xml" );
 				fileChooser.setFileFilter( xmlFilter );
+				final String currDir = IJ.getDirectory( "current" );
+				if ( currDir != null )
+					fileChooser.setCurrentDirectory( new File( currDir ) );
 				int userSelection = fileChooser.showSaveDialog( null );
 				if ( userSelection == JFileChooser.APPROVE_OPTION )
 				{
