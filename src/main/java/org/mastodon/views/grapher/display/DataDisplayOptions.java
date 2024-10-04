@@ -30,24 +30,24 @@ package org.mastodon.views.grapher.display;
 
 import java.awt.event.KeyListener;
 
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
 import org.mastodon.ui.NavigationEtiquette;
 import org.mastodon.ui.coloring.DefaultGraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGenerator;
-import org.mastodon.views.grapher.datagraph.DataEdge;
-import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.display.DataDisplayOverlay.DataDisplayOverlayFactory;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
-public class DataDisplayOptions
+public class DataDisplayOptions< V extends Vertex< E >, E extends Edge< V > >
 {
-	public final Values values = new Values();
+	public final Values< V, E > values = new Values<>();
 
-	public static DataDisplayOptions options()
+	public static < V extends Vertex< E >, E extends Edge< V > > DataDisplayOptions< V, E > options()
 	{
-		return new DataDisplayOptions();
+		return new DataDisplayOptions<>();
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class DataDisplayOptions
 	 *            the X position.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions x( final int x )
+	public DataDisplayOptions< V, E > x( final int x )
 	{
 		values.x = x;
 		return this;
@@ -72,7 +72,7 @@ public class DataDisplayOptions
 	 *            the Y position.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions y( final int y )
+	public DataDisplayOptions< V, E > y( final int y )
 	{
 		values.y = y;
 		return this;
@@ -85,7 +85,7 @@ public class DataDisplayOptions
 	 *            the width.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions width( final int w )
+	public DataDisplayOptions< V, E > width( final int w )
 	{
 		values.width = w;
 		return this;
@@ -98,7 +98,7 @@ public class DataDisplayOptions
 	 *            the height.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions height( final int h )
+	public DataDisplayOptions< V, E > height( final int h )
 	{
 		values.height = h;
 		return this;
@@ -111,7 +111,7 @@ public class DataDisplayOptions
 	 *            the animation time in milliseconds.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions animationDurationMillis( final long ms )
+	public DataDisplayOptions< V, E > animationDurationMillis( final long ms )
 	{
 		values.animationDurationMillis = ms;
 		return this;
@@ -131,7 +131,7 @@ public class DataDisplayOptions
 	 *            the key-pressed manager.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions shareKeyPressedEvents( final KeyPressedManager manager )
+	public DataDisplayOptions< V, E > shareKeyPressedEvents( final KeyPressedManager manager )
 	{
 		values.keyPressedManager = manager;
 		return this;
@@ -144,7 +144,7 @@ public class DataDisplayOptions
 	 *            the navigation etiquette.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions navigationEtiquette( final NavigationEtiquette navigationEtiquette )
+	public DataDisplayOptions< V, E > navigationEtiquette( final NavigationEtiquette navigationEtiquette )
 	{
 		values.navigationEtiquette = navigationEtiquette;
 		return this;
@@ -157,7 +157,7 @@ public class DataDisplayOptions
 	 *            the style.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions style( final DataDisplayStyle style )
+	public DataDisplayOptions< V, E > style( final DataDisplayStyle style )
 	{
 		values.style = style;
 		return this;
@@ -170,7 +170,7 @@ public class DataDisplayOptions
 	 *            the factory.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions dataDisplayOverlayFactory( final DataDisplayOverlayFactory factory )
+	public DataDisplayOptions< V, E > dataDisplayOverlayFactory( final DataDisplayOverlayFactory factory )
 	{
 		values.dataDisplayOverlayFactory = factory;
 		return this;
@@ -184,7 +184,7 @@ public class DataDisplayOptions
 	 *            the color generator.
 	 * @return this instance.
 	 */
-	public DataDisplayOptions graphColorGenerator( final GraphColorGenerator< DataVertex, DataEdge > generator )
+	public DataDisplayOptions< V, E > graphColorGenerator( final GraphColorGenerator< V, E > generator )
 	{
 		values.graphColorGenerator = generator;
 		return this;
@@ -193,15 +193,15 @@ public class DataDisplayOptions
 	/**
 	 * Read-only {@link DataDisplayOptions} values.
 	 */
-	public static class Values
+	public static class Values< V extends Vertex< E >, E extends Edge< V > >
 	{
 		private int x = 0;
 
 		private int y = 0;
 
-		private int width = 700;
+		private int width = 400;
 
-		private int height = 450;
+		private int height = 400;
 
 		private long animationDurationMillis = 500;
 
@@ -213,13 +213,19 @@ public class DataDisplayOptions
 
 		private DataDisplayOverlayFactory dataDisplayOverlayFactory = new DataDisplayOverlayFactory();
 
-		private GraphColorGenerator< DataVertex, DataEdge > graphColorGenerator = new DefaultGraphColorGenerator<>();
+		private GraphColorGenerator< V, E > graphColorGenerator = new DefaultGraphColorGenerator<>();
 
-		public DataDisplayOptions optionsFromValues()
+		public DataDisplayOptions< V, E > optionsFromValues()
 		{
-			return new DataDisplayOptions().x( x ).y( y ).width( width ).height( height )
-					.animationDurationMillis( animationDurationMillis ).navigationEtiquette( navigationEtiquette )
-					.style( style ).dataDisplayOverlayFactory( dataDisplayOverlayFactory )
+			return new DataDisplayOptions< V, E >()
+					.x( x )
+					.y( y )
+					.width( width )
+					.height( height )
+					.animationDurationMillis( animationDurationMillis )
+					.navigationEtiquette( navigationEtiquette )
+					.style( style )
+					.dataDisplayOverlayFactory( dataDisplayOverlayFactory )
 					.graphColorGenerator( graphColorGenerator );
 		}
 
@@ -268,7 +274,7 @@ public class DataDisplayOptions
 			return dataDisplayOverlayFactory;
 		}
 
-		public GraphColorGenerator< DataVertex, DataEdge > getGraphColorGenerator()
+		public GraphColorGenerator< V, E > getGraphColorGenerator()
 		{
 			return graphColorGenerator;
 		}

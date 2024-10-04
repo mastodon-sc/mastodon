@@ -31,8 +31,8 @@ package org.mastodon.views.grapher.display;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout.LayoutListener;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
@@ -126,12 +126,12 @@ public class InertialScreenTransformEventHandler
 	/**
 	 * Sets the maximal zoom level in X.
 	 */
-	private static final double MIN_SIBLINGS_ON_CANVAS = 4;
+	private static final double DEFAULT_MIN_SCALE_X = 4;
 
 	/**
 	 * Sets the maximal zoom level in Y.
 	 */
-	private static final double MIN_TIMEPOINTS_ON_CANVAS = 4;
+	private static final double DEFAULT_MIN_SCALE_Y = 4;
 
 	private static final double EPSILON = 0.0000000001;
 
@@ -214,6 +214,10 @@ public class InertialScreenTransformEventHandler
 	 */
 	private boolean stayFullyZoomedOut;
 
+	private double minScaleX;
+
+	private double minScaleY;
+
 	/**
 	 * Timer that runs {@link #currentTimerTask}.
 	 */
@@ -240,6 +244,8 @@ public class InertialScreenTransformEventHandler
 		zoomScrollBehaviourX = new ZoomScrollBehaviour( ZOOM_X, ScrollAxis.X );
 		zoomScrollBehaviourY = new ZoomScrollBehaviour( ZOOM_Y, ScrollAxis.Y );
 		zoomScrollBehaviourXY = new ZoomScrollBehaviour( ZOOM_XY, ScrollAxis.XY );
+		minScaleX = DEFAULT_MIN_SCALE_X;
+		minScaleY = DEFAULT_MIN_SCALE_Y;
 	}
 
 	@Override
@@ -268,6 +274,16 @@ public class InertialScreenTransformEventHandler
 		updateTransformScreenSize();
 	}
 
+	public void setMinScaleY( final double minScaleY )
+	{
+		this.minScaleY = minScaleY;
+	}
+
+	public void setMinScaleX( final double minScaleX )
+	{
+		this.minScaleX = minScaleX;
+	}
+
 	private void updateTransformScreenSize()
 	{
 		final ScreenTransform transform = transformState.get();
@@ -282,25 +298,50 @@ public class InertialScreenTransformEventHandler
 	@Override
 	public synchronized void layoutChanged( final DataGraphLayout< ?, ? > layout )
 	{
+		final double minX = layout.getCurrentLayoutMinX();
+		final double maxX = layout.getCurrentLayoutMaxX();
+		final double minY = layout.getCurrentLayoutMinY();
+		final double maxY = layout.getCurrentLayoutMaxY();
+		layoutChanged( minX, maxX, minY, maxY );
+	}
+
+	/**
+	 * Updates the handler so that it accommodates data contained in the
+	 * specified bounds.
+	 *
+	 * @param minX
+	 *            min X bound.
+	 * @param maxX
+	 *            max X bound.
+	 * @param minY
+	 *            min Y bound.
+	 * @param maxY
+	 *            max Y bound.
+	 */
+	protected synchronized void layoutChanged(
+			double minX,
+			double maxX,
+			double minY,
+			double maxY )
+	{
+		this.boundXMin = minX - boundXLayoutBorder;
+		this.boundXMax = maxX + boundXLayoutBorder;
+		this.boundYMin = minY - boundYLayoutBorder;
+		this.boundYMax = maxY + boundYLayoutBorder;
+
 		final ScreenTransform transform = transformState.get();
-
-		boundXMin = layout.getCurrentLayoutMinX() - boundXLayoutBorder;
-		boundXMax = layout.getCurrentLayoutMaxX() + boundXLayoutBorder;
-		boundYMin = layout.getCurrentLayoutMinY() - boundYLayoutBorder;
-		boundYMax = layout.getCurrentLayoutMaxY() + boundYLayoutBorder;
-
-		if ( boundXMax - boundXMin < MIN_SIBLINGS_ON_CANVAS )
+		if ( maxX - minX < minScaleX )
 		{
-			final double c = ( boundXMax + boundXMin ) / 2;
-			boundXMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
-			boundXMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
+			final double c = ( maxX + minX ) / 2;
+			minX = c - minScaleX / 2;
+			maxX = c + minScaleX / 2;
 		}
 		updateMaxSizeX( transform.getScreenWidth() );
-		if ( boundYMax - boundYMin < MIN_SIBLINGS_ON_CANVAS )
+		if ( maxY - minY < minScaleX )
 		{
-			final double c = ( boundYMax + boundYMin ) / 2;
-			boundYMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
-			boundYMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
+			final double c = ( maxY + minY ) / 2;
+			minY = c - minScaleX / 2;
+			maxY = c + minScaleX / 2;
 		}
 		updateMaxSizeY( transform.getScreenHeight() );
 
@@ -331,11 +372,11 @@ public class InertialScreenTransformEventHandler
 		boundYMin = layoutMinY - boundYLayoutBorder;
 		boundYMax = layoutMaxY + boundYLayoutBorder;
 
-		if ( boundYMax - boundYMin < MIN_TIMEPOINTS_ON_CANVAS )
+		if ( boundYMax - boundYMin < minScaleY )
 		{
 			final double c = ( boundYMax + boundYMin ) / 2;
-			boundYMin = c - MIN_TIMEPOINTS_ON_CANVAS / 2;
-			boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
+			boundYMin = c - minScaleY / 2;
+			boundYMax = c + minScaleY / 2;
 		}
 
 		updateMaxSizeY( transformState.get().getScreenHeight() );
@@ -345,7 +386,7 @@ public class InertialScreenTransformEventHandler
 	{
 		ConstrainScreenTransform.constrainTransform(
 				transform,
-				MIN_SIBLINGS_ON_CANVAS, MIN_TIMEPOINTS_ON_CANVAS,
+				minScaleX, minScaleY,
 				maxSizeX, maxSizeY,
 				boundXMin, boundXMax, boundYMin, boundYMax,
 				borderRatioX, borderRatioY,
@@ -374,12 +415,12 @@ public class InertialScreenTransformEventHandler
 
 	private boolean hasMinSizeX( final ScreenTransform transform )
 	{
-		return ConstrainScreenTransform.hasMinSizeX( transform, MIN_SIBLINGS_ON_CANVAS + EPSILON );
+		return ConstrainScreenTransform.hasMinSizeX( transform, minScaleX + EPSILON );
 	}
 
 	private boolean hasMinSizeY( final ScreenTransform transform )
 	{
-		return ConstrainScreenTransform.hasMinSizeY( transform, MIN_TIMEPOINTS_ON_CANVAS + EPSILON );
+		return ConstrainScreenTransform.hasMinSizeY( transform, minScaleY + EPSILON );
 	}
 
 	private boolean hasMaxSizeX( final ScreenTransform transform )
@@ -507,7 +548,7 @@ public class InertialScreenTransformEventHandler
 			{
 				if ( zoomIn )
 				{
-					if ( !hasMinSizeY( transform ) )
+					if ( !hasMinSizeY( transform ) || true )
 						transform.zoomY( dScale, y );
 				}
 				else

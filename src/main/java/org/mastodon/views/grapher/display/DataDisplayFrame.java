@@ -82,7 +82,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< V > contextChooser,
-			final DataDisplayOptions optional )
+			final DataDisplayOptions< DataVertex, DataEdge > optional )
 	{
 		super( "Grapher" );
 
@@ -112,7 +112,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		 */
 
 		sidePanel = new GrapherSidePanel( nSources, contextChooser );
-		sidePanel.btnPlot.addActionListener( e -> dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel ) );
+		sidePanel.getBtnPlot().addActionListener( e -> dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel ) );
 
 		final FeatureModelListener featureModelListener = () -> sidePanel.setFeatures(
 				FeatureUtils.collectFeatureMap( featureModel, vertexClass ),
@@ -163,8 +163,14 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
 		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), dataDisplayPanel.getDisplay() );
 		dataDisplayPanel.getDisplay().addHandler( mouseAndKeyHandler );
-		setLocation( optional.values.getX(), optional.values.getY() );
 		setIconImages( FEATURES_ICON );
+		
+		final int x = optional.values.getX();
+		final int y = optional.values.getY();
+		if ( x <= 0 && y <= 0 )
+			setLocationRelativeTo( null );
+		else
+			setLocation( x, y );
 	}
 
 	public DataDisplayPanel< V, E > getDataDisplayPanel()

@@ -126,7 +126,9 @@ public class SharedBigDataViewerData
 		this.setups = setups;
 		this.cache = cache;
 
-		final ViewerOptions lvo = new ViewerOptions();
+		final ViewerOptions lvo = new ViewerOptions()
+				.width( 650 )
+				.height( 400 );
 		this.inputTriggerConfig = ( lvo.values.getInputTriggerConfig() != null )
 				? lvo.values.getInputTriggerConfig()
 				: new InputTriggerConfig();

@@ -100,6 +100,10 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		implements HasContextChooser< Spot >, HasColoringModel
 {
 
+	private static final int DEFAULT_WIDTH = 500;
+
+	private static final int DEFAULT_HEIGHT = 300;
+
 	public static String csvExportPath = null;
 
 	private static final String[] CONTEXTS = new String[] { KeyConfigContexts.TABLE };
@@ -163,6 +167,10 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 					.navigationHandler( branchGraphNavigation( projectModel, navigationHandler ) )
 					.done()
 				.title( selectionTable ? "Selection table" : "Data table" )
+				.x( -1 )
+				.y( -1 )
+				.width( DEFAULT_WIDTH )
+				.height( DEFAULT_HEIGHT )
 				.get();
 		setFrame( frame );
 		frame.setIconImages( TABLE_VIEW_ICON );

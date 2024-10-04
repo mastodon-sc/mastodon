@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>37.0.0</version>
+		<version>38.0.1</version>
 	</parent>
 
 	<groupId>org.mastodon</groupId>
@@ -158,7 +158,7 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.5</version>
 					<configuration>
-						<argLine>-Xms256m -Xmx1024m</argLine>
+						<argLine>-Xms256m -Xmx1536m</argLine>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -243,6 +243,13 @@
 			<name>Vladimír Ulman</name>
 			<url>https://github.com/xulman</url>
 			<properties><id>xulman</id></properties>
+		</contributor>
+		<contributor>
+			<name>Stefan Hahmann</name>
+			<url>https://github.com/stefanhahmann</url>
+			<properties>
+				<id>stefanhahmann</id>
+			</properties>
 		</contributor>
 	</contributors>
 

@@ -55,7 +55,7 @@ public class SpotPositionFeature implements Feature< Spot >
 
 	private final LinkedHashMap< FeatureProjectionKey, FeatureProjection< Spot > > projections;
 
-	private static final List< FeatureProjectionSpec > PROJECTION_SPECS = new ArrayList<>( 3 );
+	public static final List< FeatureProjectionSpec > PROJECTION_SPECS = new ArrayList<>( 3 );
 	static
 	{
 		for ( int d = 0; d < 3; d++ )

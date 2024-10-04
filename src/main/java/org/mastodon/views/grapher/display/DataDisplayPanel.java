@@ -205,14 +205,14 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final FocusModel< DataVertex > focus,
 			final SelectionModel< DataVertex, DataEdge > selection,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
-			final DataDisplayOptions optional )
+			final DataDisplayOptions< DataVertex, DataEdge > optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.layout = layout;
 		this.selection = selection;
 
-		final Values options = optional.values;
+		final Values< DataVertex, DataEdge > options = optional.values;
 		animationMilleseconds = options.getAnimationDurationMillis();
 
 		/*
@@ -224,6 +224,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		screenTransform = new ScreenTransformState( new ScreenTransform( -10000, 10000, -10000, 10000, w, h ) );
 		screenTransform.listeners().add( this );
 		transformEventHandler = new InertialScreenTransformEventHandler( screenTransform );
+
+		setPreferredSize( new Dimension( w, h ) );
 
 		/*
 		 * Make this instance listen to data graph and UI objects.

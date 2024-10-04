@@ -1,26 +1,28 @@
 package org.mastodon.mamut.io;
 
-import ij.ImagePlus;
 import mpicbg.spim.data.SpimDataException;
-import net.imagej.ImgPlus;
-import net.imagej.axis.Axes;
-import net.imagej.axis.AxisType;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.img.display.imagej.ImgToVirtualStack;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Cast;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.ProjectModelTestUtils;
+import org.mastodon.mamut.feature.FeatureComputerTestUtils;
+import org.mastodon.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.mamut.feature.branch.BranchDisplacementDurationFeature;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.views.bdv.SharedBigDataViewerData;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -37,12 +39,35 @@ public class ProjectLoaderTest
 		File mastodonFile = File.createTempFile( "test", ".mastodon" );
 		try (Context context = new Context())
 		{
-			ProjectModel appModel = wrapAsAppModel( image, model, context, mastodonFile );
+			ProjectModel appModel = ProjectModelTestUtils.wrapAsAppModel( image, model, context, mastodonFile );
 			ProjectSaver.saveProject( mastodonFile, appModel );
 		}
 		for ( int i = 0; i < 100; i++ )
 			loadAndCloseProjectModel( mastodonFile );
 		assertTrue( true );
+	}
+
+	@Test
+	public void testBranchFeaturesAfterSaveAndReload() throws IOException, SpimDataException
+	{
+		ExampleGraph1 graph = new ExampleGraph1();
+		Model model = graph.getModel();
+		try (Context context = new Context())
+		{
+			File mastodonFile = File.createTempFile( "test", ".mastodon" );
+			Img< FloatType > image = ArrayImgs.floats( 1, 1, 1 );
+			ProjectModel projectModel = ProjectModelTestUtils.wrapAsAppModel( image, model, context, mastodonFile );
+			final MamutFeatureComputerService computerService = MamutFeatureComputerService.newInstance( context );
+			computerService.setModel( model );
+			FeatureProjection< BranchSpot > durationProjection = FeatureComputerTestUtils.getFeatureProjection( context, model,
+					BranchDisplacementDurationFeature.SPEC, BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC );
+			double durationBeforeSave = durationProjection.value( graph.branchSpotA );
+			ProjectModel reloadedProjectModel = saveAndReloadProject( projectModel, mastodonFile, context );
+			FeatureProjection< BranchSpot > reloadedDurationProjection = getDurationProjectionFromModel( reloadedProjectModel );
+			BranchSpot branchSpot = reloadedProjectModel.getModel().getBranchGraph().vertices().iterator().next(); // NB: the model only has one branch spot
+			double durationAfterSave = reloadedDurationProjection.value( branchSpot );
+			assertEquals( durationBeforeSave, durationAfterSave, 0 );
+		}
 	}
 
 	private void loadAndCloseProjectModel( final File mastodonFile ) throws SpimDataException, IOException
@@ -54,20 +79,17 @@ public class ProjectLoaderTest
 		}
 	}
 
-	private static ProjectModel wrapAsAppModel( final Img< FloatType > image, final Model model, final Context context, final File file )
-			throws IOException
+	private static FeatureProjection< BranchSpot > getDurationProjectionFromModel( final ProjectModel reloadedProjectModel )
 	{
-		final SharedBigDataViewerData sharedBigDataViewerData = asSharedBdvDataXyz( image );
-		MamutProject mamutProject = new MamutProject( file );
-		File datasetXmlFile = File.createTempFile( "test", ".xml" );
-		mamutProject.setDatasetXmlFile( datasetXmlFile );
-		return ProjectModel.create( context, model, sharedBigDataViewerData, mamutProject );
+		BranchDisplacementDurationFeature reloadedFeature = Cast
+				.unchecked( reloadedProjectModel.getModel().getFeatureModel().getFeature( BranchDisplacementDurationFeature.SPEC ) );
+		return reloadedFeature.project( FeatureProjectionKey.key( BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC ) );
 	}
 
-	private static SharedBigDataViewerData asSharedBdvDataXyz( final Img< FloatType > image1 )
+	private static ProjectModel saveAndReloadProject( final ProjectModel projectModel, final File mastodonFile, final Context context )
+			throws IOException, SpimDataException
 	{
-		final ImagePlus image =
-				ImgToVirtualStack.wrap( new ImgPlus<>( image1, "image", new AxisType[] { Axes.X, Axes.Y, Axes.Z, Axes.TIME } ) );
-		return Objects.requireNonNull( SharedBigDataViewerData.fromImagePlus( image ) );
+		ProjectSaver.saveProject( mastodonFile, projectModel );
+		return ProjectLoader.open( mastodonFile.getAbsolutePath(), context, false, true );
 	}
 }
