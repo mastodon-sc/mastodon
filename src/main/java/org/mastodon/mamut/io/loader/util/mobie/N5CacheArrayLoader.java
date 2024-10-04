@@ -130,10 +130,11 @@ public class N5CacheArrayLoader< T, A extends DataAccess > implements MastodonSi
             {
                 final T src = dataBlock.getData();
                 final int[] srcDims = dataBlock.getSize();
-                final int[] dstDims = new int[ srcDims.length ];
-                Arrays.fill( dstDims, 1 );
-                for ( int d = 0; d < cellDimensions.length; ++d )
-                    dstDims[ d ] = cellDimensions[ d ];
+                final int[] dstDims = Arrays.copyOf( cellDimensions, srcDims.length );
+                if ( cellDimensions.length < dstDims.length )
+                {
+                    Arrays.fill( dstDims, cellDimensions.length, dstDims.length, 1 );
+                }
                 final int[] srcPos = new int[ srcDims.length ];
                 final int[] dstPos = new int[ srcDims.length ];
                 final int[] size = new int[ srcDims.length ];

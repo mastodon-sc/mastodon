@@ -75,7 +75,6 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
         {
             MultiscaleMetadata< ? > setupMetadata = metadata.getChildrenMetadata()[ i ];
             final List< DatasetAttributes > attributesList = Arrays.stream( setupMetadata.getChildrenMetadata() )
-                    .sorted()
                     .map( levelMetadata -> levelMetadata.getAttributes() )
                     .collect( Collectors.toList() );
             setupToAttributesList.put( i, attributesList );

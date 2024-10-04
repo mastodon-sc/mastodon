@@ -430,6 +430,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                 final long[] dimensions = adapter.getDimensions( setupId, timepointId, level );
                 final int[] cellDimensions = adapter.getCellDimensions( setupId, timepointId, level );
                 final CellGrid grid = new CellGrid( dimensions, cellDimensions );
+                final int n = grid.numDimensions();
 
                 final int priority = numMipmapLevels() - 1 - level;
                 final CacheHints cacheHints = new CacheHints( loadingStrategy, priority, false );
@@ -437,14 +438,17 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                 final SimpleCacheArrayLoader< ? > cacheArrayLoader =
                         adapter.createCacheArrayLoader( setupId, timepointId, level, grid );
                 final CacheLoader< Long, Cell< ? > > loader = key -> {
-                    final int n = grid.numDimensions();
-                    long[] cellMin = new long[ n ];
-                    int[] cellDims = new int[ n ];
+                    final long[] cellGridMin = new long[ n ];
+                    final int[] cellGridDims = new int[ n ];
                     final long[] cellGridPosition = new long[ n ];
-                    grid.getCellDimensions( key, cellMin, cellDims );
+                    grid.getCellDimensions( key, cellGridMin, cellGridDims );
                     grid.getCellGridPositionFlat( key, cellGridPosition );
-                    cellDims = Arrays.stream( cellDims ).limit( 3 ).toArray();
-                    cellMin = Arrays.stream( cellMin ).limit( 3 ).toArray();
+                    final long[] cellMin = Arrays.copyOf( cellGridMin, 3 );
+                    final int[] cellDims = Arrays.copyOf( cellGridDims, 3 );
+                    if ( n < 3 )
+                    {
+                        Arrays.fill( cellDims, n, 3, 1 );
+                    }
                     DataAccess dataAccess = null;
                     if ( adapter instanceof N5ReaderToViewerImgLoaderAdapter && n == 4 )
                     {
@@ -457,10 +461,17 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                     }
                     return new Cell<>( cellDims, cellMin, dataAccess );
                 };
-                final CellGrid imgGrid = new CellGrid(
-                        Arrays.stream( dimensions ).limit( 3 ).toArray(),
-                        Arrays.stream( cellDimensions ).limit( 3 ).toArray()
-                );
+                final long[] imgDimensions = Arrays.copyOf( dimensions, 3 );
+                if ( n < 3 )
+                {
+                    Arrays.fill( imgDimensions, n, 3, 1 );
+                }
+                final int[] imgCellDimensions = Arrays.copyOf( cellDimensions, 3 );
+                if ( n < 3 )
+                {
+                    Arrays.fill( imgCellDimensions, n, 3, 1 );
+                }
+                final CellGrid imgGrid = new CellGrid( imgDimensions, imgCellDimensions );
                 return cache.createImg( imgGrid, timepointId, setupId, level, cacheHints, loader, cacheArrayLoader.getEmptyArrayCreator(),
                         type );
             }
