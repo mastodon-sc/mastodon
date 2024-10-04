@@ -78,6 +78,6 @@ public interface N5ReaderToViewerImgLoaderAdapter< T extends N5Reader >
 
     default String getFullPathName( final String pathName )
     {
-        return ( getDataset() + pathName ).replaceAll( "^/+", "/" );
+        return ( getDataset() + pathName ).replaceAll( "/+", "/" );
     }
 }

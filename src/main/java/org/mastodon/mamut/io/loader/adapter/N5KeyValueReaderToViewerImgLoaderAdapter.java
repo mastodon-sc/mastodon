@@ -43,9 +43,11 @@ import org.janelia.saalfeldlab.n5.N5KeyValueReader;
 import org.janelia.saalfeldlab.n5.N5Reader;
 import org.janelia.saalfeldlab.n5.bdv.N5ViewerCreator;
 import org.janelia.saalfeldlab.n5.metadata.N5ViewerMultichannelMetadata;
+import org.janelia.saalfeldlab.n5.metadata.imagej.N5ImagePlusMetadata;
 import org.janelia.saalfeldlab.n5.universe.N5DatasetDiscoverer;
 import org.janelia.saalfeldlab.n5.universe.N5TreeNode;
 import org.janelia.saalfeldlab.n5.universe.metadata.MultiscaleMetadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.N5CosemMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
 import org.mastodon.mamut.io.loader.util.mobie.N5CacheArrayLoader;
 
@@ -150,10 +152,19 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
         return new N5CacheArrayLoader<>( n5, pathName, attributes, DataTypeProperties.of( attributes.getDataType() ) );
     }
 
+    private static boolean isSupportedMetadata( final N5Metadata meta )
+    {
+        if ( meta instanceof N5ImagePlusMetadata ||
+                meta instanceof N5CosemMetadata ||
+                meta instanceof N5ViewerMultichannelMetadata )
+            return true;
+        return false;
+    }
+
     private static N5Metadata getMetadataRecursively( final N5TreeNode node )
     {
         N5Metadata meta = node.getMetadata();
-        if ( meta instanceof N5ViewerMultichannelMetadata )
+        if ( isSupportedMetadata( meta ) )
         {
             return meta;
         }
@@ -186,7 +197,7 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
         if ( node == null )
             return null;
         N5Metadata meta = getMetadataRecursively( node );
-        if ( meta instanceof N5ViewerMultichannelMetadata )
+        if ( isSupportedMetadata( meta ) )
             return ( N5ViewerMultichannelMetadata ) meta;
         else
             throw new N5Exception( "No N5ViewerMultichannelMetadata found" );

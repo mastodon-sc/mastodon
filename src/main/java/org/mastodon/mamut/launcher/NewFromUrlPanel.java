@@ -123,7 +123,7 @@ class NewFromUrlPanel extends JPanel
 		gbcLblNewMastodonProject.gridy = row++;
 		add( lblNewMastodonProject, gbcLblNewMastodonProject );
 
-		final JLabel lblFetchFromURL = new JLabel( "Browse S3-compatible URL:" );
+		final JLabel lblFetchFromURL = new JLabel( "Browse URL:" );
 		final GridBagConstraints gbcLblFetchFromURL = new GridBagConstraints();
 		gbcLblFetchFromURL.insets = new Insets( 5, 5, 5, 5 );
 		gbcLblFetchFromURL.anchor = GridBagConstraints.SOUTHWEST;
@@ -197,6 +197,12 @@ class NewFromUrlPanel extends JPanel
 					if ( unit == null || unit.isEmpty() )
 						unit = "pixel";
 					calib = setup0Level0Metadata.spatialTransform3d();
+				}
+				else
+				{
+					SwingUtilities.invokeLater(
+							() -> IJ.error( "Metadata not supported", "The metadata is not supported: " + metadata.getName() ) );
+					return;
 				}
 				final AffineTransform3D calibFinal = calib.copy();
 
@@ -339,7 +345,7 @@ class NewFromUrlPanel extends JPanel
 				catch ( final URISyntaxException e )
 				{
 					SwingUtilities.invokeLater(
-							() -> IJ.error( "Invalid URI", "The URI is not valid or cre: " + n5UriOrPath ) );
+							() -> IJ.error( "Invalid URI", "The URI is not valid or credentials are missing: " + n5UriOrPath ) );
 				}
 			}
 
