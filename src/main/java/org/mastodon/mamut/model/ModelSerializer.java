@@ -33,7 +33,7 @@ import org.mastodon.graph.ref.AbstractEdgePool;
 import org.mastodon.graph.ref.AbstractVertexPool;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
 
-class ModelSerializer implements GraphSerializer< Spot, Link >
+public class ModelSerializer implements GraphSerializer< Spot, Link >
 {
 	private ModelSerializer()
 	{}
