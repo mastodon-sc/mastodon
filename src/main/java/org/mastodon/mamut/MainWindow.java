@@ -38,6 +38,7 @@ import static org.mastodon.app.MastodonIcons.TABLE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_ICON_MEDIUM;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 
@@ -319,6 +320,9 @@ public class MainWindow extends JFrame
 						// item( ProjectActions.LOAD_PROJECT ),
 						item( ProjectActions.SAVE_PROJECT ),
 						item( ProjectActions.SAVE_PROJECT_AS ),
+						separator(),
+						menu( "Import" ),
+						menu( "Export" ),
 						separator(),
 						item( ProjectActions.FIX_DATASET_PATH ),
 						separator(),
