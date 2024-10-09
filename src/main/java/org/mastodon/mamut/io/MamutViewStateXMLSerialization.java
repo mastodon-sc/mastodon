@@ -70,7 +70,7 @@ import net.imglib2.realtransform.AffineGet;
 
 /**
  * Utility class that can transform a GUI state
- * <code>Map< String, Object ></code> to XML and vice versa.
+ * <code>Map&lt; String, Object &gt;</code> to XML and vice versa.
  */
 public class MamutViewStateXMLSerialization
 {
