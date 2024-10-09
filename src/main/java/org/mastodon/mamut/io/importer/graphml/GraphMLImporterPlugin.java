@@ -33,7 +33,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +43,7 @@ import javax.swing.JOptionPane;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -91,8 +92,8 @@ public class GraphMLImporterPlugin implements MamutPlugin
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Arrays.asList(
-				menu( "Plugins", menu( "Imports", item( IMPORT_GRAPHML ) ) ) );
+		return Collections.singletonList(
+				MamutMenuBuilder.fileMenu( menu( "Import", item( IMPORT_GRAPHML ) ) ) );
 	}
 
 	@Override
