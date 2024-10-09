@@ -33,7 +33,7 @@ import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = Command.class, menuPath = "Plugins>Mastodon" )
+@Plugin( type = Command.class, menuPath = "Plugins>Tracking>Mastodon>Mastodon Launcher" )
 public class MastodonLauncherCommand extends ContextCommand
 {
 
