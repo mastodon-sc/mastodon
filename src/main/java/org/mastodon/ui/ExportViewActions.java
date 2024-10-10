@@ -4,7 +4,12 @@ import java.awt.Component;
 
 import javax.swing.JFrame;
 
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.util.ExportUtils;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -40,5 +45,29 @@ public class ExportViewActions
 	{
 		actions.namedAction( exportToSvgAction, EXPORT_VIEW_TO_SVG_KEYS );
 		actions.namedAction( exportToPngAction, EXPORT_VIEW_TO_PNG_KEYS );
+	}
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = CommandDescriptionProvider.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigScopes.MASTODON,
+					KeyConfigContexts.BIGDATAVIEWER,
+					KeyConfigContexts.TRACKSCHEME,
+					KeyConfigContexts.GRAPHER );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( EXPORT_VIEW_TO_SVG, EXPORT_VIEW_TO_SVG_KEYS,
+					"Capture the current view and export it to a SVG image file." );
+			descriptions.add( EXPORT_VIEW_TO_PNG, EXPORT_VIEW_TO_PNG_KEYS,
+					"Capture the current view and export it to a PNG image file." );
+		}
 	}
 }
