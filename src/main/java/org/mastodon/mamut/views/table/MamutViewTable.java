@@ -30,6 +30,7 @@ package org.mastodon.mamut.views.table;
 
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
@@ -194,11 +195,11 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
-						separator(),
-						item( TableViewActions.EXPORT_TO_CSV ) ),
+						menu( "Export",
+								item( TableViewActions.EXPORT_TO_CSV ) ) ),
 				viewMenu(
 						MamutMenuBuilder.colorMenu( colorMenuHandle ),
-						ViewMenuBuilder.menu( "Branch coloring", colorBranchMenuHandle ),
+						menu( "Branch coloring", colorBranchMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				editMenu(
@@ -214,7 +215,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 						separator(),
 						item( TableViewActions.EDIT_LABEL ),
 						item( TableViewActions.TOGGLE_TAG ) ),
-				ViewMenuBuilder.menu( "Settings",
+				menu( "Settings",
 						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
 						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
 		projectModel.getPlugins().addMenus( menu );
