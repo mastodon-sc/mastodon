@@ -473,7 +473,8 @@ public class SharedBigDataViewerData
 		if ( !sbdv.tryLoadSettings( spimDataXmlFilename ) )
 		{
 			final BasicViewerState state = new BasicViewerState();
-			state.addSource( sources.get( 0 ) );
+			for ( int i = 0; i < sources.size(); ++i )
+				state.addSource( sources.get( i ) );
 			state.setCurrentSource( sources.get( 0 ) );
 			InitializeViewerState.initBrightness( 0.001, 0.999, state, setups );
 		}

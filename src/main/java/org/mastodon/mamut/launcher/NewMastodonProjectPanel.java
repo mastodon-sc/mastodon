@@ -82,7 +82,7 @@ class NewMastodonProjectPanel extends JPanel
 		gbcLblNewMastodonProject.gridy = 0;
 		add( lblNewMastodonProject, gbcLblNewMastodonProject );
 
-		rdbtBrowseToBDV = new JRadioButton( "Browse to a BDV file (xml/h5 pair):" );
+		rdbtBrowseToBDV = new JRadioButton( "Browse to a BDV file (xml + N5/OME-Zarr/HDF5 pair):" );
 		final GridBagConstraints gbc_rdbtBrowseToBDV = new GridBagConstraints();
 		gbc_rdbtBrowseToBDV.anchor = GridBagConstraints.SOUTHWEST;
 		gbc_rdbtBrowseToBDV.insets = new Insets( 5, 5, 5, 5 );
