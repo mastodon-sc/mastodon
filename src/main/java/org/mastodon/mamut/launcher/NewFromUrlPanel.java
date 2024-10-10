@@ -70,6 +70,7 @@ import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadata
 import org.mastodon.mamut.io.loader.N5UniverseImgLoader;
 import org.mastodon.mamut.io.loader.util.credentials.AWSCredentialsManager;
 import org.mastodon.mamut.io.loader.util.credentials.AWSCredentialsTools;
+import org.mastodon.ui.util.EverythingDisablerAndReenabler;
 
 import bdv.spimdata.SequenceDescriptionMinimal;
 import bdv.spimdata.SpimDataMinimal;
@@ -142,149 +143,7 @@ class NewFromUrlPanel extends JPanel
 		/*
 		 * Wire listeners.
 		 */
-		btnBrowse.addActionListener( l -> {
-			xmlFile = null;
-			final ExecutorService exec = Executors.newFixedThreadPool( ij.Prefs.getThreads() );
-			final DatasetSelectorDialog dialog = new DatasetSelectorDialog(
-					new N5ViewerReaderFun(),
-					new N5Importer.N5BasePathFun(),
-					lastOpenedContainer,
-					N5ViewerCreator.n5vGroupParsers,
-					N5ViewerCreator.n5vParsers );
-
-			dialog.setLoaderExecutor( exec );
-			dialog.setContainerPathUpdateCallback( x -> lastOpenedContainer = x );
-			dialog.setTreeRenderer( new N5ViewerTreeCellRenderer( false ) );
-
-			dialog.run( selection -> {
-				N5Metadata metadata = selection.metadata.get( 0 );
-				long[] dimensions = null;
-				double[] scales = null;
-				String[] axisLabels = null;
-				String unit = null;
-				AffineTransform3D calib = null;
-				int x = 1;
-				int y = 1;
-				int z = 1;
-				int c = 1;
-				int t = 1;
-				double sx = 1.0;
-				double sy = 1.0;
-				double sz = 1.0;
-				if ( metadata instanceof OmeNgffMetadata )
-				{
-					final NgffSingleScaleAxesMetadata setup0Level0Metadata =
-							( ( OmeNgffMetadata ) metadata ).multiscales[ 0 ].getChildrenMetadata()[ 0 ];
-					dimensions = setup0Level0Metadata.getAttributes().getDimensions();
-					scales = setup0Level0Metadata.getScale();
-					axisLabels = setup0Level0Metadata.getAxisLabels();
-					unit = setup0Level0Metadata.unit();
-					if ( unit == null || unit.isEmpty() )
-						unit = "pixel";
-					calib = setup0Level0Metadata.spatialTransform3d();
-				}
-				else if ( metadata instanceof N5ViewerMultichannelMetadata )
-				{
-					c = ( ( N5ViewerMultichannelMetadata ) metadata ).getChildrenMetadata().length;
-					final MultiscaleMetadata< ? > setup0Metadata =
-							( ( N5ViewerMultichannelMetadata ) metadata ).getChildrenMetadata()[ 0 ];
-					final N5SingleScaleMetadata setup0Level0Metadata = ( N5SingleScaleMetadata ) setup0Metadata.getChildrenMetadata()[ 0 ];
-					dimensions = setup0Level0Metadata.getAttributes().getDimensions();
-					scales = setup0Level0Metadata.getPixelResolution();
-					final DefaultAxisMetadata axes = AxisUtils.defaultN5ViewerAxes( ( setup0Level0Metadata ) );
-					axisLabels = axes.getAxisLabels();
-					unit = setup0Level0Metadata.unit();
-					if ( unit == null || unit.isEmpty() )
-						unit = "pixel";
-					calib = setup0Level0Metadata.spatialTransform3d();
-				}
-				else
-				{
-					SwingUtilities.invokeLater(
-							() -> IJ.error( "Metadata not supported", "The metadata is not supported: " + metadata.getName() ) );
-					return;
-				}
-				final AffineTransform3D calibFinal = calib.copy();
-
-				for ( int i = 0; i < axisLabels.length; i++ )
-				{
-					if ( axisLabels[ i ].toLowerCase().equals( "x" ) )
-					{
-						x = ( int ) dimensions[ i ];
-						sx = scales[ i ];
-					}
-					else if ( axisLabels[ i ].toLowerCase().equals( "y" ) )
-					{
-						y = ( int ) dimensions[ i ];
-						sy = scales[ i ];
-					}
-					else if ( axisLabels[ i ].toLowerCase().equals( "z" ) )
-					{
-						z = ( int ) dimensions[ i ];
-						sz = scales[ i ];
-					}
-					else if ( axisLabels[ i ].toLowerCase().equals( "c" ) )
-						c = ( int ) dimensions[ i ];
-					else if ( axisLabels[ i ].toLowerCase().equals( "t" ) )
-						t = ( int ) dimensions[ i ];
-				}
-				final Dimensions imageSize = new FinalDimensions( x, y, z );
-				final TimePoints timepoints = new TimePoints(
-						IntStream.range( 0, t ).mapToObj( TimePoint::new ).collect( Collectors.toList() ) );
-				final Map< Integer, BasicViewSetup > setups = new HashMap<>();
-				final VoxelDimensions voxelDimensions = new FinalVoxelDimensions( unit, sx, sy, sz );
-				for ( int i = 0; i < c; i++ )
-					setups.put( i, new BasicViewSetup( i, String.format( "channel %d", i ), imageSize, voxelDimensions ) );
-				final BasicImgLoader imgLoader =
-						new N5UniverseImgLoader( selection.n5.getURI().toString(), metadata.getPath(), null );
-				final SequenceDescriptionMinimal sequenceDescription =
-						new SequenceDescriptionMinimal( timepoints, setups, imgLoader, null );
-				final ViewRegistrations viewRegistrations = new ViewRegistrations(
-						IntStream.range( 0, t )
-								.boxed()
-								.flatMap( tp -> IntStream.range( 0, setups.size() )
-										.mapToObj( setup -> new ViewRegistration( tp, setup, calibFinal ) ) )
-								.collect( Collectors.toList() )
-				);
-
-				final JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setDialogTitle( "Save BigDataViewer XML File" );
-				final FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter( "XML Files", "xml" );
-				fileChooser.setFileFilter( xmlFilter );
-				final String currDir = IJ.getDirectory( "current" );
-				if ( currDir != null )
-					fileChooser.setCurrentDirectory( new File( currDir ) );
-				int userSelection = fileChooser.showSaveDialog( null );
-				if ( userSelection == JFileChooser.APPROVE_OPTION )
-				{
-					File fileToSave = fileChooser.getSelectedFile();
-
-					// Ensure the file has the .xml extension
-					if ( !fileToSave.getAbsolutePath().endsWith( ".xml" ) )
-					{
-						fileToSave = new File( fileToSave.getAbsolutePath() + ".xml" );
-					}
-
-					final SpimDataMinimal spimData =
-							new SpimDataMinimal( fileToSave.getParentFile(), sequenceDescription, viewRegistrations );
-
-					try
-					{
-						new XmlIoSpimDataMinimal().save( spimData, fileToSave.getAbsolutePath() );
-					}
-					catch ( SpimDataException e )
-					{
-						e.printStackTrace();
-					}
-
-					if ( checkBDVFile( fileToSave ) )
-					{
-						xmlFile = fileToSave;
-					}
-
-				}
-			} );
-		} );
+		btnBrowse.addActionListener( e -> openBrowserWindow() );
 
 		labelInfo = new JLabel( "" );
 		final GridBagConstraints gbcLabelInfo = new GridBagConstraints();
@@ -295,11 +154,165 @@ class NewFromUrlPanel extends JPanel
 		add( labelInfo, gbcLabelInfo );
 
 		btnCreate = new JButton( buttonTitle );
+		btnCreate.setEnabled( false );
 		final GridBagConstraints gbcBtnCreate = new GridBagConstraints();
 		gbcBtnCreate.anchor = GridBagConstraints.EAST;
 		gbcBtnCreate.gridx = 0;
 		gbcBtnCreate.gridy = row++;
 		add( btnCreate, gbcBtnCreate );
+	}
+
+	private void openBrowserWindow()
+	{
+		xmlFile = null;
+		final ExecutorService exec = Executors.newFixedThreadPool( ij.Prefs.getThreads() );
+		final DatasetSelectorDialog dialog = new DatasetSelectorDialog(
+				new N5ViewerReaderFun(),
+				new N5Importer.N5BasePathFun(),
+				lastOpenedContainer,
+				N5ViewerCreator.n5vGroupParsers,
+				N5ViewerCreator.n5vParsers );
+
+		dialog.setLoaderExecutor( exec );
+		dialog.setContainerPathUpdateCallback( x -> lastOpenedContainer = x );
+		dialog.setTreeRenderer( new N5ViewerTreeCellRenderer( false ) );
+
+		btnCreate.setEnabled( false );
+		labelInfo.setText( "" );
+
+		dialog.run( selection -> {
+
+			// Disable UI when clicking ok.
+			final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( SwingUtilities.getWindowAncestor( dialog.getJTree() ), null );
+			disabler.disable();
+
+			final N5Metadata metadata = selection.metadata.get( 0 );
+			long[] dimensions = null;
+			double[] scales = null;
+			String[] axisLabels = null;
+			String unit = null;
+			AffineTransform3D calib = null;
+			int x = 1;
+			int y = 1;
+			int z = 1;
+			int c = 1;
+			int t = 1;
+			double sx = 1.0;
+			double sy = 1.0;
+			double sz = 1.0;
+			if ( metadata instanceof OmeNgffMetadata )
+			{
+				final NgffSingleScaleAxesMetadata setup0Level0Metadata =
+						( ( OmeNgffMetadata ) metadata ).multiscales[ 0 ].getChildrenMetadata()[ 0 ];
+				dimensions = setup0Level0Metadata.getAttributes().getDimensions();
+				scales = setup0Level0Metadata.getScale();
+				axisLabels = setup0Level0Metadata.getAxisLabels();
+				unit = setup0Level0Metadata.unit();
+				if ( unit == null || unit.isEmpty() )
+					unit = "pixel";
+				calib = setup0Level0Metadata.spatialTransform3d();
+			}
+			else if ( metadata instanceof N5ViewerMultichannelMetadata )
+			{
+				c = ( ( N5ViewerMultichannelMetadata ) metadata ).getChildrenMetadata().length;
+				final MultiscaleMetadata< ? > setup0Metadata =
+						( ( N5ViewerMultichannelMetadata ) metadata ).getChildrenMetadata()[ 0 ];
+				final N5SingleScaleMetadata setup0Level0Metadata = ( N5SingleScaleMetadata ) setup0Metadata.getChildrenMetadata()[ 0 ];
+				dimensions = setup0Level0Metadata.getAttributes().getDimensions();
+				scales = setup0Level0Metadata.getPixelResolution();
+				final DefaultAxisMetadata axes = AxisUtils.defaultN5ViewerAxes( ( setup0Level0Metadata ) );
+				axisLabels = axes.getAxisLabels();
+				unit = setup0Level0Metadata.unit();
+				if ( unit == null || unit.isEmpty() )
+					unit = "pixel";
+				calib = setup0Level0Metadata.spatialTransform3d();
+			}
+			else
+			{
+				SwingUtilities.invokeLater(
+						() -> IJ.error( "Metadata not supported", "The metadata is not supported: " + metadata.getName() ) );
+				return;
+			}
+			final AffineTransform3D calibFinal = calib.copy();
+
+			for ( int i = 0; i < axisLabels.length; i++ )
+			{
+				if ( axisLabels[ i ].toLowerCase().equals( "x" ) )
+				{
+					x = ( int ) dimensions[ i ];
+					sx = scales[ i ];
+				}
+				else if ( axisLabels[ i ].toLowerCase().equals( "y" ) )
+				{
+					y = ( int ) dimensions[ i ];
+					sy = scales[ i ];
+				}
+				else if ( axisLabels[ i ].toLowerCase().equals( "z" ) )
+				{
+					z = ( int ) dimensions[ i ];
+					sz = scales[ i ];
+				}
+				else if ( axisLabels[ i ].toLowerCase().equals( "c" ) )
+					c = ( int ) dimensions[ i ];
+				else if ( axisLabels[ i ].toLowerCase().equals( "t" ) )
+					t = ( int ) dimensions[ i ];
+			}
+			final Dimensions imageSize = new FinalDimensions( x, y, z );
+			final TimePoints timepoints = new TimePoints(
+					IntStream.range( 0, t ).mapToObj( TimePoint::new ).collect( Collectors.toList() ) );
+			final Map< Integer, BasicViewSetup > setups = new HashMap<>();
+			final VoxelDimensions voxelDimensions = new FinalVoxelDimensions( unit, sx, sy, sz );
+			for ( int i = 0; i < c; i++ )
+				setups.put( i, new BasicViewSetup( i, String.format( "channel %d", i ), imageSize, voxelDimensions ) );
+			final BasicImgLoader imgLoader =
+					new N5UniverseImgLoader( selection.n5.getURI().toString(), metadata.getPath(), null );
+			final SequenceDescriptionMinimal sequenceDescription =
+					new SequenceDescriptionMinimal( timepoints, setups, imgLoader, null );
+			final ViewRegistrations viewRegistrations = new ViewRegistrations(
+					IntStream.range( 0, t )
+							.boxed()
+							.flatMap( tp -> IntStream.range( 0, setups.size() )
+									.mapToObj( setup -> new ViewRegistration( tp, setup, calibFinal ) ) )
+							.collect( Collectors.toList() ) );
+
+			final JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle( "Save BigDataViewer XML File" );
+			final FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter( "XML Files", "xml" );
+			fileChooser.setFileFilter( xmlFilter );
+			final String currDir = IJ.getDirectory( "current" );
+			if ( currDir != null )
+				fileChooser.setCurrentDirectory( new File( currDir ) );
+			final int userSelection = fileChooser.showSaveDialog( null );
+			if ( userSelection == JFileChooser.APPROVE_OPTION )
+			{
+				File fileToSave = fileChooser.getSelectedFile();
+
+				// Ensure the file has the .xml extension
+				if ( !fileToSave.getAbsolutePath().endsWith( ".xml" ) )
+				{
+					fileToSave = new File( fileToSave.getAbsolutePath() + ".xml" );
+				}
+
+				final SpimDataMinimal spimData =
+						new SpimDataMinimal( fileToSave.getParentFile(), sequenceDescription, viewRegistrations );
+
+				try
+				{
+					new XmlIoSpimDataMinimal().save( spimData, fileToSave.getAbsolutePath() );
+				}
+				catch ( final SpimDataException e )
+				{
+					e.printStackTrace();
+				}
+
+				if ( checkBDVFile( fileToSave ) )
+				{
+					xmlFile = fileToSave;
+					btnCreate.setEnabled( true );
+				}
+			}
+		} );
+		SwingUtilities.getWindowAncestor( dialog.getJTree() ).setLocationRelativeTo( this );
 	}
 
 	boolean checkBDVFile( final File file )
@@ -334,7 +347,8 @@ class NewFromUrlPanel extends JPanel
 			{
 				try
 				{
-					// need to strip off storage format for n5uri to correctly remove query;
+					// need to strip off storage format for n5uri to correctly
+					// remove query;
 					final Pair< StorageFormat, URI > fmtUri = N5Factory.StorageFormat.parseUri( n5UriOrPath );
 					final StorageFormat format = fmtUri.getA();
 
