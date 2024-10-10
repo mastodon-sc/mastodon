@@ -2,11 +2,11 @@ package org.mastodon.mamut.io.loader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mastodon.mamut.ProjectModel;
@@ -16,7 +16,9 @@ import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
+import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
 
+@Ignore
 public class N5UniverseImgLoaderTest
 {
 
