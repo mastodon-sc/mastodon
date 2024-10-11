@@ -1,9 +1,8 @@
 /*-
  * #%L
- * Configurable key and mouse event handling
+ * Mastodon
  * %%
- * Copyright (C) 2015 - 2023 Max Planck Institute of Molecular Cell Biology
- * and Genetics.
+ * Copyright (C) 2014 - 2024 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
