@@ -34,8 +34,10 @@ import java.util.function.Consumer;
 
 import javax.swing.JOptionPane;
 
+import org.mastodon.app.MastodonIcons;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.io.project.MamutImagePlusProject;
 import org.mastodon.mamut.launcher.LauncherUtil;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.Context;
@@ -60,6 +62,7 @@ public class ProjectActions
 	public static final String IMPORT_SIMI = "import simi";
 	public static final String IMPORT_MAMUT = "import mamut";
 	public static final String EXPORT_MAMUT = "export mamut";
+	public static final String FIX_DATASET_PATH = "fix project image path";
 
 	static final String[] CREATE_PROJECT_KEYS = new String[] { "not mapped" };
 	static final String[] CREATE_PROJECT_FROM_URL_KEYS = new String[] { "not mapped" };
@@ -70,6 +73,7 @@ public class ProjectActions
 	static final String[] IMPORT_SIMI_KEYS = new String[] { "not mapped" };
 	static final String[] IMPORT_MAMUT_KEYS = new String[] { "not mapped" };
 	static final String[] EXPORT_MAMUT_KEYS = new String[] { "not mapped" };
+	static final String[] FIX_DATASET_PATH_KEYS = { "not mapped" };
 
 	/**
 	 * Install the global actions for creating, loading or importing a new
@@ -115,15 +119,34 @@ public class ProjectActions
 		final RunnableAction importTgmmAction = new RunnableAction( IMPORT_TGMM, () -> ProjectImporter.importTgmmDataWithDialog( appModel, parentComponent ) );
 		final RunnableAction importSimiAction = new RunnableAction( IMPORT_TGMM, () -> ProjectImporter.importSimiDataWithDialog( appModel, parentComponent ) );
 		final RunnableAction exportMamutAction = new RunnableAction( EXPORT_MAMUT, () -> ProjectExporter.exportMamut( appModel, parentComponent ) );
+		final RunnableAction fixDatasetPathAction = new RunnableAction( FIX_DATASET_PATH, () -> tweakDatasetPath( appModel, parentComponent ) );
 
 		actions.namedAction( saveProjectAction, SAVE_PROJECT_KEYS );
 		actions.namedAction( saveProjectAsAction, SAVE_PROJECT_AS_KEYS );
 		actions.namedAction( importTgmmAction, IMPORT_TGMM_KEYS );
 		actions.namedAction( importSimiAction, IMPORT_SIMI_KEYS );
 		actions.namedAction( exportMamutAction, EXPORT_MAMUT_KEYS );
+		actions.namedAction( fixDatasetPathAction, FIX_DATASET_PATH_KEYS );
 	}
 
-	private static Runnable runInNewThread( Runnable o )
+	private static void tweakDatasetPath( final ProjectModel appModel, final Frame parentComponent )
+	{
+		if ( appModel.getProject() instanceof MamutImagePlusProject )
+		{
+			JOptionPane.showMessageDialog(
+					null,
+					"The current project is based on an \n"
+							+ "ImagePlus as image data source. \n"
+							+ "Its dataset path cannot be edited.",
+					"Cannot edit dataset path",
+					JOptionPane.WARNING_MESSAGE,
+					MastodonIcons.MASTODON_ICON_MEDIUM );
+			return;
+		}
+		new DatasetPathDialog( parentComponent, appModel ).setVisible( true );
+	}
+
+	private static Runnable runInNewThread( final Runnable o )
 	{
 		return () -> {
 			new Thread( () -> {
@@ -131,7 +154,7 @@ public class ProjectActions
 				{
 					o.run();
 				}
-				catch ( Throwable t )
+				catch ( final Throwable t )
 				{
 					t.printStackTrace();
 				}
@@ -164,6 +187,8 @@ public class ProjectActions
 					"Import tracks from a Simi Biocell .sbd into the current project." );
 			descriptions.add( IMPORT_MAMUT, IMPORT_MAMUT_KEYS, "Import a MaMuT project." );
 			descriptions.add( EXPORT_MAMUT, EXPORT_MAMUT_KEYS, "Export current project as a MaMuT project." );
+			descriptions.add( FIX_DATASET_PATH, FIX_DATASET_PATH_KEYS,
+					"Shows a dialog to modify a new path to the image data and whether it is relative or absolute." );
 		}
 	}
 

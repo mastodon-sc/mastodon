@@ -33,6 +33,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.branchColorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
@@ -66,6 +67,7 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.EditTagActions;
+import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
@@ -73,6 +75,7 @@ import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
@@ -120,7 +123,7 @@ public class MamutBranchViewTrackScheme
 			final TimepointModel timepointModel )
 	{
 		super( appModel, trackSchemeGraphFactory.createViewGraph( appModel ),
-				new String[] { KeyConfigContexts.TRACKSCHEME } );
+				new String[] { KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.MASTODON } );
 
 		// TrackScheme options.
 		final GraphColorGeneratorAdapter< BranchSpot, BranchLink, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
@@ -187,6 +190,7 @@ public class MamutBranchViewTrackScheme
 				frame.getTrackschemePanel().getDisplay(), model );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel,
 				frame.getTrackschemePanel() );
+		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme Branch" );
 
 		frame.getTrackschemePanel().getNavigationActions().install( viewActions,
 				TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
@@ -208,6 +212,21 @@ public class MamutBranchViewTrackScheme
 			frame.getTrackschemePanel().graphChanged();
 		} );
 
+		// Command finder.
+		final CommandFinder cf = CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
+				.keyConfigContexts( keyConfigContexts )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.register( appModel.getPlugins().getPluginActions() )
+				.modificationListeners( appModel.getKeymap().updateListeners() )
+				.parent( frame )
+				.installOn( viewActions );
+		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
+
 		// Menus.
 		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), appModel.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
@@ -219,6 +238,10 @@ public class MamutBranchViewTrackScheme
 		MainWindow.addMenus( menu, actionMap );
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						separator(),
+						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),
+						item( ExportViewActions.EXPORT_VIEW_TO_PNG ) ),
 				viewMenu(
 						branchColorMenu( coloringMenuHandle ),
 						colorbarMenu( colorbarMenuHandle ),

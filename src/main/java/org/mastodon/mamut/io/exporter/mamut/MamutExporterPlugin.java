@@ -35,7 +35,7 @@ import java.awt.Component;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +45,7 @@ import javax.swing.JOptionPane;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.plugin.MamutPlugin;
@@ -92,8 +93,8 @@ public class MamutExporterPlugin implements MamutPlugin
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Arrays.asList(
-				menu( "Plugins", menu( "Exports", item( EXPORT_MAMUT ) ) ) );
+		return Collections.singletonList(
+				MamutMenuBuilder.fileMenu( menu( "Export", item( EXPORT_MAMUT ) ) ) );
 	}
 
 	@Override

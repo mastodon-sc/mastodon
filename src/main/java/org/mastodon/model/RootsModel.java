@@ -37,4 +37,6 @@ public interface RootsModel< V >
 	void setRoots( List< V > roots );
 
 	RefList< V > getRoots();
+
+	void close();
 }

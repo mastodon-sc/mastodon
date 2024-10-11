@@ -389,4 +389,10 @@ public class DefaultSelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	{
 		emitEvents = false;
 	}
+
+	@Override
+	public boolean areListenersPaused()
+	{
+		return !emitEvents;
+	}
 }

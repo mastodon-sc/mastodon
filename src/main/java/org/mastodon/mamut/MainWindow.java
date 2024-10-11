@@ -38,6 +38,7 @@ import static org.mastodon.app.MastodonIcons.TABLE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_ICON_MEDIUM;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 
@@ -61,6 +62,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.MastodonIcons;
@@ -73,8 +75,11 @@ import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory;
 import org.mastodon.mamut.views.table.MamutViewTableFactory;
 import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeFactory;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.RunnableActionPair;
+import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.InputActionBindings;
 
 import bdv.ui.keymap.Keymap;
 import net.miginfocom.swing.MigLayout;
@@ -97,7 +102,8 @@ public class MainWindow extends JFrame
 		setLocationByPlatform( true );
 		setLocationRelativeTo( null );
 
-		// Re-register save actions, this time using this frame as parent component.
+		// Re-register save actions, this time using this frame as parent
+		// component.
 		ProjectActions.installAppActions( appModel.getProjectActions(), appModel, this );
 
 		// Views:
@@ -113,7 +119,7 @@ public class MainWindow extends JFrame
 		prepareButton( tableButton, "table", TABLE_ICON_MEDIUM );
 		buttonsPanel.add( tableButton, "grow" );
 
-		final JButton bdvButton = new JButton( new RunnableActionPair( MamutViewBdvFactory.NEW_BDV_VIEW, 
+		final JButton bdvButton = new JButton( new RunnableActionPair( MamutViewBdvFactory.NEW_BDV_VIEW,
 				() -> projectActionMap.get( MamutViewBdvFactory.NEW_BDV_VIEW ).actionPerformed( null ),
 				() -> projectActionMap.get( MamutBranchViewBdvFactory.NEW_BRANCH_BDV_VIEW ).actionPerformed( null ) ) );
 		prepareButton( bdvButton, "bdv", BDV_ICON_MEDIUM );
@@ -123,9 +129,9 @@ public class MainWindow extends JFrame
 		prepareButton( selectionTableButton, "selection table", TABLE_ICON_MEDIUM );
 		buttonsPanel.add( selectionTableButton, "grow" );
 
-		final JButton trackschemeButton = new JButton( new RunnableActionPair( MamutViewTrackSchemeFactory.NEW_TRACKSCHEME_VIEW, 
-						() -> projectActionMap.get( MamutViewTrackSchemeFactory.NEW_TRACKSCHEME_VIEW ).actionPerformed( null ),
-						() -> projectActionMap.get( MamutBranchViewTrackSchemeFactory.NEW_BRANCH_TRACKSCHEME_VIEW ).actionPerformed( null ) ) );
+		final JButton trackschemeButton = new JButton( new RunnableActionPair( MamutViewTrackSchemeFactory.NEW_TRACKSCHEME_VIEW,
+				() -> projectActionMap.get( MamutViewTrackSchemeFactory.NEW_TRACKSCHEME_VIEW ).actionPerformed( null ),
+				() -> projectActionMap.get( MamutBranchViewTrackSchemeFactory.NEW_BRANCH_TRACKSCHEME_VIEW ).actionPerformed( null ) ) );
 		prepareButton( trackschemeButton, "trackscheme", TRACKSCHEME_ICON_MEDIUM );
 		buttonsPanel.add( trackschemeButton, "grow, wrap" );
 
@@ -209,6 +215,25 @@ public class MainWindow extends JFrame
 
 		// Register to when the project model is closed.
 		appModel.projectClosedListeners().add( () -> dispose() );
+
+		// Command finder.
+		final InputActionBindings keybindings = new InputActionBindings();
+		SwingUtilities.replaceUIActionMap( content, keybindings.getConcatenatedActionMap() );
+		SwingUtilities.replaceUIInputMap( content, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+				keybindings.getConcatenatedInputMap() );
+		final Actions mwActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
+		mwActions.install( keybindings, "main" );
+		CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
+				.keyConfigContext( KeyConfigContexts.MASTODON )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.register( appModel.getPlugins().getPluginActions() )
+				.modificationListeners( appModel.getKeymap().updateListeners() )
+				.parent( this )
+				.installOn( mwActions );
 	}
 
 	/**
@@ -320,11 +345,16 @@ public class MainWindow extends JFrame
 						item( ProjectActions.SAVE_PROJECT ),
 						item( ProjectActions.SAVE_PROJECT_AS ),
 						separator(),
+						menu( "Import" ),
+						menu( "Export" ),
+						separator(),
+						item( ProjectActions.FIX_DATASET_PATH ),
+						separator(),
 						// item( ProjectActions.IMPORT_TGMM ),
 						// item( ProjectActions.IMPORT_SIMI ),
 						// item( ProjectActions.IMPORT_MAMUT ),
 						// item( ProjectActions.EXPORT_MAMUT ),
-						//						separator(),
+						// separator(),
 						item( WindowManager.PREFERENCES_DIALOG ),
 						separator(),
 						item( WindowManager.OPEN_ONLINE_DOCUMENTATION ) ) );

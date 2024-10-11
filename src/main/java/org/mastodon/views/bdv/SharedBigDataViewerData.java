@@ -126,7 +126,9 @@ public class SharedBigDataViewerData
 		this.setups = setups;
 		this.cache = cache;
 
-		final ViewerOptions lvo = new ViewerOptions();
+		final ViewerOptions lvo = new ViewerOptions()
+				.width( 650 )
+				.height( 400 );
 		this.inputTriggerConfig = ( lvo.values.getInputTriggerConfig() != null )
 				? lvo.values.getInputTriggerConfig()
 				: new InputTriggerConfig();
@@ -265,7 +267,7 @@ public class SharedBigDataViewerData
 		return elem;
 	}
 
-	private void restoreFromXmlSetupAssignments( final Element parent )
+	public void restoreFromXmlSetupAssignments( final Element parent )
 	{
 		final Element elemSetupAssignments = parent.getChild( "SetupAssignments" );
 		if ( elemSetupAssignments == null )
@@ -471,7 +473,8 @@ public class SharedBigDataViewerData
 		if ( !sbdv.tryLoadSettings( spimDataXmlFilename ) )
 		{
 			final BasicViewerState state = new BasicViewerState();
-			state.addSource( sources.get( 0 ) );
+			for ( int i = 0; i < sources.size(); ++i )
+				state.addSource( sources.get( i ) );
 			state.setCurrentSource( sources.get( 0 ) );
 			InitializeViewerState.initBrightness( 0.001, 0.999, state, setups );
 		}

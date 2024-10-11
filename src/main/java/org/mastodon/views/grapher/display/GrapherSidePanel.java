@@ -100,7 +100,7 @@ public class GrapherSidePanel extends JPanel
 
 	private final JRadioButton rdbtnContext;
 
-	final JButton btnPlot;
+	private final JButton btnPlot;
 
 	public GrapherSidePanel( final int nSources, final ContextChooser< ? > contextChooser )
 	{
@@ -252,6 +252,16 @@ public class GrapherSidePanel extends JPanel
 				new EverythingDisablerAndReenabler( chooserPanel, new Class[] { Label.class } );
 		contextEnabler.setEnabled( rdbtnContext.isSelected() );
 		rdbtnContext.addChangeListener( e -> contextEnabler.setEnabled( rdbtnContext.isSelected() ) );
+	}
+
+	/**
+	 * Exposes the plot button of this panel.
+	 * 
+	 * @return the plot button.
+	 */
+	public JButton getBtnPlot()
+	{
+		return btnPlot;
 	}
 
 	public < V, E > void setFeatures(

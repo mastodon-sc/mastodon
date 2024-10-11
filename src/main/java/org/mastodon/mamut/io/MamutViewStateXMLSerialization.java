@@ -70,9 +70,9 @@ import net.imglib2.realtransform.AffineGet;
 
 /**
  * Utility class that can transform a GUI state
- * <code>Map< String, Object ></code> to XML and vice versa.
+ * <code>Map&lt; String, Object &gt;</code> to XML and vice versa.
  */
-class MamutViewStateXMLSerialization
+public class MamutViewStateXMLSerialization
 {
 
 	private static final String WINDOW_TAG = "Window";
@@ -88,7 +88,7 @@ class MamutViewStateXMLSerialization
 	 */
 	private static final String CHOSEN_CONTEXT_PROVIDER_KEY = "ContextProvider";
 
-	static Element toXml( final Map< String, Object > guiState )
+	public static Element toXml( final Map< String, Object > guiState )
 	{
 		final Element element = new Element( WINDOW_TAG );
 		toXml( guiState, element );
@@ -191,7 +191,7 @@ class MamutViewStateXMLSerialization
 	 * @param windowManager
 	 *            the application {@link WindowManager}.
 	 */
-	static void fromXml( final Element windowsEl, final WindowManager windowManager )
+	public static void fromXml( final Element windowsEl, final WindowManager windowManager )
 	{
 		final MamutViews viewFactories = windowManager.getViewFactories();
 		final Collection< Class< ? extends MamutViewI > > classes = viewFactories.getKeys();

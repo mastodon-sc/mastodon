@@ -135,7 +135,8 @@ public class DataDisplayStyleEditorPanel extends JPanel
 		final SelectionModel< DataVertex, DataEdge > selection =
 				new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
 		final NavigationHandler< DataVertex, DataEdge > navigation = new DefaultNavigationHandler<>();
-		final DataDisplayOptions options = DataDisplayOptions.options().style( style );
+		final DataDisplayOptions< DataVertex, DataEdge > options = DataDisplayOptions.options();
+		options.style( style );
 
 		// Layout.
 

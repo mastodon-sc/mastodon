@@ -97,6 +97,14 @@ public class TableViewFrameBuilder
 
 	private final ArrayList< Runnable > runOnClose = new ArrayList<>();
 
+	private int x = 0;
+
+	private int y = 0;
+
+	private int width = 500;
+
+	private int height = 300;
+
 	public TableViewFrameBuilder title( final String title )
 	{
 		this.title = title;
@@ -120,6 +128,30 @@ public class TableViewFrameBuilder
 	public TableViewFrameBuilder undo( final UndoPointMarker undo )
 	{
 		this.undo = undo;
+		return this;
+	}
+
+	public TableViewFrameBuilder x( final int x )
+	{
+		this.x = x;
+		return this;
+	}
+
+	public TableViewFrameBuilder y( final int y )
+	{
+		this.y = y;
+		return this;
+	}
+
+	public TableViewFrameBuilder width( final int width )
+	{
+		this.width = width;
+		return this;
+	}
+
+	public TableViewFrameBuilder height( final int height )
+	{
+		this.height = height;
 		return this;
 	}
 
@@ -163,6 +195,16 @@ public class TableViewFrameBuilder
 			if ( bundle.contextChooser != null )
 				frame.contextChoosers.add( bundle.contextChooser );
 		}
+
+		/*
+		 * Size and position.
+		 */
+
+		frame.setSize( width, height );
+		if ( x <= 0 && y <= 0 )
+			frame.setLocationRelativeTo( null );
+		else
+			frame.setLocation( x, y );
 
 		return frame;
 	}

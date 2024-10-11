@@ -31,6 +31,8 @@ package org.mastodon.model;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.ref.RefArrayList;
+import org.mastodon.graph.GraphListener;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
@@ -42,7 +44,7 @@ import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import java.util.List;
 
 public class BranchTrackSchemeRootsModel
-		implements RootsModel< TrackSchemeVertex >
+		implements RootsModel< TrackSchemeVertex >, GraphListener< Spot, Link >
 {
 	private final ModelGraph modelGraph;
 
@@ -59,6 +61,17 @@ public class BranchTrackSchemeRootsModel
 		this.branchGraph = branchGraph;
 		this.viewGraph = viewGraph;
 		this.list = new RefArrayList<>( graph.vertices().getRefPool() );
+		this.modelGraph.addGraphListener( this );
+	}
+
+	/**
+	 * This method should be called when the model is no longer needed.
+	 * It removes listeners to allow garbage collection.
+	 */
+	@Override
+	public void close()
+	{
+		modelGraph.removeGraphListener( this );
 	}
 
 	@Override
@@ -92,5 +105,35 @@ public class BranchTrackSchemeRootsModel
 		viewGraph.releaseRef( vertexRef );
 		branchGraph.releaseRef( branchSpotRef );
 		return roots;
+	}
+
+	@Override
+	public void graphRebuilt()
+	{
+		list.clear();
+	}
+
+	@Override
+	public void vertexAdded( Spot vertex )
+	{
+
+	}
+
+	@Override
+	public void vertexRemoved( Spot vertex )
+	{
+		list.remove( vertex );
+	}
+
+	@Override
+	public void edgeAdded( Link edge )
+	{
+
+	}
+
+	@Override
+	public void edgeRemoved( Link edge )
+	{
+
 	}
 }

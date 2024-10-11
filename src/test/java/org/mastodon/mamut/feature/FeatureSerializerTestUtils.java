@@ -105,7 +105,7 @@ public class FeatureSerializerTestUtils
 		Map< FeatureProjectionKey, FeatureProjection< T > > projections1 = feature1.projections().stream()
 				.collect( Collectors.toMap( FeatureProjection::getKey, x -> x ) );
 
-		Map< FeatureProjectionKey, FeatureProjection< T > > projections2 = feature1.projections().stream()
+		Map< FeatureProjectionKey, FeatureProjection< T > > projections2 = feature2.projections().stream()
 				.collect( Collectors.toMap( FeatureProjection::getKey, x -> x ) );
 
 		if ( !projections1.keySet().equals( projections2.keySet() ) )

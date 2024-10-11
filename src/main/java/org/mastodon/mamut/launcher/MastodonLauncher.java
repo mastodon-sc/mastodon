@@ -113,6 +113,7 @@ public class MastodonLauncher extends JFrame
 		gui.btnHelp.addActionListener( l -> showHelpPanel() );
 
 		gui.newMastodonProjectPanel.btnCreate.addActionListener( l -> createNewProject() );
+		gui.newFromUrlPanel.btnCreate.addActionListener( l -> createNewProjectFromURL() );
 		gui.importTGMMPanel.btnImport.addActionListener( l -> importTgmm() );
 		gui.importSimiBioCellPanel.btnImport.addActionListener( l -> importSimi() );
 
@@ -316,6 +317,32 @@ public class MastodonLauncher extends JFrame
 		catch ( final Exception e )
 		{}
 		return null;
+	}
+
+	private void createNewProjectFromURL()
+	{
+		gui.clearLog();
+
+		/*
+		* Open from a URL.
+		*/
+
+		final EverythingDisablerAndReenabler disabler =
+				new EverythingDisablerAndReenabler( gui, new Class[] { JLabel.class } );
+		disabler.disable();
+		new Thread( () -> {
+			try
+			{
+				final ProjectModel appModel =
+						LauncherUtil.createProjectFromBdvFileWithDialog( gui.newFromUrlPanel.xmlFile, context, gui, gui::error );
+				new MainWindow( appModel ).setVisible( true );
+				dispose();
+			}
+			finally
+			{
+				disabler.reenable();
+			}
+		} ).start();
 	}
 
 	private void createNewProject()
@@ -571,7 +598,8 @@ public class MastodonLauncher extends JFrame
 				}
 				catch ( final IOException e )
 				{
-					gui.error( "Invalid Mastodon file.\nMaybe it is not a Mastodon file?\n\n" + LauncherUtil.getProblemDescription( null, e ) );
+					gui.error( "Invalid Mastodon file.\nMaybe it is not a Mastodon file?\n\n"
+							+ LauncherUtil.getProblemDescription( null, e ) );
 				}
 			}
 			finally
@@ -592,7 +620,8 @@ public class MastodonLauncher extends JFrame
 			{
 				dropTargetDropEvent.acceptDrop( DnDConstants.ACTION_COPY );
 				@SuppressWarnings( "unchecked" )
-				final List< File > droppedFiles = ( List< File > ) dropTargetDropEvent.getTransferable().getTransferData( DataFlavor.javaFileListFlavor );
+				final List< File > droppedFiles =
+						( List< File > ) dropTargetDropEvent.getTransferable().getTransferData( DataFlavor.javaFileListFlavor );
 				for ( final File file : droppedFiles )
 				{
 					// process files

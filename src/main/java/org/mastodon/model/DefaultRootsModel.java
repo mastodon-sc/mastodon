@@ -32,7 +32,8 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.graph.Edge;
-import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.GraphListener;
+import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
@@ -40,16 +41,30 @@ import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import java.util.List;
 
 public class DefaultRootsModel< Spot extends Vertex< Link >, Link extends Edge< Spot > >
-		implements RootsModel< TrackSchemeVertex >
+		implements RootsModel< TrackSchemeVertex >, GraphListener< Spot, Link >
 {
 	private final TrackSchemeGraph< Spot, Link > viewGraph;
 
 	private final RefList< Spot > modelRoots;
 
-	public DefaultRootsModel( ReadOnlyGraph< Spot, Link > modelGraph, TrackSchemeGraph< Spot, Link > viewGraph )
+	private final ListenableReadOnlyGraph< Spot, Link > modelGraph;
+
+	public DefaultRootsModel( ListenableReadOnlyGraph< Spot, Link > modelGraph, TrackSchemeGraph< Spot, Link > viewGraph )
 	{
 		this.viewGraph = viewGraph;
+		this.modelGraph = modelGraph;
+		this.modelGraph.addGraphListener( this );
 		this.modelRoots = RefCollections.createRefList( modelGraph.vertices() );
+	}
+
+	/**
+	 * This method should be called when the model is no longer needed.
+	 * It removes listeners to allow garbage collection.
+	 */
+	@Override
+	public void close()
+	{
+		modelGraph.removeGraphListener( this );
 	}
 
 	@Override
@@ -71,5 +86,35 @@ public class DefaultRootsModel< Spot extends Vertex< Link >, Link extends Edge< 
 			viewRoots.add( viewGraph.getVertexMap().getRight( modelRoot, ref ) );
 		viewGraph.releaseRef( ref );
 		return viewRoots;
+	}
+
+	@Override
+	public void graphRebuilt()
+	{
+		modelRoots.clear();
+	}
+
+	@Override
+	public void vertexAdded( Spot vertex )
+	{
+
+	}
+
+	@Override
+	public void vertexRemoved( Spot vertex )
+	{
+		modelRoots.remove( vertex );
+	}
+
+	@Override
+	public void edgeAdded( Link edge )
+	{
+
+	}
+
+	@Override
+	public void edgeRemoved( Link edge )
+	{
+
 	}
 }

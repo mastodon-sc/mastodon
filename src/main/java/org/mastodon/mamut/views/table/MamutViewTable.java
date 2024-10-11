@@ -30,6 +30,7 @@ package org.mastodon.mamut.views.table;
 
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
@@ -87,6 +88,7 @@ import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.ui.coloring.TrackGraphColorGenerator;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
@@ -99,6 +101,10 @@ import bdv.BigDataViewerActions;
 public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link >, Spot, Link >
 		implements HasContextChooser< Spot >, HasColoringModel
 {
+
+	private static final int DEFAULT_WIDTH = 500;
+
+	private static final int DEFAULT_HEIGHT = 300;
 
 	public static String csvExportPath = null;
 
@@ -163,6 +169,10 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 					.navigationHandler( branchGraphNavigation( projectModel, navigationHandler ) )
 					.done()
 				.title( selectionTable ? "Selection table" : "Data table" )
+				.x( -1 )
+				.y( -1 )
+				.width( DEFAULT_WIDTH )
+				.height( DEFAULT_HEIGHT )
 				.get();
 		setFrame( frame );
 		frame.setIconImages( TABLE_VIEW_ICON );
@@ -175,6 +185,19 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		// Table actions.
 		MastodonFrameViewActions.install( viewActions, this );
 		TableViewActions.install( viewActions, frame );
+		final CommandFinder cf = CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.register( appModel.getPlugins().getPluginActions() )
+				.modificationListeners( appModel.getKeymap().updateListeners() )
+				.parent( frame )
+				.installOn( viewActions );
+		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 
 		// Menus
 		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), projectModel.getKeymap(), CONTEXTS );
@@ -186,11 +209,11 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		appModel.getWindowManager().addWindowMenu( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
-						separator(),
-						item( TableViewActions.EXPORT_TO_CSV ) ),
+						menu( "Export",
+								item( TableViewActions.EXPORT_TO_CSV ) ) ),
 				viewMenu(
 						MamutMenuBuilder.colorMenu( colorMenuHandle ),
-						ViewMenuBuilder.menu( "Branch coloring", colorBranchMenuHandle ),
+						menu( "Branch coloring", colorBranchMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				editMenu(
@@ -206,7 +229,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 						separator(),
 						item( TableViewActions.EDIT_LABEL ),
 						item( TableViewActions.TOGGLE_TAG ) ),
-				ViewMenuBuilder.menu( "Settings",
+				menu( "Settings",
 						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
 						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
 		projectModel.getPlugins().addMenus( menu );

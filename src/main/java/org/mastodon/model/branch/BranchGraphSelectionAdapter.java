@@ -76,6 +76,12 @@ public class BranchGraphSelectionAdapter<
 	}
 
 	@Override
+	public boolean areListenersPaused()
+	{
+		return selection.areListenersPaused();
+	}
+
+	@Override
 	public boolean isSelected( final BV vertex )
 	{
 		Iterator< V > vIter = branchGraph.vertexBranchIterator( vertex );
@@ -123,9 +129,15 @@ public class BranchGraphSelectionAdapter<
 	@Override
 	public void setSelected( final BV vertex, final boolean selected )
 	{
-		selection.pauseListeners();
-		setVertexSelected( vertex, selected );
-		selection.resumeListeners();
+		boolean areListenersPaused = selection.areListenersPaused();
+		if ( areListenersPaused )
+			setVertexSelected( vertex, selected );
+		else
+		{
+			selection.pauseListeners();
+			setVertexSelected( vertex, selected );
+			selection.resumeListeners();
+		}
 	}
 
 	private boolean setVertexSelected( final BV branchVertex, final boolean selected )

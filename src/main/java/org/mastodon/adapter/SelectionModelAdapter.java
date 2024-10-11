@@ -162,4 +162,10 @@ public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, 
 	{
 		selection.pauseListeners();
 	}
+
+	@Override
+	public boolean areListenersPaused()
+	{
+		return selection.areListenersPaused();
+	}
 }

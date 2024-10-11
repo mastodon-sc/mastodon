@@ -424,6 +424,18 @@ public class TrackMateImporter
 						final int targetID = Integer.parseInt( edgeEl.getAttributeValue( EDGE_TARGET_ATTRIBUTE ) );
 						final Spot target = idToSpotIDmap.get( targetID, targetRef );
 
+						if ( source == null )
+						{
+							// TODO Echo warnings in a logger instead of sysout.
+							System.out.println( "Could not find spot with ID " + sourceID + " - skipping edge " + sourceID + " → " + targetID );
+							continue;
+						}
+						if ( target == null )
+						{
+							System.out.println( "Could not find spot with ID " + targetID + " - skipping edge " + sourceID + " → " + targetID );
+							continue;
+						}
+
 						// Protect against link time inversion.
 						final Link link;
 						if ( source.getTimepoint() < target.getTimepoint() )
