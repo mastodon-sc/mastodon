@@ -55,12 +55,14 @@ import java.util.function.Consumer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
@@ -244,10 +246,65 @@ class LauncherGUI extends JPanel
 		public LoggerPanel()
 		{
 			super( new BorderLayout() );
-			this.textPane = new JTextPane();
-			textPane.setOpaque( false );
-			textPane.setEditable( false );
-			add( textPane, BorderLayout.CENTER );
+			final BorderLayout layout = new BorderLayout();
+			this.setLayout( layout );
+			this.setPreferredSize( new java.awt.Dimension( 270, 500 ) );
+
+			final JScrollPane scrollPane = new JScrollPane();
+			this.add( scrollPane );
+			scrollPane.setPreferredSize( new java.awt.Dimension( 262, 136 ) );
+
+			textPane = new JTextPane();
+			textPane.setEditable( true );
+			scrollPane.setViewportView( textPane );
+			textPane.setBackground( this.getBackground() );
+
+			final AbstractDocument doc = ( AbstractDocument ) textPane.getDocument();
+			doc.setDocumentFilter( new WrapDocumentFilter() );
+
+		}
+	}
+
+	private static class WrapDocumentFilter extends DocumentFilter
+	{
+		@Override
+		public void insertString( final FilterBypass fb, final int offset, final String string, final AttributeSet attr ) throws BadLocationException
+		{
+			if ( string == null || string.isEmpty() )
+			{ return; }
+			final StringBuilder modifiedText = new StringBuilder();
+			for ( final char c : string.toCharArray() )
+			{
+				if ( c == '/' )
+				{
+					modifiedText.append( c ).append( ' ' );
+				}
+				else
+				{
+					modifiedText.append( c );
+				}
+			}
+			super.insertString( fb, offset, modifiedText.toString(), attr );
+		}
+
+		@Override
+		public void replace( final FilterBypass fb, final int offset, final int length, final String text, final AttributeSet attrs ) throws BadLocationException
+		{
+			if ( text == null || text.isEmpty() )
+			{ return; }
+			final StringBuilder modifiedText = new StringBuilder();
+			for ( final char c : text.toCharArray() )
+			{
+				if ( c == '/' )
+				{
+					modifiedText.append( ' ' ).append( c ).append( ' ' );
+				}
+				else
+				{
+					modifiedText.append( c );
+				}
+			}
+			super.replace( fb, offset, length, modifiedText.toString(), attrs );
 		}
 	}
 
