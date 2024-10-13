@@ -121,7 +121,10 @@ public class DefaultSelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public synchronized boolean isSelected( final V v )
 	{
-		return vertexBits.get( idmap.getVertexId( v ) );
+		final int id = idmap.getVertexId( v );
+		if ( id < 0 )
+			return false;
+		return vertexBits.get( id );
 	}
 
 	/**
@@ -134,7 +137,10 @@ public class DefaultSelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public synchronized boolean isSelected( final E e )
 	{
-		return edgeBits.get( idmap.getEdgeId( e ) );
+		final int id = idmap.getEdgeId( e );
+		if ( id < 0 )
+			return false;
+		return edgeBits.get( id );
 	}
 
 	/**
