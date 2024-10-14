@@ -33,7 +33,10 @@ import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = Command.class, menuPath = "Plugins>Tracking>Mastodon>Mastodon Launcher" )
+@Plugin(
+		type = Command.class,
+		menuPath = "Plugins>Tracking>Mastodon>Mastodon Launcher",
+		iconPath = "../../app/mastodon-logo-32x32.png" )
 public class MastodonLauncherCommand extends ContextCommand
 {
 
