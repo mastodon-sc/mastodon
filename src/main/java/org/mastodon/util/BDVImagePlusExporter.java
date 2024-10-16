@@ -114,6 +114,8 @@ public class BDVImagePlusExporter
 		final ExportMipmapInfo autoMipmapSettings = ProposeMipmaps.proposeMipmaps( new BasicViewSetup( 0, "", size, voxelSize ) );
 
 		// show dialog to get output paths, resolutions, subdivisions, min-max option
+		if ( lastExportPath == null )
+			lastExportPath = "./" + imp.getShortTitle() + ".xml";
 		final Parameters params = getParameters( imp.getDisplayRangeMin(), imp.getDisplayRangeMax(), autoMipmapSettings );
 		if ( params == null )
 			return null;
@@ -338,7 +340,7 @@ public class BDVImagePlusExporter
 
 	static boolean lastDeflate = true;
 
-	static String lastExportPath = "./export.xml";
+	static String lastExportPath = null;
 
 	private static Parameters getParameters( final double impMin, final double impMax, final ExportMipmapInfo autoMipmapSettings )
 	{
