@@ -61,31 +61,32 @@ import java.util.List;
 
 import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales.Dataset;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 public class OmeZarrMultiscalesAdapter implements JsonDeserializer< OmeZarrMultiscales >, JsonSerializer< OmeZarrMultiscales >
 {
 
-    @Override
-    public OmeZarrMultiscales deserialize( JsonElement json, Type typeOfT, JsonDeserializationContext context ) throws JsonParseException
+	@SuppressWarnings( "serial" )
+	@Override
+    public OmeZarrMultiscales deserialize( final JsonElement json, final Type typeOfT, final JsonDeserializationContext context ) throws JsonParseException
     {
-        JsonObject jsonObject = json.getAsJsonObject();
-        Type zarrAxisListType = new TypeToken< List< ZarrAxis > >()
+        final JsonObject jsonObject = json.getAsJsonObject();
+        final Type zarrAxisListType = new TypeToken< List< ZarrAxis > >()
         {}.getType();
-        List< ZarrAxis > zarrAxisList = context.deserialize( jsonObject.get( "axes" ), zarrAxisListType );
-        ZarrAxes axes = context.deserialize( jsonObject.get( "axes" ), ZarrAxes.class );
-        Type datasetsType = new TypeToken< Dataset[] >()
+        final List< ZarrAxis > zarrAxisList = context.deserialize( jsonObject.get( "axes" ), zarrAxisListType );
+        final ZarrAxes axes = context.deserialize( jsonObject.get( "axes" ), ZarrAxes.class );
+        final Type datasetsType = new TypeToken< Dataset[] >()
         {}.getType();
-        Dataset[] datasets = context.deserialize( jsonObject.get( "datasets" ), datasetsType );
-        String version = jsonObject.get( "version" ).getAsString();
-        OmeZarrMultiscales multiscales = new OmeZarrMultiscales();
+        final Dataset[] datasets = context.deserialize( jsonObject.get( "datasets" ), datasetsType );
+        final String version = jsonObject.get( "version" ).getAsString();
+        final OmeZarrMultiscales multiscales = new OmeZarrMultiscales();
         multiscales.axes = axes;
         multiscales.zarrAxisList = zarrAxisList;
         multiscales.datasets = datasets;
@@ -94,9 +95,9 @@ public class OmeZarrMultiscalesAdapter implements JsonDeserializer< OmeZarrMulti
     }
 
     @Override
-    public JsonElement serialize( OmeZarrMultiscales src, Type typeOfSrc, JsonSerializationContext context )
+    public JsonElement serialize( final OmeZarrMultiscales src, final Type typeOfSrc, final JsonSerializationContext context )
     {
-        JsonObject obj = new JsonObject();
+        final JsonObject obj = new JsonObject();
         obj.add( "axes", context.serialize( src.zarrAxisList ) );
         obj.add( "datasets", context.serialize( src.datasets ) );
         obj.add( "name", context.serialize( src.name ) );

@@ -48,7 +48,6 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenu;
-import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.mamut.MainWindow;

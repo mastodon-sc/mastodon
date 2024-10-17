@@ -56,6 +56,9 @@
  */
 package org.mastodon.mamut.io.img.cache;
 
+import java.util.concurrent.Callable;
+
+import bdv.cache.CacheControl;
 import bdv.cache.SharedQueue;
 import bdv.img.cache.CacheArrayLoader;
 import bdv.img.cache.CreateInvalidVolatileCell;
@@ -63,9 +66,6 @@ import bdv.img.cache.EmptyArrayCreator;
 import bdv.img.cache.SimpleCacheArrayLoader;
 import bdv.img.cache.VolatileCachedCellImg;
 import bdv.img.cache.VolatileGlobalCellCache;
-import java.util.concurrent.Callable;
-
-import bdv.cache.CacheControl;
 import net.imglib2.cache.Cache;
 import net.imglib2.cache.CacheLoader;
 import net.imglib2.cache.LoaderCache;
@@ -293,8 +293,8 @@ public class MastodonVolatileGlobalCellCache implements CacheControl
 
         final VolatileCache< Long, Cell< ? > > vcache = new WeakRefVolatileCache<>( cache, queue, createInvalid );
 
-        @SuppressWarnings( "unchecked" )
-        final VolatileCachedCellImg< T, A > img = new VolatileCachedCellImg<>( grid, type, cacheHints, ( VolatileCache ) vcache );
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
+		final VolatileCachedCellImg< T, A > img = new VolatileCachedCellImg<>( grid, type, cacheHints, ( VolatileCache ) vcache );
 
         return img;
     }

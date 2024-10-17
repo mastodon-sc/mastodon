@@ -83,44 +83,45 @@ public abstract class ArrayCreator< A, T extends NativeType< T > >
 
     protected final BiConsumer< ArrayImg< T, ? >, DataBlock< ? > > copyFromBlock;
 
-    public ArrayCreator( CellGrid cellGrid, DataType dataType )
+    public ArrayCreator( final CellGrid cellGrid, final DataType dataType )
     {
         this.cellGrid = cellGrid;
         this.dataType = dataType;
         this.copyFromBlock = N5CellLoader.createCopy( dataType );
     }
 
-    @NotNull
-    public A VolatileDoubleArray( DataBlock< ? > dataBlock, long[] cellDims, int n )
+	@SuppressWarnings( "unchecked" )
+	@NotNull
+    public A VolatileDoubleArray( final DataBlock< ? > dataBlock, final long[] cellDims, final int n )
     {
         switch ( dataType )
         {
         case UINT8:
         case INT8:
-            byte[] bytes = new byte[ n ];
+            final byte[] bytes = new byte[ n ];
             copyFromBlock.accept( Cast.unchecked( ArrayImgs.bytes( bytes, cellDims ) ), dataBlock );
             return ( A ) new VolatileByteArray( bytes, true );
         case UINT16:
         case INT16:
-            short[] shorts = new short[ n ];
+            final short[] shorts = new short[ n ];
             copyFromBlock.accept( Cast.unchecked( ArrayImgs.shorts( shorts, cellDims ) ), dataBlock );
             return ( A ) new VolatileShortArray( shorts, true );
         case UINT32:
         case INT32:
-            int[] ints = new int[ n ];
+            final int[] ints = new int[ n ];
             copyFromBlock.accept( Cast.unchecked( ArrayImgs.ints( ints, cellDims ) ), dataBlock );
             return ( A ) new VolatileIntArray( ints, true );
         case UINT64:
         case INT64:
-            long[] longs = new long[ n ];
+            final long[] longs = new long[ n ];
             copyFromBlock.accept( Cast.unchecked( ArrayImgs.longs( longs, cellDims ) ), dataBlock );
             return ( A ) new VolatileLongArray( longs, true );
         case FLOAT32:
-            float[] floats = new float[ n ];
+            final float[] floats = new float[ n ];
             copyFromBlock.accept( Cast.unchecked( ArrayImgs.floats( floats, cellDims ) ), dataBlock );
             return ( A ) new VolatileFloatArray( floats, true );
         case FLOAT64:
-            double[] doubles = new double[ n ];
+            final double[] doubles = new double[ n ];
             copyFromBlock.accept( Cast.unchecked( ArrayImgs.doubles( doubles, cellDims ) ), dataBlock );
             return ( A ) new VolatileDoubleArray( doubles, true );
         default:
@@ -128,10 +129,10 @@ public abstract class ArrayCreator< A, T extends NativeType< T > >
         }
     }
 
-    public A createEmptyArray( long[] gridPosition )
+    public A createEmptyArray( final long[] gridPosition )
     {
-        long[] cellDims = getCellDims( gridPosition );
-        int n = ( int ) ( cellDims[ 0 ] * cellDims[ 1 ] * cellDims[ 2 ] );
+        final long[] cellDims = getCellDims( gridPosition );
+        final int n = ( int ) ( cellDims[ 0 ] * cellDims[ 1 ] * cellDims[ 2 ] );
         switch ( dataType )
         {
         case UINT8:
@@ -155,7 +156,7 @@ public abstract class ArrayCreator< A, T extends NativeType< T > >
         }
     }
 
-    public long[] getCellDims( long[] gridPosition )
+    public long[] getCellDims( final long[] gridPosition )
     {
         return null;
     }
