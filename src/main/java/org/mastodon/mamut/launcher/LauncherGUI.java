@@ -150,7 +150,7 @@ class LauncherGUI extends JPanel
 		sidePanel.add( btnOpenURL, c );
 
 		c.gridx = 1;
-		sidePanel.add( new JLabel( "new project from URL" ), c );
+		sidePanel.add( new JLabel( "new from OME-NGFF..." ), c );
 
 		c.gridx = 0;
 		c.gridy++;
@@ -212,7 +212,7 @@ class LauncherGUI extends JPanel
 		newMastodonProjectPanel = new NewMastodonProjectPanel( "New Mastodon project", "create" );
 		centralPanel.add( newMastodonProjectPanel, NEW_MASTODON_PROJECT_KEY );
 
-		newFromUrlPanel = new NewFromUrlPanel( "New From URL", "create" );
+		newFromUrlPanel = new NewFromUrlPanel( "New from OME-NGFF / Zarr / N5 / HDF5", "create" );
 		centralPanel.add( newFromUrlPanel, NEW_FROM_URL_KEY );
 
 		recentProjectsPanel = new RecentProjectsPanel( projectOpener );

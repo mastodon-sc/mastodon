@@ -28,17 +28,23 @@
  */
 package org.mastodon.mamut.launcher;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -47,6 +53,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -95,6 +102,13 @@ class NewFromUrlPanel extends JPanel
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String DOCUMENTATION_STR = "Information on NGFF and remote imports";
+
+	private static final String DOCUMENTATION_URL = "https://github.com/saalfeldlab/n5-ij?tab=readme-ov-file#open-hdf5n5zarrome-ngff";
+
+	private static final String N5_DOCUMENTATION_LINK =
+			"<html><a href='" + DOCUMENTATION_URL + "'>" + DOCUMENTATION_STR + "</html>";
+
 	final JButton btnCreate;
 
 	final JLabel labelInfo;
@@ -124,11 +138,13 @@ class NewFromUrlPanel extends JPanel
 		gbcLblNewMastodonProject.gridy = row++;
 		add( lblNewMastodonProject, gbcLblNewMastodonProject );
 
-		final JLabel lblFetchFromURL = new JLabel( "Browse URL:" );
+		final JLabel lblFetchFromURL = new JLabel( "<html>Browse to local or remote OME-NGFF / Zarr / N5 / HDF5 file:</html>" );
 		final GridBagConstraints gbcLblFetchFromURL = new GridBagConstraints();
 		gbcLblFetchFromURL.insets = new Insets( 5, 5, 5, 5 );
 		gbcLblFetchFromURL.anchor = GridBagConstraints.SOUTHWEST;
 		gbcLblFetchFromURL.gridx = 0;
+		gbcLblFetchFromURL.gridwidth = 2;
+		gbcLblFetchFromURL.fill = GridBagConstraints.HORIZONTAL;
 		gbcLblFetchFromURL.gridy = row++;
 		add( lblFetchFromURL, gbcLblFetchFromURL );
 
@@ -160,14 +176,53 @@ class NewFromUrlPanel extends JPanel
 		gbcBtnCreate.gridx = 0;
 		gbcBtnCreate.gridy = row++;
 		add( btnCreate, gbcBtnCreate );
+
+		final GridBagConstraints gbcSeparator = new GridBagConstraints();
+		gbcSeparator.insets = new Insets( 5, 5, 5, 5 );
+		gbcSeparator.anchor = GridBagConstraints.SOUTH;
+		gbcSeparator.gridx = 0;
+		gbcSeparator.gridy = row++;
+		gbcSeparator.weighty = 1.;
+		gbcLblFetchFromURL.gridwidth = 2;
+		gbcLblFetchFromURL.fill = GridBagConstraints.BOTH;
+		add( new JSeparator(), gbcSeparator );
+
+		final JLabel hyperlink = new JLabel( N5_DOCUMENTATION_LINK );
+		hyperlink.setForeground( Color.BLUE.darker() );
+		hyperlink.setCursor( Cursor.getPredefinedCursor( Cursor.HAND_CURSOR ) );
+		hyperlink.setToolTipText( DOCUMENTATION_URL );
+		hyperlink.addMouseListener( new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked( final java.awt.event.MouseEvent e )
+			{
+				try
+				{
+					Desktop.getDesktop().browse( new URI( DOCUMENTATION_URL ) );
+				}
+				catch ( IOException | URISyntaxException e1 )
+				{
+					e1.printStackTrace();
+				}
+			}
+		} );
+		final GridBagConstraints gbcHyperlink = new GridBagConstraints();
+		gbcHyperlink.insets = new Insets( 5, 5, 5, 5 );
+		gbcHyperlink.anchor = GridBagConstraints.SOUTH;
+		gbcHyperlink.gridx = 0;
+		gbcHyperlink.gridy = row++;
+		gbcHyperlink.gridwidth = 2;
+		gbcHyperlink.fill = GridBagConstraints.HORIZONTAL;
+		add( hyperlink, gbcHyperlink );
 	}
 
 	private void openBrowserWindow()
 	{
 		xmlFile = null;
 		final ExecutorService exec = Executors.newFixedThreadPool( ij.Prefs.getThreads() );
+		final Consumer< String > messenger = ( s ) -> SwingUtilities.invokeLater( () -> labelInfo.setText( "<html>" + s + "</html>" ) );
 		final DatasetSelectorDialog dialog = new DatasetSelectorDialog(
-				new N5ViewerReaderFun(),
+				new N5ViewerReaderFun( messenger ),
 				new N5Importer.N5BasePathFun(),
 				lastOpenedContainer,
 				N5ViewerCreator.n5vGroupParsers,
@@ -229,8 +284,7 @@ class NewFromUrlPanel extends JPanel
 			}
 			else
 			{
-				SwingUtilities.invokeLater(
-						() -> IJ.error( "Metadata not supported", "The metadata is not supported: " + metadata.getName() ) );
+				messenger.accept( "The metadata is not supported: " + metadata.getName() );
 				return;
 			}
 			final AffineTransform3D calibFinal = calib.copy();
@@ -315,7 +369,7 @@ class NewFromUrlPanel extends JPanel
 		SwingUtilities.getWindowAncestor( dialog.getJTree() ).setLocationRelativeTo( this );
 	}
 
-	boolean checkBDVFile( final File file )
+	private boolean checkBDVFile( final File file )
 	{
 		try
 		{
@@ -331,10 +385,15 @@ class NewFromUrlPanel extends JPanel
 		}
 	}
 
-	public static class N5ViewerReaderFun implements Function< String, N5Reader >
+	private static class N5ViewerReaderFun implements Function< String, N5Reader >
 	{
 
-		public String message;
+		private final Consumer< String > messenger;
+
+		public N5ViewerReaderFun( final Consumer< String > messager )
+		{
+			this.messenger = messager;
+		}
 
 		@Override
 		public N5Reader apply( final String n5UriOrPath )
@@ -358,8 +417,7 @@ class NewFromUrlPanel extends JPanel
 				}
 				catch ( final URISyntaxException e )
 				{
-					SwingUtilities.invokeLater(
-							() -> IJ.error( "Invalid URI", "The URI is not valid or credentials are missing: " + n5UriOrPath ) );
+					messenger.accept( "The URI is not valid or credentials are missing: " + n5UriOrPath );
 				}
 			}
 
@@ -384,7 +442,11 @@ class NewFromUrlPanel extends JPanel
 			catch ( final N5Exception e )
 			{
 				AWSCredentialsManager.getInstance().setCredentials( null );
-				IJ.handleException( e );
+				messenger.accept( e.getMessage() );
+			}
+			catch ( final Exception e )
+			{
+				messenger.accept( e.getMessage() );
 			}
 			return null;
 		}
