@@ -33,6 +33,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.Box;
@@ -946,6 +948,9 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		graphOverlay.setYLabel( ylabel );
 
 		graphChanged();
+		Executors.newSingleThreadScheduledExecutor()
+				.schedule( () -> transformEventHandler.zoomOutFully(),
+						100, TimeUnit.MILLISECONDS );
 	}
 
 	private RefSet< DataVertex > fromContext()
