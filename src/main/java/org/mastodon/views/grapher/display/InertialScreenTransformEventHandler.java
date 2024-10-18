@@ -671,6 +671,22 @@ public class InertialScreenTransformEventHandler
 		}
 	}
 
+	public void zoomOutFully()
+	{
+		transformState.get( tstart );
+		tend.set( tstart );
+		zoomOutFullyX( tend );
+		zoomOutFullyY( tend );
+		constrainTransform( tend );
+		ConstrainScreenTransform.removeJitter( tend, tstart );
+		if ( !tend.equals( tstart ) )
+		{
+			stayFullyZoomedOut = false;
+			animator = new InterpolateScreenTransformAnimator( tstart, tend, 200 );
+			runAnimation();
+		}
+	}
+
 	private void animate()
 	{
 		final long t = System.currentTimeMillis();
