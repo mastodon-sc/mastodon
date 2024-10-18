@@ -44,10 +44,6 @@
   contexts: [bdv]
   triggers: [button1]
 - !mapping
-  action: brightness settings
-  contexts: [bdv]
-  triggers: [S]
-- !mapping
   action: close dialog window
   contexts: [mastodon]
   triggers: [ctrl W, meta W, ESCAPE]

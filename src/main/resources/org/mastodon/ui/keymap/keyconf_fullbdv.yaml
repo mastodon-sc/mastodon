@@ -212,10 +212,6 @@
   contexts: [bdv]
   triggers: [O]
 - !mapping
-  action: brightness settings
-  contexts: [bdv]
-  triggers: [S]
-- !mapping
   action: save settings
   contexts: [bdv]
   triggers: [F11]
