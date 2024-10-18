@@ -237,6 +237,9 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		branchColoringModel = registerBranchColoring( projectModel, branchColoringAdapter, colorBranchMenuHandle,
 				() -> frame.repaint(), runOnClose );
 
+		// Set the tag-set menu and listen to user selecting a tag in it.
+		registerTagSetMenu( tagSetMenuHandle, () -> frame.repaint() );
+
 		/*
 		 * Register a listener to vertex label property changes, will update the
 		 * table-view when the label change.
