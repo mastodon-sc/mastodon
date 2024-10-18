@@ -166,6 +166,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 					.coloring( branchColoringAdapter )
 					.focusModel( branchFocusfocusModel( projectModel ) )
 					.navigationHandler( branchGraphNavigation( projectModel, navigationHandler ) )
+					.selectionTable( selectionTable )
 					.done()
 				.title( selectionTable ? "Selection table" : "Data table" )
 				.x( -1 )
