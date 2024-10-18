@@ -28,7 +28,20 @@
  */
 package org.mastodon.mamut.views.grapher;
 
-import net.imglib2.loops.LoopBuilder;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
+
+import java.util.function.BiConsumer;
+
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+
 import org.apache.commons.lang3.function.TriFunction;
 import org.mastodon.Ref;
 import org.mastodon.app.ui.MastodonFrameViewActions;
@@ -69,6 +82,7 @@ import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.DataDisplayZoom;
 import org.mastodon.views.grapher.display.FeatureGraphConfig;
+import org.mastodon.views.grapher.display.FreeformSelectionBehaviour;
 import org.mastodon.views.grapher.display.OffsetAxes;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
@@ -76,18 +90,7 @@ import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.Behaviours;
 
-import javax.swing.ActionMap;
-import javax.swing.JPanel;
-import java.util.function.BiConsumer;
-
-import static org.mastodon.app.ui.ViewMenuBuilder.item;
-import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
+import net.imglib2.loops.LoopBuilder;
 
 public class GrapherInitializer< V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > >
 {
@@ -254,6 +257,7 @@ public class GrapherInitializer< V extends Vertex< E > & HasTimepoint & HasLabel
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(),
 				appModel.getSelectionModel(), viewGraph.getLock(), panel, panel.getDisplay(), model );
 		DataDisplayZoom.install( viewBehaviours, panel );
+		FreeformSelectionBehaviour.install( viewBehaviours, layout, viewGraph, selectionModel, focusModel, panel );
 		ExportViewActions.install( viewActions, panel.getDisplay(), frame, frame.getTitle() );
 
 		panel.getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
