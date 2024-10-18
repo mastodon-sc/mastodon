@@ -324,7 +324,9 @@ public class MamutBranchView<
 				menuHandle.getMenu(),
 				model.getTagSetModel(),
 				appModel.getSelectionModel(),
-				model.getGraph().getLock(), model );
+				model.getGraph().getLock(),
+				model,
+				refresh );
 		tagSetModel.listeners().add( tagSetMenu );
 		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 	}

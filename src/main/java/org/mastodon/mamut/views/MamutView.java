@@ -246,7 +246,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final Model model = appModel.getModel();
 		final TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
 		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu<>( menuHandle.getMenu(), tagSetModel, selectionModel,
-				model.getGraph().getLock(), model );
+				model.getGraph().getLock(), model, refresh );
 		tagSetModel.listeners().add( tagSetMenu );
 		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 	}
