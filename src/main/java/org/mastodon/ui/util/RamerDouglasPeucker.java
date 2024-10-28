@@ -14,6 +14,25 @@ public class RamerDouglasPeucker
 		simplifySection( points, 0, points.size() - 1, epsilon );
 	}
 
+	/**
+	 * Determines if a point should be added to the specified polygon, based on
+	 * the Ramer-Douglas-Peucker criterion (perpendicular distance from the last
+	 * segment).
+	 */
+	public static boolean shouldAddPoint( final List< Point > points, final Point newPoint, final double epsilon )
+	{
+		if ( points.size() < 2 )
+			return true;
+
+		// Get the last two points
+		final Point lastPoint = points.get( points.size() - 1 );
+		final Point secondLastPoint = points.get( points.size() - 2 );
+
+		final double distance = perpendicularDistance( newPoint, secondLastPoint, lastPoint );
+
+		return distance > epsilon;
+	}
+
 	private static void simplifySection( final List< Point > points, final int start, final int end, final double epsilon )
 	{
 		if ( end <= start + 1 )

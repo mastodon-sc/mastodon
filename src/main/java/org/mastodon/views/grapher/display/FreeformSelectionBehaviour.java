@@ -125,8 +125,9 @@ public class FreeformSelectionBehaviour implements DragBehaviour, OverlayRendere
 	{
 		if ( isDrawing )
 		{
-			polygon.add( new Point( x, y ) );
-			RamerDouglasPeucker.simplifyPath( polygon, 0.1 );
+			final Point p = new Point( x, y );
+			if ( RamerDouglasPeucker.shouldAddPoint( polygon, p, 0.1 ) )
+				polygon.add( p );
 			panel.repaint();
 		}
 	}
