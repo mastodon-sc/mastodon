@@ -28,11 +28,18 @@
  */
 package org.mastodon.mamut.io;
 
-import mpicbg.spim.data.SpimDataException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mastodon.feature.FeatureProjection;
@@ -43,15 +50,13 @@ import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.branch.BranchDisplacementDurationFeature;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
-import java.io.File;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import mpicbg.spim.data.SpimDataException;
 
 /**
  * This unit test can be used to test if the ProjectLoader class can properly load and close a project file multiple times without causing memory leaks.
@@ -95,6 +100,28 @@ public class ProjectLoaderTest
 			BranchSpot branchSpot = reloadedProjectModel.getModel().getBranchGraph().vertices().iterator().next(); // NB: the model only has one branch spot
 			double durationAfterSave = reloadedDurationProjection.value( branchSpot );
 			assertEquals( durationBeforeSave, durationAfterSave, 0 );
+		}
+	}
+
+	@Test
+	public void testOpenProjectAfterDeletingPoints() throws IOException, SpimDataException
+	{
+		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
+		Model model = exampleGraph2.getModel();
+		try (Context context = new Context())
+		{
+			File mastodonFile = File.createTempFile( "test", ".mastodon" );
+			Img< FloatType > image = ArrayImgs.floats( 1, 1, 1 );
+			ProjectModel projectModel = ProjectModelTestUtils.wrapAsAppModel( image, model, context, mastodonFile );
+			final MamutFeatureComputerService computerService = MamutFeatureComputerService.newInstance( context );
+			computerService.setModel( model );
+			FeatureComputerTestUtils.getFeatureProjection( context, model, BranchDisplacementDurationFeature.SPEC, // NB: Implicitly creates and computes the feature
+					BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC );
+			ModelGraph graph = projectModel.getModel().getGraph();
+			graph.remove( exampleGraph2.spot7 );
+			graph.notifyGraphChanged();
+			ProjectModel reloadedProjectModel = saveAndReloadProject( projectModel, mastodonFile, context );
+			assertNotNull( reloadedProjectModel );
 		}
 	}
 
