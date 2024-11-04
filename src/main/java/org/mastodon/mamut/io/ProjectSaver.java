@@ -261,7 +261,10 @@ public class ProjectSaver
 		try (final MamutProject.ProjectWriter writer = project.openForWriting())
 		{
 			MamutProjectIO.save( project, writer );
+			// Synchronize branch graph with main graph before saving. This is required to make saved state consistent.
+			appModel.getBranchGraphSync().sync();
 			final Model model = appModel.getModel();
+			// Save Raw Graph Model
 			final GraphToFileIdMap< Spot, Link > idmap = model.saveRaw( writer );
 			// Serialize feature model.
 			MamutRawFeatureModelIO.serialize( appModel.getContext(), model, idmap, writer );
