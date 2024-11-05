@@ -186,6 +186,9 @@ public class GrapherInitializer< V extends Vertex< E > & HasTimepoint & HasLabel
 
 		// Label listener
 		appModel.getModel().getGraph().addVertexLabelListener( vertex -> panel.entitiesAttributesChanged() );
+
+		// Add a listener to detect changes in the graph and trigger a re-plot of the Grapher View
+		model.getGraph().addGraphChangeListener( frame::plot );
 	}
 
 	void setOnClose( final MamutViewI view )
