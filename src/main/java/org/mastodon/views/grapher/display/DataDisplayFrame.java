@@ -70,6 +70,8 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 
 	private final GrapherSidePanel sidePanel;
 
+	private final FeatureModel featureModel;
+
 	public DataDisplayFrame(
 			final DataGraph< V, E > graph,
 			final FeatureModel featureModel,
@@ -107,12 +109,14 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		final Class< V > vertexClass = graph.getGraphIdBimap().vertexIdBimap().getRefClass();
 		final Class< E > edgeClass = graph.getGraphIdBimap().edgeIdBimap().getRefClass();
 
+		this.featureModel = featureModel;
+
 		/*
 		 * Side panel.
 		 */
 
 		sidePanel = new GrapherSidePanel( nSources, contextChooser );
-		sidePanel.getBtnPlot().addActionListener( e -> dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel ) );
+		sidePanel.getBtnPlot().addActionListener( e -> plot() );
 
 		final FeatureModelListener featureModelListener = () -> sidePanel.setFeatures(
 				FeatureUtils.collectFeatureMap( featureModel, vertexClass ),
@@ -181,5 +185,10 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 	public GrapherSidePanel getVertexSidePanel()
 	{
 		return sidePanel;
+	}
+
+	public void plot()
+	{
+		dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel );
 	}
 }
