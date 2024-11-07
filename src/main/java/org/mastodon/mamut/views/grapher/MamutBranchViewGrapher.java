@@ -99,7 +99,7 @@ public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSp
 		grapherInitializer.layout();
 	}
 
-	private static FeatureGraphConfig getFeatureGraphConfig()
+	static FeatureGraphConfig getFeatureGraphConfig()
 	{
 		// If they are available, set some sensible defaults for the feature.
 		Iterator< FeatureProjectionSpec > projections = BranchDisplacementDurationFeature.SPEC.getProjectionSpecs().iterator();
