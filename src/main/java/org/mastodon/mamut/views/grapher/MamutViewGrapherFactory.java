@@ -34,7 +34,6 @@ import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.AbstractMamutViewFactory;
 import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
-import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
@@ -73,12 +72,6 @@ public class MamutViewGrapherFactory extends AbstractMamutViewFactory< MamutView
 
 	public static final String NEW_GRAPHER_VIEW = "new grapher view";
 
-	/**
-	 * Key for the transform in a Grapher view. Value is a Grapher
-	 * ScreenTransform instance.
-	 */
-	public static final String GRAPHER_TRANSFORM_KEY = "GrapherTransform";
-
 	@Override
 	public MamutViewGrapher create( final ProjectModel projectModel )
 	{
@@ -89,10 +82,7 @@ public class MamutViewGrapherFactory extends AbstractMamutViewFactory< MamutView
 	public Map< String, Object > getGuiState( final MamutViewGrapher view )
 	{
 		final Map< String, Object > guiState = super.getGuiState( view );
-		// Transform.
-		final ScreenTransform t = view.getFrame().getDataDisplayPanel().getScreenTransform().get();
-		guiState.put( GRAPHER_TRANSFORM_KEY, t );
-
+		GrapherGuiState.writeGuiState( view, guiState );
 		return guiState;
 	}
 
@@ -101,11 +91,7 @@ public class MamutViewGrapherFactory extends AbstractMamutViewFactory< MamutView
 	public void restoreGuiState( final MamutViewGrapher view, final Map< String, Object > guiState )
 	{
 		super.restoreGuiState( view, guiState );
-
-		// Transform.
-		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( GRAPHER_TRANSFORM_KEY );
-		if ( null != tLoaded )
-			view.getFrame().getDataDisplayPanel().getScreenTransform().set( tLoaded );
+		GrapherGuiState.loadGuiState( view, guiState, MamutViewGrapher.getFeatureGraphConfig() );
 	}
 
 	@Override

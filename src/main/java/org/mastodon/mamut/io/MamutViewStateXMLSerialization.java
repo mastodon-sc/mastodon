@@ -41,7 +41,16 @@ import static org.mastodon.mamut.views.MamutView.TRACK_COLORING_KEY;
 import static org.mastodon.mamut.views.MamutViewFactory.VIEW_TYPE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
-import static org.mastodon.mamut.views.grapher.MamutViewGrapherFactory.GRAPHER_TRANSFORM_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_TRANSFORM_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_SPEC_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_INCOMING_EDGE_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_PROJECTION_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_SHOW_EDGES_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_IS_EDGE_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_SPEC_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_INCOMING_EDGE_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_PROJECTION_KEY;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_DISPLAYED;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_ELEMENT;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_NAME;
@@ -247,6 +256,10 @@ public class MamutViewStateXMLSerialization
 			case FEATURE_COLOR_MODE_KEY:
 			case VIEW_TYPE_KEY:
 			case CHOSEN_CONTEXT_PROVIDER_KEY:
+			case GRAPHER_X_AXIS_FEATURE_SPEC_KEY:
+			case GRAPHER_X_AXIS_FEATURE_PROJECTION_KEY:
+			case GRAPHER_Y_AXIS_FEATURE_SPEC_KEY:
+			case GRAPHER_Y_AXIS_FEATURE_PROJECTION_KEY:
 				value = el.getTextTrim();
 				break;
 			case TRACKSCHEME_TRANSFORM_KEY:
@@ -266,6 +279,11 @@ public class MamutViewStateXMLSerialization
 			case NO_COLORING_KEY:
 			case SETTINGS_PANEL_VISIBLE_KEY:
 			case COLORBAR_VISIBLE_KEY:
+			case GRAPHER_SHOW_EDGES_KEY:
+			case GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY:
+			case GRAPHER_X_AXIS_INCOMING_EDGE_KEY:
+			case GRAPHER_Y_AXIS_FEATURE_IS_EDGE_KEY:
+			case GRAPHER_Y_AXIS_INCOMING_EDGE_KEY:
 			case TRACK_COLORING_KEY:
 				value = XmlHelpers.getBoolean( viewEl, key );
 				break;
