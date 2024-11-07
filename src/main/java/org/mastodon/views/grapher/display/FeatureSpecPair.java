@@ -199,4 +199,13 @@ public class FeatureSpecPair implements Comparable< FeatureSpecPair >
 		final FeatureProjection< O > projection = ( FeatureProjection< O > ) feature.project( key );
 		return projection;
 	}
+
+	/**
+	 * Returns the key of the feature spec this instance is specifying.
+	 * @return the key of the feature spec.
+	 */
+	public String getFeatureSpecKey()
+	{
+		return featureSpec.getKey();
+	}
 }
