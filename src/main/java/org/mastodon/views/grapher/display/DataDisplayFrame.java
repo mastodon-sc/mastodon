@@ -60,6 +60,7 @@ import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
+import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 
 public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends ViewFrame
@@ -116,7 +117,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		 */
 
 		sidePanel = new GrapherSidePanel( nSources, contextChooser );
-		sidePanel.getBtnPlot().addActionListener( e -> plot() );
+		sidePanel.getBtnPlot().addActionListener( e -> plot( false ) );
 
 		final FeatureModelListener featureModelListener = () -> sidePanel.setFeatures(
 				FeatureUtils.collectFeatureMap( featureModel, vertexClass ),
@@ -187,8 +188,18 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		return sidePanel;
 	}
 
-	public void plot()
+	/**
+	 * Plots the grapher view.
+	 * @param keepCurrentScreenTransform if {@code true}, the current screen transform is kept, otherwise it zoomed out fully.
+	 */
+	public void plot( boolean keepCurrentScreenTransform )
 	{
-		dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel );
+		dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel,
+				keepCurrentScreenTransform ? dataDisplayPanel.getScreenTransform().get() : null );
+	}
+
+	public void plot( final ScreenTransform transform )
+	{
+		dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel, transform );
 	}
 }

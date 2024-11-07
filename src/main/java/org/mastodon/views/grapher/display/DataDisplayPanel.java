@@ -871,7 +871,7 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		}
 	}
 
-	void plot( final FeatureGraphConfig gc, final FeatureModel featureModel )
+	void plot( final FeatureGraphConfig gc, final FeatureModel featureModel, final ScreenTransform transform )
 	{
 		trackContext = false;
 
@@ -948,9 +948,12 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		graphOverlay.setYLabel( ylabel );
 
 		graphChanged();
-		Executors.newSingleThreadScheduledExecutor()
-				.schedule( () -> transformEventHandler.zoomOutFully(),
-						100, TimeUnit.MILLISECONDS );
+		Executors.newSingleThreadScheduledExecutor().schedule( () -> {
+			if ( transform == null )
+				transformEventHandler.zoomOutFully();
+			else
+				transformEventHandler.zoomTo( transform.getMinX(), transform.getMaxX(), transform.getMinY(), transform.getMaxY() );
+		}, 100, TimeUnit.MILLISECONDS );
 	}
 
 	private RefSet< DataVertex > fromContext()
