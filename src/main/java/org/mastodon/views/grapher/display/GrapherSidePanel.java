@@ -405,6 +405,26 @@ public class GrapherSidePanel extends JPanel
 		repaint();
 	}
 
+	public FeatureSpec< ?, ? > getFeatureSpec( final String featureSpecKey )
+	{
+		for ( final FeatureSpecPair featureSpecPair : specs )
+		{
+			if ( featureSpecPair.getFeatureSpecKey().equals( featureSpecKey ) )
+				return featureSpecPair.featureSpec;
+		}
+		return null;
+	}
+
+	public FeatureProjectionSpec getFeatureProjectionSpec( final String projectionKey )
+	{
+		for ( final FeatureSpecPair featureSpecPair : specs )
+		{
+			if ( featureSpecPair.projectionKey().toString().equals( projectionKey ) )
+				return featureSpecPair.projectionKey().getSpec();
+		}
+		return null;
+	}
+
 	private static final FeatureModel demoFM()
 	{
 		final Model model = new Model();
