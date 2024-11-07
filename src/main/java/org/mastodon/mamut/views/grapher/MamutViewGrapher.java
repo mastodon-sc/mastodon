@@ -109,7 +109,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 	}
 
-	private static FeatureGraphConfig getFeatureGraphConfig()
+	static FeatureGraphConfig getFeatureGraphConfig()
 	{
 		// If they are available, set some sensible defaults for the feature.
 		final FeatureSpecPair spvx = new FeatureSpecPair( SpotFrameFeature.SPEC,
