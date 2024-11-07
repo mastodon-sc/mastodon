@@ -28,6 +28,8 @@
  */
 package org.mastodon.mamut.views.grapher;
 
+import java.util.Map;
+
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.views.AbstractMamutViewFactory;
 import org.mastodon.mamut.views.MamutViewFactory;
@@ -43,6 +45,21 @@ public class MamutBranchViewGrapherFactory extends AbstractMamutViewFactory< Mam
 	public MamutBranchViewGrapher create( final ProjectModel projectModel )
 	{
 		return new MamutBranchViewGrapher( projectModel );
+	}
+
+	@Override
+	public Map< String, Object > getGuiState( final MamutBranchViewGrapher view )
+	{
+		final Map< String, Object > guiState = super.getGuiState( view );
+		GrapherGuiState.writeGuiState( view, guiState );
+		return guiState;
+	}
+
+	@Override
+	public void restoreGuiState( final MamutBranchViewGrapher view, final Map< String, Object > guiState )
+	{
+		super.restoreGuiState( view, guiState );
+		GrapherGuiState.loadGuiState( view, guiState, MamutBranchViewGrapher.getFeatureGraphConfig() );
 	}
 
 	@Override
