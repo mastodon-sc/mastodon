@@ -122,9 +122,13 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	public static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.WHITE;
 
-	public static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
+	public static final BasicStroke EDIT_GRAPH_OVERLAY_NORMAL_STROKE = new BasicStroke( 2f );
 
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_BIG_STROKE = new BasicStroke( 4f );
+
+	public static final BasicStroke EDIT_GRAPH_OVERLAY_REMOVAL_STROKE = new BasicStroke( 4f,
+			BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+			0, new float[] { 6 }, 0 );
 
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
 			1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
@@ -239,6 +243,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 		public boolean snap;
 
+		public boolean edgeToRemove;
+
 		public EditSpecialBehavioursOverlay()
 		{
 			from = new double[ 3 ];
@@ -276,7 +282,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				if ( paintGhostTarget )
 				{
 					ellipse.setCenter( vTo[ 0 ], vTo[ 1 ] );
-					graphics.setStroke( EDIT_GRAPH_OVERLAY_STROKE );
+					graphics.setStroke( EDIT_GRAPH_OVERLAY_NORMAL_STROKE );
 					OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
 				}
 			}
@@ -284,7 +290,9 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			// The link.
 			if ( paintGhostLink )
 			{
-				graphics.setStroke( snap ? EDIT_GRAPH_OVERLAY_BIG_STROKE : EDIT_GRAPH_OVERLAY_STROKE );
+				graphics.setStroke( snap
+						? ( edgeToRemove ? EDIT_GRAPH_OVERLAY_REMOVAL_STROKE : EDIT_GRAPH_OVERLAY_BIG_STROKE )
+						: EDIT_GRAPH_OVERLAY_NORMAL_STROKE );
 				renderer.getViewerPosition( from, vFrom );
 
 				g.drawLine( ( int ) vFrom[ 0 ], ( int ) vFrom[ 1 ],
@@ -386,6 +394,10 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				{
 					overlay.snap = true;
 					target.localize( overlay.to );
+					// Is there an existing link?
+					overlay.edgeToRemove =
+							( overlayGraph.getEdge( source, target, edgeRef ) != null )
+							|| ( overlayGraph.getEdge( target, source, edgeRef ) != null );
 				}
 				else
 				{
@@ -771,6 +783,12 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 							overlay.snap = true;
 							System.out.println( "[AddOrLinkSpot] Found a close target: " + target ); // DEBUG
 							target.localize( overlay.to );
+							/*
+							 * Is there a link between the source and found
+							 * target? Tell the overlay.
+							 */
+							overlay.edgeToRemove = ( overlayGraph.getEdge( source, target, edge ) != null )
+									|| ( overlayGraph.getEdge( target, source, edge ) != null );
 						}
 					}
 					finally
@@ -816,11 +834,19 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 						/*
 						 * Link the new or existing spot to source vertex if
-						 * there is none between the two. Careful for oriented
-						 * edge.
+						 * there is none between the two. Otherwise remove the
+						 * existing link. Careful to oriented edge.
 						 */
 						if ( overlayGraph.getEdge( source, target, edge ) != null )
+						{ // forward
+							overlayGraph.remove( edge );
 							return;
+						}
+						if ( overlayGraph.getEdge( target, source, edge ) != null )
+						{ // backward
+							overlayGraph.remove( edge );
+							return;
+						}
 
 						if ( forward )
 							overlayGraph.addEdge( source, target, edge ).init();
@@ -837,12 +863,11 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 							selection.setSelected( target, true );
 							selection.resumeListeners();
 						}
-
-						overlayGraph.notifyGraphChanged();
-						undo.setUndoPoint();
 					}
 					finally
 					{
+						overlayGraph.notifyGraphChanged();
+						undo.setUndoPoint();
 						lock.writeLock().unlock();
 					}
 				}
