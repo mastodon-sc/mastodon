@@ -94,6 +94,9 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 
+import ij.IJ;
+import ij.ImagePlus;
+
 /**
  * Importer for TrackMate (http://imagej.net/TrackMate) files.
  * <p>
@@ -162,7 +165,18 @@ public class TrackMateImporter
 				imageFile = makDummyImage( imageDataEl );
 			}
 		}
-		final MamutProject project = MamutProjectIO.fromBdvFile( imageFile );
+		final MamutProject project;
+		if ( imageFile.getAbsolutePath().endsWith( ".xml" ) )
+		{
+			// Point to a XML file -> it's a MaMuT file
+			project = MamutProjectIO.fromBdvFile( imageFile );
+		}
+		else
+		{
+			// Everything else: we assume it's an IJ image.
+			final ImagePlus imp = IJ.openImage( imageFile.getAbsolutePath() );
+			project = MamutProjectIO.fromImagePlus( imp );
+		}
 
 		// Set project time and space units
 		final Element modelEl = root.getChild( MODEL_TAG );
