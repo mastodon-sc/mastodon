@@ -523,6 +523,8 @@ public class TrackMateImporter
 			return Dimension.COST;
 		case "ANGLE_RATE":
 			return Dimension.ANGLE_RATE;
+		case "AREA":
+			return Dimension.AREA;
 
 		default:
 			throw new IllegalArgumentException( "Unkown dimension " + dimension );
