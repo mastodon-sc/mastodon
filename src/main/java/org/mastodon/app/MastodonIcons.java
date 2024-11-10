@@ -140,7 +140,7 @@ public class MastodonIcons
 			new ImageIcon( MastodonIcons.class.getResource( "icon-tag-32x32.png" ) );
 
 	public static final ImageIcon MAMUT_IMPORT_ICON_MEDIUM =
-			new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-import-32x32.png" ) );
+			new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-import-32x32-2.png" ) );
 
 	public static final ImageIcon MAMUT_EXPORT_ICON_MEDIUM =
 			new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-export-32x32.png" ) );

@@ -180,7 +180,7 @@ class LauncherGUI extends JPanel
 		sidePanel.add( btnImportMamut, c );
 
 		c.gridx = 1;
-		sidePanel.add( new JLabel( "import MaMuT" ), c );
+		sidePanel.add( new JLabel( "<html>import TrackMate<br>&amp; MaMuT</html>" ), c );
 
 		c.gridx = 0;
 		c.gridy++;
