@@ -30,9 +30,7 @@ package org.mastodon.views.bdv.overlay;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.mastodon.collection.RefSet;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
@@ -160,8 +158,6 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	 */
 	private static final double ALOT_RADIUS_CHANGE = 1.;
 
-	private final AddSpotBehaviour addSpotBehaviour;
-
 	private final ToggleAutoLinkingModeBehaviour toggleAutoLinkingModeBehaviour;
 
 	private final MoveSpotBehaviour moveSpotBehaviour;
@@ -183,16 +179,14 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final ViewerPanel viewerPanel,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
-			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo,
 			final double minRadius )
 	{
-		final EditBehaviours< V, E > eb = new EditBehaviours<>( viewerPanel, overlayGraph, renderer, selection, focus,
+		final EditBehaviours< V, E > eb = new EditBehaviours<>( viewerPanel, overlayGraph, renderer, focus,
 				undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE, minRadius );
 
 		behaviours.namedBehaviour( eb.moveSpotBehaviour, MOVE_SPOT_KEYS );
-		behaviours.namedBehaviour( eb.addSpotBehaviour, ADD_SPOT_KEYS );
 		behaviours.namedBehaviour( eb.toggleAutoLinkingModeBehaviour, TOGGLE_AUTO_LINKING_MODE_KEYS );
 		behaviours.namedBehaviour( eb.increaseSpotRadiusBehaviour, INCREASE_SPOT_RADIUS_KEYS );
 		behaviours.namedBehaviour( eb.increaseSpotRadiusBehaviourABit, INCREASE_SPOT_RADIUS_ABIT_KEYS );
@@ -208,8 +202,6 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final OverlayGraphRenderer< V, E > renderer;
 
-	private final SelectionModel< V, E > selection;
-
 	private final FocusModel< V > focus;
 
 	private final UndoPointMarker undo;
@@ -220,7 +212,6 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final ViewerPanel viewerPanel,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
-			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo,
 			final double normalRadiusChange,
@@ -232,12 +223,10 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		this.overlayGraph = overlayGraph;
 		this.lock = overlayGraph.getLock();
 		this.renderer = renderer;
-		this.selection = selection;
 		this.focus = focus;
 		this.undo = undo;
 
 		moveSpotBehaviour = new MoveSpotBehaviour( MOVE_SPOT );
-		addSpotBehaviour = new AddSpotBehaviour( ADD_SPOT );
 		toggleAutoLinkingModeBehaviour = new ToggleAutoLinkingModeBehaviour( TOGGLE_AUTO_LINKING_MODE );
 		increaseSpotRadiusBehaviour = new ResizeSpotBehaviour( INCREASE_SPOT_RADIUS, normalRadiusChange, minRadius );
 		increaseSpotRadiusBehaviourALot =
@@ -265,91 +254,6 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		{
 			autoLink = !autoLink;
 			viewerPanel.showMessage( "Auto-linking mode " + ( autoLink ? "on" : "off" ) );
-		}
-	}
-
-	private class AddSpotBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
-	{
-
-		private final double[] pos;
-
-		public AddSpotBehaviour( final String name )
-		{
-			super( name );
-			pos = new double[ 3 ];
-		}
-
-		@Override
-		public void click( final int x, final int y )
-		{
-			boolean isOutsideExistingSpot = false;
-			lock.readLock().lock();
-			try
-			{
-				final V ref = overlayGraph.vertexRef();
-				isOutsideExistingSpot = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref ) == null;
-				overlayGraph.releaseRef( ref );
-			}
-			finally
-			{
-				lock.readLock().unlock();
-			}
-
-			// Only create a spot if we don't click inside an existing spot.
-			if ( isOutsideExistingSpot )
-			{
-				final int timepoint = renderer.getCurrentTimepoint();
-				renderer.getGlobalPosition( x, y, pos );
-				final V ref = overlayGraph.vertexRef();
-				lock.writeLock().lock();
-				try
-				{
-					final V vertex = overlayGraph.addVertex( ref ).init( timepoint, pos, lastRadius );
-
-					if ( autoLink )
-					{
-						final RefSet< V > selectedVertices = selection.getSelectedVertices();
-						if ( selectedVertices.size() == 1 )
-						{
-							final V previous = selectedVertices.iterator().next();
-							/*
-							 * Careful with directed graphs. We always check and
-							 * create links forward in time.
-							 */
-							final int t1 = vertex.getTimepoint();
-							final int t2 = previous.getTimepoint();
-							if ( t1 != t2 )
-							{
-								final V from = t1 > t2 ? previous : vertex;
-								final V to = t1 > t2 ? vertex : previous;
-								final E eref = overlayGraph.edgeRef();
-								overlayGraph.addEdge( from, to, eref ).init();
-								overlayGraph.releaseRef( eref );
-							}
-						}
-					}
-
-					overlayGraph.notifyGraphChanged();
-
-					undo.setUndoPoint();
-
-					if ( FOCUS_EDITED_SPOT )
-						focus.focusVertex( vertex );
-
-					if ( SELECT_ADDED_SPOT )
-					{
-						selection.pauseListeners();
-						selection.clearSelection();
-						selection.setSelected( vertex, true );
-						selection.resumeListeners();
-					}
-				}
-				finally
-				{
-					overlayGraph.releaseRef( ref );
-					lock.writeLock().unlock();
-				}
-			}
 		}
 	}
 

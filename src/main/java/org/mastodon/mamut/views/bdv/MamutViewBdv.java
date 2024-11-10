@@ -233,7 +233,7 @@ public class MamutViewBdv
 
 		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel,
 				navigationHandler );
-		EditBehaviours.install( viewBehaviours, viewer, viewGraph, tracksOverlay, selectionModel, focusModel, model,
+		EditBehaviours.install( viewBehaviours, viewer, viewGraph, tracksOverlay, focusModel, model,
 				getMinRadius( sharedBdvData ) );
 		EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, selectionModel,
 				focusModel, model );
