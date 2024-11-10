@@ -354,7 +354,7 @@
 - !mapping
   action: add spot
   contexts: [bdv]
-  triggers: [A]
+  triggers: [not mapped]
 - !mapping
   action: increase spot radius
   contexts: [bdv]
@@ -379,14 +379,6 @@
   action: decrease spot radius a bit
   contexts: [bdv]
   triggers: [ctrl Q]
-- !mapping
-  action: add linked spot
-  contexts: [bdv]
-  triggers: [A]
-- !mapping
-  action: add linked spot backward
-  contexts: [bdv]
-  triggers: [C]
 - !mapping
   action: toggle link
   contexts: [bdv, ts]
