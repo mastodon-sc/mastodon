@@ -124,6 +124,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
 
+	public static final BasicStroke EDIT_GRAPH_OVERLAY_BIG_STROKE = new BasicStroke( 4f );
+
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
 			1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
 			1.0f, new float[] { 4f, 10f }, 0f );
@@ -235,6 +237,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 		public boolean paintGhostTarget;
 
+		public boolean snap;
+
 		public EditSpecialBehavioursOverlay()
 		{
 			from = new double[ 3 ];
@@ -280,7 +284,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			// The link.
 			if ( paintGhostLink )
 			{
-				graphics.setStroke( EDIT_GRAPH_OVERLAY_STROKE );
+				graphics.setStroke( snap ? EDIT_GRAPH_OVERLAY_BIG_STROKE : EDIT_GRAPH_OVERLAY_STROKE );
 				renderer.getViewerPosition( from, vFrom );
 
 				g.drawLine( ( int ) vFrom[ 0 ], ( int ) vFrom[ 1 ],
@@ -379,9 +383,15 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			if ( editing )
 			{
 				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) != null )
+				{
+					overlay.snap = true;
 					target.localize( overlay.to );
+				}
 				else
+				{
+					overlay.snap = false;
 					renderer.getGlobalPosition( x, y, overlay.to );
+				}
 			}
 		}
 
@@ -748,6 +758,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 						{
 							// No target in the vicinity - paint the future one.
 							overlay.paintGhostTarget = true;
+							overlay.snap = false;
 							System.out.println( "[AddOrLinkSpot] No near target" ); // DEBUG
 							renderer.getGlobalPosition( x, y, pos );
 							LinAlgHelpers.add( pos, start, pos );
@@ -757,6 +768,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 						{
 							// Snap ghost link to found target.
 							overlay.paintGhostTarget = false;
+							overlay.snap = true;
 							System.out.println( "[AddOrLinkSpot] Found a close target: " + target ); // DEBUG
 							target.localize( overlay.to );
 						}
