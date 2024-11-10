@@ -4,17 +4,9 @@
   contexts: [mastodon]
   triggers: [ctrl COMMA, meta COMMA]
 - !mapping
-  action: add linked spot
-  contexts: [bdv]
-  triggers: [A]
-- !mapping
-  action: add linked spot backward
-  contexts: [bdv]
-  triggers: [shift A]
-- !mapping
   action: add spot
   contexts: [bdv]
-  triggers: [A]
+  triggers: [not mapped]
 - !mapping
   action: align XY plane
   contexts: [bdv]
