@@ -657,8 +657,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 			if ( creatingNewSpot )
 			{
-				System.out.println( "[AddOrLinkSpot] creating a new spot at " + x + ", " + y ); // DEBUG
-
 				final int timepoint = renderer.getCurrentTimepoint();
 				renderer.getGlobalPosition( x, y, pos );
 				lock.writeLock().lock();
@@ -711,8 +709,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			}
 			else
 			{
-				System.out.println( "[AddOrLinkSpot] starting from " + source ); // DEBUG
-
 				// Move to next or previous time point and check that we can.
 				final int currentTimepoint = viewer.state().getCurrentTimepoint();
 				if ( forward )
@@ -771,7 +767,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 							// No target in the vicinity - paint the future one.
 							overlay.paintGhostTarget = true;
 							overlay.snap = false;
-							System.out.println( "[AddOrLinkSpot] No near target" ); // DEBUG
 							renderer.getGlobalPosition( x, y, pos );
 							LinAlgHelpers.add( pos, start, pos );
 							System.arraycopy( pos, 0, overlay.to, 0, pos.length );
@@ -781,7 +776,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 							// Snap ghost link to found target.
 							overlay.paintGhostTarget = false;
 							overlay.snap = true;
-							System.out.println( "[AddOrLinkSpot] Found a close target: " + target ); // DEBUG
 							target.localize( overlay.to );
 							/*
 							 * Is there a link between the source and found
@@ -816,7 +810,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 					{
 						lock.readLock().unlock();
 					}
-					System.out.println( targetFound ); // DEBUG
 
 					lock.writeLock().lock();
 					try
