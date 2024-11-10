@@ -108,15 +108,31 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			descriptions.add( TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS,
 					"Toggle link from the spot under the mouse, by dragging to a spot in the previous timepoint." );
 			descriptions.add( ADD_OR_LINK_SPOT_FORWARD, ADD_OR_LINK_SPOT_FORWARD_KEYS,
-					"Add or link to a new spot in the next timepoint. If a target spot is found near "
-							+ "the mouse location when the key is released, it is linked to the source spot this "
-							+ "action was started on. If not, a new spot is created at the mouse location and "
-							+ "linked to the source spot." );
+					"Main action to add or link to a new spot."
+							+ "\n"
+							+ "If there are no spots where the mouse is clicked, a new spot is created, which "
+							+ "can be positionned by holding the key and moving the mouse. "
+							+ "\n"
+							+ "If the key is pressed from within a source spot, the viewer moves to the *next* "
+							+ "time point and offers to create a new spot linked to this source. "
+							+ "Hold and drag to position the new spot. A new spot will be created "
+							+ "where the mouse is released, and linked to the source spot. "
+							+ "If a target spot is found near  the mouse location when the key is "
+							+ "released, it is linked to the source spot. If a link already exists "
+							+ "between the two, it is removed." );
 			descriptions.add( ADD_OR_LINK_SPOT_BACKWARD, ADD_OR_LINK_SPOT_BACKWARD_KEYS,
-					"Add or link to a spot in the previous timepoint. If a target spot is found near "
-							+ "the mouse location when the key is released, it is linked to the source spot this "
-							+ "action was started on. If not, a new spot is created at the mouse location and "
-							+ "linked to the source spot." );
+					"Main action to add or link to a new spot."
+							+ "\n"
+							+ "If there are no spots where the mouse is clicked, a new spot is created, which "
+							+ "can be positionned by holding the key and moving the mouse. "
+							+ "\n"
+							+ "If the key is pressed from within a source spot, the viewer moves to the *previous* "
+							+ "time point and offers to create a new spot linked to this source. "
+							+ "Hold and drag to position the new spot. A new spot will be created "
+							+ "where the mouse is released, and linked to the source spot. "
+							+ "If a target spot is found near  the mouse location when the key is "
+							+ "released, it is linked to the source spot. If a link already exists "
+							+ "between the two, it is removed." );
 		}
 	}
 
