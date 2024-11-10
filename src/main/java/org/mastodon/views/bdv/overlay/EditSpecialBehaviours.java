@@ -639,12 +639,11 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 				final int timepoint = renderer.getCurrentTimepoint();
 				renderer.getGlobalPosition( x, y, pos );
-				final V ref = overlayGraph.vertexRef();
 				lock.writeLock().lock();
 				try
 				{
 					// Add new spot.
-					final V vertex = overlayGraph.addVertex( ref ).init( timepoint, pos, EditBehaviours.lastRadius );
+					overlayGraph.addVertex( source ).init( timepoint, pos, EditBehaviours.lastRadius );
 
 					// Link to it if autolink mode is on.
 					if ( EditBehaviours.autoLink )
@@ -657,12 +656,12 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 							 * Careful with directed graphs. We always check and
 							 * create links forward in time.
 							 */
-							final int t1 = vertex.getTimepoint();
+							final int t1 = source.getTimepoint();
 							final int t2 = previous.getTimepoint();
 							if ( t1 != t2 )
 							{
-								final V from = t1 > t2 ? previous : vertex;
-								final V to = t1 > t2 ? vertex : previous;
+								final V from = t1 > t2 ? previous : source;
+								final V to = t1 > t2 ? source : previous;
 								final E eref = overlayGraph.edgeRef();
 								overlayGraph.addEdge( from, to, eref ).init();
 								overlayGraph.releaseRef( eref );
@@ -673,19 +672,18 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 					undo.setUndoPoint();
 
 					if ( FOCUS_EDITED_SPOT )
-						focus.focusVertex( vertex );
+						focus.focusVertex( source );
 
 					if ( SELECT_ADDED_SPOT )
 					{
 						selection.pauseListeners();
 						selection.clearSelection();
-						selection.setSelected( vertex, true );
+						selection.setSelected( source, true );
 						selection.resumeListeners();
 					}
 				}
 				finally
 				{
-					overlayGraph.releaseRef( ref );
 					lock.writeLock().unlock();
 				}
 			}
@@ -731,31 +729,42 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		@Override
 		public void drag( final int x, final int y )
 		{
-			if ( moving && !creatingNewSpot )
+			if ( moving )
 			{
-				lock.readLock().lock();
-				try
+				if ( creatingNewSpot )
 				{
-					if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) == null )
-					{
-						// No target in the vicinity - paint the future one.
-						overlay.paintGhostTarget = true;
-						System.out.println( "[AddOrLinkSpot] No near target" ); // DEBUG
-						renderer.getGlobalPosition( x, y, pos );
-						LinAlgHelpers.add( pos, start, pos );
-						System.arraycopy( pos, 0, overlay.to, 0, pos.length );
-					}
-					else
-					{
-						// Snap ghost link to found target.
-						overlay.paintGhostTarget = false;
-						System.out.println( "[AddOrLinkSpot] Found a close target: " + target ); // DEBUG
-						target.localize( overlay.to );
-					}
+					// Move the new spot around.
+					renderer.getGlobalPosition( x, y, pos );
+					LinAlgHelpers.add( pos, start, pos );
+					source.setPosition( pos );
 				}
-				finally
+				else
 				{
-					lock.readLock().unlock();
+					// Show a future link to a new or existing spot.
+					lock.readLock().lock();
+					try
+					{
+						if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) == null )
+						{
+							// No target in the vicinity - paint the future one.
+							overlay.paintGhostTarget = true;
+							System.out.println( "[AddOrLinkSpot] No near target" ); // DEBUG
+							renderer.getGlobalPosition( x, y, pos );
+							LinAlgHelpers.add( pos, start, pos );
+							System.arraycopy( pos, 0, overlay.to, 0, pos.length );
+						}
+						else
+						{
+							// Snap ghost link to found target.
+							overlay.paintGhostTarget = false;
+							System.out.println( "[AddOrLinkSpot] Found a close target: " + target ); // DEBUG
+							target.localize( overlay.to );
+						}
+					}
+					finally
+					{
+						lock.readLock().unlock();
+					}
 				}
 			}
 		}
