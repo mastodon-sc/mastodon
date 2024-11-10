@@ -75,7 +75,7 @@ public enum Dimension
 	 */
 	TIME( "Time" ),
 	/**
-	 * Units of angles. We alway pick radians for units.
+	 * Units of angles. We always pick radians for units.
 	 */
 	ANGLE( "Angle" ),
 	/**
@@ -89,7 +89,11 @@ public enum Dimension
 	/**
 	 * Non numerical quantities.
 	 */
-	STRING( "NA" ); // for non-numeric features
+	STRING( "NA" ),
+	/**
+	 * Area.
+	 */
+	AREA( "Area" );
 
 	public static final String COUNTS_UNITS = "Counts";
 
@@ -127,6 +131,8 @@ public enum Dimension
 		{
 		case ANGLE:
 			return RADIANS_UNITS;
+		case ANGLE_RATE:
+			return RADIANS_UNITS + "/" + timeUnits;
 		case INTENSITY:
 			return COUNTS_UNITS;
 		case INTENSITY_SQUARED:
@@ -146,6 +152,8 @@ public enum Dimension
 			return spaceUnits + "/" + timeUnits;
 		case RATE:
 			return "/" + timeUnits;
+		case AREA:
+			return spaceUnits + "²";
 		default:
 		case STRING:
 			return null;
