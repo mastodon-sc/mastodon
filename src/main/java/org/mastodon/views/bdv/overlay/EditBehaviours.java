@@ -81,7 +81,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	static final String[] MOVE_SPOT_KEYS = new String[] { "SPACE" };
 
-	static final String[] ADD_SPOT_KEYS = new String[] { "A" };
+	static final String[] ADD_SPOT_KEYS = new String[] { "not mapped" };
 
 	static final String[] TOGGLE_AUTO_LINKING_MODE_KEYS = { "control L" };
 
@@ -100,7 +100,9 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	/**
 	 * Common (static) flag for the auto-linking mode.
 	 */
-	private static boolean autoLink = false;
+	static boolean autoLink = false;
+
+	static double lastRadius = 5.;
 
 	/*
 	 * Command descriptions for all provided commands
@@ -175,8 +177,6 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	private final ResizeSpotBehaviour decreaseSpotRadiusBehaviourALot;
 
 	private final ResizeSpotBehaviour decreaseSpotRadiusBehaviourABit;
-
-	private double lastRadius = 5.;
 
 	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
