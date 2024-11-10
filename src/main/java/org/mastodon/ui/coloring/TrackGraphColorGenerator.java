@@ -37,7 +37,6 @@ import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 import org.mastodon.model.HasLabel;
-import org.mastodon.views.trackscheme.util.AlphanumCompare;
 
 public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E extends Edge< V > >
 		implements GraphColorGenerator< V, E >
@@ -45,7 +44,7 @@ public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E exten
 
 	private final RefIntMap< V > cache;
 
-	private final GlasbeyLut lut;
+	private final int[] lut;
 
 	private final InverseDepthFirstIterator< V, E > iterator;
 
@@ -62,7 +61,7 @@ public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E exten
 		this.rootsProvider = new RootProvider<>( graph );
 		this.graph = graph;
 		this.cache = RefMaps.createRefIntMap( graph.vertices(), 0 );
-		this.lut = GlasbeyLut.create();
+		this.lut = GlasbeyLut.intColors;
 		this.iterator = new InverseDepthFirstIterator<>( graph );
 		this.toUpdate = RefCollections.createRefList( graph.vertices() );
 
@@ -137,12 +136,8 @@ public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E exten
 		if ( rootsUpToDate )
 			return;
 
-		final RefList< V > sortedRoots = RefCollections.createRefList( graph.vertices() );
-		sortedRoots.addAll( rootsProvider.get() );
-		sortedRoots.sort( ( v1, v2 ) -> AlphanumCompare.compare( v1.getLabel(), v2.getLabel() ) );
 		cache.clear();
-		lut.reset();
-		sortedRoots.forEach( r -> cache.put( r, lut.next() ) );
+		rootsProvider.get().forEach( r -> cache.put( r, lut[ Math.abs( r.getLabel().hashCode() ) % lut.length ] ) );
 		rootsUpToDate = true;
 	}
 
