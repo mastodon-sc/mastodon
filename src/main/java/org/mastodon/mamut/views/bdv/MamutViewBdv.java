@@ -77,6 +77,7 @@ import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BdvContextProvider;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
+import org.mastodon.views.bdv.BigDataViewerBehavioursMamut;
 import org.mastodon.views.bdv.BigDataViewerMamut;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.ViewerFrameMamut;
@@ -149,6 +150,7 @@ public class MamutViewBdv
 
 		MastodonFrameViewActions.install( viewActions, this );
 		BigDataViewerActionsMamut.install( viewActions, bdv );
+		BigDataViewerBehavioursMamut.install( viewBehaviours, bdv );
 
 		/*
 		 * We have to build the coloring menu handles now. But the other actions
