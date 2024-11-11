@@ -33,6 +33,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -193,6 +194,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 	private Context< DataVertex > context;
 
 	private final SelectionModel< DataVertex, DataEdge > selection;
+
+	private CountDownLatch latch;
 
 	/**
 	 * If <code>true</code> the display will be updated live when the window
@@ -363,6 +366,8 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			if ( flags.graphChanged )
 			{
 				layout.layout();
+				if ( latch != null )
+					latch.countDown();
 				layoutMinX = layout.getCurrentLayoutMinX();
 				layoutMaxX = layout.getCurrentLayoutMaxX();
 				layoutMinY = layout.getCurrentLayoutMinY();
@@ -947,13 +952,22 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			ylabel += " (" + yunits + ")";
 		graphOverlay.setYLabel( ylabel );
 
+		latch = new CountDownLatch( 1 );
 		graphChanged();
 		Executors.newSingleThreadScheduledExecutor().schedule( () -> {
-			if ( transform == null )
-				transformEventHandler.zoomOutFully();
-			else
-				transformEventHandler.zoomTo( transform.getMinX(), transform.getMaxX(), transform.getMinY(), transform.getMaxY() );
-		}, 100, TimeUnit.MILLISECONDS );
+			try
+			{
+				latch.await();
+				if ( transform == null )
+					transformEventHandler.zoomOutFully();
+				else
+					transformEventHandler.zoomTo( transform.getMinX(), transform.getMaxX(), transform.getMinY(), transform.getMaxY() );
+			}
+			catch ( InterruptedException e )
+			{
+				Thread.currentThread().interrupt();
+			}
+		}, 0, TimeUnit.SECONDS );
 	}
 
 	private RefSet< DataVertex > fromContext()
