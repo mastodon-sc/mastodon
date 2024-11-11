@@ -548,7 +548,7 @@ public class InertialScreenTransformEventHandler
 			{
 				if ( zoomIn )
 				{
-					if ( !hasMinSizeY( transform ) || true )
+					if ( !hasMinSizeY( transform ) )
 						transform.zoomY( dScale, y );
 				}
 				else
