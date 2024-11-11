@@ -116,7 +116,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next(), false, false );
 		final FeatureSpecPair spvy = new FeatureSpecPair( SpotQuickMeanIntensityFeature.SPEC,
 				SpotQuickMeanIntensityFeature.PROJECTION_SPEC, 0, false, false );
-		return new FeatureGraphConfig( spvx, spvy, FeatureGraphConfig.GraphDataItemsSource.TRACK_OF_SELECTION, true );
+		return new FeatureGraphConfig( spvx, spvy, FeatureGraphConfig.GraphDataItemsSource.CONTEXT, false );
 	}
 
 	@SuppressWarnings( "unchecked" )
