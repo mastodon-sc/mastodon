@@ -63,6 +63,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
@@ -151,6 +152,14 @@ public class MamutViewBdv
 		MastodonFrameViewActions.install( viewActions, this );
 		BigDataViewerActionsMamut.install( viewActions, bdv );
 		BigDataViewerBehavioursMamut.install( viewBehaviours, bdv );
+		EditTagActions.install( viewActions, frame.getKeybindings(),
+				frame.getTriggerbindings(),
+				appModel.getModel().getTagSetModel(),
+				appModel.getSelectionModel(),
+				viewGraph.getLock(),
+				bdv.getViewer(),
+				bdv.getViewer().getDisplay(),
+				appModel.getModel() );
 
 		/*
 		 * We have to build the coloring menu handles now. But the other actions
