@@ -50,7 +50,7 @@ public class RecentProjects implements Iterable< String >
 	private static final String RECENT_PROJECTS_FILE =
 			System.getProperty( "user.home" ) + "/.mastodon/recentprojects.yaml";
 
-	private static final int MAX_N_RECENT_PROJECTS = 10;
+	private static final int MAX_N_RECENT_PROJECTS = 20;
 
 	private final List< String > recent;
 
