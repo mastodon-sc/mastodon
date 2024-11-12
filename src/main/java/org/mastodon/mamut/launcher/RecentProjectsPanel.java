@@ -80,7 +80,7 @@ public class RecentProjectsPanel extends JPanel
 		scrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
 		add( scrollPane, "span, wrap" );
 
-		if ( recentProjects != null && !recentProjects.isempty() )
+		if ( !recentProjects.isempty() )
 		{
 			final JLabel lblTitleHint = new JLabel( "Double-click to open the containing folder." );
 			lblTitleHint.setFont( lblTitleHint.getFont().deriveFont( lblTitleHint.getFont().getStyle() | Font.ITALIC ) );
