@@ -96,10 +96,7 @@ public class RecentProjectsPanel extends JPanel
 				listPanel.add( ta, "" );
 
 				final JButton btnOpen = new JButton( MastodonIcons.LOAD_ICON_SMALL );
-				btnOpen.addActionListener( l -> {
-					projectOpener.accept( ta.getText() );
-					// Recent projects will be updated in the launcher method.
-				} );
+				btnOpen.addActionListener( l -> projectOpener.accept( ta.getText() ) ); // Recent projects will be updated in the launcher method.
 				add( btnOpen );
 
 				final JButton btnClear = new JButton( MastodonIcons.REMOVE_ICON );
