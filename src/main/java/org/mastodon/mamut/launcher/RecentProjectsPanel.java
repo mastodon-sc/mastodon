@@ -29,9 +29,6 @@
 package org.mastodon.mamut.launcher;
 
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Desktop;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -39,7 +36,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
@@ -47,10 +43,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.ui.util.RecentProjects;
+
+import net.miginfocom.swing.MigLayout;
 
 public class RecentProjectsPanel extends JPanel
 {
@@ -61,6 +61,7 @@ public class RecentProjectsPanel extends JPanel
 
 	public RecentProjectsPanel( final Consumer< String > projectOpener )
 	{
+		setLayout( new MigLayout( "fill, wrap 3", "[grow, fill][shrink 0][shrink 0]", "[][grow, fill][]" ) );
 		remakeGUI( projectOpener );
 	}
 
@@ -68,87 +69,45 @@ public class RecentProjectsPanel extends JPanel
 	{
 		removeAll();
 
-		/*
-		 * Row heights and weights.
-		 */
-
-		final int[] rowHeights = new int[ 1 // title.
-				+ ( recentProjects.isempty() ? 1 : recentProjects.size() )
-				+ 1 // separator
-				+ 1 // open other
-				+ 1 ]; // fill blank
-
-		rowHeights[ 0 ] = 35;
-		for ( int i = 0; i < Math.max( 1, recentProjects.size() ); i++ )
-			rowHeights[ 0 ] = 60;
-
-		rowHeights[ rowHeights.length - 3 ] = 65;
-		rowHeights[ rowHeights.length - 2 ] = 35;
-		rowHeights[ rowHeights.length - 1 ] = 10;
-
-		final double[] rowWeights = new double[ rowHeights.length ];
-		Arrays.fill( rowWeights, 0. );
-		rowWeights[ rowWeights.length - 1 ] = 1.;
-
-		/*
-		 * GUI
-		 */
-
-		final GridBagLayout gbl = new GridBagLayout();
-		gbl.columnWeights = new double[] { 1., 0., 0. };
-		gbl.rowHeights = rowHeights;
-		gbl.rowWeights = rowWeights;
-		setLayout( gbl );
-
-		final GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.insets = new Insets( 5, 5, 5, 5 );
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-
 		final JLabel lblTitle = new JLabel( "Recent projects" );
 		lblTitle.setFont( lblTitle.getFont().deriveFont( lblTitle.getFont().getStyle() | Font.BOLD ) );
 		lblTitle.setHorizontalAlignment( SwingConstants.CENTER );
-		add( lblTitle, gbc );
+		add( lblTitle, "span, wrap" );
 
-		/*
-		 * List of recent projects.
-		 */
+		final JPanel listPanel = new JPanel( new MigLayout( "fillx, wrap 3", "[fill][shrink 0][shrink 0]", "" ) );
+		final JScrollPane scrollPane = new JScrollPane( listPanel );
+		scrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED );
+		scrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+		add( scrollPane, "span, wrap" );
 
 		if ( recentProjects != null && !recentProjects.isempty() )
 		{
-			gbc.gridy++;
 			final JLabel lblTitleHint = new JLabel( "Double-click to open the containing folder." );
-			lblTitleHint
-					.setFont( lblTitleHint.getFont().deriveFont( lblTitleHint.getFont().getStyle() | Font.ITALIC ) );
+			lblTitleHint.setFont( lblTitleHint.getFont().deriveFont( lblTitleHint.getFont().getStyle() | Font.ITALIC ) );
 			lblTitleHint.setHorizontalAlignment( SwingConstants.CENTER );
-			add( lblTitleHint, gbc );
+			listPanel.add( lblTitleHint, "span, wrap" );
 
 			for ( final String projectPath : recentProjects )
 			{
-				gbc.gridy++;
-				gbc.gridx = 0;
 				final JTextArea ta = new JTextArea( projectPath );
 				ta.setEditable( true );
 				ta.setLineWrap( true );
 				ta.addMouseListener( new MouseDblClickOpenPath( ta.getText() ) );
-				add( ta, gbc );
+				listPanel.add( ta, "" );
 
-				gbc.gridx = 1;
 				final JButton btnOpen = new JButton( MastodonIcons.LOAD_ICON_SMALL );
 				btnOpen.addActionListener( l -> {
 					projectOpener.accept( ta.getText() );
 					// Recent projects will be updated in the launcher method.
 				} );
-				add( btnOpen, gbc );
+				add( btnOpen );
 
-				gbc.gridx = 2;
 				final JButton btnClear = new JButton( MastodonIcons.REMOVE_ICON );
 				btnClear.addActionListener( l -> {
 					recentProjects.remove( projectPath );
 					remakeGUI( projectOpener );
 				} );
-				add( btnClear, gbc );
+				listPanel.add( btnClear, "wrap" );
 			}
 		}
 		else
@@ -156,29 +115,19 @@ public class RecentProjectsPanel extends JPanel
 			final JLabel lblNo = new JLabel( "No recent projects." );
 			lblNo.setFont( getFont().deriveFont( getFont().getStyle() | Font.ITALIC ) );
 			lblNo.setHorizontalAlignment( SwingConstants.CENTER );
-
-			gbc.gridy++;
-			gbc.gridwidth = 3;
-			add( lblNo, gbc );
-			gbc.gridwidth = 1;
+			listPanel.add( lblNo, "span, wrap" );
 		}
 
-		gbc.gridy++;
-		gbc.gridx = 0;
-		gbc.gridwidth = 2;
-		add( new JSeparator(), gbc );
+		add( new JSeparator(), "span, wrap" );
 
-		gbc.gridy++;
-		gbc.gridwidth = 1;
 		final JLabel lblTitle2 = new JLabel( "Open another project" );
 		lblTitle2.setHorizontalAlignment( SwingConstants.CENTER );
 		lblTitle2.setFont( lblTitle2.getFont().deriveFont( lblTitle2.getFont().getStyle() | Font.BOLD ) );
-		add( lblTitle2, gbc );
+		add( lblTitle2 );
 
-		gbc.gridx = 1;
 		final JButton btnBrowse = new JButton( MastodonIcons.LOAD_ICON_SMALL );
 		btnBrowse.addActionListener( l -> projectOpener.accept( null ) );
-		add( btnBrowse, gbc );
+		add( btnBrowse );
 
 		revalidate();
 		repaint();
