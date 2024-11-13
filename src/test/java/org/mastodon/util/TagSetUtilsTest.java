@@ -50,28 +50,28 @@ import static org.junit.Assert.assertTrue;
 public class TagSetUtilsTest
 {
 
-	private final static String tagSetName = "testTagSet";
+	private static final String TAG_SET_NAME = "testTagSet";
 
-	private final static String tagLabel0 = "tag0";
+	private static final String TAG_LABEL_0 = "tag0";
 
-	private final static String tagLabel1 = "tag1";
+	private static final String TAG_LABEL_1 = "tag1";
 
-	private final static String tagLabel2 = "tag2";
+	private static final String TAG_LABEL_2 = "tag2";
 
-	private final static Color tagColor0 = Color.red;
+	private static final Color tagColor0 = Color.red;
 
-	private final static Color tagColor1 = Color.green;
+	private static final Color tagColor1 = Color.green;
 
-	private final static Color tagColor2 = Color.blue;
+	private static final Color tagColor2 = Color.blue;
 
-	private final static Collection< Pair< String, Integer > > tagsAndColors = initTagsAndColors();
+	private static final Collection< Pair< String, Integer > > tagsAndColors = initTagsAndColors();
 
 	private static Collection< Pair< String, Integer > > initTagsAndColors()
 	{
 		Collection< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		tagsAndColors.add( Pair.of( tagLabel0, tagColor0.getRGB() ) );
-		tagsAndColors.add( Pair.of( tagLabel1, tagColor1.getRGB() ) );
-		tagsAndColors.add( Pair.of( tagLabel2, tagColor2.getRGB() ) );
+		tagsAndColors.add( Pair.of( TAG_LABEL_0, tagColor0.getRGB() ) );
+		tagsAndColors.add( Pair.of( TAG_LABEL_1, tagColor1.getRGB() ) );
+		tagsAndColors.add( Pair.of( TAG_LABEL_2, tagColor2.getRGB() ) );
 		return tagsAndColors;
 	}
 
@@ -80,15 +80,15 @@ public class TagSetUtilsTest
 	{
 		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
 
-		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName, tagsAndColors );
+		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), TAG_SET_NAME, tagsAndColors );
 
 		TagSetStructure.TagSet tagSet = exampleGraph1.getModel().getTagSetModel().getTagSetStructure().getTagSets().get( 0 );
 
-		assertEquals( tagSetName, tagSet.getName() );
+		assertEquals( TAG_SET_NAME, tagSet.getName() );
 		assertEquals( tagsAndColors.size(), tagSet.getTags().size() );
-		assertEquals( tagLabel0, tagSet.getTags().get( 0 ).label() );
-		assertEquals( tagLabel1, tagSet.getTags().get( 1 ).label() );
-		assertEquals( tagLabel2, tagSet.getTags().get( 2 ).label() );
+		assertEquals( TAG_LABEL_0, tagSet.getTags().get( 0 ).label() );
+		assertEquals( TAG_LABEL_1, tagSet.getTags().get( 1 ).label() );
+		assertEquals( TAG_LABEL_2, tagSet.getTags().get( 2 ).label() );
 		assertEquals( tagColor0.getRGB(), tagSet.getTags().get( 0 ).color() );
 		assertEquals( tagColor1.getRGB(), tagSet.getTags().get( 1 ).color() );
 		assertEquals( tagColor2.getRGB(), tagSet.getTags().get( 2 ).color() );
@@ -100,7 +100,7 @@ public class TagSetUtilsTest
 		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 		Model model = exampleGraph2.getModel();
 
-		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), tagSetName, tagsAndColors );
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), TAG_SET_NAME, tagsAndColors );
 
 		TagSetStructure.Tag tag0 = tagSet.getTags().get( 0 );
 		TagSetUtils.tagSpotAndOutgoingEdges( exampleGraph2.getModel(), tagSet, tag0, exampleGraph2.spot0 );
