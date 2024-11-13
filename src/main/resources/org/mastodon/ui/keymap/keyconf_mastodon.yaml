@@ -4,18 +4,6 @@
   contexts: [mastodon]
   triggers: [ctrl COMMA, meta COMMA]
 - !mapping
-  action: add linked spot
-  contexts: [bdv]
-  triggers: [A]
-- !mapping
-  action: add linked spot backward
-  contexts: [bdv]
-  triggers: [shift A]
-- !mapping
-  action: add spot
-  contexts: [bdv]
-  triggers: [A]
-- !mapping
   action: align XY plane
   contexts: [bdv]
   triggers: [shift Z]
@@ -309,12 +297,8 @@
   triggers: [I]
 - !mapping
   action: toggle link
-  contexts: [bdv, ts]
+  contexts: [ts]
   triggers: [W, L]
-- !mapping
-  action: toggle link backward
-  contexts: [bdv]
-  triggers: [shift L, shift W]
 - !mapping
   action: toggle settings panel
   contexts: [bdv, ts]

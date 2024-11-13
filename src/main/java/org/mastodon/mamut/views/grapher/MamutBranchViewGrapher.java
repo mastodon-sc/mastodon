@@ -109,7 +109,7 @@ public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSp
 				new FeatureSpecPair( BranchDisplacementDurationFeature.SPEC, displacementSpec, false, false );
 		final FeatureSpecPair featureSpecY =
 				new FeatureSpecPair( BranchDisplacementDurationFeature.SPEC, durationSpec, false, false );
-		return new FeatureGraphConfig( featureSpecX, featureSpecY, GraphDataItemsSource.TRACK_OF_SELECTION, true );
+		return new FeatureGraphConfig( featureSpecX, featureSpecY, GraphDataItemsSource.CONTEXT, false );
 	}
 
 	@SuppressWarnings( "unchecked" )

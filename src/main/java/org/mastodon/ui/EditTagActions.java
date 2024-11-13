@@ -97,7 +97,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	{
 		public Descriptions()
 		{
-			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.GRAPHER );
 		}
 
 		@Override

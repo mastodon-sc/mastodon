@@ -352,10 +352,6 @@
   contexts: [bdv]
   triggers: [SPACE]
 - !mapping
-  action: add spot
-  contexts: [bdv]
-  triggers: [A]
-- !mapping
   action: increase spot radius
   contexts: [bdv]
   triggers: [E]
@@ -380,21 +376,9 @@
   contexts: [bdv]
   triggers: [ctrl Q]
 - !mapping
-  action: add linked spot
-  contexts: [bdv]
-  triggers: [A]
-- !mapping
-  action: add linked spot backward
-  contexts: [bdv]
-  triggers: [C]
-- !mapping
   action: toggle link
-  contexts: [bdv, ts]
+  contexts: [ts]
   triggers: [L]
-- !mapping
-  action: toggle link backward
-  contexts: [bdv]
-  triggers: [shift L]
 - !mapping
   action: navigate to child
   contexts: [bdv, ts]

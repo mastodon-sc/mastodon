@@ -36,7 +36,7 @@ import java.awt.Color;
 public class GlasbeyLut
 {
 
-	private static final Color[] colors = new Color[] {
+	public static final Color[] colors = new Color[] {
 			new Color( 255, 255, 255 ),
 			new Color( 20, 20, 255 ),
 			new Color( 255, 20, 20 ),
@@ -295,7 +295,7 @@ public class GlasbeyLut
 			new Color( 189, 117, 101 )
 	};
 
-	private static final int[] intColors;
+	public static final int[] intColors;
 	static
 	{
 		intColors = new int[ colors.length ];
