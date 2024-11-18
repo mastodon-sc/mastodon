@@ -79,9 +79,9 @@ import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 
 import bdv.export.ProgressWriter;
-import bdv.tools.DelayedPackDialog;
 import bdv.ui.keymap.Keymap;
 import bdv.ui.keymap.Keymap.UpdateListener;
+import bdv.util.DelayedPackDialog;
 import bdv.viewer.OverlayRenderer;
 import bdv.viewer.ViewerPanel;
 import ij.io.LogStream;
