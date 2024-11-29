@@ -26,34 +26,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-/*-
- * #%L
- * Readers and writers for image data in MoBIE projects
- * %%
- * Copyright (C) 2021 - 2023 EMBL
- * %%
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * #L%
- */
 package org.mastodon.mamut.io.loader.util.mobie;
 
 import java.io.IOException;
@@ -87,7 +59,7 @@ public class N5OMEZarrCacheArrayLoader< A extends DataAccess > implements Simple
     private final ZarrAxes zarrAxes;
 
     public N5OMEZarrCacheArrayLoader( final N5Reader n5, final String pathName, final int channel, final int timepoint,
-            final DatasetAttributes attributes, CellGrid grid, ZarrAxes zarrAxes )
+            final DatasetAttributes attributes, final CellGrid grid, final ZarrAxes zarrAxes )
     {
         this.n5 = n5;
         this.pathName = pathName; // includes the level
@@ -100,24 +72,24 @@ public class N5OMEZarrCacheArrayLoader< A extends DataAccess > implements Simple
     }
 
     @Override
-    public A loadArray( final long[] gridPosition, int[] cellDimensions ) throws IOException
+    public A loadArray( final long[] gridPosition, final int[] cellDimensions ) throws IOException
     {
         DataBlock< ? > block = null;
 
-        long[] dataBlockIndices = toZarrChunkIndices( gridPosition );
+        final long[] dataBlockIndices = toZarrChunkIndices( gridPosition );
 
         try
         {
             block = n5.readBlock( pathName, attributes, dataBlockIndices );
         }
-        catch ( SdkClientException e )
+        catch ( final SdkClientException e )
         {
             System.err.println( e.getMessage() ); // this happens sometimes, not sure yet why...
         }
 
         if ( block == null )
         {
-            return ( A ) zarrArrayCreator.createEmptyArray( gridPosition );
+            return zarrArrayCreator.createEmptyArray( gridPosition );
         }
         else
         {
@@ -125,14 +97,14 @@ public class N5OMEZarrCacheArrayLoader< A extends DataAccess > implements Simple
         }
     }
 
-    private long[] toZarrChunkIndices( long[] gridPosition )
+    private long[] toZarrChunkIndices( final long[] gridPosition )
     {
 
-        long[] chunkInZarr = new long[ zarrAxes.getNumDimension() ];
+        final long[] chunkInZarr = new long[ zarrAxes.getNumDimension() ];
 
         // fill in the spatial dimensions
         final Map< Integer, Integer > spatialToZarr = zarrAxes.spatialToZarr();
-        for ( Map.Entry< Integer, Integer > entry : spatialToZarr.entrySet() )
+        for ( final Map.Entry< Integer, Integer > entry : spatialToZarr.entrySet() )
             chunkInZarr[ entry.getValue() ] = gridPosition[ entry.getKey() ];
 
         if ( zarrAxes.hasChannels() )

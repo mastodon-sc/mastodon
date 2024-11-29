@@ -26,38 +26,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-/*
- * Original code from bigdataviewer-core:
- * https://github.com/bigdataviewer/bigdataviewer-core/blob/c47e2370ae9b9e281444f127cb36cd9ef1497336/src/main/java/bdv/img/n5/N5ImageLoader.java
- * LICENSE is shown below:
- * 
- * #%L
- * BigDataViewer core classes with minimal dependencies.
- * %%
- * Copyright (C) 2012 - 2023 BigDataViewer developers.
- * %%
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * #L%
- */
 package org.mastodon.mamut.io.loader;
 
 import java.io.IOException;
@@ -65,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Exception;
@@ -78,8 +47,8 @@ import org.mastodon.mamut.io.img.cache.MastodonSimpleCacheArrayLoader;
 import org.mastodon.mamut.io.img.cache.MastodonVolatileGlobalCellCache;
 import org.mastodon.mamut.io.loader.adapter.N5HDF5ReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.N5KeyValueReaderToViewerImgLoaderAdapter;
-import org.mastodon.mamut.io.loader.adapter.ZarrKeyValueReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.N5ReaderToViewerImgLoaderAdapter;
+import org.mastodon.mamut.io.loader.adapter.ZarrKeyValueReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales;
 import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscalesAdapter;
 import org.mastodon.mamut.io.loader.util.mobie.ZarrAxes;
@@ -177,7 +146,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
 
     public N5UniverseImgLoader( final String uri, final String dataset, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription )
     {
-        GsonBuilder gsonBuilder = new GsonBuilder();
+        final GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter( ZarrCompressor.class, ZarrCompressor.jsonAdapter );
         gsonBuilder.registerTypeAdapter( ZarrAxes.class, new ZarrAxesAdapter() );
         gsonBuilder.registerTypeAdapter( OmeZarrMultiscales.class, new OmeZarrMultiscalesAdapter() );
@@ -250,7 +219,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
             open();
             return true;
         }
-        catch ( Throwable e )
+        catch ( final Throwable e )
         {
             return false;
         }
@@ -332,7 +301,7 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
     private < T extends NativeType< T >, V extends Volatile< T > & NativeType< V > > SetupImgLoader< T, V >
             createSetupImgLoader( final int setupId ) throws IOException
     {
-        DataType dataType = adapter.getSetupDataType( setupId );
+        final DataType dataType = adapter.getSetupDataType( setupId );
         return new SetupImgLoader<>( setupId, Cast.unchecked( DataTypeProperties.of( dataType ) ) );
     }
 
