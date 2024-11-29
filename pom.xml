@@ -10,7 +10,7 @@
 
 	<groupId>org.mastodon</groupId>
 	<artifactId>mastodon</artifactId>
-	<version>1.0.0-beta-33-SNAPSHOT</version>
+	<version>1.0.0-beta-34-SNAPSHOT</version>
 
 	<name>Mastodon</name>
 	<description>Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.</description>
