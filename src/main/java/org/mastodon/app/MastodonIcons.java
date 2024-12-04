@@ -227,7 +227,7 @@ public class MastodonIcons
 	 */
 
 	public static final Image MAINWINDOW_BG =
-			new ImageIcon( MastodonIcons.class.getResource( "MastodonMainWindowBG.png" ) ).getImage();
+			new ImageIcon( MastodonIcons.class.getResource( "MastodonMainWindowBG-flipped.png" ) ).getImage();
 
 	/*
 	 * General use icons.

@@ -385,7 +385,8 @@ class LauncherGUI extends JPanel
 		public void paintComponent( final Graphics g )
 		{
 			super.paintComponent( g );
-			g.drawImage( MAINWINDOW_BG, 0, 0, this );
+			final int x = getWidth() - MAINWINDOW_BG.getWidth( null );
+			g.drawImage( MAINWINDOW_BG, x, 0, this );
 		}
 	}
 
