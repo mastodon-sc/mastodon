@@ -28,8 +28,8 @@
  */
 package org.mastodon.mamut.launcher;
 
-import java.awt.Font;
 import java.awt.Desktop;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -41,11 +41,11 @@ import java.util.function.Consumer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.JScrollPane;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.ui.util.RecentProjects;
@@ -99,7 +99,7 @@ public class RecentProjectsPanel extends JPanel
 				btnOpen.addActionListener( l -> projectOpener.accept( ta.getText() ) ); // Recent projects will be updated in the launcher method.
 				listPanel.add( btnOpen );
 
-				final JButton btnClear = new JButton( MastodonIcons.REMOVE_ICON );
+				final JButton btnClear = new JButton( MastodonIcons.BIN_ICON );
 				btnClear.addActionListener( l -> {
 					recentProjects.remove( projectPath );
 					remakeGUI( projectOpener );
@@ -140,26 +140,26 @@ public class RecentProjectsPanel extends JPanel
 		}
 
 		@Override
-		public void mouseClicked( MouseEvent mouseEvent )
+		public void mouseClicked( final MouseEvent mouseEvent )
 		{
 			if ( mouseEvent.getClickCount() == 2 )
 				openUrl( Uri );
 		}
 
 		@Override
-		public void mousePressed( MouseEvent mouseEvent )
+		public void mousePressed( final MouseEvent mouseEvent )
 		{ /* empty */ }
 
 		@Override
-		public void mouseReleased( MouseEvent mouseEvent )
+		public void mouseReleased( final MouseEvent mouseEvent )
 		{ /* empty */ }
 
 		@Override
-		public void mouseEntered( MouseEvent mouseEvent )
+		public void mouseEntered( final MouseEvent mouseEvent )
 		{ /* empty */ }
 
 		@Override
-		public void mouseExited( MouseEvent mouseEvent )
+		public void mouseExited( final MouseEvent mouseEvent )
 		{ /* empty */ }
 	}
 
