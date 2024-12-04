@@ -248,4 +248,8 @@ public class MastodonIcons
 
 	public static final ImageIcon REMOVE_ICON = new ImageIcon( AbstractTagTable.class.getResource( "delete.png" ) );
 
+	public static final ImageIcon BIN_EMPTY_ICON = new ImageIcon( FeatureComputationPanel.class.getResource( "bin.png" ) );
+
+	public static final ImageIcon BIN_ICON = new ImageIcon( FeatureComputationPanel.class.getResource( "bin_closed.png" ) );
+
 }
