@@ -275,7 +275,7 @@ class LauncherGUI extends JPanel
 			final StringBuilder modifiedText = new StringBuilder();
 			for ( final char c : string.toCharArray() )
 			{
-				if ( c == '/' )
+				if ( c == '/' || c == '\\' )
 				{
 					modifiedText.append( c ).append( ' ' );
 				}
