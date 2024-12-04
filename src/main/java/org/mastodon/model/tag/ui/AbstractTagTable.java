@@ -29,6 +29,8 @@
 package org.mastodon.model.tag.ui;
 
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static org.mastodon.app.MastodonIcons.ADD_ICON;
+import static org.mastodon.app.MastodonIcons.BIN_ICON;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -41,7 +43,6 @@ import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -64,9 +65,6 @@ import org.scijava.ui.behaviour.util.Actions;
 
 public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, ? >.Element >
 {
-	private static final ImageIcon ADD_ICON = new ImageIcon( AbstractTagTable.class.getResource( "add.png" ) );
-
-	private static final ImageIcon REMOVE_ICON = new ImageIcon( AbstractTagTable.class.getResource( "delete.png" ) );
 
 	public class Element
 	{
@@ -394,7 +392,7 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 			if ( row == elements.size() )
 				setIcon( ADD_ICON );
 			else
-				setIcon( REMOVE_ICON );
+				setIcon( BIN_ICON );
 			final boolean paintSelected = isSelected && !table.isEditing();
 			setForeground( paintSelected ? table.getSelectionForeground() : table.getForeground() );
 			setBackground( paintSelected ? table.getSelectionBackground() : table.getBackground() );
