@@ -129,6 +129,8 @@ public class DefaultObjTagMap< O, T > implements ObjTagMap< O, T >
 	@Override
 	public T get( final O object )
 	{
+		if ( object == null )
+			return null;
 		final LabelSet< O, Integer > ref = idLabelSets.createRef();
 		try
 		{
