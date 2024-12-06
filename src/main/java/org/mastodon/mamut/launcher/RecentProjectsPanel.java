@@ -30,6 +30,8 @@ package org.mastodon.mamut.launcher;
 
 import java.awt.Desktop;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -47,10 +49,10 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.ui.util.RecentProjects;
-
-import net.miginfocom.swing.MigLayout;
 
 public class RecentProjectsPanel extends JPanel
 {
@@ -61,7 +63,7 @@ public class RecentProjectsPanel extends JPanel
 
 	public RecentProjectsPanel( final Consumer< String > projectOpener )
 	{
-		setLayout( new MigLayout( "fill, wrap 3", "[grow, fill][shrink 0][shrink 0]", "[][grow, fill][]" ) );
+		setLayout( new MigLayout( "fill", "[grow]", "[]10[grow]10[]10[]" ) );
 		remakeGUI( projectOpener );
 	}
 
@@ -71,63 +73,82 @@ public class RecentProjectsPanel extends JPanel
 
 		final JLabel lblTitle = new JLabel( "Recent projects" );
 		lblTitle.setFont( lblTitle.getFont().deriveFont( lblTitle.getFont().getStyle() | Font.BOLD ) );
-		lblTitle.setHorizontalAlignment( SwingConstants.CENTER );
-		add( lblTitle, "span, wrap" );
+		add( lblTitle, "align center, wrap" );
 
-		final JPanel listPanel = new JPanel( new MigLayout( "fillx, wrap 3", "[fill][shrink 0][shrink 0]", "" ) );
-		final JScrollPane scrollPane = new JScrollPane( listPanel );
-		scrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED );
-		scrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-		add( scrollPane, "span, wrap" );
-
+		final JPanel listPanel;
 		if ( !recentProjects.isempty() )
 		{
+			listPanel = new JPanel( new MigLayout( "fillx", "[grow]", "[]15[]" ) );
 			final JLabel lblTitleHint = new JLabel( "Double-click to open the containing folder." );
 			lblTitleHint.setFont( lblTitleHint.getFont().deriveFont( lblTitleHint.getFont().getStyle() | Font.ITALIC ) );
-			lblTitleHint.setHorizontalAlignment( SwingConstants.CENTER );
-			listPanel.add( lblTitleHint, "span, wrap" );
+			listPanel.add( lblTitleHint, "align center, wrap" );
 
+			// list of recent projects
 			for ( final String projectPath : recentProjects )
 			{
-				final JTextArea ta = new JTextArea( projectPath );
-				ta.setEditable( true );
-				ta.setLineWrap( true );
-				ta.addMouseListener( new MouseDblClickOpenPath( ta.getText() ) );
-				listPanel.add( ta );
-
-				final JButton btnOpen = new JButton( MastodonIcons.LOAD_ICON_SMALL );
-				btnOpen.addActionListener( l -> projectOpener.accept( ta.getText() ) ); // Recent projects will be updated in the launcher method.
-				listPanel.add( btnOpen );
-
-				final JButton btnClear = new JButton( MastodonIcons.BIN_ICON );
-				btnClear.addActionListener( l -> {
-					recentProjects.remove( projectPath );
-					remakeGUI( projectOpener );
-				} );
-				listPanel.add( btnClear, "wrap" );
+				ListItem listItem = new ListItem( projectPath, projectOpener );
+				listPanel.add( listItem, "grow, wrap" );
 			}
 		}
 		else
 		{
+			// No recent projects.
+			listPanel = new JPanel( new GridBagLayout() );
 			final JLabel lblNo = new JLabel( "No recent projects." );
 			lblNo.setFont( getFont().deriveFont( getFont().getStyle() | Font.ITALIC ) );
-			lblNo.setHorizontalAlignment( SwingConstants.CENTER );
-			listPanel.add( lblNo, "span, wrap" );
+			listPanel.add( lblNo, new GridBagConstraints() );
 		}
 
-		add( new JSeparator(), "span, wrap" );
+		final JScrollPane scrollPane = new JScrollPane( listPanel );
+		scrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED );
+		scrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+		add( scrollPane, "grow, wrap" );
+
+		add( new JSeparator(), "span" );
+		add( getBottomPanel( projectOpener ), "right" );
+
+		revalidate();
+		repaint();
+	}
+
+	private class ListItem extends JPanel
+	{
+		private ListItem( final String path, final Consumer< String > projectOpener )
+		{
+			super( new MigLayout( "fill, ins 0, gapy 0", "[fill][][]", "" ) );
+
+			final JTextArea ta = new JTextArea( path );
+			ta.setEditable( true );
+			ta.setLineWrap( true );
+			ta.addMouseListener( new MouseDblClickOpenPath( ta.getText() ) );
+			add( ta, "pushx, w 0:5" );
+
+			final JButton btnOpen = new JButton( MastodonIcons.LOAD_ICON_SMALL );
+			btnOpen.addActionListener( l -> projectOpener.accept( ta.getText() ) ); // Recent projects will be updated in the launcher method.
+			add( btnOpen, "" );
+
+			final JButton btnClear = new JButton( MastodonIcons.BIN_ICON );
+			btnClear.addActionListener( l -> {
+				recentProjects.remove( path );
+				remakeGUI( projectOpener );
+			} );
+			add( btnClear, "wrap" );
+		}
+	}
+
+	private static JPanel getBottomPanel( final Consumer< String > projectOpener )
+	{
+		JPanel bottomPanel = new JPanel( new MigLayout( "", "[][]", "" ) );
 
 		final JLabel lblTitle2 = new JLabel( "Open another project" );
 		lblTitle2.setHorizontalAlignment( SwingConstants.CENTER );
 		lblTitle2.setFont( lblTitle2.getFont().deriveFont( lblTitle2.getFont().getStyle() | Font.BOLD ) );
-		add( lblTitle2 );
+		bottomPanel.add( lblTitle2, "" );
 
 		final JButton btnBrowse = new JButton( MastodonIcons.LOAD_ICON_SMALL );
 		btnBrowse.addActionListener( l -> projectOpener.accept( null ) );
-		add( btnBrowse );
-
-		revalidate();
-		repaint();
+		bottomPanel.add( btnBrowse, "" );
+		return bottomPanel;
 	}
 
 	public static final class MouseDblClickOpenPath implements MouseListener
