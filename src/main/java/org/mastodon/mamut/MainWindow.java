@@ -106,11 +106,19 @@ public class MainWindow extends JFrame
 		// component.
 		ProjectActions.installAppActions( appModel.getProjectActions(), appModel, this );
 
-		// Views:
+		// Main Panel
 		final JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout( new MigLayout() );
 		final ActionMap projectActionMap = appModel.getProjectActions().getActionMap();
 
+		// Project:
+		final JLabel projectLabel = new JLabel( "Project:" );
+		projectLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
+		buttonsPanel.add( projectLabel );
+		final JLabel projectNameLabel = new JLabel( appModel.getProjectName() );
+		buttonsPanel.add( projectNameLabel, "wrap" );
+
+		// Views:
 		final JLabel viewsLabel = new JLabel( "Views:" );
 		viewsLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( viewsLabel, "span, wrap" );
