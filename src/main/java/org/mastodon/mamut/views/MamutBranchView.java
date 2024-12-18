@@ -157,12 +157,6 @@ public class MamutBranchView<
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final ModelGraph graph = appModel.getModel().getGraph();
 
-		// Highlight.
-		final HighlightModel< Spot, Link > graphHighlightModel = appModel.getHighlightModel();
-		final HighlightModel< BranchSpot, BranchLink > branchHighlightModel =
-				new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphHighlightModel );
-		this.highlightModel = new HighlightModelAdapter<>( branchHighlightModel, vertexMap, edgeMap );
-
 		// Focus
 		final FocusModel< Spot > graphFocusModel = appModel.getFocusModel();
 		final FocusModel< BranchSpot > branchFocusfocusModel =
@@ -184,6 +178,12 @@ public class MamutBranchView<
 
 		// Time-point.
 		this.timepointModel = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
+
+		// Highlight.
+		final HighlightModel< Spot, Link > graphHighlightModel = appModel.getHighlightModel();
+		final HighlightModel< BranchSpot, BranchLink > branchHighlightModel =
+				new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphHighlightModel, timepointModel );
+		this.highlightModel = new HighlightModelAdapter<>( branchHighlightModel, vertexMap, edgeMap );
 
 		// Tag-set.
 		this.tagSetModel = branchTagSetModel( appModel );

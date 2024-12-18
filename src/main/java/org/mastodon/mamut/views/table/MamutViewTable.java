@@ -67,6 +67,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.model.branch.BranchGraphEdgeBimap;
 import org.mastodon.model.branch.BranchGraphFocusAdapter;
 import org.mastodon.model.branch.BranchGraphHighlightAdapter;
@@ -162,7 +163,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 					.featureModel( featureModel )
 					.tagSetModel( branchTagSetModel( projectModel ) )
 					.selectionModel( branchSelectionModel( projectModel ) )
-					.highlightModel( branchHighlightModel( projectModel ) )
+				.highlightModel( branchHighlightModel( projectModel, this.timepointModel ) )
 					.coloring( branchColoringAdapter )
 					.focusModel( branchFocusfocusModel( projectModel ) )
 					.navigationHandler( branchGraphNavigation( projectModel, navigationHandler ) )
@@ -337,13 +338,14 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		return branchGraphNavigation;
 	}
 
-	private static HighlightModel< BranchSpot, BranchLink > branchHighlightModel( final ProjectModel appModel )
+	private static HighlightModel< BranchSpot, BranchLink > branchHighlightModel( final ProjectModel appModel,
+			final TimepointModel timepointModel )
 	{
 		final ModelGraph graph = appModel.getModel().getGraph();
 		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
 		final HighlightModel< Spot, Link > graphHighlightModel = appModel.getHighlightModel();
 		final HighlightModel< BranchSpot, BranchLink > branchHighlightModel =
-				new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphHighlightModel );
+				new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphHighlightModel, timepointModel );
 		return branchHighlightModel;
 	}
 
