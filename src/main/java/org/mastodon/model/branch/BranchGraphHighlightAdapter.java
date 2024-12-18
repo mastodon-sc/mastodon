@@ -28,6 +28,8 @@
  */
 package org.mastodon.model.branch;
 
+import java.util.Iterator;
+
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -35,10 +37,12 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
+import org.mastodon.model.TimepointModel;
+import org.mastodon.spatial.HasTimepoint;
 import org.scijava.listeners.Listeners;
 
 public class BranchGraphHighlightAdapter<
-		V extends Vertex< E >,
+		V extends Vertex< E > & HasTimepoint,
 		E extends Edge< V >,
 		BV extends Vertex< BE >,
 		BE extends Edge< BV > >
@@ -48,28 +52,54 @@ public class BranchGraphHighlightAdapter<
 
 	private final HighlightModel< V, E > highlight;
 
+	private final TimepointModel timepoint;
+
 	public BranchGraphHighlightAdapter(
 			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
-			final HighlightModel< V, E > highlight )
+			final HighlightModel< V, E > highlight,
+			final TimepointModel timepoint )
 	{
 		super( branchGraph, graph, idmap );
 		this.highlight = highlight;
+		this.timepoint = timepoint;
 	}
 
 	@Override
-	public void highlightVertex( final BV vertex )
+	public void highlightVertex( final BV branchVertex )
 	{
-		if ( null == vertex )
+		if ( null == branchVertex )
 		{
 			highlight.highlightVertex( null );
 			return;
 		}
 
-		final V vRef = graph.vertexRef();
-		highlight.highlightVertex( branchGraph.getLastLinkedVertex( vertex, vRef ) );
-		graph.releaseRef( vRef );
+		final V spotRef = graph.vertexRef();
+		Iterator< V > vertices = branchGraph.vertexBranchIterator( branchVertex );
+		boolean highlighted = false;
+		try
+		{
+			// prefer to highlight the spot at the current timepoint
+			while ( vertices.hasNext() )
+			{
+				V spotVertex = vertices.next();
+				if ( spotVertex.getTimepoint() == timepoint.getTimepoint() )
+				{
+					highlight.highlightVertex( spotVertex );
+					highlighted = true;
+					break;
+				}
+			}
+			// if there is no spot at the current timepoint, highlight the last spot in the branch
+			if ( !highlighted )
+				highlight.highlightVertex( branchGraph.getLastLinkedVertex( branchVertex, spotRef ) );
+		}
+		finally
+		{
+			graph.releaseRef( spotRef );
+			branchGraph.releaseIterator( vertices );
+		}
 	}
 
 	@Override
