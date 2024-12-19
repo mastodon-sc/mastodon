@@ -201,23 +201,36 @@ public class GrapherSidePanel extends JPanel
 		rdbtnKeepCurrent.setFont( rdbtnKeepCurrent.getFont().deriveFont( rdbtnKeepCurrent.getFont().getSize() - 2f ) );
 		btngrp.add( rdbtnKeepCurrent );
 
-		rdbtnContext = new JRadioButton( "From context:" );
+		rdbtnContext = new JRadioButton();
+		rdbtnContext.setText( "Full graph" );
+		btngrp.add( rdbtnContext );
+
 		final GridBagConstraints gbcRdbtnContext = new GridBagConstraints();
 		gbcRdbtnContext.anchor = GridBagConstraints.WEST;
 		gbcRdbtnContext.insets = new Insets( 0, 5, 0, 5 );
 		gbcRdbtnContext.gridx = 0;
 		gbcRdbtnContext.gridy = 9;
-		add( rdbtnContext, gbcRdbtnContext );
 		rdbtnContext.setFont( rdbtnContext.getFont().deriveFont( rdbtnContext.getFont().getSize() - 2f ) );
-		btngrp.add( rdbtnContext );
+		add( rdbtnContext, gbcRdbtnContext );
 
-		final ContextChooserPanel< ? > chooserPanel = new ContextChooserPanel<>( contextChooser );
-		final GridBagConstraints gbcChooserPanel = new GridBagConstraints();
-		gbcChooserPanel.fill = GridBagConstraints.BOTH;
-		gbcChooserPanel.insets = new Insets( 0, 5, 5, 5 );
-		gbcChooserPanel.gridx = 0;
-		gbcChooserPanel.gridy = 10;
-		add( chooserPanel, gbcChooserPanel );
+		if ( contextChooser != null )
+		{
+			rdbtnContext.setText( "From context:" );
+			final ContextChooserPanel< ? > chooserPanel = new ContextChooserPanel<>( contextChooser );
+			final GridBagConstraints gbcChooserPanel = new GridBagConstraints();
+			gbcChooserPanel.fill = GridBagConstraints.BOTH;
+			gbcChooserPanel.insets = new Insets( 0, 5, 5, 5 );
+			gbcChooserPanel.gridx = 0;
+			gbcChooserPanel.gridy = 10;
+			add( chooserPanel, gbcChooserPanel );
+			for ( final Component c : chooserPanel.getComponents() )
+				c.setFont( c.getFont().deriveFont( c.getFont().getSize2D() - 2f ) );
+			// show context box only if the right button is selected.
+			final EverythingDisablerAndReenabler contextEnabler =
+					new EverythingDisablerAndReenabler( chooserPanel, new Class[] { Label.class } );
+			contextEnabler.setEnabled( rdbtnContext.isSelected() );
+			rdbtnContext.addChangeListener( e -> contextEnabler.setEnabled( rdbtnContext.isSelected() ) );
+		}
 
 		chkboxConnect = new JCheckBox( "Show edges" );
 		final GridBagConstraints gbcChkboxConnect = new GridBagConstraints();
@@ -228,9 +241,6 @@ public class GrapherSidePanel extends JPanel
 		add( chkboxConnect, gbcChkboxConnect );
 		chkboxConnect.setSelected( true );
 		chkboxConnect.setFont( chkboxConnect.getFont().deriveFont( chkboxConnect.getFont().getSize() - 2f ) );
-
-		for ( final Component c : chooserPanel.getComponents() )
-			c.setFont( c.getFont().deriveFont( c.getFont().getSize2D() - 2f ) );
 
 		btnPlot = new JButton( "Plot" );
 		final GridBagConstraints gbcBtnPlot = new GridBagConstraints();
@@ -247,11 +257,6 @@ public class GrapherSidePanel extends JPanel
 			if ( !rdbtnContext.isSelected() )
 				rdbtnKeepCurrent.setSelected( true );
 		} );
-		// show context box only if the right button is selected.
-		final EverythingDisablerAndReenabler contextEnabler =
-				new EverythingDisablerAndReenabler( chooserPanel, new Class[] { Label.class } );
-		contextEnabler.setEnabled( rdbtnContext.isSelected() );
-		rdbtnContext.addChangeListener( e -> contextEnabler.setEnabled( rdbtnContext.isSelected() ) );
 	}
 
 	/**
