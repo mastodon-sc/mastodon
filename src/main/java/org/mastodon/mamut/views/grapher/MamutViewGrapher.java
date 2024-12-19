@@ -47,6 +47,7 @@ import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
+import org.mastodon.views.grapher.datagraph.DataContextListener;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataVertex;
@@ -74,8 +75,9 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 				new String[] { KeyConfigContexts.GRAPHER } );
 
 
+		final DataContextListener< Spot > contextListener = new DataContextListener<>( viewGraph );
 		grapherInitializer = new GrapherInitializer<>( viewGraph, appModel, selectionModel, navigationHandler, focusModel, highlightModel,
-				getGroupHandle() );
+				getGroupHandle(), contextListener );
 		grapherInitializer.setOnClose( this );
 		grapherInitializer.initFeatureConfig( getFeatureGraphConfig() );
 		setFrame( grapherInitializer.getFrame() ); // this creates viewActions and viewBehaviours thus must be called before installActions

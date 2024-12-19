@@ -129,7 +129,7 @@ public class GrapherInitializer< V extends Vertex< E > & HasTimepoint & HasLabel
 	GrapherInitializer( final DataGraph< V, E > graph, final ProjectModel appModel,
 			final SelectionModel< DataVertex, DataEdge > selectionModel, final NavigationHandler< DataVertex, DataEdge > navigationHandler,
 			final FocusModel< DataVertex > focusModel, final HighlightModel< DataVertex, DataEdge > highlightModel,
-			final GroupHandle groupHandle
+			final GroupHandle groupHandle, final DataContextListener< V > contextListener
 	)
 	{
 		this.viewGraph = graph;
@@ -143,8 +143,7 @@ public class GrapherInitializer< V extends Vertex< E > & HasTimepoint & HasLabel
 		layout = new DataGraphLayout<>( viewGraph, selectionModel );
 
 		// ContextChooser
-		final DataContextListener< V > contextListener = new DataContextListener<>( viewGraph );
-		contextChooser = new ContextChooser<>( contextListener );
+		this.contextChooser = contextListener == null ? null : new ContextChooser<>( contextListener );
 
 		// Style
 		final DataDisplayStyleManager dataDisplayStyleManager = appModel.getWindowManager().getManager( DataDisplayStyleManager.class );
@@ -178,7 +177,8 @@ public class GrapherInitializer< V extends Vertex< E > & HasTimepoint & HasLabel
 
 		// Panel
 		this.panel = frame.getDataDisplayPanel();
-		contextListener.setContextListener( panel );
+		if ( contextListener != null )
+			contextListener.setContextListener( panel );
 
 		// Style listener
 		styleUpdateListener = panel::repaint;
