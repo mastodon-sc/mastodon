@@ -43,8 +43,6 @@ import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.views.context.ContextChooser;
-import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataVertex;
@@ -59,7 +57,7 @@ import java.util.Iterator;
 import java.util.function.BiConsumer;
 
 public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSpot, BranchLink >, DataVertex, DataEdge >
-		implements HasContextChooser< BranchSpot >, HasColoringModel, HasColorBarOverlay, DataDisplayFrameSupplier< BranchSpot, BranchLink >
+		implements HasColoringModel, HasColorBarOverlay, DataDisplayFrameSupplier< BranchSpot, BranchLink >
 {
 
 	private final GrapherInitializer< BranchSpot, BranchLink > grapherInitializer;
@@ -74,7 +72,7 @@ public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSp
 				new String[] { KeyConfigContexts.GRAPHER } );
 
 		grapherInitializer = new GrapherInitializer<>( viewGraph, appModel, selectionModel, navigationHandler, focusModel, highlightModel,
-				getGroupHandle() );
+				getGroupHandle(), null );
 		grapherInitializer.getFrame().setTitle( "Grapher Branch" );
 		InertialScreenTransformEventHandler handler = grapherInitializer.getFrame().getDataDisplayPanel().getTransformEventHandler();
 		handler.setMinScaleX( 0.1d );
@@ -117,12 +115,6 @@ public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSp
 	public DataDisplayFrame< BranchSpot, BranchLink > getFrame()
 	{
 		return ( DataDisplayFrame< BranchSpot, BranchLink > ) super.getFrame();
-	}
-
-	@Override
-	public ContextChooser< BranchSpot > getContextChooser()
-	{
-		return grapherInitializer.getContextChooser();
 	}
 
 	@Override
