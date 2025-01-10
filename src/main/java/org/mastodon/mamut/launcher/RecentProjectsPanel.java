@@ -78,7 +78,7 @@ public class RecentProjectsPanel extends JPanel
 		final JPanel listPanel;
 		if ( !recentProjects.isempty() )
 		{
-			listPanel = new JPanel( new MigLayout( "fillx", "[grow]", "[]15[]" ) );
+			listPanel = new JPanel( new MigLayout( "fillx", "[grow]", "[]10[]" ) );
 			final JLabel lblTitleHint = new JLabel( "Double-click to open the containing folder." );
 			lblTitleHint.setFont( lblTitleHint.getFont().deriveFont( lblTitleHint.getFont().getStyle() | Font.ITALIC ) );
 			listPanel.add( lblTitleHint, "align center, wrap" );
