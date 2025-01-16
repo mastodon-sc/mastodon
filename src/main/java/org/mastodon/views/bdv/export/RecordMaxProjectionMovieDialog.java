@@ -81,7 +81,6 @@ import org.scijava.ui.behaviour.util.InputActionBindings;
 import bdv.export.ProgressWriter;
 import bdv.ui.keymap.Keymap;
 import bdv.ui.keymap.Keymap.UpdateListener;
-import bdv.util.DelayedPackDialog;
 import bdv.viewer.OverlayRenderer;
 import bdv.viewer.ViewerPanel;
 import ij.io.LogStream;
@@ -92,7 +91,7 @@ import ij.io.LogStream;
  *
  * @author Jean-Yves Tinevez
  */
-public class RecordMaxProjectionMovieDialog extends DelayedPackDialog implements OverlayRenderer
+public class RecordMaxProjectionMovieDialog extends bdv.tools.DelayedPackDialog implements OverlayRenderer
 {
 
 	public static final String RECORD_MIP_MOVIE_DIALOG = "record max projection movie dialog";
