@@ -49,10 +49,10 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
-import net.miginfocom.swing.MigLayout;
-
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.ui.util.RecentProjects;
+
+import net.miginfocom.swing.MigLayout;
 
 public class RecentProjectsPanel extends JPanel
 {
@@ -86,7 +86,7 @@ public class RecentProjectsPanel extends JPanel
 			// list of recent projects
 			for ( final String projectPath : recentProjects )
 			{
-				ListItem listItem = new ListItem( projectPath, projectOpener );
+				final ListItem listItem = new ListItem( projectPath, projectOpener );
 				listPanel.add( listItem, "grow, wrap" );
 			}
 		}
@@ -113,6 +113,8 @@ public class RecentProjectsPanel extends JPanel
 
 	private class ListItem extends JPanel
 	{
+		private static final long serialVersionUID = 1L;
+
 		private ListItem( final String path, final Consumer< String > projectOpener )
 		{
 			super( new MigLayout( "fill, ins 0, gapy 0", "[fill][][]", "" ) );
@@ -138,7 +140,7 @@ public class RecentProjectsPanel extends JPanel
 
 	private static JPanel getBottomPanel( final Consumer< String > projectOpener )
 	{
-		JPanel bottomPanel = new JPanel( new MigLayout( "", "[][]", "" ) );
+		final JPanel bottomPanel = new JPanel( new MigLayout( "", "[][]", "" ) );
 
 		final JLabel lblTitle2 = new JLabel( "Open another project" );
 		lblTitle2.setHorizontalAlignment( SwingConstants.CENTER );
