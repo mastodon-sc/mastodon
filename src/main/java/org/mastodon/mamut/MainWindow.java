@@ -52,6 +52,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -105,18 +107,25 @@ public class MainWindow extends JFrame
 		// Re-register save actions, this time using this frame as parent
 		// component.
 		ProjectActions.installAppActions( appModel.getProjectActions(), appModel, this );
+		final ActionMap projectActionMap = appModel.getProjectActions().getActionMap();
 
 		// Main Panel
 		final JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setLayout( new MigLayout() );
-		final ActionMap projectActionMap = appModel.getProjectActions().getActionMap();
+		buttonsPanel.setLayout( new MigLayout( "wrap 2", "[150px!]10[150px!]" ) );
 
 		// Project:
-		final JLabel projectLabel = new JLabel( "Project:" );
+		final JPanel titlePanel = new JPanel();
+		final BoxLayout boxLayout = new BoxLayout( titlePanel, BoxLayout.LINE_AXIS );
+		titlePanel.setLayout( boxLayout );
+		titlePanel.setOpaque( false );
+		final JLabel projectLabel = new JLabel( "Project: " );
 		projectLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
-		buttonsPanel.add( projectLabel );
 		final JLabel projectNameLabel = new JLabel( appModel.getProjectName() );
-		buttonsPanel.add( projectNameLabel, "wrap" );
+		titlePanel.add( projectLabel );
+		titlePanel.add( Box.createHorizontalGlue() );
+		titlePanel.add( projectNameLabel );
+		buttonsPanel.add( titlePanel, "span 2, grow, wrap, align left" );
+		buttonsPanel.add( new JSeparator(), "span, grow, wrap" );
 
 		// Views:
 		final JLabel viewsLabel = new JLabel( "Views:" );
@@ -190,7 +199,9 @@ public class MainWindow extends JFrame
 			public void paintComponent( final Graphics g )
 			{
 				super.paintComponent( g );
-				g.drawImage( MAINWINDOW_BG, 0, 0, this );
+				final int x = getWidth() - MAINWINDOW_BG.getWidth( null );
+                final int y = 0;
+				g.drawImage( MAINWINDOW_BG, x, y, this );
 			}
 		};
 		setContentPane( content );
