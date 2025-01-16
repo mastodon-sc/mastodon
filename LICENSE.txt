@@ -1,4 +1,4 @@
-Copyright (c) 2014 - 2024, Tobias Pietzsch, Jean-Yves Tinevez
+Copyright (c) 2014 - 2025, Tobias Pietzsch, Jean-Yves Tinevez
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
