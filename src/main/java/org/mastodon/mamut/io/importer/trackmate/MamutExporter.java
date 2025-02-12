@@ -424,9 +424,9 @@ public class MamutExporter
 						public void processVertexLate( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
 						{
 							/*
-							 * 1 root = 1 track, unless a track has several roots. Add
-							 * the iterated vertex to the list of root to skip if
-							 * needed.
+							 * 1 root = 1 track, unless a track has several
+							 * roots. Add the iterated vertex to the list of
+							 * root to skip if needed.
 							 */
 							if ( vertex.incomingEdges().isEmpty() )
 								toSkip.add( vertex );
@@ -520,6 +520,15 @@ public class MamutExporter
 		return spotCollectionElement;
 	}
 
+	/**
+	 * Collection of link feature names that we want to export in the mamut
+	 * file, but computed from the link data currently set in Mastodon. We used
+	 * this collection to avoid exporting a feature with identical name in the
+	 * case a feature imported as the same name.
+	 */
+	private final static Set< String > IMPORTED_LINK_BUILTIN_FEATURES = new HashSet<>( Arrays.asList(
+			EDGE_SOURCE_ATTRIBUTE, EDGE_TARGET_ATTRIBUTE ) );
+
 	private Element edgeToXml( final Link edge, final int sourceSpotID, final int targetSpotID )
 	{
 		final Collection< Attribute > attributes = new ArrayList<>();
@@ -529,9 +538,38 @@ public class MamutExporter
 		attributes.add( new Attribute( EDGE_TARGET_ATTRIBUTE, Integer.toString( targetSpotID ) ) );
 
 		// Link features.
-		linkFeatureProjections.forEach( p -> attributes.add( new Attribute(
-				p.attributeName,
-				Double.toString( p.projection.value( edge ) ) ) ) );
+		for ( final ExportFeatureProjection< Link > p : linkFeatureProjections )
+		{
+			final String attName;
+			final String origName = p.attributeName;
+			/*
+			 * If the model to export was imported from a TrackMate or a MaMuT
+			 * file, it will already contain features with the same name that
+			 * the builtin feature we added just above. Which will cause an
+			 * error.
+			 * 
+			 * To avoid this, rename these imported features.
+			 */
+			if ( IMPORTED_LINK_BUILTIN_FEATURES.contains( origName ) )
+			{
+				final String importedAttName = "IMPORTED_" + origName;
+				attName = importedAttName;
+			}
+			else if ( origName.startsWith( "IMPORTED_" ) )
+			{
+				// We skip features that have been re-imported.
+				continue;
+			}
+			else
+			{
+				// All good.
+				attName = origName;
+			}
+
+			attributes.add( new Attribute(
+					attName,
+					Double.toString( p.projection.value( edge ) ) ) );
+		}
 
 		final Element edgeElement = new Element( EDGE_TAG );
 		edgeElement.setAttributes( attributes );
@@ -556,9 +594,20 @@ public class MamutExporter
 		return trackElement;
 	}
 
+	/**
+	 * Collection of spot feature names that we want to export in the mamut
+	 * file, but computed from the actual position, etc, currently set in
+	 * Mastodon. We used this collection to avoid exporting a feature with
+	 * identical name in the case a feature imported as the same name.
+	 */
+	private final static Set< String > IMPORTED_SPOT_BUILTIN_FEATURES = new HashSet<>( Arrays.asList( ID_FEATURE_NAME, LABEL_FEATURE_NAME, POSITION_X_FEATURE_NAME,
+			POSITION_Y_FEATURE_NAME, POSITION_Z_FEATURE_NAME, FRAME_FEATURE_NAME,
+			POSITION_T_FEATURE_NAME, QUALITY_FEATURE_NAME, VISIBILITY_FEATURE_NAME,
+			RADIUS_FEATURE_NAME ) );
+
 	private Element spotToXml( final Spot spot )
 	{
-		final Collection< Attribute > attributes = new ArrayList<>();
+		final List< Attribute > attributes = new ArrayList<>();
 
 		// Id.
 		attributes.add( new Attribute( ID_FEATURE_NAME, Integer.toString( spot.getInternalPoolIndex() ) ) );
@@ -583,10 +632,38 @@ public class MamutExporter
 		final double meanRadius = Arrays.stream( eig.getRealEigenvalues() ).map( Math::sqrt ).average().getAsDouble();
 		attributes.add( new Attribute( RADIUS_FEATURE_NAME, Double.toString( meanRadius ) ) );
 
-		// Spot features.
-		spotFeatureProjections.forEach( p -> attributes.add( new Attribute(
-				p.attributeName,
-				Double.toString( p.projection.value( spot ) ) ) ) );
+		for (final ExportFeatureProjection< Spot > p : spotFeatureProjections )
+		{
+			final String attName;
+			final String origName = p.attributeName;
+			/*
+			 * If the model to export was imported from a TrackMate or a MaMuT
+			 * file, it will already contain features with the same name that
+			 * the builtin feature we added just above. Which will cause an
+			 * error.
+			 * 
+			 * To avoid this, rename these imported features.
+			 */
+			if ( IMPORTED_SPOT_BUILTIN_FEATURES.contains( origName ) )
+			{
+				final String importedAttName = "IMPORTED_" + origName;
+				attName = importedAttName;
+			}
+			else if ( origName.startsWith( "IMPORTED_" ) )
+			{
+				// We skip features that have been re-imported.
+				continue;
+			}
+			else
+			{
+				// All good.
+				attName = origName;
+			}
+			
+			attributes.add( new Attribute(
+					attName,
+					Double.toString( p.projection.value( spot ) ) ) );
+		}
 
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
 		spotElement.setAttributes( attributes );
@@ -652,8 +729,8 @@ public class MamutExporter
 	}
 
 	/**
-	 * Tries to recover the TrackMate dimension from the unit string and the spatial and
-	 * time units.
+	 * Tries to recover the TrackMate dimension from the unit string and the
+	 * spatial and time units.
 	 *
 	 * @param units
 	 *            the unit string.
