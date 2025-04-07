@@ -51,6 +51,8 @@ import javax.swing.JRadioButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import net.imglib2.util.Cast;
+
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjectionSpec;
@@ -74,7 +76,7 @@ import org.scijava.Context;
 /**
  * Panel that lets the user specifies what to plot. The user specifications are
  * bundled as a {@link FeatureGraphConfig} object.
- * 
+ *
  * @author Jean-Yves Tinevez
  */
 public class GrapherSidePanel extends JPanel
@@ -102,10 +104,13 @@ public class GrapherSidePanel extends JPanel
 
 	private final JButton btnPlot;
 
+	private final ContextChooser< ? > contextChooser;
+
 	public GrapherSidePanel( final int nSources, final ContextChooser< ? > contextChooser )
 	{
 		this.nSources = nSources;
 		this.specs = new ArrayList<>();
+		this.contextChooser = contextChooser;
 
 		final GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 150, 0 };
@@ -261,7 +266,7 @@ public class GrapherSidePanel extends JPanel
 
 	/**
 	 * Exposes the plot button of this panel.
-	 * 
+	 *
 	 * @return the plot button.
 	 */
 	public JButton getBtnPlot()
@@ -428,6 +433,11 @@ public class GrapherSidePanel extends JPanel
 				return featureSpecPair.projectionKey().getSpec();
 		}
 		return null;
+	}
+
+	public ContextChooser< Spot > getContextChooser()
+	{
+		return Cast.unchecked( this.contextChooser );
 	}
 
 	private static final FeatureModel demoFM()
