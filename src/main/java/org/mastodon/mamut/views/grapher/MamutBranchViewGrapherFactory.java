@@ -66,7 +66,7 @@ public class MamutBranchViewGrapherFactory extends AbstractMamutViewFactory< Mam
 		super.restoreGuiState( view, guiState );
 		DataDisplayFrame< BranchSpot, BranchLink > frame = view.getFrame();
 		GrapherGuiState.loadGuiState( guiState, frame.getDataDisplayPanel().getScreenTransform(), frame.getVertexSidePanel(),
-				MamutBranchViewGrapher.getFeatureGraphConfig(), view );
+				MamutBranchViewGrapher.getFeatureGraphConfig(), view.getFrame() );
 	}
 
 	@Override

@@ -57,7 +57,7 @@ import java.util.Iterator;
 import java.util.function.BiConsumer;
 
 public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSpot, BranchLink >, DataVertex, DataEdge >
-		implements HasColoringModel, HasColorBarOverlay, DataDisplayFrameSupplier< BranchSpot, BranchLink >
+		implements HasColoringModel, HasColorBarOverlay
 {
 
 	private final GrapherInitializer< BranchSpot, BranchLink > grapherInitializer;

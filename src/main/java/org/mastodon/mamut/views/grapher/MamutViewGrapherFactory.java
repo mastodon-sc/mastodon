@@ -98,7 +98,7 @@ public class MamutViewGrapherFactory extends AbstractMamutViewFactory< MamutView
 		super.restoreGuiState( view, guiState );
 		DataDisplayFrame< Spot, Link > frame = view.getFrame();
 		GrapherGuiState.loadGuiState( guiState, frame.getDataDisplayPanel().getScreenTransform(), frame.getVertexSidePanel(),
-				MamutViewGrapher.getFeatureGraphConfig(), view );
+				MamutViewGrapher.getFeatureGraphConfig(), view.getFrame() );
 	}
 
 	@Override

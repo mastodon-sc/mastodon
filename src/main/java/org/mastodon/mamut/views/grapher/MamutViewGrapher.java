@@ -59,7 +59,7 @@ import org.mastodon.views.grapher.display.FeatureSpecPair;
 import net.imglib2.loops.LoopBuilder;
 
 public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge >
-		implements HasContextChooser< Spot >, HasColoringModel, HasColorBarOverlay, DataDisplayFrameSupplier< Spot, Link >
+		implements HasContextChooser< Spot >, HasColoringModel, HasColorBarOverlay
 {
 
 	private final GrapherInitializer< Spot, Link > grapherInitializer;

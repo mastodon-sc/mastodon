@@ -41,6 +41,7 @@ import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.FeatureGraphConfig;
 import org.mastodon.views.grapher.display.FeatureSpecPair;
 import org.mastodon.views.grapher.display.GrapherSidePanel;
+import org.mastodon.views.grapher.display.Plotable;
 import org.mastodon.views.grapher.display.ScreenTransformState;
 
 public class GrapherGuiState
@@ -118,10 +119,10 @@ public class GrapherGuiState
 		loadGuiState( guiState, screenTransformState, sidePanel, defaultConfig, null );
 	}
 
-	static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
+	public static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
 			loadGuiState( final Map< String, Object > guiState, final ScreenTransformState screenTransformState,
 					final GrapherSidePanel sidePanel, final FeatureGraphConfig defaultConfig,
-					final DataDisplayFrameSupplier< V, E > frameSupplier )
+					final Plotable plotable )
 	{
 		// Read Screen Transform.
 		final ScreenTransform screenTransform = ( ScreenTransform ) guiState.get( GRAPHER_TRANSFORM_KEY );
@@ -133,8 +134,8 @@ public class GrapherGuiState
 		sidePanel.setGraphConfig( config );
 
 		// Plot with loaded transform and config.
-		if ( frameSupplier != null )
-			frameSupplier.getFrame().plot( screenTransform );
+		if ( plotable != null )
+			plotable.plot( screenTransform );
 	}
 
 	private static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void

@@ -63,7 +63,7 @@ import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 
-public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends ViewFrame
+public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends ViewFrame implements Plotable
 {
 	private static final long serialVersionUID = 1L;
 
