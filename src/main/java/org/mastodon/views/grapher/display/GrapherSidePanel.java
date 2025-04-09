@@ -58,6 +58,8 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.project.MamutProject;
@@ -79,7 +81,7 @@ import org.scijava.Context;
  *
  * @author Jean-Yves Tinevez
  */
-public class GrapherSidePanel extends JPanel
+public class GrapherSidePanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel
 {
 
 	private static final long serialVersionUID = 1L;
@@ -104,9 +106,9 @@ public class GrapherSidePanel extends JPanel
 
 	private final JButton btnPlot;
 
-	private final ContextChooser< ? > contextChooser;
+	private final ContextChooser< V > contextChooser;
 
-	public GrapherSidePanel( final int nSources, final ContextChooser< ? > contextChooser )
+	public GrapherSidePanel( final int nSources, final ContextChooser< V > contextChooser )
 	{
 		this.nSources = nSources;
 		this.specs = new ArrayList<>();
@@ -435,9 +437,9 @@ public class GrapherSidePanel extends JPanel
 		return null;
 	}
 
-	public ContextChooser< Spot > getContextChooser()
+	public ContextChooser< V > getContextChooser()
 	{
-		return Cast.unchecked( this.contextChooser );
+		return this.contextChooser;
 	}
 
 	private static final FeatureModel demoFM()
@@ -473,7 +475,7 @@ public class GrapherSidePanel extends JPanel
 				FeatureUtils.collectFeatureMap( fm, Spot.class );
 		final Map< FeatureSpec< ?, Link >, Feature< Link > > linkFeatures =
 				FeatureUtils.collectFeatureMap( fm, Link.class );
-		final GrapherSidePanel gsp = new GrapherSidePanel( 2, new ContextChooser<>( null ) );
+		final GrapherSidePanel<Spot, Link> gsp = new GrapherSidePanel<Spot, Link>( 2, new ContextChooser<>( null ) );
 		gsp.setFeatures( spotFeatures, linkFeatures );
 
 		final JFrame frame = new JFrame( "Grapher side panel" );

@@ -114,14 +114,7 @@ public class GrapherGuiState
 
 	public static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
 			loadGuiState( final Map< String, Object > guiState, final ScreenTransformState screenTransformState,
-					final GrapherSidePanel sidePanel, final FeatureGraphConfig defaultConfig )
-	{
-		loadGuiState( guiState, screenTransformState, sidePanel, defaultConfig, null );
-	}
-
-	public static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
-			loadGuiState( final Map< String, Object > guiState, final ScreenTransformState screenTransformState,
-					final GrapherSidePanel sidePanel, final FeatureGraphConfig defaultConfig,
+					final GrapherSidePanel<V, E> sidePanel, final FeatureGraphConfig defaultConfig,
 					final Plotable plotable )
 	{
 		// Read Screen Transform.
@@ -159,7 +152,7 @@ public class GrapherGuiState
 
 	public static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > FeatureGraphConfig
 			loadFeatureGraphConfig(
-					final GrapherSidePanel sidePanel, final Map< String, Object > guiState,
+					final GrapherSidePanel<V, E> sidePanel, final Map< String, Object > guiState,
 					final FeatureGraphConfig defaultConfig
 			)
 	{
@@ -173,7 +166,7 @@ public class GrapherGuiState
 		return new FeatureGraphConfig( featureSpecPairX, featureSpecPairY, FeatureGraphConfig.GraphDataItemsSource.CONTEXT, showEdges );
 	}
 
-	private static FeatureSpecPair loadFeatureSpecPair( final Map< String, Object > guiState, final GrapherSidePanel sidePanel,
+	private static < V extends Vertex< E >,  E extends Edge< V > > FeatureSpecPair loadFeatureSpecPair( final Map< String, Object > guiState, final GrapherSidePanel<V, E> sidePanel,
 			final String edgeKey, final String featureSpecKey, final String projectionKey, final String incomingEdgeKey )
 	{
 		Boolean isEdgeFeature = ( Boolean ) guiState.get( edgeKey );

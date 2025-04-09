@@ -69,7 +69,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 
 	private final DataDisplayPanel< V, E > dataDisplayPanel;
 
-	private final GrapherSidePanel sidePanel;
+	private final GrapherSidePanel<V, E> sidePanel;
 
 	private final FeatureModel featureModel;
 
@@ -116,7 +116,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		 * Side panel.
 		 */
 
-		sidePanel = new GrapherSidePanel( nSources, contextChooser );
+		sidePanel = new GrapherSidePanel<>( nSources, contextChooser );
 		sidePanel.getBtnPlot().addActionListener( e -> plot( false ) );
 
 		final FeatureModelListener featureModelListener = () -> sidePanel.setFeatures(
@@ -183,7 +183,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		return dataDisplayPanel;
 	}
 
-	public GrapherSidePanel getVertexSidePanel()
+	public GrapherSidePanel<V, E> getVertexSidePanel()
 	{
 		return sidePanel;
 	}
@@ -194,8 +194,10 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 	 */
 	public void plot( boolean keepCurrentScreenTransform )
 	{
-		dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel,
-				keepCurrentScreenTransform ? dataDisplayPanel.getScreenTransform().get() : null );
+		if ( keepCurrentScreenTransform )
+			plot( dataDisplayPanel.getScreenTransform().get() );
+		else
+			plot( null );
 	}
 
 	public void plot( final ScreenTransform transform )

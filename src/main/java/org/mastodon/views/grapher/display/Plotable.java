@@ -5,4 +5,6 @@ import org.mastodon.views.grapher.datagraph.ScreenTransform;
 public interface Plotable
 {
 	void plot( final ScreenTransform screenTransform );
+
+	void plot( final boolean keepCurrentScreenTransform );
 }
