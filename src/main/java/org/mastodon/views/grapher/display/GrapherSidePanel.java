@@ -51,8 +51,6 @@ import javax.swing.JRadioButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import net.imglib2.util.Cast;
-
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjectionSpec;
@@ -72,6 +70,7 @@ import org.mastodon.ui.context.ContextChooserPanel;
 import org.mastodon.ui.util.EverythingDisablerAndReenabler;
 import org.mastodon.util.FeatureUtils;
 import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.grapher.display.FeatureGraphConfig.GraphDataItemsSource;
 import org.scijava.Context;
 
@@ -81,7 +80,7 @@ import org.scijava.Context;
  *
  * @author Jean-Yves Tinevez
  */
-public class GrapherSidePanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel
+public class GrapherSidePanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel implements HasContextChooser< V >
 {
 
 	private static final long serialVersionUID = 1L;
