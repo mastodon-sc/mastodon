@@ -198,6 +198,8 @@ class LauncherGUI extends JPanel
 		c.gridwidth = 1;
 		c.gridy++;
 		btnHelp = new JButton( HELP_ICON_MEDIUM );
+		btnHelp.addActionListener( e -> openDocs() );
+		btnHelp.setToolTipText( "Open online documentation" );
 		sidePanel.add( btnHelp, c );
 
 		centralPanel = new JPanel();
@@ -363,14 +365,7 @@ class LauncherGUI extends JPanel
 				@Override
 				public void mouseClicked( final java.awt.event.MouseEvent e )
 				{
-					try
-					{
-						Desktop.getDesktop().browse( new URI( DOCUMENTATION_URL ) );
-					}
-					catch ( IOException | URISyntaxException e1 )
-					{
-						e1.printStackTrace();
-					}
+					openDocs();
 				}
 			} );
 			final GridBagConstraints gbcHyperlilnk = new GridBagConstraints();
@@ -387,6 +382,19 @@ class LauncherGUI extends JPanel
 			super.paintComponent( g );
 			final int x = getWidth() - MAINWINDOW_BG.getWidth( null );
 			g.drawImage( MAINWINDOW_BG, x, 0, this );
+		}
+	}
+
+	private static void openDocs()
+	{
+		try
+		{
+			System.out.println( DOCUMENTATION_URL );
+			Desktop.getDesktop().browse( new URI( DOCUMENTATION_URL ) );
+		}
+		catch ( IOException | URISyntaxException e1 )
+		{
+			e1.printStackTrace();
 		}
 	}
 
