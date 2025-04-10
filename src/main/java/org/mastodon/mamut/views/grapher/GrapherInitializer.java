@@ -71,6 +71,7 @@ import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.grapher.datagraph.DataContextListener;
 import org.mastodon.views.grapher.datagraph.DataEdge;
@@ -273,6 +274,23 @@ public class GrapherInitializer< V extends Vertex< E > & HasTimepoint & HasLabel
 		final JPanel searchPanel =
 				SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, panel );
 		frame.getSettingsPanel().add( searchPanel );
+	}
+
+	void addCommandFinder(final Actions viewActions, final String[] keyConfigContexts)
+	{
+		final CommandFinder cf = CommandFinder.build()
+				.context( appModel.getContext() )
+				.inputTriggerConfig( appModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
+				.register( viewActions )
+				.register( appModel.getModelActions() )
+				.register( appModel.getProjectActions() )
+				.register( appModel.getPlugins().getPluginActions() )
+				.modificationListeners( appModel.getKeymap().updateListeners() )
+				.parent( frame )
+				.installOn( viewActions );
+		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 	}
 
 	private void
