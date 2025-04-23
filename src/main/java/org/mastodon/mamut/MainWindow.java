@@ -111,7 +111,7 @@ public class MainWindow extends JFrame
 
 		// Main Panel
 		final JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setLayout( new MigLayout( "wrap 2", "[150px!]10[150px!]" ) );
+		buttonsPanel.setLayout( new MigLayout( "wrap 2", "[190px!]10[190px!]" ) );
 
 		// Project:
 		final JPanel titlePanel = new JPanel();
