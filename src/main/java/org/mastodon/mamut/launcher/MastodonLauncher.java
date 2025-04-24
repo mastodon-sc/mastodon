@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.launcher;
 
+import java.awt.Font;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -47,6 +48,7 @@ import java.util.function.IntUnaryOperator;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import org.jdom2.JDOMException;
 import org.mastodon.app.MastodonIcons;
@@ -94,6 +96,7 @@ public class MastodonLauncher extends JFrame
 	public MastodonLauncher( final Context context )
 	{
 		super( "Mastodon launcher" );
+		setFont();
 		this.context = Optional.ofNullable( context ).orElse( new Context() );
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
@@ -121,6 +124,27 @@ public class MastodonLauncher extends JFrame
 		setSize( 630, 660 );
 
 		setDropTarget( new LauncherDropTarget() );
+	}
+
+	private static void setFont()
+	{
+		// Determine the OS and set the font
+		String os = System.getProperty( "os.name" ).toLowerCase();
+
+		if ( os.contains( "nix" ) || os.contains( "nux" ) )
+		{
+			Font defaultFont = new Font( "Arial", Font.PLAIN, 12 );
+			// Set the font for UI components
+			UIManager.put( "Label.font", defaultFont );
+			UIManager.put( "Button.font", defaultFont );
+			UIManager.put( "TextField.font", defaultFont );
+			UIManager.put( "TextArea.font", defaultFont );
+			UIManager.put( "ComboBox.font", defaultFont );
+			UIManager.put( "List.font", defaultFont );
+			UIManager.put( "Table.font", defaultFont );
+			UIManager.put( "Menu.font", defaultFont );
+			UIManager.put( "MenuItem.font", defaultFont );
+		}
 	}
 
 	private void importSimi()
