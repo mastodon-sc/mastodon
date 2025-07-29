@@ -54,6 +54,7 @@ import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FILTER_V
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FOLDER_ATTRIBUTE;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FRAME_ATTRIBUTE;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FRAME_FEATURE_NAME;
+import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FRAME_INTERVAL_ATTRIBUTE;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.GUI_STATE_TAG;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.HEIGHT_ATTRIBUTE;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.ID_FEATURE_NAME;
@@ -361,6 +362,7 @@ public class MamutExporter
 		attributes.add( new Attribute( PIXEL_WIDTH_ATTRIBUTE, Double.toString( pixelWidth ) ) );
 		attributes.add( new Attribute( PIXEL_HEIGHT_ATTRIBUTE, Double.toString( pixelHeight ) ) );
 		attributes.add( new Attribute( VOXEL_DEPTH_ATTRIBUTE, Double.toString( voxelDepth ) ) );
+		attributes.add( new Attribute( FRAME_INTERVAL_ATTRIBUTE, Double.toString( 1. ) ) );
 
 		final Element timePointsElement = document
 				.getRootElement()

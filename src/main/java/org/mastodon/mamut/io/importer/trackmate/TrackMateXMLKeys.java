@@ -125,6 +125,8 @@ public class TrackMateXMLKeys
 
 	public static final String NFRAMES_ATTRIBUTE = "nframes";
 
+	public static final String FRAME_INTERVAL_ATTRIBUTE = "timeinterval";
+
 	public static final String PIXEL_WIDTH_ATTRIBUTE = "pixelwidth";
 
 	public static final String PIXEL_HEIGHT_ATTRIBUTE = "pixelheight";
