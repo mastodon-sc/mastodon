@@ -660,9 +660,18 @@ public class MamutExporter
 				attName = origName;
 			}
 			
-			attributes.add( new Attribute(
-					attName,
-					Double.toString( p.projection.value( spot ) ) ) );
+			
+			String val;
+			if ( p.projection instanceof IntFeatureProjection )
+			{
+				val = Integer.toString( (int) p.projection.value( spot ) );
+			}
+			else
+			{
+				// Assume double.
+				val = Double.toString( p.projection.value( spot ) );
+			}
+			attributes.add( new Attribute( attName, val ) );
 		}
 
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
@@ -991,4 +1000,5 @@ public class MamutExporter
 		exporter.appendGuiState();
 		exporter.write( target );
 	}
+
 }
