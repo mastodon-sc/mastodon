@@ -682,11 +682,27 @@ public class MamutExporter
 	private Element featuresDeclarationToXml()
 	{
 		final Element featuresElement = new Element( FEATURE_DECLARATION_TAG );
+		appendBasicFeatureDeclarations( featuresElement );
 		appendFeaturesDeclarationOfClass( Spot.class, featuresElement, SPOT_FEATURE_DECLARATION_TAG );
 		appendFeaturesDeclarationOfClass( Link.class, featuresElement, EDGE_FEATURE_DECLARATION_TAG );
 		// Create an empty declaration for track features, for now.
 		appendFeaturesDeclarationOfClass( Boolean.class, featuresElement, TRACK_FEATURE_DECLARATION_TAG );
 		return featuresElement;
+	}
+
+	private void appendBasicFeatureDeclarations( final Element featuresElement )
+	{
+		// Spots.
+		final Element spotFeaturesElement = getOrAddChild( featuresElement, SPOT_FEATURE_DECLARATION_TAG );
+		CommonTrackMateFeatureDeclarations.spotFeatureDeclarations.forEach( cf -> spotFeaturesElement.addContent( cf.toElement() ) );
+
+		// Edges.
+		final Element edgeFeaturesElement = getOrAddChild( featuresElement, EDGE_FEATURE_DECLARATION_TAG );
+		CommonTrackMateFeatureDeclarations.edgeFeatureDeclarations.forEach( cf -> edgeFeaturesElement.addContent( cf.toElement() ) );
+
+		// Tracks.
+		final Element trackFeaturesElement = getOrAddChild( featuresElement, TRACK_FEATURE_DECLARATION_TAG );
+		CommonTrackMateFeatureDeclarations.trackFeatureDeclarations.forEach( cf -> trackFeaturesElement.addContent( cf.toElement() ) );
 	}
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
@@ -701,7 +717,7 @@ public class MamutExporter
 		else
 			projections = Collections.emptyList();
 
-		final Element classFeaturesElement = new Element( classFeatureDeclarationTag );
+		final Element classFeaturesElement = getOrAddChild( featuresElement, classFeatureDeclarationTag );
 		for ( final ExportFeatureProjection< T > p : projections )
 		{
 			final String isint = ( p.projection instanceof IntFeatureProjection )
@@ -719,7 +735,17 @@ public class MamutExporter
 			fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
 			classFeaturesElement.addContent( fel );
 		}
-		featuresElement.addContent( classFeaturesElement );
+	}
+
+	private Element getOrAddChild( final Element parent, final String childName )
+	{
+		Element child = parent.getChild( childName );
+		if ( null == child )
+		{
+			child = new Element( childName );
+			parent.addContent( child );
+		}
+		return child;
 	}
 
 	private static Document getSAXParsedDocument( final String fileName )
