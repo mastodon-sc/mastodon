@@ -8,6 +8,7 @@ import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FEATURE_
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FEATURE_TAG;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jdom2.Element;
@@ -67,4 +68,27 @@ public class CommonTrackMateFeatureDeclarations
 			return fel;
 		}
 	}
+
+	/**
+	 * List of Mastodon spot projection keys, translated to the TrackMate export
+	 * name, that are not needed in the exported XML file, as they are already
+	 * exported via TrackMate builtin features.
+	 */
+	public static final List< String > redundantSpotProjectionKeys = Arrays.asList(
+			"Spot_position_X", "Spot_position_Y", "Spot_position_Z", "Spot_radius", "Spot_frame" );
+
+	/**
+	 * List of Mastodon link projection keys, translated to the TrackMate export
+	 * name, that are not needed in the exported XML file, as they are already
+	 * exported via TrackMate builtin features.
+	 */
+	public static final List< String > redundantLinkProjectionKeys = Arrays.asList(
+			"Link_target_IDs_Source_spot_id", "Link_target_IDs_Target_spot_id" );
+
+	/**
+	 * List of Mastodon track projection keys, translated to the TrackMate
+	 * export name, that are not needed in the exported XML file, as they are
+	 * already exported via TrackMate builtin features.
+	 */
+	public static final List< String > redundantTrackProjectionKeys = Collections.emptyList();
 }

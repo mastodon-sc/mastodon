@@ -540,8 +540,15 @@ public class MamutExporter
 		// Link features.
 		for ( final ExportFeatureProjection< Link > p : linkFeatureProjections )
 		{
-			final String attName;
 			final String origName = p.attributeName;
+			/*
+			 * Do not export link features that are common TrackMate features
+			 * and that we already exported above.
+			 */
+			if ( CommonTrackMateFeatureDeclarations.redundantLinkProjectionKeys.contains( origName ) )
+				continue;
+
+			final String attName;
 			/*
 			 * If the model to export was imported from a TrackMate or a MaMuT
 			 * file, it will already contain features with the same name that
@@ -634,8 +641,15 @@ public class MamutExporter
 
 		for (final ExportFeatureProjection< Spot > p : spotFeatureProjections )
 		{
-			final String attName;
 			final String origName = p.attributeName;
+			/*
+			 * Do not export spot features that are common TrackMate features
+			 * and that we already exported above.
+			 */
+			if ( CommonTrackMateFeatureDeclarations.redundantSpotProjectionKeys.contains( origName ) )
+				continue;
+
+			final String attName;
 			/*
 			 * If the model to export was imported from a TrackMate or a MaMuT
 			 * file, it will already contain features with the same name that
@@ -710,16 +724,33 @@ public class MamutExporter
 			final String classFeatureDeclarationTag )
 	{
 		final List< ExportFeatureProjection< T > > projections;
+		List< String > redundantFeatures;
 		if ( clazz.equals( Spot.class ) )
+		{
 			projections = ( List ) spotFeatureProjections;
+			redundantFeatures = CommonTrackMateFeatureDeclarations.redundantSpotProjectionKeys;
+		}
 		else if ( clazz.equals( Link.class ) )
+		{
 			projections = ( List ) linkFeatureProjections;
+			redundantFeatures = CommonTrackMateFeatureDeclarations.redundantLinkProjectionKeys;
+		}
 		else
+		{
 			projections = Collections.emptyList();
+			redundantFeatures = CommonTrackMateFeatureDeclarations.redundantTrackProjectionKeys;
+		}
 
 		final Element classFeaturesElement = getOrAddChild( featuresElement, classFeatureDeclarationTag );
 		for ( final ExportFeatureProjection< T > p : projections )
 		{
+			/*
+			 * Do not export features that are common TrackMate features and
+			 * that we already declared.
+			 */
+			if ( redundantFeatures.contains( p.attributeName ) )
+				continue;
+
 			final String isint = ( p.projection instanceof IntFeatureProjection )
 					? "true"
 					: "false";
