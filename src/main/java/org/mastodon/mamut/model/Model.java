@@ -233,7 +233,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	}
 
 	/**
-	 * Saves this model to the specified the specified project folder.
+	 * Saves this model to the specified project folder.
 	 *
 	 * @param writer
 	 *            writer to save the raw project files.
