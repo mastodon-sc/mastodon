@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,14 +28,21 @@
  */
 package org.mastodon.graph.revised;
 
+import java.io.IOException;
+
+import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.io.importer.ModelImporter;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.views.bdv.SharedBigDataViewerData;
+import org.scijava.Context;
 
 public class CreateLargeModelExample
 {
-	private static final int N_STARTING_CELLS = 6;
+	private static final int N_STARTING_CELLS = 10;
 
 	private static final int N_DIVISIONS = 17;
 
@@ -160,8 +167,13 @@ public class CreateLargeModelExample
 		model.getGraph().releaseRef( link );
 	}
 
-	public static void main( final String[] args )
+	public static void main( final String[] args ) throws IOException
 	{
+		// Print info on the JVM used to run the code.
+		System.out.println( "JVM: " + System.getProperty( "java.vm.name" ) + " " + System.getProperty( "java.vm.version" ) );
+		System.out.println( "Java: " + System.getProperty( "java.version" ) );
+		System.out.println( "OS: " + System.getProperty( "os.name" ) + " " + System.getProperty( "os.version" ) + " " + System.getProperty( "os.arch" ) );
+
 		final CreateLargeModelExample clme = new CreateLargeModelExample();
 		final long start = System.currentTimeMillis();
 		final Model model = clme.run();
@@ -170,5 +182,22 @@ public class CreateLargeModelExample
 		System.out.println( "Total number of spots: " + model.getGraph().vertices().size() );
 		System.out.println( String.format( "Total memory used by the model: %.1f MB",
 				( Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() ) / 1e6d ) );
+
+
+		final Context context = new Context();
+		final SharedBigDataViewerData imagedata = SharedBigDataViewerData.fromDummyFilename( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" );
+		final MamutProject project = new MamutProject( "./large_model_example.mastodon" );
+		final ProjectModel appModel = ProjectModel.create( context, model, imagedata, project  );
+		final WindowManager wm = new WindowManager( appModel  );
+
+//		start = System.currentTimeMillis();
+//		wm.createBigDataViewer();
+//		end = System.currentTimeMillis();
+//		System.out.println( "Rendering in the main viewer done in " + ( end - start ) / 1000. + " s." );
+//
+//		start = System.currentTimeMillis();
+//		wm.createTrackScheme( );
+//		end = System.currentTimeMillis();
+//		System.out.println( "Rendering in TrackScheme done in " + ( end - start ) / 1000. + " s." );
 	}
 }
