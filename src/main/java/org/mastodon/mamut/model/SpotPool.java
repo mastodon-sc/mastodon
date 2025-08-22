@@ -31,7 +31,7 @@ package org.mastodon.mamut.model;
 import org.mastodon.model.AbstractSpotPool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
-import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.pool.MultiArrayMemPool;
 import org.mastodon.pool.attributes.DoubleArrayAttribute;
 import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.properties.ObjPropertyMap;
@@ -62,7 +62,7 @@ public class SpotPool extends AbstractSpotPool< Spot, Link, ByteMappedElement, M
 
 	SpotPool( final int initialCapacity )
 	{
-		super( initialCapacity, layout, Spot.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+		super( initialCapacity, layout, Spot.class, MultiArrayMemPool.factory( ByteMappedElementArray.factory ) );
 		label = new ObjPropertyMap<>( this );
 		registerPropertyMap( label );
 	}
