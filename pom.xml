@@ -184,7 +184,7 @@
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
-		<mastodon-graph.version>1.0.0-beta-30</mastodon-graph.version>
+		<mastodon-graph.version>1.0.0-beta-31-SNAPSHOT</mastodon-graph.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
