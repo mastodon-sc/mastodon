@@ -32,8 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mastodon.feature.Dimension;
-import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.mamut.feature.LinkDeltaFrameFeature;
 import org.mastodon.mamut.feature.LinkDisplacementFeature;
@@ -47,11 +46,10 @@ import org.mastodon.mamut.feature.branch.BranchNDivisionsFeature;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.model.AbstractModel;
+import org.mastodon.model.AbstractModelBranch;
 import org.mastodon.model.tag.DefaultTagSetModel;
 import org.mastodon.properties.Property;
 import org.mastodon.spatial.SpatioTemporalIndex;
-import org.mastodon.spatial.SpatioTemporalIndexImp;
 import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoPointMarker;
@@ -68,24 +66,18 @@ import net.imglib2.RealLocalizable;
  * On top of a graph structure for the spots, this model manages a
  * {@link SpatioTemporalIndex}, that can slice the model at some given
  * time-points.
- * <p>
- * The model graph is only exposed as a {@link ReadOnlyGraph}. All updates to
- * the model graph are done through {@link Model}. This includes vertex and edge
- * attribute changes (although this currently cannot be enforced through
- * {@link ReadOnlyGraph}).
+ *
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class Model extends AbstractModel< ModelGraph, Spot, Link > implements UndoPointMarker
+public class Model extends AbstractModelBranch< ModelGraph, Spot, Link, ModelBranchGraph, BranchSpot, BranchLink > implements UndoPointMarker
 {
 
 	private static final int initialCapacity = 1024;
 
-	private final ModelBranchGraph branchGraph;
-
-	private final SpatioTemporalIndexImp< BranchSpot, BranchLink > branchIndex;
-
 	private final GraphUndoRecorder< Spot, Link > undoRecorder;
+
+	private FeatureModel featureModel;
 
 	public Model()
 	{
@@ -94,11 +86,23 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	public Model( final String spaceUnits, final String timeUnits )
 	{
-		super( new ModelGraph( initialCapacity ), spaceUnits, timeUnits );
+		this( new ModelGraph( initialCapacity ), spaceUnits, timeUnits );
+	}
+
+	private Model( final ModelGraph graph, final String spaceUnits, final String timeUnits )
+	{
+		super( graph, new ModelBranchGraph( graph, initialCapacity ), spaceUnits, timeUnits );
+
+		/*
+		 * Feature model.
+		 */
+
+		this.featureModel = new FeatureModel();
 		declareDefaultFeatures();
 
-		branchGraph = new ModelBranchGraph( modelGraph, initialCapacity );
-		branchIndex = new SpatioTemporalIndexImp<>( branchGraph, branchGraph.getGraphIdBimap().vertexIdBimap() );
+		/*
+		 * Undo / Redo.
+		 */
 
 		final List< Property< Spot > > vertexUndoableProperties = new ArrayList<>();
 		vertexUndoableProperties.add( modelGraph.getVertexPool().positionProperty() );
@@ -163,11 +167,6 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		return ModelSerializer.getInstance();
 	}
 
-	public SpatioTemporalIndex< BranchSpot > getBranchGraphSpatioTemporalIndex()
-	{
-		return branchIndex;
-	}
-
 	public void undo()
 	{
 		lock.writeLock().lock();
@@ -210,16 +209,6 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public boolean isSavePoint()
 	{
 		return undoRecorder.isSavePoint();
-	}
-
-	public ModelBranchGraph getBranchGraph()
-	{
-		return branchGraph;
-	}
-
-	public GraphIdBimap< BranchSpot, BranchLink > getBranchGraphIdBimap()
-	{
-		return branchGraph.getGraphIdBimap();
 	}
 
 	public String getSpaceUnits()

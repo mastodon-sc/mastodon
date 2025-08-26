@@ -38,7 +38,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.io.GraphSerializer;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
@@ -72,13 +71,11 @@ public abstract class AbstractModel<
 		E extends AbstractListenableEdge< E, V, ?, ? > >
 {
 
-	protected final FeatureModel featureModel;
-
 	protected final DefaultTagSetModel< V, E > tagSetModel;
 
 	protected final MG modelGraph;
 
-	private final SpatioTemporalIndex< V > index;
+	protected final SpatioTemporalIndex< V > index;
 
 	protected final ReentrantReadWriteLock lock;
 
@@ -91,17 +88,21 @@ public abstract class AbstractModel<
 		this.modelGraph = modelGraph;
 		this.spaceUnits = spaceUnits;
 		this.timeUnits = timeUnits;
-		this.featureModel = new FeatureModel();
-		this.tagSetModel = new DefaultTagSetModel<>( modelGraph );
+		this.tagSetModel = createTagSetModel( modelGraph );
+		this.index = new SpatioTemporalIndexImp<>( modelGraph, getGraphIdBimap().vertexIdBimap() );
+		this.lock = modelGraph.getLock();
 
-		final SpatioTemporalIndexImp< V, E > theIndex = new SpatioTemporalIndexImp<>( modelGraph, getGraphIdBimap().vertexIdBimap() );
 		/*
 		 * Every 1 second, rebuild spatial indices with more than 100
-		 * modifications
+		 * modifications.
 		 */
-		new SpatioTemporalIndexImpRebuilderThread( "Rebuild spatial indices", theIndex, 100, 1000, true ).start();
-		index = theIndex;
-		lock = modelGraph.getLock();
+		new SpatioTemporalIndexImpRebuilderThread( "Rebuild spatial indices",
+				( SpatioTemporalIndexImp< ?, ? > ) getSpatioTemporalIndex(), 100, 1000, true ).start();
+	}
+
+	protected DefaultTagSetModel< V, E > createTagSetModel( final MG modelGraph )
+	{
+		return new DefaultTagSetModel<>( modelGraph );
 	}
 
 	/**
@@ -123,12 +124,6 @@ public abstract class AbstractModel<
 	public GraphIdBimap< V, E > getGraphIdBimap()
 	{
 		return modelGraph.idmap;
-	}
-
-
-	public FeatureModel getFeatureModel()
-	{
-		return featureModel;
 	}
 
 	public TagSetModel< V, E > getTagSetModel()
