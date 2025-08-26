@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,24 +28,12 @@
  */
 package org.mastodon.mamut.model;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.feature.Dimension;
-import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
-import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
-import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.mamut.feature.LinkDeltaFrameFeature;
 import org.mastodon.mamut.feature.LinkDisplacementFeature;
@@ -56,18 +44,14 @@ import org.mastodon.mamut.feature.SpotNLinksFeature;
 import org.mastodon.mamut.feature.SpotPositionFeature;
 import org.mastodon.mamut.feature.SpotRadiusFeature;
 import org.mastodon.mamut.feature.branch.BranchNDivisionsFeature;
-import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.AbstractModel;
 import org.mastodon.model.tag.DefaultTagSetModel;
-import org.mastodon.model.tag.RawTagSetModelIO;
-import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.properties.Property;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
-import org.mastodon.spatial.SpatioTemporalIndexImpRebuilderThread;
 import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoPointMarker;
@@ -97,26 +81,11 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private static final int initialCapacity = 1024;
 
-	/*
-	 * SpatioTemporalIndex of model spots
-	 */
-	private final SpatioTemporalIndex< Spot > index;
-
-	private final ReentrantReadWriteLock lock;
-
-	private final GraphUndoRecorder< Spot, Link > undoRecorder;
-
-	private final FeatureModel featureModel;
-
-	private final DefaultTagSetModel< Spot, Link > tagSetModel;
-
-	private final String spaceUnits;
-
-	private final String timeUnits;
-
 	private final ModelBranchGraph branchGraph;
 
 	private final SpatioTemporalIndexImp< BranchSpot, BranchLink > branchIndex;
+
+	private final GraphUndoRecorder< Spot, Link > undoRecorder;
 
 	public Model()
 	{
@@ -125,18 +94,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	public Model( final String spaceUnits, final String timeUnits )
 	{
-		super( new ModelGraph( initialCapacity ) );
-		this.spaceUnits = spaceUnits;
-		this.timeUnits = timeUnits;
-		final SpatioTemporalIndexImp< Spot, Link > theIndex =
-				new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
-		/*
-		 * Every 1 second, rebuild spatial indices with more than 100
-		 * modifications
-		 */
-		new SpatioTemporalIndexImpRebuilderThread( "Rebuild spatial indices", theIndex, 100, 1000, true ).start();
-		index = theIndex;
-		lock = modelGraph.getLock();
+		super( new ModelGraph( initialCapacity ), spaceUnits, timeUnits );
+		declareDefaultFeatures();
 
 		branchGraph = new ModelBranchGraph( modelGraph, initialCapacity );
 		branchIndex = new SpatioTemporalIndexImp<>( branchGraph, branchGraph.getGraphIdBimap().vertexIdBimap() );
@@ -148,10 +107,6 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		vertexUndoableProperties.add( modelGraph.getVertexPool().labelProperty() );
 
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
-
-		featureModel = new FeatureModel();
-		declareDefaultFeatures();
-		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 		vertexUndoableProperties.add(
 				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
 				{
@@ -202,69 +157,10 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		featureModel.declareFeature( new BranchNDivisionsFeature() );
 	}
 
-	/**
-	 * Clears this model and loads the model from the specified project folder.
-	 *
-	 * @param reader
-	 *            reader from which to load the raw project files.
-	 * @return the {@link FileIdToGraphMap} object generated by loading the
-	 *         model graph.
-	 * @throws IOException
-	 *             if an I/O error occurs while reading the file.
-	 */
-	public FileIdToGraphMap< Spot, Link > loadRaw( final MamutProject.ProjectReader reader ) throws IOException
+	@Override
+	public ModelSerializer getGraphSerializer()
 	{
-		final FileIdToGraphMap< Spot, Link > idmap =
-				modelGraph.loadRaw( reader.getRawModelInputStream(), ModelSerializer.getInstance() );
-
-		tagSetModel.pauseListeners();
-		tagSetModel.clear();
-		try (
-				final InputStream tis = reader.getRawTagsInputStream();
-				final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( tis, 1024 * 1024 ) ))
-		{
-			RawTagSetModelIO.read( tagSetModel, idmap, ois );
-		}
-		catch ( final FileNotFoundException e )
-		{}
-		tagSetModel.resumeListeners();
-
-		return idmap;
-	}
-
-	/**
-	 * Saves this model to the specified project folder.
-	 *
-	 * @param writer
-	 *            writer to save the raw project files.
-	 * @return the {@link GraphToFileIdMap} object generated by saving the model
-	 *         graph.
-	 * @throws IOException
-	 *             if an I/O error occurs while writing the file.
-	 */
-	public GraphToFileIdMap< Spot, Link > saveRaw( final MamutProject.ProjectWriter writer ) throws IOException
-	{
-		final GraphToFileIdMap< Spot, Link > idmap =
-				modelGraph.saveRaw( writer.getRawModelOutputStream(), ModelSerializer.getInstance() );
-
-		try (
-				final OutputStream fos = writer.getRawTagsOutputStream();
-				final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) ))
-		{
-			RawTagSetModelIO.write( tagSetModel, idmap, oos );
-		}
-
-		return idmap;
-	}
-
-	/**
-	 * Exposes the spatio-temporal index of this model.
-	 *
-	 * @return the spatio-temporal index.
-	 */
-	public SpatioTemporalIndex< Spot > getSpatioTemporalIndex()
-	{
-		return index;
+		return ModelSerializer.getInstance();
 	}
 
 	public SpatioTemporalIndex< BranchSpot > getBranchGraphSpatioTemporalIndex()
@@ -324,16 +220,6 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public GraphIdBimap< BranchSpot, BranchLink > getBranchGraphIdBimap()
 	{
 		return branchGraph.getGraphIdBimap();
-	}
-
-	public FeatureModel getFeatureModel()
-	{
-		return featureModel;
-	}
-
-	public TagSetModel< Spot, Link > getTagSetModel()
-	{
-		return tagSetModel;
 	}
 
 	public String getSpaceUnits()
