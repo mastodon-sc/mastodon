@@ -43,6 +43,9 @@ import org.mastodon.graph.io.GraphSerializer;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.graph.ref.AbstractListenableEdge;
+import org.mastodon.grouping.GroupHandle;
+import org.mastodon.grouping.GroupManager;
+import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.model.tag.DefaultTagSetModel;
 import org.mastodon.model.tag.RawTagSetModelIO;
@@ -68,8 +71,14 @@ import org.mastodon.spatial.SpatioTemporalIndexImpRebuilderThread;
 public abstract class AbstractModel<
 		MG extends AbstractModelGraph< MG, ?, ?, V, E, ? >,
 		V extends AbstractSpot< V, E, ?, ?, MG >,
-		E extends AbstractListenableEdge< E, V, ?, ? > >
+		E extends AbstractListenableEdge< E, V, ?, ? > > implements MastodonModel< MG, V, E >
 {
+
+	private static final int NUM_GROUPS = 3;
+
+	public final GroupableModelFactory< NavigationHandler< V, E > > NAVIGATION = new ForwardingNavigationHandler.Factory<>();
+
+	public final GroupableModelFactory< TimepointModel > TIMEPOINT = ForwardingTimepointModel.factory;
 
 	protected final DefaultTagSetModel< V, E > tagSetModel;
 
@@ -83,14 +92,44 @@ public abstract class AbstractModel<
 
 	protected final String timeUnits;
 
+	protected final DefaultSelectionModel< V, E > selectionModel;
+
+	protected final DefaultHighlightModel< V, E > highlightModel;
+
+	protected final DefaultFocusModel< V, E > focusModel;
+
+	protected final GroupManager groupManager;
+
+	protected final GroupHandle groupHandle;
+
 	protected AbstractModel( final MG modelGraph, final String spaceUnits, final String timeUnits )
+	{
+		this( modelGraph, spaceUnits, timeUnits, NUM_GROUPS );
+	}
+
+	protected AbstractModel( final MG modelGraph, final String spaceUnits, final String timeUnits, final int numGroups )
 	{
 		this.modelGraph = modelGraph;
 		this.spaceUnits = spaceUnits;
 		this.timeUnits = timeUnits;
-		this.tagSetModel = createTagSetModel( modelGraph );
+		this.tagSetModel = new DefaultTagSetModel<>( modelGraph );
 		this.index = new SpatioTemporalIndexImp<>( modelGraph, getGraphIdBimap().vertexIdBimap() );
 		this.lock = modelGraph.getLock();
+		this.groupManager = new GroupManager( numGroups );
+		groupManager.registerModel( TIMEPOINT );
+		groupManager.registerModel( NAVIGATION );
+
+		final DefaultSelectionModel< V, E > selectionModel = new DefaultSelectionModel<>( modelGraph, modelGraph.idmap );
+		modelGraph.addGraphListener( selectionModel );
+		this.selectionModel = selectionModel;
+
+		final DefaultHighlightModel< V, E > highlightModel = new DefaultHighlightModel<>( modelGraph.idmap );
+		modelGraph.addGraphListener( highlightModel );
+		this.highlightModel = highlightModel;
+
+		final DefaultFocusModel< V, E > focusModel = new DefaultFocusModel<>( modelGraph.idmap );
+		modelGraph.addGraphListener( focusModel );
+		this.focusModel = focusModel;
 
 		/*
 		 * Every 1 second, rebuild spatial indices with more than 100
@@ -100,45 +139,52 @@ public abstract class AbstractModel<
 				( SpatioTemporalIndexImp< ?, ? > ) getSpatioTemporalIndex(), 100, 1000, true ).start();
 	}
 
-	protected DefaultTagSetModel< V, E > createTagSetModel( final MG modelGraph )
-	{
-		return new DefaultTagSetModel<>( modelGraph );
-	}
-
-	/**
-	 * Exposes the graph managed by this model.
-	 *
-	 * @return the graph.
-	 */
+	@Override
 	public MG getGraph()
 	{
 		return modelGraph;
 	}
 
-	/**
-	 * Exposes the bidirectional map between vertices and their id, and between
-	 * edges and their id.
-	 *
-	 * @return the bidirectional id map.
-	 */
+	@Override
 	public GraphIdBimap< V, E > getGraphIdBimap()
 	{
 		return modelGraph.idmap;
 	}
 
+	@Override
+	public SpatioTemporalIndex< V > getSpatioTemporalIndex()
+	{
+		return index;
+	}
+
+	@Override
 	public TagSetModel< V, E > getTagSetModel()
 	{
 		return tagSetModel;
 	}
 
-	/**
-	 * Exposes the spatio-temporal index of this model.
-	 *
-	 * @return the spatio-temporal index.
-	 */
-	public SpatioTemporalIndex< V > getSpatioTemporalIndex()
+	@Override
+	public DefaultSelectionModel< V, E > getSelectionModel()
 	{
-		return index;
+		return selectionModel;
+	}
+
+	@Override
+	public DefaultHighlightModel< V, E > getHighlightModel()
+	{
+		return highlightModel;
+	}
+
+	@Override
+	public DefaultFocusModel< V, E > getFocusModel()
+	{
+		return focusModel;
+	}
+
+	@Override
+	public GroupManager getGroupManager()
+	{
+		return groupManager;
 	}
 
 	public abstract GraphSerializer< V, E > getGraphSerializer();

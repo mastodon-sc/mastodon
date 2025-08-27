@@ -68,7 +68,7 @@ import net.imglib2.RealLocalizable;
  * time-points.
  *
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class Model extends AbstractModelBranch< ModelGraph, Spot, Link, ModelBranchGraph, BranchSpot, BranchLink > implements UndoPointMarker
 {
@@ -139,8 +139,7 @@ public class Model extends AbstractModelBranch< ModelGraph, Spot, Link, ModelBra
 				vertexUndoableProperties,
 				edgeUndoableProperties );
 
-		final Recorder< DefaultTagSetModel.SetTagSetStructureUndoableEdit > recorder =
-				undoRecorder.createGenericUndoableEditRecorder();
+		final Recorder< DefaultTagSetModel.SetTagSetStructureUndoableEdit > recorder = undoRecorder.createGenericUndoableEditRecorder();
 		tagSetModel.setUndoRecorder( recorder );
 	}
 

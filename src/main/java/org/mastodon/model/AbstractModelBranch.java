@@ -4,6 +4,10 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.branch.BranchGraphImp;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
+import org.mastodon.grouping.GroupManager;
+import org.mastodon.model.branch.BranchGraphFocusAdapter;
+import org.mastodon.model.branch.BranchGraphHighlightAdapter;
+import org.mastodon.model.branch.BranchGraphSelectionAdapter;
 import org.mastodon.model.branch.BranchGraphTagSetAdapter;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.spatial.HasTimepoint;
@@ -58,19 +62,27 @@ public abstract class AbstractModelBranch<
 		return branchModel;
 	}
 
-	public class BranchModel
+	public class BranchModel implements MastodonModel< BG, BV, BE >
 	{
 
 		private final TagSetModel< BV, BE > branchGraphTagSetModel;
 
 		private final SpatioTemporalIndexImp< BV, BE > branchIndex;
 
+		private final FocusModel< BV > branchFocusfocusModel;
+
+		private final SelectionModel< BV, BE > branchSelectionModel;
+
+		private final HighlightModel< BV, BE > branchHighlightModel;
+
 		protected BranchModel()
 		{
 			this.branchIndex = new SpatioTemporalIndexImp< BV, BE >( branchGraph, branchGraph.getGraphIdBimap().vertexIdBimap() );
 			final MG graph = AbstractModelBranch.super.getGraph();
-			final TagSetModel< V, E > tagSetModel = AbstractModelBranch.super.getTagSetModel();
 			this.branchGraphTagSetModel = new BranchGraphTagSetAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), tagSetModel );
+			this.branchFocusfocusModel = new BranchGraphFocusAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), focusModel );
+			this.branchSelectionModel = new BranchGraphSelectionAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), selectionModel );
+			this.branchHighlightModel = new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), highlightModel, timepointModel );
 		}
 
 		/**
@@ -81,6 +93,7 @@ public abstract class AbstractModelBranch<
 		 *
 		 * @return the branch graph tag set model.
 		 */
+		@Override
 		public TagSetModel< BV, BE > getTagSetModel()
 		{
 			return branchGraphTagSetModel;
@@ -92,11 +105,13 @@ public abstract class AbstractModelBranch<
 		 *
 		 * @return the bidirectional id map.
 		 */
+		@Override
 		public GraphIdBimap< BV, BE > getGraphIdBimap()
 		{
 			return branchGraph.getGraphIdBimap();
 		}
 
+		@Override
 		public BG getGraph()
 		{
 			return branchGraph;
@@ -107,9 +122,40 @@ public abstract class AbstractModelBranch<
 		 *
 		 * @return the spatio-temporal index.
 		 */
+		@Override
 		public SpatioTemporalIndex< BV > getSpatioTemporalIndex()
 		{
 			return branchIndex;
+		}
+
+		@Override
+		public HighlightModel< BV, BE > getHighlightModel()
+		{
+			return branchHighlightModel;
+		}
+
+		@Override
+		public FocusModel< BV > getFocusModel()
+		{
+			return branchFocusfocusModel;
+		}
+
+		@Override
+		public SelectionModel< BV, BE > getSelectionModel()
+		{
+			return branchSelectionModel;
+		}
+
+		@Override
+		public TimepointModel getTimepointModel()
+		{
+			return timepointModel;
+		}
+
+		@Override
+		public GroupManager getGroupManager()
+		{
+			return groupManager;
 		}
 	}
 }
