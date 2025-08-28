@@ -51,7 +51,6 @@ import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.context.ContextChooserPanel;
-import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
@@ -73,7 +72,6 @@ public class TrackSchemeFrame extends ViewFrame
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final RootsModel< TrackSchemeVertex > rootsModel,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
-			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< ? > contextChooser,
 			final TrackSchemeOptions optional )
