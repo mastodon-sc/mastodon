@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,6 +29,7 @@
 package org.mastodon.views.trackscheme.wrap;
 
 import org.mastodon.model.HasLabel;
+import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 
@@ -56,7 +57,7 @@ public interface ModelGraphProperties< V, E >
 {
 	public int getTimepoint( V v );
 
-	default public int getFirstTimePoint( V v )
+	default public int getFirstTimePoint( final V v )
 	{
 		return getTimepoint( v );
 	};
@@ -65,7 +66,7 @@ public interface ModelGraphProperties< V, E >
 
 	public void setLabel( V v, String label );
 
-	default String getFirstLabel( V v )
+	default String getFirstLabel( final V v )
 	{
 		return getLabel( v );
 	}
@@ -81,5 +82,7 @@ public interface ModelGraphProperties< V, E >
 	public void removeVertex( V v );
 
 	public void notifyGraphChanged();
+
+	public void addVertexLabelListener( final PropertyChangeListener< V > listener );
 
 }
