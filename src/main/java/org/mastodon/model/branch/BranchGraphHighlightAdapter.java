@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,8 +28,6 @@
  */
 package org.mastodon.model.branch;
 
-import java.util.Iterator;
-
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -37,33 +35,24 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.spatial.HasTimepoint;
 import org.scijava.listeners.Listeners;
 
-public class BranchGraphHighlightAdapter<
-		V extends Vertex< E > & HasTimepoint,
-		E extends Edge< V >,
-		BV extends Vertex< BE >,
-		BE extends Edge< BV > >
+public class BranchGraphHighlightAdapter< V extends Vertex< E > & HasTimepoint, E extends Edge< V >, BV extends Vertex< BE >, BE extends Edge< BV > >
 		extends AbstractBranchGraphAdapter< V, E, BV, BE >
 		implements HighlightModel< BV, BE >
 {
 
 	private final HighlightModel< V, E > highlight;
 
-	private final TimepointModel timepoint;
-
 	public BranchGraphHighlightAdapter(
 			final BranchGraph< BV, BE, V, E > branchGraph,
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
-			final HighlightModel< V, E > highlight,
-			final TimepointModel timepoint )
+			final HighlightModel< V, E > highlight )
 	{
 		super( branchGraph, graph, idmap );
 		this.highlight = highlight;
-		this.timepoint = timepoint;
 	}
 
 	@Override
@@ -75,31 +64,10 @@ public class BranchGraphHighlightAdapter<
 			return;
 		}
 
+		// Highlight the last spot in the branch
 		final V spotRef = graph.vertexRef();
-		Iterator< V > vertices = branchGraph.vertexBranchIterator( branchVertex );
-		boolean highlighted = false;
-		try
-		{
-			// prefer to highlight the spot at the current timepoint
-			while ( vertices.hasNext() )
-			{
-				V spotVertex = vertices.next();
-				if ( spotVertex.getTimepoint() == timepoint.getTimepoint() )
-				{
-					highlight.highlightVertex( spotVertex );
-					highlighted = true;
-					break;
-				}
-			}
-			// if there is no spot at the current timepoint, highlight the last spot in the branch
-			if ( !highlighted )
-				highlight.highlightVertex( branchGraph.getLastLinkedVertex( branchVertex, spotRef ) );
-		}
-		finally
-		{
-			graph.releaseRef( spotRef );
-			branchGraph.releaseIterator( vertices );
-		}
+		highlight.highlightVertex( branchGraph.getLastLinkedVertex( branchVertex, spotRef ) );
+		graph.releaseRef( spotRef );
 	}
 
 	@Override
