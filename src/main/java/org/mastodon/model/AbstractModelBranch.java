@@ -4,7 +4,6 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.branch.BranchGraphImp;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
-import org.mastodon.grouping.GroupManager;
 import org.mastodon.model.branch.BranchGraphFocusAdapter;
 import org.mastodon.model.branch.BranchGraphHighlightAdapter;
 import org.mastodon.model.branch.BranchGraphSelectionAdapter;
@@ -82,7 +81,7 @@ public abstract class AbstractModelBranch<
 			this.branchGraphTagSetModel = new BranchGraphTagSetAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), tagSetModel );
 			this.branchFocusfocusModel = new BranchGraphFocusAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), focusModel );
 			this.branchSelectionModel = new BranchGraphSelectionAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), selectionModel );
-			this.branchHighlightModel = new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), highlightModel, timepointModel );
+			this.branchHighlightModel = new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), highlightModel );
 		}
 
 		/**
@@ -144,18 +143,6 @@ public abstract class AbstractModelBranch<
 		public SelectionModel< BV, BE > getSelectionModel()
 		{
 			return branchSelectionModel;
-		}
-
-		@Override
-		public TimepointModel getTimepointModel()
-		{
-			return timepointModel;
-		}
-
-		@Override
-		public GroupManager getGroupManager()
-		{
-			return groupManager;
 		}
 	}
 }

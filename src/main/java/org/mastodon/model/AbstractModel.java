@@ -43,9 +43,6 @@ import org.mastodon.graph.io.GraphSerializer;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.graph.ref.AbstractListenableEdge;
-import org.mastodon.grouping.GroupHandle;
-import org.mastodon.grouping.GroupManager;
-import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.model.tag.DefaultTagSetModel;
 import org.mastodon.model.tag.RawTagSetModelIO;
@@ -74,14 +71,6 @@ public abstract class AbstractModel<
 		E extends AbstractListenableEdge< E, V, ?, ? > > implements MastodonModel< MG, V, E >
 {
 
-	private static final int NUM_GROUPS = 3;
-
-	public final GroupableModelFactory< NavigationHandler< V, E > > NAVIGATION = new ForwardingNavigationHandler.Factory<>();
-
-	public final GroupableModelFactory< TimepointModel > TIMEPOINT = ForwardingTimepointModel.factory;
-
-	protected final DefaultTagSetModel< V, E > tagSetModel;
-
 	protected final MG modelGraph;
 
 	protected final SpatioTemporalIndex< V > index;
@@ -92,22 +81,15 @@ public abstract class AbstractModel<
 
 	protected final String timeUnits;
 
+	protected final DefaultTagSetModel< V, E > tagSetModel;
+
 	protected final DefaultSelectionModel< V, E > selectionModel;
 
 	protected final DefaultHighlightModel< V, E > highlightModel;
 
 	protected final DefaultFocusModel< V, E > focusModel;
 
-	protected final GroupManager groupManager;
-
-	protected final GroupHandle groupHandle;
-
 	protected AbstractModel( final MG modelGraph, final String spaceUnits, final String timeUnits )
-	{
-		this( modelGraph, spaceUnits, timeUnits, NUM_GROUPS );
-	}
-
-	protected AbstractModel( final MG modelGraph, final String spaceUnits, final String timeUnits, final int numGroups )
 	{
 		this.modelGraph = modelGraph;
 		this.spaceUnits = spaceUnits;
@@ -115,9 +97,6 @@ public abstract class AbstractModel<
 		this.tagSetModel = new DefaultTagSetModel<>( modelGraph );
 		this.index = new SpatioTemporalIndexImp<>( modelGraph, getGraphIdBimap().vertexIdBimap() );
 		this.lock = modelGraph.getLock();
-		this.groupManager = new GroupManager( numGroups );
-		groupManager.registerModel( TIMEPOINT );
-		groupManager.registerModel( NAVIGATION );
 
 		final DefaultSelectionModel< V, E > selectionModel = new DefaultSelectionModel<>( modelGraph, modelGraph.idmap );
 		modelGraph.addGraphListener( selectionModel );
@@ -179,12 +158,6 @@ public abstract class AbstractModel<
 	public DefaultFocusModel< V, E > getFocusModel()
 	{
 		return focusModel;
-	}
-
-	@Override
-	public GroupManager getGroupManager()
-	{
-		return groupManager;
 	}
 
 	public abstract GraphSerializer< V, E > getGraphSerializer();
