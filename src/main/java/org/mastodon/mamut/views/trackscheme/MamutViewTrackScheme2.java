@@ -45,27 +45,18 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.adapter.FadingModelAdapter;
-import org.mastodon.adapter.FocusModelAdapter;
-import org.mastodon.adapter.HighlightModelAdapter;
-import org.mastodon.adapter.NavigationHandlerAdapter;
-import org.mastodon.adapter.RefBimap;
-import org.mastodon.adapter.SelectionModelAdapter;
-import org.mastodon.adapter.TimepointModelAdapter;
+import org.mastodon.app.AppModel;
+import org.mastodon.app.ui.MastodonFrameView2;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
-import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenu2;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
-import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.UndoActions;
-import org.mastodon.mamut.model.Link;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchLink;
-import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.MastodonModel;
@@ -77,11 +68,13 @@ import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
-import org.mastodon.ui.coloring.ColoringModelMain;
+import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.commandfinder.CommandFinder;
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.TimepointAndNumberOfSpotsPanel;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
@@ -101,12 +94,22 @@ import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
-import net.imglib2.RealLocalizable;
-
+/**
+ *
+ * @author Jean-Yves Tinevez
+ *
+ * @param <M>
+ * @param <G>
+ * @param <V>
+ * @param <E>
+ */
 public class MamutViewTrackScheme2<
+		AM extends AppModel< M, G, V, E >,
+		M extends MastodonModel< G, V, E > & UndoPointMarker,
 		G extends ListenableGraph< V, E >,
-		V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint & RealLocalizable,
+		V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint,
 		E extends AbstractListenableEdge< E, V, ?, ? > >
+		extends MastodonFrameView2< AM, M, TrackSchemeGraph< V, E >, V, E, TrackSchemeVertex, TrackSchemeEdge >
 		implements HasContextChooser< V >, HasColorBarOverlay, HasColoringModel
 {
 
@@ -126,39 +129,25 @@ public class MamutViewTrackScheme2<
 
 	private final ColorBarOverlay colorBarOverlay;
 
-	private TrackSchemeGraph< V, E > viewGraph;
-
 	public MamutViewTrackScheme2(
-			final MastodonModel< G, V, E > model,
+			final AM model,
 			final ModelGraphProperties< V, E > modelGraphProperties,
 			final ReentrantLock lock )
 	{
-		/*
-		 * SUPER methods
-		 */
-
-		this.viewGraph = new TrackSchemeGraph<>(
-				model.getGraph(),
-				model.getGraphIdBimap(),
-				modelGraphProperties );
-
-		final RefBimap< MV, V > vertexMap = viewGraph.getVertexMap();
-		final RefBimap< ME, E > edgeMap = viewGraph.getEdgeMap();
-
-		GroupHandle groupHandle = model.getGroupManager().createGroupHandle();
-		final HighlightModelAdapter< MV, ME, V, E > highlightModel = new HighlightModelAdapter<>( model.getHighlightModel(), vertexMap, edgeMap );
-		final FocusModelAdapter< MV, ME, V, E > focusModel = new FocusModelAdapter<>( model.getFocusModel(), vertexMap, edgeMap );
-		final SelectionModelAdapter< MV, ME, V, E > selectionModel = new SelectionModelAdapter<>( model.getSelectionModel(), vertexMap, edgeMap );
-		final TimepointModelAdapter timepointModel = new TimepointModelAdapter( groupHandle.getModel( model.getTimepointGroupKey() ) );
-		final NavigationHandlerAdapter< MV, ME, V, E > navigationHandler = new NavigationHandlerAdapter<>( groupHandle.getModel( model.getNavigationGroupKey() ), vertexMap, edgeMap );
+		super( model,
+				new TrackSchemeGraph<>(
+						model.dataModel().getGraph(),
+						model.dataModel().getGraphIdBimap(),
+						modelGraphProperties ),
+				new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		/*
 		 * TrackScheme ContextChooser
 		 */
 		final TrackSchemeContextListener< V > contextListener = new TrackSchemeContextListener<>( viewGraph );
-		contextChooser = new ContextChooser<>( contextListener );
+		this.contextChooser = new ContextChooser<>( contextListener );
 
-		final KeyPressedManager keyPressedManager = model.getKeyPressedManager();
+		final KeyPressedManager keyPressedManager = model.uiModel().getKeyPressedManager();
 
 		/*
 		 * show TrackSchemeFrame
@@ -173,7 +162,7 @@ public class MamutViewTrackScheme2<
 
 		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler, timepointModel );
 
-		final RootsModel< TrackSchemeVertex > rootsModel = new DefaultRootsModel<>( model.getGraph(), viewGraph );
+		final RootsModel< TrackSchemeVertex > rootsModel = new DefaultRootsModel<>( model.dataModel().getGraph(), viewGraph );
 		onClose( () -> rootsModel.close() );
 
 		final FadingModelAdapter< V, E, TrackSchemeVertex, TrackSchemeEdge > fadingModelAdapter = new FadingModelAdapter<>( null, viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
@@ -187,12 +176,11 @@ public class MamutViewTrackScheme2<
 				selectionModel,
 				rootsModel,
 				navigationHandler,
-				model,
 				groupHandle,
 				contextChooser,
 				options );
 
-		frame.getTrackschemePanel().setTimepointRange( model.getMinTimepoint(), model.getMaxTimepoint() );
+		frame.getTrackschemePanel().setTimepointRange( model.getTimepointMin(), model.getTimepointMax() );
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
 
@@ -203,19 +191,19 @@ public class MamutViewTrackScheme2<
 		setFrame( frame );
 
 		MastodonFrameViewActions.install( viewActions, this );
-		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
-		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(), viewGraph, viewGraph.getLock(), viewGraph, model );
-		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
+		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model.dataModel() );
+		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(), viewGraph, viewGraph.getLock(), viewGraph, model.dataModel() );
+		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model.dataModel() );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
-		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(),
-				model.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(),
-				frame.getTrackschemePanel().getDisplay(), model );
+		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.dataModel().getTagSetModel(),
+				model.dataModel().getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(),
+				frame.getTrackschemePanel().getDisplay(), model.dataModel() );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
 		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme" );
 
 		// Timepoint and number of spots.
-		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model.getSpatioTemporalIndex() );
+		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model.dataModel().getSpatioTemporalIndex() );
 		timepointAndNumberOfSpotsPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
@@ -231,19 +219,19 @@ public class MamutViewTrackScheme2<
 		// Command finder.
 		final CommandFinder cf = CommandFinder.build()
 				.context( model.getContext() )
-				.inputTriggerConfig( model.getKeymap().getConfig() )
+				.inputTriggerConfig( model.uiModel().getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
 				.descriptionProvider( model.getWindowManager().getViewFactories().getCommandDescriptions() )
 				.register( viewActions )
-				.register( model.getModelActions() )
-				.register( model.getProjectActions() )
-				.register( model.getPlugins().getPluginActions() )
-				.modificationListeners( model.getKeymap().updateListeners() )
+				.register( model.uiModel().getModelActions() )
+				.register( model.uiModel().getProjectActions() )
+				.register( model.uiModel().getPlugins().getPluginActions() )
+				.modificationListeners( model.uiModel().getKeymap().updateListeners() )
 				.parent( frame )
 				.installOn( viewActions );
 		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 
-		final ViewMenu menu = new ViewMenu( this );
+		final ViewMenu2 menu = new ViewMenu2( this, model.uiModel().getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
 		final JMenuHandle coloringMenuHandle = new JMenuHandle();
@@ -287,7 +275,7 @@ public class MamutViewTrackScheme2<
 						separator(),
 						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL ),
 						tagSetMenu( tagSetMenuHandle ) ) );
-		model.getPlugins().addMenus( menu );
+		model.uiModel().getPlugins().addMenus( menu );
 
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
@@ -300,8 +288,7 @@ public class MamutViewTrackScheme2<
 		registerTagSetMenu( tagSetMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		// Listen to vertex labels being changed.
-		model.getGraph().addVertexLabelListener(
-				v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
+		modelGraphProperties.addVertexLabelListener( v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
 
 		frame.getTrackschemePanel().getDisplay().overlays().add( colorBarOverlay );
 
@@ -325,14 +312,15 @@ public class MamutViewTrackScheme2<
 	}
 
 	@Override
-	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
-	{
-		return coloringModel;
-	}
-
-	@Override
 	public ColorBarOverlay getColorBarOverlay()
 	{
 		return colorBarOverlay;
+	}
+
+	@Override
+	public ColoringModel getColoringModel()
+	{
+		return null; // TODO also change coloring model - remove branch stuff in
+						// the base class
 	}
 }
