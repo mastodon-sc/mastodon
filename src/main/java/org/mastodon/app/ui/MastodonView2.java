@@ -1,6 +1,7 @@
 package org.mastodon.app.ui;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
@@ -31,11 +32,13 @@ public class MastodonView2<
 		E extends Edge< V > >
 {
 
-	protected final M model;
+	protected final M dataModel;
 
 	protected final UIModel uiModel;
 
 	protected final VG viewGraph;
+
+	protected final ReentrantReadWriteLock lock;
 
 	protected final GroupHandle groupHandle;
 
@@ -51,12 +54,12 @@ public class MastodonView2<
 
 	protected final ArrayList< Runnable > runOnClose;
 
-
-	public MastodonView2( final M dataModel, final UIModel uiModel, final VG viewGraph )
+	public MastodonView2( final M dataModel, final UIModel uiModel, final VG viewGraph, final ReentrantReadWriteLock lock )
 	{
-		this.model = dataModel;
+		this.dataModel = dataModel;
 		this.uiModel = uiModel;
 		this.viewGraph = viewGraph;
+		this.lock = lock;
 		this.groupHandle = uiModel.getGroupManager().createGroupHandle();
 
 		final RefBimap< MV, V > vertexMap = viewGraph.getVertexMap();

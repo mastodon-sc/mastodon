@@ -38,7 +38,7 @@ import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import java.awt.Component;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
@@ -134,7 +134,7 @@ public class MamutViewTrackScheme2<
 			final M dataModel,
 			final UIModel uiModel,
 			final ModelGraphProperties< V, E > modelGraphProperties,
-			final ReentrantLock lock,
+			final ReentrantReadWriteLock lock,
 			final Context context )
 	{
 		this( dataModel, uiModel, modelGraphProperties, lock, context,
@@ -146,7 +146,7 @@ public class MamutViewTrackScheme2<
 			final M dataModel,
 			final UIModel uiModel,
 			final ModelGraphProperties< V, E > modelGraphProperties,
-			final ReentrantLock lock,
+			final ReentrantReadWriteLock lock,
 			final Context context,
 			final int timepointMin,
 			final int timepointMax )
@@ -156,6 +156,7 @@ public class MamutViewTrackScheme2<
 						dataModel.getGraph(),
 						dataModel.getGraphIdBimap(),
 						modelGraphProperties ),
+				lock,
 				new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		/*
@@ -220,7 +221,7 @@ public class MamutViewTrackScheme2<
 		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme" );
 
 		// Timepoint and number of spots.
-		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, model.dataModel().getSpatioTemporalIndex() );
+		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, dataModel.dataModel().getSpatioTemporalIndex() );
 		timepointAndNumberOfSpotsPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
@@ -314,8 +315,7 @@ public class MamutViewTrackScheme2<
 
 		frame.getTrackschemePanel().repaint();
 
-		// Give focus to the display so that it can receive key presses
-		// immediately.
+		// Give focus to the display so that it can receive key presses immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 	}
 
