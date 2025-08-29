@@ -105,11 +105,7 @@ import org.scijava.ui.behaviour.KeyPressedManager;
  * @param <V>
  * @param <E>
  */
-public class MamutViewTrackScheme2<
-		M extends MastodonModel< G, V, E > & UndoPointMarker,
-		G extends ListenableGraph< V, E >,
-		V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint,
-		E extends AbstractListenableEdge< E, V, ?, ? > >
+public class MamutViewTrackScheme2< M extends MastodonModel< G, V, E >, G extends ListenableGraph< V, E >, V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint, E extends AbstractListenableEdge< E, V, ?, ? > >
 		extends MastodonFrameView2< M, TrackSchemeGraph< V, E >, V, E, TrackSchemeVertex, TrackSchemeEdge >
 		implements HasContextChooser< V >, HasColorBarOverlay, HasColoringModel
 {
@@ -208,23 +204,31 @@ public class MamutViewTrackScheme2<
 
 		setFrame( frame );
 
+		// Read only actions.
 		MastodonFrameViewActions.install( viewActions, this );
-		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, dataModel );
-		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(), viewGraph, viewGraph.getLock(), viewGraph, dataModel );
-		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, dataModel );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
-		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
-		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), dataModel.getTagSetModel(),
-				dataModel.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(),
-				frame.getTrackschemePanel().getDisplay(), dataModel );
 		ShowSelectedTracksActions.install( viewActions, viewGraph, selectionModel, rootsModel, frame.getTrackschemePanel() );
 		ExportViewActions.install( viewActions, frame.getTrackschemePanel().getDisplay(), frame, "TrackScheme" );
+		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
+
+		// Actions modifying the model -> need an undo point marker.
+		if ( dataModel instanceof UndoPointMarker )
+		{
+			final UndoPointMarker undo = ( UndoPointMarker ) dataModel;
+			HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, undo );
+			ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(), viewGraph, viewGraph.getLock(), viewGraph, undo );
+			EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, undo );
+			EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), dataModel.getTagSetModel(),
+					dataModel.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(),
+					frame.getTrackschemePanel().getDisplay(), undo );
+		}
 
 		// Timepoint and number of spots.
-		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, dataModel.dataModel().getSpatioTemporalIndex() );
+		final TimepointAndNumberOfSpotsPanel timepointAndNumberOfSpotsPanel = new TimepointAndNumberOfSpotsPanel( timepointModel, dataModel.getSpatioTemporalIndex() );
 		timepointAndNumberOfSpotsPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		frame.getSettingsPanel().add( timepointAndNumberOfSpotsPanel );
 
+		// Search box.
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getTrackschemePanel() );
 		searchPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
 		frame.getSettingsPanel().add( searchPanel );
@@ -315,7 +319,8 @@ public class MamutViewTrackScheme2<
 
 		frame.getTrackschemePanel().repaint();
 
-		// Give focus to the display so that it can receive key presses immediately.
+		// Give focus to the display so that it can receive key presses
+		// immediately.
 		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 	}
 
