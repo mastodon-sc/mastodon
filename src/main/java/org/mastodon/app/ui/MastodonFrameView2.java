@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.mastodon.app.AppModel;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
@@ -23,14 +22,13 @@ import bdv.ui.keymap.Keymap;
 import bdv.ui.keymap.Keymap.UpdateListener;
 
 public class MastodonFrameView2<
-			AM extends AppModel< ?, ?, MV, ME >,
 			M extends MastodonModel< ?, MV, ME >,
 			VG extends ViewGraph< MV, ME, V, E >,
 			MV extends AbstractListenableVertex< MV, ME, ?, ? > & HasTimepoint,
 			ME extends AbstractListenableEdge< ME, MV, ?, ? >,
 			V extends Vertex< E >,
 			E extends Edge< V > >
-		extends MastodonView2< AM, M, VG, MV, ME, V, E >
+		extends MastodonView2< M, VG, MV, ME, V, E >
 		implements HasFrame
 {
 
@@ -42,11 +40,11 @@ public class MastodonFrameView2<
 
 	protected Behaviours viewBehaviours;
 
-	public MastodonFrameView2( final AM model, final VG viewGraph, final String[] keyConfigContexts )
+	public MastodonFrameView2( final M model, final UIModel uiModel, final VG viewGraph, final String[] keyConfigContexts )
 	{
-		super( model, viewGraph );
+		super( model, uiModel, viewGraph );
 
-		final Set< String > c = new LinkedHashSet<>( Arrays.asList( model.uiModel().getKeyConfigContexts() ) );
+		final Set< String > c = new LinkedHashSet<>( Arrays.asList( uiModel.getKeyConfigContexts() ) );
 		c.addAll( Arrays.asList( keyConfigContexts ) );
 		this.keyConfigContexts = c.toArray( new String[] {} );
 	}
@@ -69,25 +67,25 @@ public class MastodonFrameView2<
 		} );
 		this.frame = frame;
 
-		final Actions projectActions = model.uiModel().getProjectActions();
+		final Actions projectActions = uiModel.getProjectActions();
 		if ( projectActions != null )
 		{
 			frame.keybindings.addActionMap( "project", new WrappedActionMap( projectActions.getActionMap() ) );
 			frame.keybindings.addInputMap( "project", new WrappedInputMap( projectActions.getInputMap() ) );
 		}
 
-		final Actions pluginActions = model.uiModel().getPlugins().getPluginActions();
+		final Actions pluginActions = uiModel.getPlugins().getPluginActions();
 		if ( pluginActions != null )
 		{
 			frame.keybindings.addActionMap( "plugin", new WrappedActionMap( pluginActions.getActionMap() ) );
 			frame.keybindings.addInputMap( "plugin", new WrappedInputMap( pluginActions.getInputMap() ) );
 		}
 
-		final Actions modelActions = model.uiModel().getModelActions();
+		final Actions modelActions = uiModel.getModelActions();
 		frame.keybindings.addActionMap( "model", new WrappedActionMap( modelActions.getActionMap() ) );
 		frame.keybindings.addInputMap( "model", new WrappedInputMap( modelActions.getInputMap() ) );
 
-		final Keymap keymap = model.uiModel().getKeymap();
+		final Keymap keymap = uiModel.getKeymap();
 
 		viewActions = new Actions( keymap.getConfig(), keyConfigContexts );
 		viewActions.install( frame.keybindings, "view" );

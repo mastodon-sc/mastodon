@@ -8,7 +8,6 @@ import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
-import org.mastodon.app.AppModel;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
@@ -24,7 +23,6 @@ import org.mastodon.model.TimepointModel;
 import org.mastodon.spatial.HasTimepoint;
 
 public class MastodonView2<
-		AM extends AppModel< ?, ?, MV, ME >,
 		M extends MastodonModel< ?, MV, ME >,
 		VG extends ViewGraph< MV, ME, V, E >,
 		MV extends AbstractListenableVertex< MV, ME, ?, ? > & HasTimepoint,
@@ -33,7 +31,9 @@ public class MastodonView2<
 		E extends Edge< V > >
 {
 
-	protected final AM model;
+	protected final M model;
+
+	protected final UIModel uiModel;
 
 	protected final VG viewGraph;
 
@@ -51,21 +51,22 @@ public class MastodonView2<
 
 	protected final ArrayList< Runnable > runOnClose;
 
-	public MastodonView2( final AM model, final VG viewGraph )
-	{
-		this.model = model;
-		this.viewGraph = viewGraph;
 
-		this.groupHandle = model.uiModel().getGroupManager().createGroupHandle();
+	public MastodonView2( final M dataModel, final UIModel uiModel, final VG viewGraph )
+	{
+		this.model = dataModel;
+		this.uiModel = uiModel;
+		this.viewGraph = viewGraph;
+		this.groupHandle = uiModel.getGroupManager().createGroupHandle();
 
 		final RefBimap< MV, V > vertexMap = viewGraph.getVertexMap();
 		final RefBimap< ME, E > edgeMap = viewGraph.getEdgeMap();
-		final TimepointModelAdapter timepointModelAdapter = new TimepointModelAdapter( groupHandle.getModel( model.uiModel().TIMEPOINT ) );
-		final HighlightModelAdapter< MV, ME, V, E > highlightModelAdapter = new HighlightModelAdapter<>( model.dataModel().getHighlightModel(), vertexMap, edgeMap );
-		final FocusModelAdapter< MV, ME, V, E > focusModelAdapter = new FocusModelAdapter<>( model.dataModel().getFocusModel(), vertexMap, edgeMap );
-		final SelectionModelAdapter< MV, ME, V, E > selectionModelAdapter = new SelectionModelAdapter<>( model.dataModel().getSelectionModel(), vertexMap, edgeMap );
+		final TimepointModelAdapter timepointModelAdapter = new TimepointModelAdapter( groupHandle.getModel( uiModel.TIMEPOINT ) );
+		final HighlightModelAdapter< MV, ME, V, E > highlightModelAdapter = new HighlightModelAdapter<>( dataModel.getHighlightModel(), vertexMap, edgeMap );
+		final FocusModelAdapter< MV, ME, V, E > focusModelAdapter = new FocusModelAdapter<>( dataModel.getFocusModel(), vertexMap, edgeMap );
+		final SelectionModelAdapter< MV, ME, V, E > selectionModelAdapter = new SelectionModelAdapter<>( dataModel.getSelectionModel(), vertexMap, edgeMap );
 		@SuppressWarnings( { "rawtypes", "unchecked" } )
-		final NavigationHandlerAdapter< MV, ME, V, E > navigationHandlerAdapter = new NavigationHandlerAdapter( groupHandle.getModel( model.uiModel().NAVIGATION ), vertexMap, edgeMap );
+		final NavigationHandlerAdapter< MV, ME, V, E > navigationHandlerAdapter = new NavigationHandlerAdapter( groupHandle.getModel( uiModel.NAVIGATION ), vertexMap, edgeMap );
 
 		timepointModel = timepointModelAdapter;
 		highlightModel = highlightModelAdapter;
