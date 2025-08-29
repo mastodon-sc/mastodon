@@ -113,18 +113,13 @@ public class MamutViewTrackScheme2< M extends MastodonModel< G, V, E >, G extend
 	private final ContextChooser< V > contextChooser;
 
 	/**
-	 * a reference on the {@code GraphColorGeneratorAdapter} created and
-	 * registered with this instance/window
-	 */
-	private final GraphColorGeneratorAdapter< V, E, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter;
-
-	/**
-	 * a reference on a supervising instance of the {@code ColoringModel} that
+	 * A reference on a supervising instance of the {@code ColoringModel} that
 	 * is bound to this instance/window
 	 */
-//	private final ColoringModelMain< V, E, BV, BE > coloringModel;
+	private final ColoringModel coloringModel;
 
 	private final ColorBarOverlay colorBarOverlay;
+
 
 	public MamutViewTrackScheme2(
 			final M dataModel,
@@ -168,7 +163,7 @@ public class MamutViewTrackScheme2< M extends MastodonModel< G, V, E >, G extend
 		 */
 		final TrackSchemeStyleManager trackSchemeStyleManager = uiModel.getWindowManager().getManager( TrackSchemeStyleManager.class );
 		final TrackSchemeStyle forwardDefaultStyle = trackSchemeStyleManager.getForwardDefaultStyle();
-		coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+		final GraphColorGeneratorAdapter< V, E, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
 				.style( forwardDefaultStyle )
@@ -345,8 +340,7 @@ public class MamutViewTrackScheme2< M extends MastodonModel< G, V, E >, G extend
 	@Override
 	public ColoringModel getColoringModel()
 	{
-		return null; // TODO also change coloring model - remove branch stuff in
-						// the base class
+		return coloringModel;
 	}
 
 	private static < V extends HasTimepoint > int minTimepoint( final RefCollection< V > vertices )
