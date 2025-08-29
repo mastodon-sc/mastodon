@@ -28,17 +28,35 @@
  */
 package org.mastodon.app;
 
+import static org.mastodon.app.MastodonIcons.FEATURES_ICON;
+import static org.mastodon.app.MastodonIcons.TAGS_ICON;
+
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.swing.JDialog;
+
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.ui.UIModel;
+import org.mastodon.app.ui.UIUtils;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
+import org.mastodon.mamut.CloseListener;
+import org.mastodon.mamut.MamutFeatureComputation;
 import org.mastodon.model.MastodonModel;
+import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.spatial.HasTimepoint;
+import org.mastodon.ui.coloring.TrackGraphColorGenerator;
+import org.mastodon.undo.UndoPointMarker;
 import org.scijava.Context;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.RunnableAction;
 
+import bdv.ui.keymap.Keymap;
 import bdv.ui.keymap.KeymapManager;
 
 /**
@@ -54,18 +72,12 @@ import bdv.ui.keymap.KeymapManager;
  * @param <E>
  *            the type of edges in the model graph.
  */
-public class AppModel<
-		M extends MastodonModel< G, V, E >,
-		G extends ListenableGraph< V, E >,
-		V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint,
-		E extends AbstractListenableEdge< E, V, ?, ? > >
+public class AppModel< M extends MastodonModel< G, V, E >, G extends ListenableGraph< V, E >, V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint, E extends AbstractListenableEdge< E, V, ?, ? > >
 {
 
 	protected final M model;
 
 	protected final UIModel uiModel;
-
-	protected final Context context;
 
 	/**
 	 * Instantiate a new Mastodon-app model.
@@ -96,9 +108,54 @@ public class AppModel<
 			final String[] keyConfigContexts,
 			final int numGroups )
 	{
-		this.context = context;
 		this.model = model;
-		this.uiModel = new UIModel( numGroups, keyPressedManager, keymapManager, plugins, globalActions, keyConfigContexts );
+		this.uiModel = new UIModel( context, numGroups, keyPressedManager, keymapManager, plugins, globalActions, keyConfigContexts );
+
+		/*
+		 * Singletons and managers.
+		 */
+		// Register a TrackColorGenerator for this model's graph.
+		final TrackGraphColorGenerator< V, E > trackGraphColorGenerator = new TrackGraphColorGenerator<>( model.getGraph() );
+		uiModel.closeListeners().add( () -> trackGraphColorGenerator.close() );
+		uiModel.registerInstance( trackGraphColorGenerator );
+
+		/*
+		 * Tag-set and feature computation dialogs
+		 */
+		if ( model instanceof UndoPointMarker )
+		{
+			// Tag-set edit dialog: only if the model is an UndoableModel.
+			final UndoPointMarker undo = ( UndoPointMarker ) model;
+			final Keymap keymap = keymapManager.getForwardSelectedKeymap();
+			final TagSetDialog tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), undo, keymap, keyConfigContexts );
+			final RunnableAction editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, () -> tagSetDialog.setVisible( true ) );
+			uiModel.getProjectActions().namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
+			tagSetDialog.setIconImages( TAGS_ICON );
+			uiModel.closeListeners().add( tagSetDialog::dispose );
+			uiModel.registerWindow( tagSetDialog );
+		}
+
+		final JDialog featureComputationDialog = MamutFeatureComputation.getDialog( this, context );
+		featureComputationDialog.setIconImages( FEATURES_ICON );
+		uiModel.closeListeners().add( featureComputationDialog::dispose );
+		uiModel.registerWindow( featureComputationDialog );
+
+		/*
+		 * Actions to create dialogs.
+		 */
+		final RunnableAction featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, () -> featureComputationDialog.setVisible( true ) );
+		final RunnableAction openOnlineDocumentation = new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
+		uiModel.getProjectActions().namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
+		uiModel.getProjectActions().namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
+
+		// Adjust titles of all windows to include project name.
+		uiModel.forEachWindow( w -> UIUtils.adjustTitle( w, getProjectName() ) );
+	}
+
+	private String getProjectName()
+	{
+		// TODO Auto-generated method stub
+		return "TODO define a project name";
 	}
 
 	public M dataModel()
@@ -111,9 +168,10 @@ public class AppModel<
 		return uiModel;
 	}
 
-	public Context getContext()
+	public void close()
 	{
-		return context;
+		uiModel.closeListeners().list.forEach( CloseListener::close );
+		uiModel.closeAllWindows();
 	}
 
 	public int getTimepointMin()
@@ -143,4 +201,39 @@ public class AppModel<
 				min = v.getTimepoint();
 		return min == Integer.MAX_VALUE ? 0 : min;
 	}
+
+	/**
+	 * Opens the online documentation in a browser window.
+	 */
+	public void openOnlineDocumentation()
+	{
+		new Thread( () -> {
+			try
+			{
+				Desktop.getDesktop().browse( new URI( getOnlineDocumentationURL() ) );
+			}
+			catch ( IOException | URISyntaxException e1 )
+			{
+				e1.printStackTrace();
+			}
+		} ).start();
+	}
+
+	/**
+	 * Returns the URL of the online documentation. Subclasses may override.
+	 *
+	 * @return the URL of the online documentation.
+	 */
+	protected String getOnlineDocumentationURL()
+	{
+		return "https://mastodon.readthedocs.io/en/latest/";
+	}
+
+	private static final String TAGSETS_DIALOG = "edit tag sets";
+	private static final String COMPUTE_FEATURE_DIALOG = "compute features";
+	private static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
+
+	private final static String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
+	private final static String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
+	private final static String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
 }
