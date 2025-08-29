@@ -9,10 +9,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.graph.branch.BranchGraphImp;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
+import org.mastodon.model.AbstractModelBranch;
+import org.mastodon.model.AbstractModelBranch.BranchModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
@@ -20,6 +24,16 @@ import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColorBarOverlayMenu;
+import org.mastodon.ui.coloring.ColoringMenu;
+import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.ui.coloring.ColoringModel.ColoringChangedListener;
+import org.mastodon.ui.coloring.ColoringModelMain;
+import org.mastodon.ui.coloring.DefaultColoringModel;
+import org.mastodon.ui.coloring.GraphColorGenerator;
+import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.ui.coloring.TrackGraphColorGenerator;
+import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -159,5 +173,97 @@ public class MastodonFrameView2<
 			tagSetModel.listeners().add( tagSetMenu );
 			onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 		}
+	}
+
+	/**
+	 * Sets up and registers the coloring menu item and related actions and
+	 * listeners. A new instance of the {@code ColoringModel} is created here
+	 * and a reference on it is returned. This instance is bound to all relevant
+	 * actions and is therefore knowledgeable of the currently used coloring
+	 * style.
+	 * <p>
+	 * A different implementation of {@code ColoringModel} is created depending
+	 * on whether the data model has a branch graph or not.
+	 *
+	 * @param colorGeneratorAdapter
+	 *            adapts a (modifiable) model coloring to view vertices/edges.
+	 * @param menuHandle
+	 *            handle to the JMenu corresponding to the coloring submenu.
+	 *            Coloring options will be installed here.
+	 * @param refresh
+	 *            triggers repaint of the graph (called when coloring changes)
+	 *
+	 * @return reference on the underlying {@code ColoringModel}
+	 */
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	protected ColoringModel registerColoring(
+			final GraphColorGeneratorAdapter< MV, ME, V, E > colorGeneratorAdapter,
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		final TagSetModel< MV, ME > tagSetModel = dataModel.getTagSetModel();
+		final FeatureColorModeManager featureColorModeManager = uiModel.getWindowManager().getManager( FeatureColorModeManager.class );
+		final FeatureModel featureModel = uiModel.getWindowManager().getManager( FeatureModel.class );
+
+		final ColoringModel coloringModel;
+		if ( dataModel instanceof AbstractModelBranch )
+		{
+			@SuppressWarnings( { "unchecked", "rawtypes" } )
+            final AbstractModelBranch bm = ( AbstractModelBranch ) dataModel;
+			@SuppressWarnings( "rawtypes" )
+			final BranchModel branchModel = bm.branchModel();
+			@SuppressWarnings( "rawtypes" )
+			final BranchGraphImp branchGraph = branchModel.getGraph();
+			coloringModel = new ColoringModelMain( tagSetModel, featureColorModeManager, featureModel, branchGraph );
+		}
+		else
+		{
+			coloringModel = new DefaultColoringModel<>( tagSetModel, featureColorModeManager, featureModel );
+		}
+
+		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
+		tagSetModel.listeners().add( coloringModel );
+		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
+		tagSetModel.listeners().add( coloringMenu );
+		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
+
+		featureColorModeManager.listeners().add( coloringModel );
+		onClose( () -> featureColorModeManager.listeners().remove( coloringModel ) );
+		featureColorModeManager.listeners().add( coloringMenu );
+		onClose( () -> featureColorModeManager.listeners().remove( coloringMenu ) );
+
+		featureModel.listeners().add( coloringMenu );
+		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
+
+		// Handle track color generator, if we have one.
+		@SuppressWarnings( "unchecked" )
+		final TrackGraphColorGenerator< MV, ME > tgcg = uiModel.getWindowManager().getManager( TrackGraphColorGenerator.class );
+
+		@SuppressWarnings( "unchecked" )
+		final ColoringChangedListener coloringChangedListener = () -> {
+			final GraphColorGenerator< MV, ME > colorGenerator;
+			switch ( coloringModel.getColoringStyle() )
+			{
+			case BY_FEATURE:
+				colorGenerator = ( GraphColorGenerator< MV, ME > ) coloringModel.getFeatureGraphColorGenerator();
+				break;
+			case BY_TAGSET:
+				colorGenerator = new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() );
+				break;
+			case BY_TRACK:
+				colorGenerator = tgcg;
+				break;
+			case NONE:
+				colorGenerator = null;
+				break;
+			default:
+				throw new IllegalArgumentException( "Unknown coloring style: " + coloringModel.getColoringStyle() );
+			}
+			colorGeneratorAdapter.setColorGenerator( colorGenerator );
+			refresh.run();
+		};
+		coloringModel.listeners().add( coloringChangedListener );
+
+		return coloringModel;
 	}
 }
