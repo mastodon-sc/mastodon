@@ -60,7 +60,6 @@ public class ColoringModelMain<
 		BV extends Vertex< BE >,
 		BE extends Edge< BV > >
 		extends ColoringModel
-		implements TagSetModel.TagSetModelListener, FeatureColorModeManager.FeatureColorModesListener
 {
 
 	private final BranchGraph< BV, BE, V, E > branchGraph;
