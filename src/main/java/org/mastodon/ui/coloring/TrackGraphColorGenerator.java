@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,6 +28,8 @@
  */
 package org.mastodon.ui.coloring;
 
+import java.util.function.ToIntFunction;
+
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefIntMap;
 import org.mastodon.collection.RefList;
@@ -38,7 +40,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 import org.mastodon.model.HasLabel;
 
-public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E extends Edge< V > >
+public class TrackGraphColorGenerator< V extends Vertex< E >, E extends Edge< V > >
 		implements GraphColorGenerator< V, E >
 {
 
@@ -56,6 +58,8 @@ public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E exten
 
 	private boolean rootsUpToDate;
 
+	private final ToIntFunction< V > hashFun;
+
 	public TrackGraphColorGenerator( final ListenableReadOnlyGraph< V, E > graph )
 	{
 		this.rootsProvider = new RootProvider<>( graph );
@@ -64,6 +68,14 @@ public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E exten
 		this.lut = GlasbeyLut.intColors;
 		this.iterator = new InverseDepthFirstIterator<>( graph );
 		this.toUpdate = RefCollections.createRefList( graph.vertices() );
+
+		// Function to associate a lut to a vertex in a deterministic way.
+		final ToIntFunction< V > hashCode;
+		if ( graph.vertices().iterator().next() instanceof HasLabel )
+			hashCode = ( v ) -> ( ( HasLabel ) v ).getLabel().hashCode();
+		else
+			hashCode = ( v ) -> v.hashCode();
+		this.hashFun = hashCode;
 
 		rootsProvider.graphRebuilt();
 		graph.addGraphListener( rootsProvider );
@@ -137,7 +149,7 @@ public class TrackGraphColorGenerator< V extends Vertex< E > & HasLabel, E exten
 			return;
 
 		cache.clear();
-		rootsProvider.get().forEach( r -> cache.put( r, lut[ Math.abs( r.getLabel().hashCode() ) % lut.length ] ) );
+		rootsProvider.get().forEach( r -> cache.put( r, lut[ Math.abs( hashFun.applyAsInt( r ) ) % lut.length ] ) );
 		rootsUpToDate = true;
 	}
 
