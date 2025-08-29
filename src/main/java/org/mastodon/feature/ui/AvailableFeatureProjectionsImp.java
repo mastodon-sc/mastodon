@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -198,13 +198,13 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 		final Map< String, FeatureProperties > features;
 
 		final Class< ? > target = spec.getTargetClass();
-		if ( target.isAssignableFrom( vertexClass ) )
+		if ( null != vertexClass && target.isAssignableFrom( vertexClass ) )
 			features = vertexFeatures;
-		else if ( target.isAssignableFrom( edgeClass ) )
+		else if ( null != edgeClass && target.isAssignableFrom( edgeClass ) )
 			features = edgeFeatures;
-		else if ( target.isAssignableFrom( branchVertexClass ) )
+		else if ( null != branchVertexClass && target.isAssignableFrom( branchVertexClass ) )
 			features = branchVertexFeatures;
-		else if ( target.isAssignableFrom( branchEdgeClass ) )
+		else if ( null != branchEdgeClass && target.isAssignableFrom( branchEdgeClass ) )
 			features = branchEdgeFeatures;
 		else
 			return;
