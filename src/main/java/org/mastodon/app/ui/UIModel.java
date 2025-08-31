@@ -49,7 +49,8 @@ import bdv.util.InvokeOnEDT;
 
 /**
  * Components of a {@link AppModel} that stores elements related to user
- * interface (creating views, making them interactive, and in sync).
+ * interfaces (creating views, making them interactive, and in sync). This class
+ * is meant to create only components that do not depend on the data model.
  *
  * @author Jean-Yves Tinevez
  */

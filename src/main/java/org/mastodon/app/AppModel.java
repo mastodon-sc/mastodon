@@ -61,8 +61,27 @@ import bdv.ui.keymap.KeymapManager;
 
 /**
  * Data class that stores the data model and the application model of a Mastodon
- * application. The vertices are expected to have a timepoint.
- *
+ * application.
+ * <p>
+ * This aggregates the {@link MastodonModel} and the {@link UIModel}, and
+ * creates some of the sub-components that need both components to be
+ * initialized s (e.g. ui components that need to access or listen to the data
+ * model).
+ * <p>
+ * Currently, this class does the following:
+ * <ul>
+ * <li>creates a UIModel,
+ * <li>creates and registers a {@link TrackGraphColorGenerator} for the model's
+ * graph, if it is a {@link ListenableReadOnlyGraph}, and stores it in the
+ * UIModel as singleton.
+ * <li>creates and registers a {@link TagSetDialog} if the model is an
+ * {@link UndoPointMarker}, and binds it to a menu item and a shortcut. The
+ * dialog is registered to the UIModel as a window.
+ * <li>creates and registers a {@link MamutFeatureComputation} dialog, and binds
+ * it to a menu item and a shortcut. The dialog is registered to the UIModel as
+ * a window.
+ * </ul>
+ * 
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch
  * @param <M>
