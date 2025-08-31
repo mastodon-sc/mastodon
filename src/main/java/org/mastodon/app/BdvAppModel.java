@@ -1,9 +1,9 @@
 package org.mastodon.app;
 
 import org.mastodon.app.plugin.MastodonPlugins;
-import org.mastodon.graph.ListenableGraph;
-import org.mastodon.graph.ref.AbstractListenableEdge;
-import org.mastodon.graph.ref.AbstractListenableVertex;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.Vertex;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
@@ -12,13 +12,12 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.ui.keymap.KeymapManager;
-import net.imglib2.RealLocalizable;
 
 public class BdvAppModel<
-			M extends MastodonModel< G, V, E >,
-			G extends ListenableGraph< V, E >,
-			V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint & RealLocalizable,
-			E extends AbstractListenableEdge< E, V, ?, ? > >
+		M extends MastodonModel< G, V, E >,
+		G extends ReadOnlyGraph< V, E >,
+		V extends Vertex< E > & HasTimepoint, 
+		E extends Edge< V > >
 		extends AppModel< M, G, V, E >
 {
 

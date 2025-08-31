@@ -41,9 +41,10 @@ import javax.swing.JDialog;
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.ui.UIModel;
 import org.mastodon.app.ui.UIUtils;
-import org.mastodon.graph.ListenableGraph;
-import org.mastodon.graph.ref.AbstractListenableEdge;
-import org.mastodon.graph.ref.AbstractListenableVertex;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.ListenableReadOnlyGraph;
+import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.CloseListener;
 import org.mastodon.mamut.MamutFeatureComputation;
 import org.mastodon.model.MastodonModel;
@@ -72,7 +73,11 @@ import bdv.ui.keymap.KeymapManager;
  * @param <E>
  *            the type of edges in the model graph.
  */
-public class AppModel< M extends MastodonModel< G, V, E >, G extends ListenableGraph< V, E >, V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint, E extends AbstractListenableEdge< E, V, ?, ? > >
+public class AppModel< 
+		M extends MastodonModel< G, V, E >, 
+		G extends ReadOnlyGraph< V, E >, 
+		V extends Vertex< E > & HasTimepoint, 
+		E extends Edge< V > >
 {
 
 	protected final M model;
@@ -114,10 +119,19 @@ public class AppModel< M extends MastodonModel< G, V, E >, G extends ListenableG
 		/*
 		 * Singletons and managers.
 		 */
-		// Register a TrackColorGenerator for this model's graph.
-		final TrackGraphColorGenerator< V, E > trackGraphColorGenerator = new TrackGraphColorGenerator<>( model.getGraph() );
-		uiModel.closeListeners().add( () -> trackGraphColorGenerator.close() );
-		uiModel.registerInstance( trackGraphColorGenerator );
+		/*
+		 * Register a TrackColorGenerator for this model's graph if it is a
+		 * listenable graph.
+		 */
+		final G graph = model.getGraph();
+		if ( graph instanceof ListenableReadOnlyGraph )
+		{
+			@SuppressWarnings( "unchecked" )
+			final ListenableReadOnlyGraph< V, E > lg = ( ListenableReadOnlyGraph< V, E > ) graph;
+			final TrackGraphColorGenerator< V, E > trackGraphColorGenerator = new TrackGraphColorGenerator< V, E >( lg );
+			uiModel.closeListeners().add( () -> trackGraphColorGenerator.close() );
+			uiModel.registerInstance( trackGraphColorGenerator );
+		}
 
 		/*
 		 * Tag-set and feature computation dialogs
@@ -230,10 +244,14 @@ public class AppModel< M extends MastodonModel< G, V, E >, G extends ListenableG
 	}
 
 	private static final String TAGSETS_DIALOG = "edit tag sets";
+
 	private static final String COMPUTE_FEATURE_DIALOG = "compute features";
+
 	private static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
 
 	private final static String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
+
 	private final static String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
+
 	private final static String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
 }
