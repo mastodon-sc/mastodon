@@ -40,9 +40,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.Vertex;
-import org.mastodon.ui.keymap.KeyConfigScopes;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -69,7 +68,9 @@ import bdv.viewer.TransformListener;
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch
  */
-public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class ToggleLinkBehaviour< 
+			V extends Vertex< E >, 
+			E extends Edge< V > >
 		extends AbstractNamedBehaviour
 		implements DragBehaviour
 {
@@ -119,7 +120,7 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 
 	private boolean editing;
 
-	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void install(
+	public static < V extends Vertex< E >, E extends Edge< V > > void install(
 			final Behaviours behaviours,
 			final TrackSchemePanel panel,
 			final TrackSchemeGraph< V, E > graph,
