@@ -38,6 +38,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.io.GraphSerializer;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
@@ -89,6 +90,8 @@ public abstract class AbstractModel<
 
 	protected final DefaultFocusModel< V, E > focusModel;
 
+	protected final FeatureModel featureModel;
+
 	protected AbstractModel( final MG modelGraph, final String spaceUnits, final String timeUnits )
 	{
 		this.modelGraph = modelGraph;
@@ -109,6 +112,8 @@ public abstract class AbstractModel<
 		final DefaultFocusModel< V, E > focusModel = new DefaultFocusModel<>( modelGraph.idmap );
 		modelGraph.addGraphListener( focusModel );
 		this.focusModel = focusModel;
+
+		this.featureModel = new FeatureModel();
 
 		/*
 		 * Every 1 second, rebuild spatial indices with more than 100

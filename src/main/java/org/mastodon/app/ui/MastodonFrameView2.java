@@ -215,7 +215,7 @@ public class MastodonFrameView2<
 	{
 		final TagSetModel< MV, ME > tagSetModel = dataModel.getTagSetModel();
 		final FeatureColorModeManager featureColorModeManager = uiModel.getInstance( FeatureColorModeManager.class );
-		final FeatureModel featureModel = uiModel.getInstance( FeatureModel.class );
+		final FeatureModel featureModel = dataModel.getFeatureModel();
 
 		final ColoringModel coloringModel;
 		if ( dataModel instanceof HasBranchModel )

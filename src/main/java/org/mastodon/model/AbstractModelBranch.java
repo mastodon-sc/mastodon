@@ -1,5 +1,6 @@
 package org.mastodon.model;
 
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.branch.BranchGraphImp;
 import org.mastodon.graph.ref.AbstractListenableEdge;
@@ -144,6 +145,12 @@ public abstract class AbstractModelBranch<
 		public SelectionModel< BV, BE > getSelectionModel()
 		{
 			return branchSelectionModel;
+		}
+
+		@Override
+		public FeatureModel getFeatureModel()
+		{
+			return featureModel;
 		}
 	}
 }

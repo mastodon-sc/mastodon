@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mastodon.feature.Dimension;
-import org.mastodon.feature.FeatureModel;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.mamut.feature.LinkDeltaFrameFeature;
 import org.mastodon.mamut.feature.LinkDisplacementFeature;
@@ -77,8 +76,6 @@ public class Model extends AbstractModelBranch< ModelGraph, Spot, Link, ModelBra
 
 	private final GraphUndoRecorder< Spot, Link > undoRecorder;
 
-	private FeatureModel featureModel;
-
 	public Model()
 	{
 		this( "pixel", "frame" );
@@ -97,7 +94,6 @@ public class Model extends AbstractModelBranch< ModelGraph, Spot, Link, ModelBra
 		 * Feature model.
 		 */
 
-		this.featureModel = new FeatureModel();
 		declareDefaultFeatures();
 
 		/*

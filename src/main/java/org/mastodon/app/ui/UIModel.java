@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 import org.mastodon.app.AppModel;
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.plugin.PluginUtils;
-import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.DefaultFeatureProjectionsManager;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
@@ -129,11 +128,6 @@ public class UIModel
 
 		final InputTriggerConfig keyconf = keymapManager.getForwardSelectedKeymap().getConfig();
 		this.modelActions = new Actions( keyconf, keyConfigContexts );
-
-		/*
-		 * Singleton instances.
-		 */
-		registerInstance( new FeatureModel() );
 
 		/*
 		 * Preferences dialog.

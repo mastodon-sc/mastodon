@@ -1,5 +1,6 @@
 package org.mastodon.model;
 
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -63,5 +64,13 @@ public interface MastodonModel<
 	 * @return the selection model.
 	 */
 	SelectionModel< V, E > getSelectionModel();
+
+	/**
+	 * Exposes the feature model that can be used to manage features computed on
+	 * the graph managed in this model.
+	 * 
+	 * @return the feature model.
+	 */
+	FeatureModel getFeatureModel();
 
 }
