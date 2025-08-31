@@ -62,7 +62,6 @@ import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.RootsModel;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
@@ -105,7 +104,11 @@ import org.scijava.ui.behaviour.KeyPressedManager;
  * @param <V>
  * @param <E>
  */
-public class MamutViewTrackScheme2< M extends MastodonModel< G, V, E >, G extends ListenableGraph< V, E >, V extends AbstractListenableVertex< V, E, ?, ? > & HasTimepoint, E extends AbstractListenableEdge< E, V, ?, ? > >
+public class MamutViewTrackScheme2< 
+		M extends MastodonModel< G, V, E >, 
+		G extends ListenableGraph< V, E >, 
+		V extends AbstractListenableVertex< V, E, ?, ? >, 
+		E extends AbstractListenableEdge< E, V, ?, ? > >
 		extends MastodonFrameView2< M, TrackSchemeGraph< V, E >, V, E, TrackSchemeVertex, TrackSchemeEdge >
 		implements HasContextChooser< V >, HasColorBarOverlay, HasColoringModel
 {
@@ -129,8 +132,8 @@ public class MamutViewTrackScheme2< M extends MastodonModel< G, V, E >, G extend
 			final Context context )
 	{
 		this( dataModel, uiModel, modelGraphProperties, lock, context,
-				minTimepoint( dataModel.getGraph().vertices() ),
-				maxTimepoint( dataModel.getGraph().vertices() ) );
+				minTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ),
+				maxTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ) );
 	}
 
 	public MamutViewTrackScheme2(
@@ -343,26 +346,28 @@ public class MamutViewTrackScheme2< M extends MastodonModel< G, V, E >, G extend
 		return coloringModel;
 	}
 
-	private static < V extends HasTimepoint > int minTimepoint( final RefCollection< V > vertices )
+	private static < V > int minTimepoint( final RefCollection< V > vertices, final ModelGraphProperties< V, ? > modelGraphProperties )
 	{
 		int min = Integer.MAX_VALUE;
 		for ( final V v : vertices )
 		{
-			if ( v.getTimepoint() < min )
-				min = v.getTimepoint();
+			final int t = modelGraphProperties.getTimepoint( v );
+			if ( t < min )
+				min = t;
 		}
 		if ( min == Integer.MAX_VALUE )
 			min = 0;
 		return min;
 	}
 
-	private static < V extends HasTimepoint > int maxTimepoint( final RefCollection< V > vertices )
+	private static < V > int maxTimepoint( final RefCollection< V > vertices, final ModelGraphProperties< V, ? > modelGraphProperties )
 	{
 		int max = Integer.MIN_VALUE;
 		for ( final V v : vertices )
 		{
-			if ( v.getTimepoint() > max )
-				max = v.getTimepoint();
+			final int t = modelGraphProperties.getTimepoint( v );
+			if ( t > max )
+				max = t;
 		}
 		if ( max == Integer.MIN_VALUE )
 			max = 10;

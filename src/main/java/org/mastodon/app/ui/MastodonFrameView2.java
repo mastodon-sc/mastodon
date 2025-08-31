@@ -13,14 +13,11 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraphImp;
-import org.mastodon.graph.ref.AbstractListenableEdge;
-import org.mastodon.graph.ref.AbstractListenableVertex;
 import org.mastodon.model.AbstractModelBranch;
 import org.mastodon.model.AbstractModelBranch.BranchModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColorBarOverlayMenu;
@@ -43,11 +40,27 @@ import org.scijava.ui.behaviour.util.WrappedInputMap;
 import bdv.ui.keymap.Keymap;
 import bdv.ui.keymap.Keymap.UpdateListener;
 
+/**
+ * Base class for views of a {@link MastodonModel} that have a frame.
+ * 
+ * @param <M>
+ *            the type of the mastodon model.
+ * @param <VG>
+ *            the type of the view-graph.
+ * @param <MV>
+ *            the type of vertices in the mastodon model.
+ * @param <ME>
+ *            the type of edges in the mastodon model.
+ * @param <V>
+ *            the type of vertices in the view-graph.
+ * @param <E>
+ *            the type of edges in the view-graph.
+ */
 public class MastodonFrameView2<
 			M extends MastodonModel< ?, MV, ME >,
 			VG extends ViewGraph< MV, ME, V, E >,
-			MV extends AbstractListenableVertex< MV, ME, ?, ? > & HasTimepoint,
-			ME extends AbstractListenableEdge< ME, MV, ?, ? >,
+			MV extends Vertex< ME >, 
+			ME extends Edge< MV >,
 			V extends Vertex< E >,
 			E extends Edge< V > >
 		extends MastodonView2< M, VG, MV, ME, V, E >

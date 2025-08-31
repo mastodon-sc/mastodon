@@ -1,16 +1,16 @@
 package org.mastodon.model;
 
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.ListenableGraph;
-import org.mastodon.graph.ref.AbstractListenableEdge;
-import org.mastodon.graph.ref.AbstractListenableVertex;
+import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.Vertex;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
 public interface MastodonModel<
-		G extends ListenableGraph< V, E > ,
-		V extends AbstractListenableVertex< V, E, ?, ? >,
-		E extends AbstractListenableEdge< E, V, ?, ? > >
+		G extends ReadOnlyGraph< V, E >,
+		V extends Vertex< E >, 
+		E extends Edge< V > >
 {
 
 	/**
