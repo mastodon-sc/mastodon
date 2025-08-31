@@ -165,6 +165,13 @@ public abstract class AbstractModel<
 		return focusModel;
 	}
 
+	@Override
+	public ReentrantReadWriteLock getLock()
+	{
+		return modelGraph.getLock();
+	}
+
+
 	public abstract GraphSerializer< V, E > getGraphSerializer();
 
 	/**

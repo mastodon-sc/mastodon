@@ -1,5 +1,7 @@
 package org.mastodon.model;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.branch.BranchGraphImp;
@@ -151,6 +153,12 @@ public abstract class AbstractModelBranch<
 		public FeatureModel getFeatureModel()
 		{
 			return featureModel;
+		}
+
+		@Override
+		public ReentrantReadWriteLock getLock()
+		{
+			return AbstractModelBranch.this.getLock();
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package org.mastodon.model;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
@@ -72,5 +74,12 @@ public interface MastodonModel<
 	 * @return the feature model.
 	 */
 	FeatureModel getFeatureModel();
+
+	/**
+	 * Exposes the read-write lock that protects this model.
+	 * 
+	 * @return the read-write lock.
+	 */
+	ReentrantReadWriteLock getLock();
 
 }

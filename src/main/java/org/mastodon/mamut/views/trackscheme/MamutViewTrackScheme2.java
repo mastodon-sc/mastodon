@@ -38,13 +38,13 @@ import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import java.awt.Component;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.adapter.FadingModelAdapter;
+import org.mastodon.app.AppModel;
 import org.mastodon.app.ui.MastodonFrameView2;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
@@ -123,15 +123,24 @@ public class MamutViewTrackScheme2<
 
 	private final ColorBarOverlay colorBarOverlay;
 
+	public MamutViewTrackScheme2(
+			final AppModel< M, G, V, E > appModel,
+			final ModelGraphProperties< V, E > modelGraphProperties )
+	{
+		this( 
+				appModel.dataModel(),
+				appModel.uiModel(),
+				modelGraphProperties,
+				appModel.getTimepointMin(),
+				appModel.getTimepointMax());
+	}
 
 	public MamutViewTrackScheme2(
 			final M dataModel,
 			final UIModel uiModel,
-			final ModelGraphProperties< V, E > modelGraphProperties,
-			final ReentrantReadWriteLock lock,
-			final Context context )
+			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
-		this( dataModel, uiModel, modelGraphProperties, lock, context,
+		this( dataModel, uiModel, modelGraphProperties,
 				minTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ),
 				maxTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ) );
 	}
@@ -140,8 +149,6 @@ public class MamutViewTrackScheme2<
 			final M dataModel,
 			final UIModel uiModel,
 			final ModelGraphProperties< V, E > modelGraphProperties,
-			final ReentrantReadWriteLock lock,
-			final Context context,
 			final int timepointMin,
 			final int timepointMax )
 	{
@@ -150,7 +157,6 @@ public class MamutViewTrackScheme2<
 						dataModel.getGraph(),
 						dataModel.getGraphIdBimap(),
 						modelGraphProperties ),
-				lock,
 				new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		/*
@@ -237,6 +243,7 @@ public class MamutViewTrackScheme2<
 		frame.getTrackschemePanel().getTransformEventHandler().install( viewBehaviours );
 
 		// Command finder.
+		final Context context = uiModel.getContext();
 		if ( context != null )
 		{
 			final CommandFinder cf = CommandFinder.build()

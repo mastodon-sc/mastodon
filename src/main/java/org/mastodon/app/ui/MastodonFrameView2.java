@@ -5,7 +5,6 @@ import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
@@ -74,9 +73,13 @@ public class MastodonFrameView2<
 
 	protected Behaviours viewBehaviours;
 
-	public MastodonFrameView2( final M dataModel, final UIModel uiModel, final VG viewGraph, final ReentrantReadWriteLock lock, final String[] keyConfigContexts )
+	public MastodonFrameView2(
+			final M dataModel,
+			final UIModel uiModel,
+			final VG viewGraph,
+			final String[] keyConfigContexts )
 	{
-		super( dataModel, uiModel, viewGraph, lock );
+		super( dataModel, uiModel, viewGraph );
 
 		final Set< String > c = new LinkedHashSet<>( Arrays.asList( uiModel.getKeyConfigContexts() ) );
 		c.addAll( Arrays.asList( keyConfigContexts ) );
@@ -181,7 +184,7 @@ public class MastodonFrameView2<
 			final SelectionModel< MV, ME > selectionModel = dataModel.getSelectionModel();
 			final TagSetModel< MV, ME > tagSetModel = dataModel.getTagSetModel();
 			final TagSetMenu< MV, ME > tagSetMenu = new TagSetMenu< MV, ME >( menuHandle.getMenu(), tagSetModel, selectionModel,
-					lock, undo, refresh );
+					dataModel.getLock(), undo, refresh );
 			tagSetModel.listeners().add( tagSetMenu );
 			onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 		}
