@@ -34,7 +34,17 @@ public class BdvAppModel<
 			final String[] keyConfigContexts,
 			final int numGroups )
 	{
-		super( context, model, keyPressedManager, keymapManager, plugins, globalActions, keyConfigContexts, numGroups );
+		super(
+				context,
+				model,
+				keyPressedManager,
+				keymapManager,
+				plugins,
+				globalActions,
+				keyConfigContexts,
+				numGroups,
+				0,
+				sharedBdvData.getNumTimepoints() - 1 );
 		this.sharedBdvData = sharedBdvData;
 	}
 
@@ -42,16 +52,4 @@ public class BdvAppModel<
 	{
 		return sharedBdvData;
 	}
-
-	@Override
-	public int getTimepointMin()
-	{
-		return 0;
-	}
-
-	@Override
-	public int getTimepointMax()
-    {
-        return sharedBdvData.getNumTimepoints() - 1;
-    }
 }

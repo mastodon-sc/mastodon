@@ -49,7 +49,6 @@ import org.mastodon.mamut.CloseListener;
 import org.mastodon.mamut.MamutFeatureComputation;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.tag.ui.TagSetDialog;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.coloring.TrackGraphColorGenerator;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.Context;
@@ -76,13 +75,17 @@ import bdv.ui.keymap.KeymapManager;
 public class AppModel< 
 		M extends MastodonModel< G, V, E >, 
 		G extends ReadOnlyGraph< V, E >, 
-		V extends Vertex< E > & HasTimepoint, 
+		V extends Vertex< E >, 
 		E extends Edge< V > >
 {
 
 	protected final M model;
 
 	protected final UIModel uiModel;
+
+	private final int minTimepoint;
+
+	private final int maxTimepoint;
 
 	/**
 	 * Instantiate a new Mastodon-app model.
@@ -111,9 +114,13 @@ public class AppModel<
 			final MastodonPlugins< ?, ? > plugins,
 			final Actions globalActions,
 			final String[] keyConfigContexts,
-			final int numGroups )
+			final int numGroups,
+			final int minTimepoint,
+			final int maxTimepoint )
 	{
 		this.model = model;
+		this.minTimepoint = minTimepoint;
+		this.maxTimepoint = maxTimepoint;
 		this.uiModel = new UIModel( context, numGroups, keyPressedManager, keymapManager, plugins, globalActions, keyConfigContexts );
 
 		/*
@@ -190,30 +197,12 @@ public class AppModel<
 
 	public int getTimepointMin()
 	{
-		return minFromVertices( model.getGraph() );
+		return maxTimepoint;
 	}
 
 	public int getTimepointMax()
 	{
-		return maxFromVertices( model.getGraph() );
-	}
-
-	private int maxFromVertices( final G graph )
-	{
-		int max = Integer.MIN_VALUE;
-		for ( final V v : graph.vertices() )
-			if ( v.getTimepoint() > max )
-				max = v.getTimepoint();
-		return max == Integer.MIN_VALUE ? 10 : max;
-	}
-
-	private int minFromVertices( final G graph )
-	{
-		int min = Integer.MAX_VALUE;
-		for ( final V v : graph.vertices() )
-			if ( v.getTimepoint() < min )
-				min = v.getTimepoint();
-		return min == Integer.MAX_VALUE ? 0 : min;
+		return minTimepoint;
 	}
 
 	/**
