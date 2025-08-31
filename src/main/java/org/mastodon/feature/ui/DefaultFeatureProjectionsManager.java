@@ -32,7 +32,7 @@ import static org.mastodon.feature.ui.AvailableFeatureProjectionsImp.createAvail
 
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.graph.ListenableGraph;
+import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.branch.BranchGraphImp;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.model.AbstractModelBranch;
@@ -142,7 +142,7 @@ public class DefaultFeatureProjectionsManager implements FeatureProjectionsManag
 	public AvailableFeatureProjections getAvailableFeatureProjections()
 	{
 		// Determine the vertex and edge classes.
-		final ListenableGraph< ?, ? > graph = model.getGraph();
+		final ReadOnlyGraph< ?, ? > graph = model.getGraph();
 		final Class< ? > vertexClass;
 		final Class< ? > edgeClass ;
 		final Class< ? > branchVertexClass;
