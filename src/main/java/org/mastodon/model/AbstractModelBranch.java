@@ -42,7 +42,7 @@ public abstract class AbstractModelBranch<
 		BG extends BranchGraphImp< V, E, BV, BE, ?, ?, ? > ,
 		BV extends AbstractListenableVertex< BV, BE, ?, ? > & HasTimepoint & RealLocalizable,
 		BE extends AbstractListenableEdge< BE, BV, ?, ? >
-> extends AbstractModel< MG, V, E >
+> extends AbstractModel< MG, V, E > implements HasBranchModel< BG, BV, BE >
 {
 
 	private final BG branchGraph;
@@ -56,6 +56,7 @@ public abstract class AbstractModelBranch<
 		this.branchModel = new BranchModel();
 	}
 
+	@Override
 	public BranchModel branchModel()
 	{
 		return branchModel;

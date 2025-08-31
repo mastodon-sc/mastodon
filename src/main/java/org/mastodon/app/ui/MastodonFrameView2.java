@@ -12,9 +12,8 @@ import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch.BranchGraphImp;
-import org.mastodon.model.AbstractModelBranch;
-import org.mastodon.model.AbstractModelBranch.BranchModel;
+import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.model.HasBranchModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
@@ -219,11 +218,11 @@ public class MastodonFrameView2<
 		final FeatureModel featureModel = uiModel.getInstance( FeatureModel.class );
 
 		final ColoringModel coloringModel;
-		if ( dataModel instanceof AbstractModelBranch )
+		if ( dataModel instanceof HasBranchModel )
 		{
-			final AbstractModelBranch bm = ( AbstractModelBranch ) dataModel;
-			final BranchModel branchModel = bm.branchModel();
-			final BranchGraphImp branchGraph = branchModel.getGraph();
+			final HasBranchModel bm = ( HasBranchModel ) dataModel;
+			final MastodonModel branchModel = bm.branchModel();
+			final BranchGraph branchGraph = ( BranchGraph ) branchModel.getGraph();
 			coloringModel = new ColoringModelMain( tagSetModel, featureColorModeManager, featureModel, branchGraph );
 		}
 		else
