@@ -157,6 +157,7 @@ public class UIModel
 		 * Extra settings pages.
 		 */
 		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
+		registerInstance( featureColorModeManager );
 		final DefaultFeatureProjectionsManager featureProjectionsManager = new DefaultFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		settings.addPage( new KeymapSettingsPage( "Settings > Keymap", keymapManager, descriptions ) );
 		settings.addPage( new FeatureColorModeConfigPage( "Settings > Feature Color Modes", featureColorModeManager, featureProjectionsManager, "Vertex", "Edge" ) );

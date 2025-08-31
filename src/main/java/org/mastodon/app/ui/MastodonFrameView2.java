@@ -215,17 +215,14 @@ public class MastodonFrameView2<
 			final Runnable refresh )
 	{
 		final TagSetModel< MV, ME > tagSetModel = dataModel.getTagSetModel();
-		final FeatureColorModeManager featureColorModeManager = uiModel.getWindowManager().getManager( FeatureColorModeManager.class );
-		final FeatureModel featureModel = uiModel.getWindowManager().getManager( FeatureModel.class );
+		final FeatureColorModeManager featureColorModeManager = uiModel.getInstance( FeatureColorModeManager.class );
+		final FeatureModel featureModel = uiModel.getInstance( FeatureModel.class );
 
 		final ColoringModel coloringModel;
 		if ( dataModel instanceof AbstractModelBranch )
 		{
-			@SuppressWarnings( { "unchecked", "rawtypes" } )
-            final AbstractModelBranch bm = ( AbstractModelBranch ) dataModel;
-			@SuppressWarnings( "rawtypes" )
+			final AbstractModelBranch bm = ( AbstractModelBranch ) dataModel;
 			final BranchModel branchModel = bm.branchModel();
-			@SuppressWarnings( "rawtypes" )
 			final BranchGraphImp branchGraph = branchModel.getGraph();
 			coloringModel = new ColoringModelMain( tagSetModel, featureColorModeManager, featureModel, branchGraph );
 		}
@@ -248,11 +245,6 @@ public class MastodonFrameView2<
 		featureModel.listeners().add( coloringMenu );
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
 
-		// Handle track color generator, if we have one.
-		@SuppressWarnings( "unchecked" )
-		final TrackGraphColorGenerator< MV, ME > tgcg = uiModel.getWindowManager().getManager( TrackGraphColorGenerator.class );
-
-		@SuppressWarnings( "unchecked" )
 		final ColoringChangedListener coloringChangedListener = () -> {
 			final GraphColorGenerator< MV, ME > colorGenerator;
 			switch ( coloringModel.getColoringStyle() )
@@ -264,6 +256,7 @@ public class MastodonFrameView2<
 				colorGenerator = new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() );
 				break;
 			case BY_TRACK:
+				final TrackGraphColorGenerator< MV, ME > tgcg = uiModel.getInstance( TrackGraphColorGenerator.class );
 				colorGenerator = tgcg;
 				break;
 			case NONE:
