@@ -164,7 +164,7 @@ public class MamutViewTrackScheme2<
 		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeStyleManager trackSchemeStyleManager = uiModel.getWindowManager().getManager( TrackSchemeStyleManager.class );
+		final TrackSchemeStyleManager trackSchemeStyleManager = uiModel.getInstance( TrackSchemeStyleManager.class );
 		final TrackSchemeStyle forwardDefaultStyle = trackSchemeStyleManager.getForwardDefaultStyle();
 		final GraphColorGeneratorAdapter< V, E, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
