@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,6 +41,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.ui.SelectionActions;
@@ -111,7 +112,8 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 		// Register save / export actions
 		ProjectActions.installAppActions( getModelActions(), this, null );
 
-		this.branchGraphSync = new BranchGraphSynchronizer( model.getBranchGraph(), model.getGraph().getLock().readLock() );
+		final ModelBranchGraph graph = model.branchModel().getGraph();
+		this.branchGraphSync = new BranchGraphSynchronizer( graph, model.getGraph().getLock().readLock() );
 		model.getGraph().addGraphChangeListener( branchGraphSync );
 		/*
 		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
@@ -159,7 +161,7 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 
 	/**
 	 * Returns the starting time-point <b>in the image data</b>.
-	 * 
+	 *
 	 * @return the starting time-point.
 	 */
 	public int getMinTimepoint()
@@ -169,7 +171,7 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 
 	/**
 	 * Returns the last time-point <b>in the image data</b>.
-	 * 
+	 *
 	 * @return the last time-point.
 	 */
 	public int getMaxTimepoint()
@@ -190,7 +192,7 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 
 	/**
 	 * Listeners that are notified when the Mastodon project is closed.
-	 * 
+	 *
 	 * @return the {@link Listeners}.
 	 */
 	public Listeners< CloseListener > projectClosedListeners()
@@ -218,7 +220,7 @@ public class ProjectModel extends MastodonAppModel< Model, Spot, Link > implemen
 
 	/**
 	 * Returns a suitable project name for the project managed in this model.
-	 * 
+	 *
 	 * @return the project name.
 	 */
 	public String getProjectName()
