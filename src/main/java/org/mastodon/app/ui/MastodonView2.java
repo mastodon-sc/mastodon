@@ -22,7 +22,7 @@ import org.mastodon.model.TimepointModel;
 /**
  * Base class for views of a {@link MastodonModel}, that display a view-graph
  * derived from the model's graph.
- * 
+ *
  * @param <M>
  *            the type of the mastodon model.
  * @param <VG>
@@ -39,7 +39,7 @@ import org.mastodon.model.TimepointModel;
 public class MastodonView2<
 		M extends MastodonModel< ?, MV, ME >,
 		VG extends ViewGraph< MV, ME, V, E >,
-		MV extends Vertex< ME >, 
+		MV extends Vertex< ME >,
 		ME extends Edge< MV >,
 		V extends Vertex< E >,
 		E extends Edge< V > >
@@ -47,7 +47,7 @@ public class MastodonView2<
 
 	protected final M dataModel;
 
-	protected final UIModel uiModel;
+	protected final UIModel< ? > uiModel;
 
 	protected final VG viewGraph;
 
@@ -67,7 +67,7 @@ public class MastodonView2<
 
 	public MastodonView2(
 			final M dataModel,
-			final UIModel uiModel,
+			final UIModel< ? > uiModel,
 			final VG viewGraph )
 	{
 		this.dataModel = dataModel;

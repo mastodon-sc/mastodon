@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,16 +41,16 @@ import static org.mastodon.mamut.views.MamutView.TRACK_COLORING_KEY;
 import static org.mastodon.mamut.views.MamutViewFactory.VIEW_TYPE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_SHOW_EDGES_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_TRANSFORM_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_PROJECTION_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_SPEC_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_INCOMING_EDGE_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_PROJECTION_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_SHOW_EDGES_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_IS_EDGE_KEY;
+import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_PROJECTION_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_SPEC_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_INCOMING_EDGE_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_PROJECTION_KEY;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_DISPLAYED;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_ELEMENT;
 import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_NAME;
@@ -68,6 +68,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.jdom2.Element;
+import org.mastodon.app.ui.MastodonFrameView;
+import org.mastodon.app.ui.UIModel;
+import org.mastodon.app.ui.UIModel.ViewFactories;
 import org.mastodon.mamut.MamutViews;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.views.MamutViewI;
@@ -89,7 +92,7 @@ public class MamutViewStateXMLSerialization
 	/**
 	 * Key that specifies the name of the chosen context provider. Values are
 	 * strings.
-	 * 
+	 *
 	 * FIXME Right now the chosen context provider is not serialized or
 	 * deserialized. Deserializing it will be a bit tricky: when we recreate
 	 * views, it is possible that a context chooser it set on a context provider
@@ -194,7 +197,7 @@ public class MamutViewStateXMLSerialization
 
 	/**
 	 * Deserializes a GUI state from XML and recreate view windows as specified.
-	 * 
+	 *
 	 * @param windowsEl
 	 *            the XML element that stores the GUI state of a view.
 	 * @param windowManager
@@ -229,6 +232,48 @@ public class MamutViewStateXMLSerialization
 
 			// Create, register the view and sets its GUI state.
 			windowManager.createView( klass, guiState );
+		}
+	}
+
+	/**
+	 * Deserializes a GUI state from XML and recreate view windows as specified.
+	 *
+	 * @param windowsEl
+	 *            the XML element that stores the GUI state of a view.
+	 * @param uiModel
+	 *            the application {@link WindowManager}.
+	 */
+	public static void fromXml( final Element windowsEl, final UIModel< ? > uiModel )
+	{
+		@SuppressWarnings( "rawtypes" )
+		final ViewFactories viewFactories = uiModel.getViewFactories();
+		@SuppressWarnings( "unchecked" )
+		final Collection< Class< ? extends MastodonFrameView< ?, ?, ?, ?, ?, ? > > > classes = viewFactories.getKeys();
+
+		final List< Element > viewEls = windowsEl.getChildren( WINDOW_TAG );
+		for ( final Element viewEl : viewEls )
+		{
+			final Map< String, Object > guiState = xmlToMap( viewEl );
+			final String typeStr = ( String ) guiState.get( VIEW_TYPE_KEY );
+
+			// First check that we know of the view type in the window manager.
+			Class< ? extends MastodonFrameView< ?, ?, ?, ?, ?, ? > > klass = null;
+			for ( final Class< ? extends MastodonFrameView< ?, ?, ?, ?, ?, ? > > cl : classes )
+			{
+				if ( cl.getSimpleName().equals( typeStr ) )
+				{
+					klass = cl;
+					break;
+				}
+			}
+			if ( klass == null )
+			{
+				System.err.println( "Deserializing GUI state: Unknown view type: " + typeStr + "." );
+				continue;
+			}
+
+			// Create, register the view and sets its GUI state.
+			viewFactories.createView( klass, guiState );
 		}
 	}
 
@@ -337,7 +382,7 @@ public class MamutViewStateXMLSerialization
 	 * split over severals. We also impose a minimal size for the windows.
 	 * <p>
 	 * The pos array is { x, y, width, height }.
-	 * 
+	 *
 	 * @param pos
 	 *            the position array.
 	 * @return the same position array.

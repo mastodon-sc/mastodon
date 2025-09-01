@@ -26,57 +26,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.managers;
+package org.mastodon.mamut.views.trackscheme;
 
-import org.mastodon.mamut.ProjectModel;
-import org.scijava.plugin.SciJavaPlugin;
+import org.mastodon.app.factory.MastodonViewTrackSchemeFactory;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.ModelGraphTrackSchemeProperties;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
-import bdv.ui.settings.SettingsPage;
 
-/**
- * Interface for discoverable style manager factories.
- * <p>
- * Such factories are meant to be automatically discovered by the window
- * manager, and used to create style managers.
- *
- * @param <T>
- *            TODO
- */
-public interface StyleManagerFactory< T > extends SciJavaPlugin
+@Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
+public class MamutViewTrackSchemeFactory2
+		extends MastodonViewTrackSchemeFactory< Model, ModelGraph, Spot, Link >
+		implements MamutViewFactory2< MamutViewTrackScheme2< Model, ModelGraph, Spot, Link > >
 {
 
-	/**
-	 * Creates a new manager instance for the specified project model.
-	 *
-	 * @param projectModel
-	 *            the project model.
-	 *
-	 * @return a new manager instance.
-	 */
-	public T create( final ProjectModel projectModel );
-
-	/**
-	 * Returns <code>true</code> if the manager handled by this factory has a
-	 * {@link SettingsPage} that can configure it.
-	 *
-	 * @return whether there is a settings page for the manager.
-	 */
-	public boolean hasSettingsPage();
-
-	/**
-	 * Creates a new settings page for the specified manager.
-	 *
-	 * @param manager
-	 *            the manager.
-	 * @return a new settings page.
-	 */
-	public SettingsPage createSettingsPage( T manager );
-
-	/**
-	 * Returns the class of the manager created by this factory.
-	 *
-	 * @return the manager class.
-	 */
-	public Class< T > getManagerClass();
-
+	@Override
+	protected ModelGraphProperties< Spot, Link > getModelGraphProperties( final ModelGraph graph )
+	{
+		return new ModelGraphTrackSchemeProperties( graph );
+	}
 }

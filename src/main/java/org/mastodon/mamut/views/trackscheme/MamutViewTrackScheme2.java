@@ -28,18 +28,8 @@
  */
 package org.mastodon.mamut.views.trackscheme;
 
-import static org.mastodon.app.ui.ViewMenuBuilder.item;
-import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
-
 import java.awt.Component;
 
-import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -49,15 +39,11 @@ import org.mastodon.app.ui.MastodonFrameView2;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.UIModel;
-import org.mastodon.app.ui.ViewMenu2;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.collection.RefCollection;
-import org.mastodon.graph.ListenableGraph;
-import org.mastodon.graph.ref.AbstractListenableEdge;
-import org.mastodon.graph.ref.AbstractListenableVertex;
-import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutMenuBuilder;
-import org.mastodon.mamut.UndoActions;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.ListenableReadOnlyGraph;
+import org.mastodon.graph.Vertex;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.MastodonModel;
@@ -66,7 +52,6 @@ import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
-import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
@@ -104,11 +89,11 @@ import org.scijava.ui.behaviour.KeyPressedManager;
  * @param <V>
  * @param <E>
  */
-public class MamutViewTrackScheme2< 
-		M extends MastodonModel< G, V, E >, 
-		G extends ListenableGraph< V, E >, 
-		V extends AbstractListenableVertex< V, E, ?, ? >, 
-		E extends AbstractListenableEdge< E, V, ?, ? > >
+public class MamutViewTrackScheme2<
+		M extends MastodonModel< G, V, E >,
+		G extends ListenableReadOnlyGraph< V, E >,
+		V extends Vertex<  E >,
+		E extends Edge< V > >
 		extends MastodonFrameView2< M, TrackSchemeGraph< V, E >, V, E, TrackSchemeVertex, TrackSchemeEdge >
 		implements HasContextChooser< V >, HasColorBarOverlay, HasColoringModel
 {
@@ -124,10 +109,10 @@ public class MamutViewTrackScheme2<
 	private final ColorBarOverlay colorBarOverlay;
 
 	public MamutViewTrackScheme2(
-			final AppModel< M, G, V, E > appModel,
+			final AppModel< M, G, V, E, ? > appModel,
 			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
-		this( 
+		this(
 				appModel.dataModel(),
 				appModel.uiModel(),
 				modelGraphProperties,
@@ -137,7 +122,7 @@ public class MamutViewTrackScheme2<
 
 	public MamutViewTrackScheme2(
 			final M dataModel,
-			final UIModel uiModel,
+			final UIModel< ? > uiModel,
 			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
 		this( dataModel, uiModel, modelGraphProperties,
@@ -147,7 +132,7 @@ public class MamutViewTrackScheme2<
 
 	public MamutViewTrackScheme2(
 			final M dataModel,
-			final UIModel uiModel,
+			final UIModel< ? > uiModel,
 			final ModelGraphProperties< V, E > modelGraphProperties,
 			final int timepointMin,
 			final int timepointMax )
@@ -250,7 +235,7 @@ public class MamutViewTrackScheme2<
 					.context( context )
 					.inputTriggerConfig( uiModel.getKeymap().getConfig() )
 					.keyConfigContexts( keyConfigContexts )
-					.descriptionProvider( uiModel.getWindowManager().getViewFactories().getCommandDescriptions() )
+					.descriptionProvider( uiModel.getCommandDescriptions() )
 					.register( viewActions )
 					.register( uiModel.getModelActions() )
 					.register( uiModel.getProjectActions() )
@@ -261,51 +246,51 @@ public class MamutViewTrackScheme2<
 			cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 		}
 
-		final ViewMenu2 menu = new ViewMenu2( this, uiModel.getKeymap(), keyConfigContexts );
-		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
 		final JMenuHandle coloringMenuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 
-		MainWindow.addMenus( menu, actionMap );
-		uiModel.getWindowManager().addWindowMenu( menu, actionMap );
-		MamutMenuBuilder.build( menu, actionMap,
-				fileMenu(
-						separator(),
-						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),
-						item( ExportViewActions.EXPORT_VIEW_TO_PNG ) ),
-				viewMenu(
-						colorMenu( coloringMenuHandle ),
-						colorbarMenu( colorbarMenuHandle ),
-						separator(),
-						item( ShowSelectedTracksActions.SHOW_TRACK_DOWNWARD ),
-						item( ShowSelectedTracksActions.SHOW_SELECTED_TRACKS ),
-						item( ShowSelectedTracksActions.SHOW_ALL_TRACKS ),
-						separator(),
-						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
-				editMenu(
-						item( UndoActions.UNDO ),
-						item( UndoActions.REDO ),
-						separator(),
-						item( SelectionActions.DELETE_SELECTION ),
-						item( SelectionActions.SELECT_WHOLE_TRACK ),
-						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
-						item( SelectionActions.SELECT_TRACK_UPWARD ),
-						separator(),
-						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_CHILD ),
-						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_PARENT ),
-						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_LEFT ),
-						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_RIGHT ),
-						separator(),
-						item( TrackSchemeNavigationActions.NAVIGATE_CHILD ),
-						item( TrackSchemeNavigationActions.NAVIGATE_PARENT ),
-						item( TrackSchemeNavigationActions.NAVIGATE_LEFT ),
-						item( TrackSchemeNavigationActions.NAVIGATE_RIGHT ),
-						separator(),
-						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL ),
-						tagSetMenu( tagSetMenuHandle ) ) );
-		uiModel.getPlugins().addMenus( menu );
+//		final ViewMenu2 menu = new ViewMenu2( this, uiModel.getKeymap(), keyConfigContexts );
+//		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
+//		MainWindow.addMenus( menu, actionMap );
+//		uiModel.getWindowManager().addWindowMenu( menu, actionMap );
+//		MamutMenuBuilder.build( menu, actionMap,
+//				fileMenu(
+//						separator(),
+//						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),
+//						item( ExportViewActions.EXPORT_VIEW_TO_PNG ) ),
+//				viewMenu(
+//						colorMenu( coloringMenuHandle ),
+//						colorbarMenu( colorbarMenuHandle ),
+//						separator(),
+//						item( ShowSelectedTracksActions.SHOW_TRACK_DOWNWARD ),
+//						item( ShowSelectedTracksActions.SHOW_SELECTED_TRACKS ),
+//						item( ShowSelectedTracksActions.SHOW_ALL_TRACKS ),
+//						separator(),
+//						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
+//				editMenu(
+//						item( UndoActions.UNDO ),
+//						item( UndoActions.REDO ),
+//						separator(),
+//						item( SelectionActions.DELETE_SELECTION ),
+//						item( SelectionActions.SELECT_WHOLE_TRACK ),
+//						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
+//						item( SelectionActions.SELECT_TRACK_UPWARD ),
+//						separator(),
+//						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_CHILD ),
+//						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_PARENT ),
+//						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_LEFT ),
+//						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_RIGHT ),
+//						separator(),
+//						item( TrackSchemeNavigationActions.NAVIGATE_CHILD ),
+//						item( TrackSchemeNavigationActions.NAVIGATE_PARENT ),
+//						item( TrackSchemeNavigationActions.NAVIGATE_LEFT ),
+//						item( TrackSchemeNavigationActions.NAVIGATE_RIGHT ),
+//						separator(),
+//						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL ),
+//						tagSetMenu( tagSetMenuHandle ) ) );
+//		uiModel.getPlugins().addMenus( menu );
 
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );

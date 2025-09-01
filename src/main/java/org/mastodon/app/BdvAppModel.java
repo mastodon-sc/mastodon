@@ -16,7 +16,7 @@ import bdv.ui.keymap.KeymapManager;
 public class BdvAppModel<
 		M extends MastodonModel< G, V, E >,
 		G extends ReadOnlyGraph< V, E >,
-		V extends Vertex< E > & HasTimepoint, 
+		V extends Vertex< E > & HasTimepoint,
 		E extends Edge< V > >
 		extends AppModel< M, G, V, E >
 {
@@ -27,6 +27,7 @@ public class BdvAppModel<
 			final Context context,
 			final M model,
 			final SharedBigDataViewerData sharedBdvData,
+			final Class< ? > viewFactoryType,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
 			final MastodonPlugins< ?, ? > plugins,
@@ -37,6 +38,7 @@ public class BdvAppModel<
 		super(
 				context,
 				model,
+				viewFactoryType,
 				keyPressedManager,
 				keymapManager,
 				plugins,

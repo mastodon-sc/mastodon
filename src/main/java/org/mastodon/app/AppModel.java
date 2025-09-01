@@ -28,15 +28,12 @@
  */
 package org.mastodon.app;
 
-import static org.mastodon.app.MastodonIcons.FEATURES_ICON;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON;
 
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import javax.swing.JDialog;
 
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.ui.UIModel;
@@ -81,7 +78,7 @@ import bdv.ui.keymap.KeymapManager;
  * it to a menu item and a shortcut. The dialog is registered to the UIModel as
  * a window.
  * </ul>
- * 
+ *
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch
  * @param <M>
@@ -91,16 +88,16 @@ import bdv.ui.keymap.KeymapManager;
  * @param <E>
  *            the type of edges in the model graph.
  */
-public class AppModel< 
-		M extends MastodonModel< G, V, E >, 
-		G extends ReadOnlyGraph< V, E >, 
-		V extends Vertex< E >, 
+public class AppModel<
+		M extends MastodonModel< G, V, E >,
+		G extends ReadOnlyGraph< V, E >,
+		V extends Vertex< E >,
 		E extends Edge< V > >
 {
 
 	protected final M model;
 
-	protected final UIModel uiModel;
+	protected final UIModel< ? > uiModel;
 
 	private final int minTimepoint;
 
@@ -125,9 +122,11 @@ public class AppModel<
 	 *            keyconf contexts for appActions (actions that should be
 	 *            available in all views)
 	 */
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	public AppModel(
 			final Context context,
 			final M model,
+			final Class< ? > viewFactoryType,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
 			final MastodonPlugins< ?, ? > plugins,
@@ -140,7 +139,7 @@ public class AppModel<
 		this.model = model;
 		this.minTimepoint = minTimepoint;
 		this.maxTimepoint = maxTimepoint;
-		this.uiModel = new UIModel( context, numGroups, keyPressedManager, keymapManager, plugins, globalActions, keyConfigContexts );
+		this.uiModel = new UIModel<>( ( Class ) viewFactoryType, context, numGroups, keyPressedManager, keymapManager, plugins, globalActions, keyConfigContexts );
 
 		/*
 		 * Singletons and managers.
@@ -152,7 +151,6 @@ public class AppModel<
 		final G graph = model.getGraph();
 		if ( graph instanceof ListenableReadOnlyGraph )
 		{
-			@SuppressWarnings( "unchecked" )
 			final ListenableReadOnlyGraph< V, E > lg = ( ListenableReadOnlyGraph< V, E > ) graph;
 			final TrackGraphColorGenerator< V, E > trackGraphColorGenerator = new TrackGraphColorGenerator< V, E >( lg );
 			uiModel.closeListeners().add( () -> trackGraphColorGenerator.close() );
@@ -175,17 +173,17 @@ public class AppModel<
 			uiModel.registerWindow( tagSetDialog );
 		}
 
-		final JDialog featureComputationDialog = MamutFeatureComputation.getDialog( this, context );
-		featureComputationDialog.setIconImages( FEATURES_ICON );
-		uiModel.closeListeners().add( featureComputationDialog::dispose );
-		uiModel.registerWindow( featureComputationDialog );
+//		final JDialog featureComputationDialog = MamutFeatureComputation.getDialog( this, context );
+//		featureComputationDialog.setIconImages( FEATURES_ICON );
+//		uiModel.closeListeners().add( featureComputationDialog::dispose );
+//		uiModel.registerWindow( featureComputationDialog );
+//		final RunnableAction featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, () -> featureComputationDialog.setVisible( true ) );
+//		uiModel.getProjectActions().namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
 		/*
-		 * Actions to create dialogs.
+		 * Online documentation.
 		 */
-		final RunnableAction featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, () -> featureComputationDialog.setVisible( true ) );
 		final RunnableAction openOnlineDocumentation = new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
-		uiModel.getProjectActions().namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 		uiModel.getProjectActions().namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
 		// Adjust titles of all windows to include project name.
@@ -203,7 +201,7 @@ public class AppModel<
 		return model;
 	}
 
-	public UIModel uiModel()
+	public UIModel< ? > uiModel()
 	{
 		return uiModel;
 	}

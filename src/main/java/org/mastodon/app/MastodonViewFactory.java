@@ -26,14 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.views;
+package org.mastodon.app;
 
 import java.util.Map;
 
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.app.ui.MastodonFrameView2;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.Vertex;
+import org.mastodon.model.MastodonModel;
 import org.scijava.plugin.SciJavaPlugin;
 
-public interface MamutViewFactory< T extends MamutViewI > extends SciJavaPlugin
+/**
+ * Interface for factories that create Mastodon views.
+ * <p>
+ * This interface does not extend {@link SciJavaPlugin}. A specific app will
+ * have a collection of factories, that implement this interface, and another
+ * marker interface specific to the app, that extends {@link SciJavaPlugin}, so
+ * that the app can discover only the factories that it uses.
+ *
+ * @author Jean-Yves Tinevez
+ *
+ * @param <T>
+ *            the type of view created by this factory.
+ * @param <M>
+ *            the type of app model used in the application.
+ * @param <G>
+ *            the type of graph used in the model.
+ * @param <V>
+ *            the type of vertex in the graph.
+ * @param <E>
+ *            the type of edge in the graph.
+ */
+public interface MastodonViewFactory<
+		T extends MastodonFrameView2< M, ?, V, E, ?, ? >,
+		M extends MastodonModel< G, V, E >,
+		G extends ReadOnlyGraph< V, E >,
+		V extends Vertex< E >,
+		E extends Edge< V > >
+		extends MastodonFactory
 {
 
 	/**
@@ -42,28 +73,28 @@ public interface MamutViewFactory< T extends MamutViewI > extends SciJavaPlugin
 	static final String VIEW_TYPE_KEY = "Type";
 
 	/**
-	 * Creates a new view for the specified project model.
+	 * Creates a new view for the specified app model.
 	 * <p>
 	 * The new view has default GUI state and is not shown.
 	 *
-	 * @param projectModel
-	 *            the project model.
+	 * @param appModel
+	 *            the app model.
 	 *
 	 * @return a new view.
 	 */
-	public T create( final ProjectModel projectModel );
+	T create( AppModel< M, G, V, E > appModel );
 
 	/**
 	 * Creates and shows a new view for the specified project model, and restore
 	 * the GUI state stored in the specified map.
 	 *
-	 * @param projectModel
-	 *            the project model.
+	 * @param appModel
+	 *            the app model.
 	 * @param guiState
 	 *            the GUI state map.
 	 * @return a new view.
 	 */
-	public T show( final ProjectModel projectModel, final Map< String, Object > guiState );
+	T show( AppModel< M, G, V, E > appModel, Map< String, Object > guiState );
 
 	/**
 	 * Restores the GUI state stored in the specified map for the specified
@@ -74,7 +105,7 @@ public interface MamutViewFactory< T extends MamutViewI > extends SciJavaPlugin
 	 * @param guiState
 	 *            the GUI state map.
 	 */
-	public void restoreGuiState( final T view, final Map< String, Object > guiState );
+	void restoreGuiState( T view, Map< String, Object > guiState );
 
 	/**
 	 * Serializes the current GUI state of the specified view in a map.
@@ -83,36 +114,7 @@ public interface MamutViewFactory< T extends MamutViewI > extends SciJavaPlugin
 	 *            the view.
 	 * @return a new map.
 	 */
-	public Map< String, Object > getGuiState( final T view );
-
-	/**
-	 * Returns the name of the command that will use this factory to create a
-	 * new view.
-	 *
-	 * @return the command name.
-	 */
-	public String getCommandName();
-
-	/**
-	 * Returns the list of default keystrokes of the command.
-	 *
-	 * @return the default keystrokes0
-	 */
-	public String[] getCommandKeys();
-
-	/**
-	 * Returns the description of the command.
-	 *
-	 * @return the description.
-	 */
-	public String getCommandDescription();
-
-	/**
-	 * Returns the text of the command to appear in menus.
-	 *
-	 * @return the menu text for the command.
-	 */
-	public String getCommandMenuText();
+	Map< String, Object > getGuiState( T view );
 
 	/**
 	 * Returns the class of the view created by this factory.
@@ -122,5 +124,5 @@ public interface MamutViewFactory< T extends MamutViewI > extends SciJavaPlugin
 	 *
 	 * @return the view class.
 	 */
-	public Class< T > getViewClass();
+	Class< T > getViewClass();
 }
