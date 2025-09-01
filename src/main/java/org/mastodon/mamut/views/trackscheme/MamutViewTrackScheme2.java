@@ -35,7 +35,7 @@ import javax.swing.SwingUtilities;
 
 import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.app.AppModel;
-import org.mastodon.app.ui.MastodonFrameView2;
+import org.mastodon.app.ui.AbstractMastodonFrameView2;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.UIModel;
@@ -94,7 +94,7 @@ public class MamutViewTrackScheme2<
 		G extends ListenableReadOnlyGraph< V, E >,
 		V extends Vertex<  E >,
 		E extends Edge< V > >
-		extends MastodonFrameView2< M, TrackSchemeGraph< V, E >, V, E, TrackSchemeVertex, TrackSchemeEdge >
+		extends AbstractMastodonFrameView2< M, TrackSchemeGraph< V, E >, V, E, TrackSchemeVertex, TrackSchemeEdge >
 		implements HasContextChooser< V >, HasColorBarOverlay, HasColoringModel
 {
 
@@ -109,7 +109,7 @@ public class MamutViewTrackScheme2<
 	private final ColorBarOverlay colorBarOverlay;
 
 	public MamutViewTrackScheme2(
-			final AppModel< M, G, V, E, ? > appModel,
+			final AppModel< M, G, V, E > appModel,
 			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
 		this(
