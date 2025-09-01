@@ -7,6 +7,7 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.branch.BranchGraphImp;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
+import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.model.branch.BranchGraphFocusAdapter;
 import org.mastodon.model.branch.BranchGraphHighlightAdapter;
 import org.mastodon.model.branch.BranchGraphSelectionAdapter;
@@ -52,17 +53,28 @@ public abstract class AbstractModelBranch<
 
 	private final BranchModel branchModel;
 
+	private final BranchGraphSynchronizer branchGraphSync;
+
 	protected AbstractModelBranch( final MG modelGraph, final BG branchGraph, final String spaceUnits, final String timeUnits )
 	{
 		super( modelGraph, spaceUnits, timeUnits );
 		this.branchGraph = branchGraph;
 		this.branchModel = new BranchModel();
+
+		this.branchGraphSync = new BranchGraphSynchronizer( branchGraph, modelGraph.getLock().readLock() );
+		modelGraph.addGraphChangeListener( branchGraphSync );
 	}
 
 	@Override
 	public BranchModel branchModel()
 	{
 		return branchModel;
+	}
+
+	@Override
+	public BranchGraphSynchronizer branchGraphSync()
+	{
+		return branchGraphSync;
 	}
 
 	public class BranchModel implements MastodonModel< BG, BV, BE >

@@ -3,10 +3,11 @@ package org.mastodon.model;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 
 public interface HasBranchModel<
 		BG extends BranchGraph< BV, BE, ?, ? >,
-		BV extends Vertex< BE >, 
+		BV extends Vertex< BE >,
 		BE extends Edge< BV > >
 {
 
@@ -16,9 +17,17 @@ public interface HasBranchModel<
 	 * A branch-graph is a view of the core graph where linear chains of edges
 	 * are grouped into single edges called branches. This view is dynamically
 	 * updated as the core graph changes.
-	 * 
+	 *
 	 * @return the branch-graph model.
 	 */
 	MastodonModel< BG, BV, BE > branchModel();
+
+	/**
+	 * Returns the branch graph synchronizer that is used to sync the branch
+	 * graph with the core graph.
+	 *
+	 * @return the branch graph synchronizer.
+	 */
+	BranchGraphSynchronizer branchGraphSync();
 
 }
