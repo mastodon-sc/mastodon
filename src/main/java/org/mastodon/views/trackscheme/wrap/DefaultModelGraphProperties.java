@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,6 +31,7 @@ package org.mastodon.views.trackscheme.wrap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.HasLabel;
+import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.HasTimepoint;
 
 public class DefaultModelGraphProperties< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > >
@@ -87,6 +88,12 @@ public class DefaultModelGraphProperties< V extends Vertex< E > & HasTimepoint &
 
 	@Override
 	public void notifyGraphChanged()
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void addVertexLabelListener( final PropertyChangeListener< V > listener )
 	{
 		throw new UnsupportedOperationException();
 	}
