@@ -166,6 +166,12 @@ public abstract class AbstractModel<
 	}
 
 	@Override
+	public FeatureModel getFeatureModel()
+    {
+        return featureModel;
+    }
+
+	@Override
 	public ReentrantReadWriteLock getLock()
 	{
 		return modelGraph.getLock();
