@@ -82,7 +82,7 @@ public interface MastodonViewFactory<
 	 *
 	 * @return a new view.
 	 */
-	T create( AppModel< M, G, V, E > appModel );
+	T create( AppModel< M, G, V, E, ? > appModel );
 
 	/**
 	 * Creates and shows a new view for the specified project model, and restore
@@ -94,7 +94,7 @@ public interface MastodonViewFactory<
 	 *            the GUI state map.
 	 * @return a new view.
 	 */
-	T show( AppModel< M, G, V, E > appModel, Map< String, Object > guiState );
+	T show( AppModel< M, G, V, E, ? > appModel, Map< String, Object > guiState );
 
 	/**
 	 * Restores the GUI state stored in the specified map for the specified

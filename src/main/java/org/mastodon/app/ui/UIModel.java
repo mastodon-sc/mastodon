@@ -1,12 +1,9 @@
 package org.mastodon.app.ui;
 
-import static org.mastodon.mamut.MamutMenuBuilder.windowMenu;
-
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,44 +12,28 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import javax.swing.ActionMap;
-
 import org.mastodon.app.AppModel;
-import org.mastodon.app.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.plugin.PluginUtils;
-import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.DefaultFeatureProjectionsManager;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.grouping.GroupManager;
 import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.mamut.CloseListener;
-import org.mastodon.mamut.KeyConfigScopes;
-import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.PreferencesDialog;
-import org.mastodon.mamut.WindowManager.ViewCreatedListener;
 import org.mastodon.mamut.managers.StyleManagerFactory2;
-import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.ForwardingNavigationHandler;
 import org.mastodon.model.ForwardingTimepointModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
-import org.mastodon.views.context.ContextChooser;
-import org.mastodon.views.context.ContextProvider;
-import org.mastodon.views.context.HasContextChooser;
-import org.mastodon.views.context.HasContextProvider;
 import org.scijava.Context;
 import org.scijava.listeners.Listeners;
-import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
-import org.scijava.ui.behaviour.io.gui.CommandDescriptionsBuilder;
 import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.tools.ToggleDialogAction;
@@ -67,16 +48,13 @@ import bdv.util.InvokeOnEDT;
  *
  * @author Jean-Yves Tinevez
  */
-public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
+public class UIModel
 {
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	public final GroupableModelFactory< NavigationHandler< ?, ? > > NAVIGATION = ( GroupableModelFactory ) new ForwardingNavigationHandler.Factory<>();
 
 	public final GroupableModelFactory< TimepointModel > TIMEPOINT = ForwardingTimepointModel.factory;
-
-	/** Manages the collections of view factories. */
-	private final ViewFactories viewFactories;
 
 	private final Context context;
 
@@ -115,7 +93,7 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 	private final List< Window > registeredWindows = new ArrayList<>();
 
 	/** Stores the different lists of data views currently opened. */
-	private final Map< Class< ? extends MastodonView2< ?, ?, ?, ?, ?, ? > >, List< MastodonView2< ?, ?, ?, ?, ?, ? > > > openedViews = new HashMap<>();
+	private final Map< Class< ? >, List< MastodonFrameView2< ?, ?, ?, ?, ?, ? > > > openedViews = new HashMap<>();
 
 	/** Collection of listeners that are notified when the project is closed. */
 	private final Listeners.List< CloseListener > closeListeners = new Listeners.List<>();
@@ -148,7 +126,6 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 	 *            the key config contexts of the views managed by this app.
 	 */
 	public UIModel(
-			final Class< VF > viewFactoryType,
 			final Context context,
 			final int numGroups,
 			final KeyPressedManager keyPressedManager,
@@ -171,13 +148,6 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 
 		final InputTriggerConfig keyconf = keymapManager.getForwardSelectedKeymap().getConfig();
 		this.modelActions = new Actions( keyconf, keyConfigContexts );
-
-		/*
-		 * Discover view factories.
-		 */
-		this.viewFactories = new ViewFactories();
-		final Consumer< VF > registerViewFactory = factory -> viewFactories.register( factory );
-		PluginUtils.forEachDiscoveredPlugin( viewFactoryType, registerViewFactory, context );
 
 		/*
 		 * Preferences dialog.
@@ -325,134 +295,6 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 		return closeListeners;
 	}
 
-	public ViewFactories getViewFactories()
-	{
-		return viewFactories;
-	}
-
-	/**
-	 * Creates, shows, registers and returns a view of the specified class with
-	 * default GUI state.
-	 *
-	 * @param <T>
-	 *            the view type.
-	 * @param klass
-	 *            the view class.
-	 * @return a new instance of the view, that was shown.
-	 */
-	public < T extends MastodonFrameView2< ?, ?, ?, ?, ?, ? > > T createView( final Class< T > klass )
-	{
-		return createView( klass, Collections.emptyMap() );
-	}
-
-	/**
-	 * Creates, shows, registers and returns a view of the specified class, with
-	 * GUI state read from the specified map.
-	 * <p>
-	 * Return <code>null</code> if the type of view is unknown to the window
-	 * manager.
-	 *
-	 * @param <T>
-	 *            the view type.
-	 * @param klass
-	 *            the view class.
-	 * @param guiState
-	 *            the GUI state map.
-	 * @param appModel
-	 * @return a new instance of the view, or <code>null</code> if the view
-	 *         class is unknown to the window manager.
-	 */
-	public synchronized < T extends MastodonFrameView2< ?, ?, ?, ?, ?, ? > > T createView(
-			final Class< T > klass,
-			final Map< String, Object > guiState,
-			final AppModel< ?, ?, ?, ? > appModel )
-	{
-		// Get the right factory.
-		final MastodonViewFactory< T, ?, ?, ?, ? > factory = viewFactories.getFactory( klass );
-
-		// Return null if the view type is unknown to us.
-		if ( factory == null )
-			return null;
-
-		// Create the view.
-		final T view = factory.create( appModel );
-
-		// Adjust the frame name.
-		adjustTitle( view.getFrame(), appModel.getProjectName() );
-
-		// Restore the view GUI state.
-		factory.restoreGuiState( view, guiState );
-
-		// Store the view for window manager.
-		openedViews.computeIfAbsent( klass, ( v ) -> new ArrayList<>() ).add( view );
-
-		// Does it has a context chooser?
-		if ( view instanceof HasContextChooser )
-		{
-			@SuppressWarnings( "unchecked" )
-			final ContextChooser< Spot > cc = ( ( HasContextChooser< Spot > ) view ).getContextChooser();
-			cc.updateContextProviders( contextProviders );
-		}
-
-		// Does it has a context provider?
-		if ( view instanceof HasContextProvider )
-		{
-			final ContextProvider< Spot > cp = ( ( HasContextProvider ) view ).getContextProvider();
-			contextProviders.add( cp );
-			// Notify context choosers.
-			forEachView( v -> {
-				if ( v instanceof HasContextChooser )
-				{
-					@SuppressWarnings( "unchecked" )
-					final HasContextChooser< Spot > cc = ( HasContextChooser< Spot > ) v;
-					cc.getContextChooser().updateContextProviders( contextProviders );
-				}
-			} );
-		}
-
-		// Register close listener.
-		view.onClose( () -> {
-			// Remove view from list of opened views.
-			openedViews.get( klass ).remove( view );
-
-			if ( view instanceof HasContextChooser )
-			{
-				// Remove context providers from it.
-				@SuppressWarnings( "unchecked" )
-				final ContextChooser< Spot > cc = ( ( HasContextChooser< Spot > ) view ).getContextChooser();
-				cc.updateContextProviders( new ArrayList<>() );
-			}
-
-			if ( view instanceof HasContextProvider )
-			{
-				// Remove it from the list of context providers.
-				final ContextProvider< Spot > cp = ( ( HasContextProvider ) view ).getContextProvider();
-				contextProviders.remove( cp );
-				// Notify context choosers.
-				forEachView( v -> {
-					if ( v instanceof HasContextChooser )
-					{
-						@SuppressWarnings( "unchecked" )
-						final HasContextChooser< Spot > cc = ( HasContextChooser< Spot > ) v;
-						cc.getContextChooser().updateContextProviders( contextProviders );
-					}
-				} );
-			}
-		} );
-
-		// Notify listeners that it has been created.
-		@SuppressWarnings( "rawtypes" )
-		final Listeners.List l1 = creationListeners.get( klass );
-		@SuppressWarnings( "unchecked" )
-		final Listeners.List< ViewCreatedListener< T > > list = l1;
-		if ( list != null )
-			list.list.forEach( l -> l.viewCreated( view ) );
-
-		// Finally, show it.
-		view.getFrame().setVisible( true );
-		return view;
-	}
-
 	/*
 	 * Singletons.
 	 */
@@ -505,6 +347,11 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 		registeredWindows.add( window );
 	}
 
+	< T extends MastodonFrameView2< ?, ?, ?, ?, ?, ? > > void registerView( final T view )
+	{
+		openedViews.computeIfAbsent( view.getClass(), k -> new ArrayList<>() ).add( view );
+	}
+
 	/**
 	 * Closes all opened views and dialogs.
 	 */
@@ -537,12 +384,12 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 	 * <code>null</code>.
 	 *
 	 * @param <V>
-	 *            the view type, must extend {@link MastodonView2}.
+	 *            the view type, must extend {@link AbstractMastodonView2}.
 	 * @param klass
-	 *            the view class, must extend {@link MastodonView2}.
+	 *            the view class, must extend {@link AbstractMastodonView2}.
 	 * @return a new, unmodified list of view of specified class.
 	 */
-	public < V extends MastodonView2< ?, ?, ?, ?, ?, ? > > List< V > getViewList( final Class< V > klass )
+	public < V extends AbstractMastodonView2< ?, ?, ?, ?, ?, ? > > List< V > getViewList( final Class< V > klass )
 	{
 		@SuppressWarnings( "unchecked" )
 		final List< V > list = ( List< V > ) openedViews.get( klass );
@@ -563,7 +410,7 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 	 *            the type of the view to operate on.
 	 */
 	@SuppressWarnings( "unchecked" )
-	public < V extends MastodonView2< ?, ?, ?, ?, ?, ? > > void forEachView( final Class< V > klass, final Consumer< V > action )
+	public < V extends AbstractMastodonView2< ?, ?, ?, ?, ?, ? > > void forEachView( final Class< V > klass, final Consumer< V > action )
 	{
 		Optional.ofNullable( ( List< V > ) openedViews.get( klass ) )
 				.orElse( Collections.emptyList() )
@@ -576,7 +423,7 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 	 * @param action
 	 *            the action to execute.
 	 */
-	public void forEachView( final Consumer< ? super MastodonView2< ?, ?, ?, ?, ?, ? > > action )
+	public void forEachView( final Consumer< ? super AbstractMastodonView2< ?, ?, ?, ?, ?, ? > > action )
 	{
 		openedViews.forEach( ( k, l ) -> l.forEach( action ) );
 	}
@@ -584,7 +431,7 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 	/**
 	 * Executes the specified actions for all the windows currently opened and
 	 * managed by this window manager. This includes the
-	 * {@link MastodonFrameView2} views, and the various dialogs.
+	 * {@link AbstractMastodonFrameView2} views, and the various dialogs.
 	 *
 	 * @param action
 	 *            the action to execute.
@@ -592,118 +439,12 @@ public class UIModel< VF extends SciJavaPlugin & MastodonViewFactory >
 	public void forEachWindow( final Consumer< ? super Window > action )
 	{
 		forEachView( v -> {
-			if ( v instanceof MastodonFrameView2 )
-				action.accept( ( ( MastodonFrameView2< ?, ?, ?, ?, ?, ? > ) v ).getFrame() );
+			if ( v instanceof AbstractMastodonFrameView2 )
+				action.accept( ( ( AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > ) v ).getFrame() );
 		} );
 		registeredWindows.forEach( action );
 	}
 
-	/**
-	 * Discovers and build command descriptions. Manually add descriptions for
-	 * the views managed here.
-	 *
-	 * @return the command descriptions object.
-	 */
-	private CommandDescriptions buildCommandDescriptions()
-	{
-		final CommandDescriptionsBuilder builder = new CommandDescriptionsBuilder();
-		context.inject( builder );
-		builder.discoverProviders();
-		// Manually declare command descriptions.
-		builder.addManually( getCommandDescriptions(), KeyConfigContexts.MASTODON );
-		return builder.build();
-	}
-
-	public CommandDescriptionProvider getCommandDescriptions()
-	{
-		return new CommandDescriptionProvider( KeyConfigScopes.MAMUT, KeyConfigContexts.MASTODON )
-		{
-
-			@Override
-			public void getCommandDescriptions( final CommandDescriptions descriptions )
-			{
-				for ( final VF viewFactory : viewFactories.factories.values() )
-					descriptions.add( viewFactory.getCommandName(), viewFactory.getCommandKeys(), viewFactory.getCommandDescription() );
-			}
-		};
-	}
-
 	private static final String PREFERENCES_DIALOG = "Preferences";
 	private final static String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
-
-	/**
-	 * Manages a collection of view factories.
-	 * <p>
-	 * Collect and install actions, menu items, menu texts.
-	 */
-	public class ViewFactories
-	{
-
-		private final Map< Class< ? extends MastodonFrameView< ?, ?, ?, ?, ?, ? > >, VF > factories = new HashMap<>();
-
-		private final ArrayList< MenuItem > menuItems;
-
-		private final HashMap< String, String > menuTexts;
-
-		ViewFactories()
-		{
-			menuItems = new ArrayList<>();
-			menuTexts = new HashMap<>();
-		}
-
-		@SuppressWarnings( "unchecked" )
-		synchronized void register( final VF factory )
-		{
-			if ( !factories.containsValue( factory ) )
-			{
-				factories.put( factory.getViewClass(), factory );
-				menuItems.add( ViewMenuBuilder.item( factory.getCommandName() ) );
-				menuTexts.put( factory.getCommandName(), factory.getCommandMenuText() );
-			}
-		}
-
-		/**
-		 * Returns the collection of view classes for which we have a factory.
-		 *
-		 * @return the collection of view classes.
-		 */
-		public Collection< Class< ? extends MastodonFrameView< ?, ?, ?, ?, ?, ? > > > getKeys()
-		{
-			return Collections.unmodifiableCollection( factories.keySet() );
-		}
-
-		/**
-		 * Returns a factory for the specified view class.
-		 *
-		 * @param <V>
-		 *            the type of view.
-		 * @param klass
-		 *            the class of the view.
-		 * @return a view factory, or <code>null</code> if the specified class
-		 *         is unknown.
-		 */
-		public < V > VF getFactory( final Class< V > klass )
-		{
-			return factories.get( klass );
-		}
-
-		public CommandDescriptionProvider getCommandDescriptions()
-		{
-			return new CommandDescriptionProvider( KeyConfigScopes.MAMUT, KeyConfigContexts.MASTODON )
-			{
-
-				@Override
-				public void getCommandDescriptions( final CommandDescriptions descriptions )
-				{
-					for ( final VF factory : factories.values() )
-						descriptions.add( factory.getCommandName(), factory.getCommandKeys(), factory.getCommandDescription() );
-				}
-			};
-		}
-
-		void addWindowMenuTo( final ViewMenu menu, final ActionMap actionMap )
-		{
-			MamutMenuBuilder.build( menu, actionMap, menuTexts, windowMenu( menuItems.toArray( new MenuItem[ 0 ] ) ) );
-		}
-	}
 }
