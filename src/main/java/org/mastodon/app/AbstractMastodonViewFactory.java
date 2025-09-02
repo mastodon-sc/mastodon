@@ -47,11 +47,7 @@ import java.util.Map;
 
 import org.mastodon.app.ui.AbstractMastodonFrameView2;
 import org.mastodon.app.ui.ViewFrame;
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.ReadOnlyGraph;
-import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
-import org.mastodon.model.MastodonModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
@@ -62,16 +58,12 @@ import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 
 public abstract class AbstractMastodonViewFactory<
-			T extends AbstractMastodonFrameView2< M, ?, V, E, ?, ? >,
-			M extends MastodonModel< G, V, E >,
-			G extends ReadOnlyGraph< V, E >,
-			V extends Vertex< E >,
-			E extends Edge< V > >
-		implements MastodonViewFactory< T, M, G, V, E >
+		T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > >
+		implements MastodonViewFactory< T >
 {
 
 	@Override
-	public T show( final AppModel< M, G, V, E > appModel, final Map< String, Object > guiState )
+	public T show( final AppModel< ?, ?, ?, ?, T, ? > appModel, final Map< String, Object > guiState )
 	{
 		final T view = create( appModel );
 		restoreGuiState( view, guiState );

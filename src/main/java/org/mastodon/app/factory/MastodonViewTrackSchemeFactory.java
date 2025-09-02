@@ -61,7 +61,7 @@ public abstract class MastodonViewTrackSchemeFactory<
 		G extends ListenableReadOnlyGraph< V, E >,
 		V extends Vertex< E >,
 		E extends Edge< V > >
-		extends AbstractMastodonViewFactory< MamutViewTrackScheme2< M, G, V, E >, M, G, V, E >
+		extends AbstractMastodonViewFactory< MamutViewTrackScheme2< M, G, V, E > >
 {
 
 	/**
@@ -75,10 +75,13 @@ public abstract class MastodonViewTrackSchemeFactory<
 	protected abstract ModelGraphProperties< V, E > getModelGraphProperties( G graph );
 
 	@Override
-	public MamutViewTrackScheme2< M, G, V, E > create( final AppModel< M, G, V, E, ? > appModel )
+	public MamutViewTrackScheme2< M, G, V, E > create( final AppModel< ?, ?, ?, ?, MamutViewTrackScheme2< M, G, V, E >, ? > appModel )
 	{
-		final ModelGraphProperties< V, E > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
-		return new MamutViewTrackScheme2<>( appModel, modelGraphProperties );
+		@SuppressWarnings( "unchecked" )
+		final ModelGraphProperties< V, E > modelGraphProperties = getModelGraphProperties( ( G ) appModel.dataModel().getGraph() );
+		@SuppressWarnings( "unchecked" )
+		final MamutViewTrackScheme2< M, G, V, E > view = new MamutViewTrackScheme2<>( ( AppModel< M, G, V, E, ?, ? > ) appModel, modelGraphProperties );
+		return view;
 	}
 
 	@Override

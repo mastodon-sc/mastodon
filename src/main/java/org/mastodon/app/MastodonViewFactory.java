@@ -31,10 +31,6 @@ package org.mastodon.app;
 import java.util.Map;
 
 import org.mastodon.app.ui.MastodonFrameView2;
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.ReadOnlyGraph;
-import org.mastodon.graph.Vertex;
-import org.mastodon.model.MastodonModel;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
@@ -59,11 +55,7 @@ import org.scijava.plugin.SciJavaPlugin;
  *            the type of edge in the graph.
  */
 public interface MastodonViewFactory<
-		T extends MastodonFrameView2< M, ?, V, E, ?, ? >,
-		M extends MastodonModel< G, V, E >,
-		G extends ReadOnlyGraph< V, E >,
-		V extends Vertex< E >,
-		E extends Edge< V > >
+		T extends MastodonFrameView2< ?, ?, ?, ?, ?, ? > >
 		extends MastodonFactory
 {
 
@@ -82,7 +74,7 @@ public interface MastodonViewFactory<
 	 *
 	 * @return a new view.
 	 */
-	T create( AppModel< M, G, V, E, ? > appModel );
+	T create( AppModel< ?, ?, ?, ?, T, ? > appModel );
 
 	/**
 	 * Creates and shows a new view for the specified project model, and restore
@@ -94,7 +86,7 @@ public interface MastodonViewFactory<
 	 *            the GUI state map.
 	 * @return a new view.
 	 */
-	T show( AppModel< M, G, V, E, ? > appModel, Map< String, Object > guiState );
+	T show( AppModel< ?, ?, ?, ?, T, ? > appModel, Map< String, Object > guiState );
 
 	/**
 	 * Restores the GUI state stored in the specified map for the specified

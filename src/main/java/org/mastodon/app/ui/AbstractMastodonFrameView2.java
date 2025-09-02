@@ -40,7 +40,7 @@ import bdv.ui.keymap.Keymap.UpdateListener;
 
 /**
  * Base class for views of a {@link MastodonModel} that have a frame.
- * 
+ *
  * @param <M>
  *            the type of the mastodon model.
  * @param <VG>
@@ -57,7 +57,7 @@ import bdv.ui.keymap.Keymap.UpdateListener;
 public class AbstractMastodonFrameView2<
 			M extends MastodonModel< ?, MV, ME >,
 			VG extends ViewGraph< MV, ME, V, E >,
-			MV extends Vertex< ME >, 
+			MV extends Vertex< ME >,
 			ME extends Edge< MV >,
 			V extends Vertex< E >,
 			E extends Edge< V > >
@@ -75,7 +75,7 @@ public class AbstractMastodonFrameView2<
 
 	public AbstractMastodonFrameView2(
 			final M dataModel,
-			final UIModel uiModel,
+			final UIModel< ?, ? > uiModel,
 			final VG viewGraph,
 			final String[] keyConfigContexts )
 	{
