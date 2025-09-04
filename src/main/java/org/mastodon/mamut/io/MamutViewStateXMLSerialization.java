@@ -246,11 +246,11 @@ public class MamutViewStateXMLSerialization
 	 *            the application {@link WindowManager}.
 	 * @param appModel
 	 */
-	public static < V extends MastodonFrameView2, VF extends MastodonViewFactory< V > & SciJavaPlugin > void fromXml( final Element windowsEl, final AppModel< ?, ?, ?, ?, V, VF > appModel )
+	public static < VF extends MastodonViewFactory< ? > & SciJavaPlugin > void fromXml( final Element windowsEl, final AppModel< ?, ?, ?, ?, VF > appModel )
 	{
-		final UIModel< V, VF > uiModel = appModel.uiModel();
-		final UIModel< V, VF >.ViewFactories viewFactories = uiModel.getViewFactories();
-		final Collection< Class< ? extends V > > classes = viewFactories.getKeys();
+		final UIModel< VF > uiModel = appModel.uiModel();
+		final UIModel< VF >.ViewFactories viewFactories = uiModel.getViewFactories();
+		final Collection< Class< ? extends MastodonFrameView2 > > classes = viewFactories.getKeys();
 
 		final List< Element > viewEls = windowsEl.getChildren( WINDOW_TAG );
 		for ( final Element viewEl : viewEls )
@@ -259,8 +259,8 @@ public class MamutViewStateXMLSerialization
 			final String typeStr = ( String ) guiState.get( VIEW_TYPE_KEY );
 
 			// First check that we know of the view type in the window manager.
-			Class< ? extends V > klass = null;
-			for ( final Class< ? extends V > cl : classes )
+			Class< ? extends MastodonFrameView2 > klass = null;
+			for ( final Class< ? extends MastodonFrameView2 > cl : classes )
 			{
 				if ( cl.getSimpleName().equals( typeStr ) )
 				{

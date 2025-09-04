@@ -7,7 +7,6 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
-import org.mastodon.mamut.views.MamutView2;
 import org.mastodon.mamut.views.MamutViewFactory2;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme2;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -28,7 +27,6 @@ public class MamutAppModel extends BdvAppModel<
 		ModelGraph,
 		Spot,
 		Link,
-		MamutView2,
 		MamutViewFactory2 >
 {
 

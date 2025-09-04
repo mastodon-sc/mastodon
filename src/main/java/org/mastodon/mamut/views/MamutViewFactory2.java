@@ -1,6 +1,7 @@
 package org.mastodon.mamut.views;
 
 import org.mastodon.app.MastodonViewFactory;
+import org.mastodon.app.ui.MastodonFrameView2;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
@@ -8,5 +9,5 @@ import org.scijava.plugin.SciJavaPlugin;
  *
  * @author Jean-Yves Tinevez
  */
-public interface MamutViewFactory2< T extends MamutView2 > extends MastodonViewFactory< T >, SciJavaPlugin
+public interface MamutViewFactory2< T extends MastodonFrameView2 > extends MastodonViewFactory< T >, SciJavaPlugin
 {}

@@ -1,7 +1,6 @@
 package org.mastodon.app;
 
 import org.mastodon.app.plugin.MastodonPlugins;
-import org.mastodon.app.ui.MastodonFrameView2;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
@@ -21,9 +20,8 @@ public class BdvAppModel<
 		G extends ReadOnlyGraph< V, E >,
 		V extends Vertex< E > & HasTimepoint,
 		E extends Edge< V >,
-		T extends MastodonFrameView2,
-		VF extends MastodonViewFactory< T > & SciJavaPlugin >
-		extends AppModel< M, G, V, E, T, VF >
+		VF extends MastodonViewFactory< ? > & SciJavaPlugin >
+		extends AppModel< M, G, V, E, VF >
 {
 
 	private final SharedBigDataViewerData sharedBdvData;

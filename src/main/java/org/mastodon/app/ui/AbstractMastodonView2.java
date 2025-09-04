@@ -47,7 +47,7 @@ public class AbstractMastodonView2<
 
 	protected final M dataModel;
 
-	protected final UIModel< ?, ? > uiModel;
+	protected final UIModel< ? > uiModel;
 
 	protected final VG viewGraph;
 
@@ -67,7 +67,7 @@ public class AbstractMastodonView2<
 
 	public AbstractMastodonView2(
 			final M dataModel,
-			final UIModel< ?, ? > uiModel,
+			final UIModel< ? > uiModel,
 			final VG viewGraph )
 	{
 		this.dataModel = dataModel;

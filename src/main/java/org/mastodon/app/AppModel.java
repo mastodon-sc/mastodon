@@ -36,7 +36,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.mastodon.app.plugin.MastodonPlugins;
-import org.mastodon.app.ui.MastodonFrameView2;
 import org.mastodon.app.ui.UIModel;
 import org.mastodon.app.ui.UIUtils;
 import org.mastodon.graph.Edge;
@@ -102,13 +101,12 @@ public class AppModel<
 		G extends ReadOnlyGraph< V, E >,
 		V extends Vertex< E >,
 		E extends Edge< V >,
-		T extends MastodonFrameView2,
-		VF extends MastodonViewFactory< T > & SciJavaPlugin >
+		VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 {
 
 	protected final M model;
 
-	protected final UIModel< T, VF > uiModel;
+	protected final UIModel< VF > uiModel;
 
 	private final int minTimepoint;
 
@@ -234,7 +232,7 @@ public class AppModel<
 		return model;
 	}
 
-	public UIModel< T, VF > uiModel()
+	public UIModel< VF > uiModel()
 	{
 		return uiModel;
 	}

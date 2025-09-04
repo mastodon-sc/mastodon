@@ -75,7 +75,7 @@ public class AbstractMastodonFrameView2<
 
 	public AbstractMastodonFrameView2(
 			final M dataModel,
-			final UIModel< ?, ? > uiModel,
+			final UIModel< ? > uiModel,
 			final VG viewGraph,
 			final String[] keyConfigContexts )
 	{

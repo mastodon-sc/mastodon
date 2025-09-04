@@ -68,7 +68,7 @@ import bdv.util.InvokeOnEDT;
  *
  * @author Jean-Yves Tinevez
  */
-public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFactory< V > & SciJavaPlugin >
+public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 {
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
@@ -113,7 +113,7 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 	private final List< Window > registeredWindows = new ArrayList<>();
 
 	/** Stores the different lists of data views currently opened. */
-	private final Map< Class< ? >, List< V > > openedViews = new HashMap<>();
+	private final Map< Class< ? >, List< MastodonFrameView2 > > openedViews = new HashMap<>();
 
 	/** Manages the collections of view factories. */
 	protected final ViewFactories viewFactories;
@@ -385,7 +385,7 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 		registeredWindows.add( window );
 	}
 
-	void registerView( final V view )
+	< V extends MastodonFrameView2 > void registerView( final V view )
 	{
 		openedViews.computeIfAbsent( view.getClass(), k -> new ArrayList<>() ).add( view );
 	}
@@ -427,10 +427,10 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 	 *            the view class, must extend {@link AbstractMastodonView2}.
 	 * @return a new, unmodified list of view of specified class.
 	 */
-	public List< V > getViewList( final Class< V > klass )
+	public < V extends MastodonFrameView2 > List< V > getViewList( final Class< V > klass )
 	{
 		@SuppressWarnings( "unchecked" )
-		final List< V > list = openedViews.get( klass );
+		final List< V > list = ( List< V > ) openedViews.get( klass );
 		if ( list == null )
 			return Collections.emptyList();
 		return Collections.unmodifiableList( list );
@@ -448,11 +448,11 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 	 *            the type of the view to operate on.
 	 */
 	@SuppressWarnings( "unchecked" )
-	public void forEachView( final Class< V > klass, final Consumer< V > action )
+	public < V extends MastodonFrameView2 > void forEachView( final Class< V > klass, final Consumer< V > action )
 	{
 		Optional.ofNullable( openedViews.get( klass ) )
 				.orElse( Collections.emptyList() )
-				.forEach( action );
+				.forEach( ( Consumer< ? super MastodonFrameView2 > ) action );
 	}
 
 	/**
@@ -461,9 +461,10 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 	 * @param action
 	 *            the action to execute.
 	 */
-	public void forEachView( final Consumer< V > action )
+	@SuppressWarnings( "unchecked" )
+	public < V extends MastodonFrameView2 > void forEachView( final Consumer< V > action )
 	{
-		openedViews.forEach( ( k, l ) -> l.forEach( action ) );
+		openedViews.forEach( ( k, l ) -> l.forEach( ( Consumer< ? super MastodonFrameView2 > ) action ) );
 	}
 
 	/**
@@ -497,7 +498,7 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 	 *            the view class.
 	 * @return a new instance of the view, that was shown.
 	 */
-	public < T extends V > T createView( final AppModel< ?, ?, ?, ?, V, VF > appModel, final Class< T > klass )
+	public < T extends MastodonFrameView2 > T createView( final AppModel< ?, ?, ?, ?, VF > appModel, final Class< T > klass )
 	{
 		return createView( appModel, klass, Collections.emptyMap() );
 	}
@@ -520,13 +521,13 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 	 * @return a new instance of the view, or <code>null</code> if the view
 	 *         class is unknown to the window manager.
 	 */
-	public synchronized < T extends V > T createView(
-			final AppModel< ?, ?, ?, ?, V, VF > appModel,
+	@SuppressWarnings( "unchecked" )
+	public synchronized < T extends MastodonFrameView2 > T createView(
+			final AppModel< ?, ?, ?, ?, VF > appModel,
 			final Class< T > klass,
 			final Map< String, Object > guiState )
 	{
 		// Get the right factory.
-		@SuppressWarnings( "unchecked" )
 		final VF factory = viewFactories.getFactory( klass );
 
 		// Return null if the view type is unknown to us.
@@ -541,7 +542,7 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 		UIUtils.adjustTitle( view.getFrame(), appModel.getProjectName() );
 
 		// Restore the view GUI state.
-		factory.restoreGuiState( view, guiState );
+		( ( MastodonViewFactory< T > ) factory ).restoreGuiState( view, guiState );
 
 		// Store the view for window manager.
 		openedViews.computeIfAbsent( klass, ( v ) -> new ArrayList<>() ).add( view );
@@ -651,7 +652,7 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 	public class ViewFactories
 	{
 
-		private final Map< Class< ? extends V >, VF > factories = new HashMap<>();
+		private final Map< Class< ? extends MastodonFrameView2 >, VF > factories = new HashMap<>();
 
 		private final ArrayList< MenuItem > menuItems;
 
@@ -679,7 +680,7 @@ public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFacto
 		 *
 		 * @return the collection of view classes.
 		 */
-		public Collection< Class< ? extends V > > getKeys()
+		public Collection< Class< ? extends MastodonFrameView2 > > getKeys()
 		{
 			return Collections.unmodifiableCollection( factories.keySet() );
 		}

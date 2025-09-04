@@ -72,7 +72,7 @@ public interface MastodonViewFactory< T extends MastodonFrameView2 >
 	 *
 	 * @return a new view.
 	 */
-	T create( AppModel< ?, ?, ?, ?, T, ? > appModel );
+	T create( AppModel< ?, ?, ?, ?, ? > appModel );
 
 	/**
 	 * Creates and shows a new view for the specified project model, and restore
@@ -84,7 +84,7 @@ public interface MastodonViewFactory< T extends MastodonFrameView2 >
 	 *            the GUI state map.
 	 * @return a new view.
 	 */
-	T show( AppModel< ?, ?, ?, ?, T, ? > appModel, Map< String, Object > guiState );
+	T show( AppModel< ?, ?, ?, ?, ? > appModel, Map< String, Object > guiState );
 
 	/**
 	 * Restores the GUI state stored in the specified map for the specified
@@ -96,7 +96,6 @@ public interface MastodonViewFactory< T extends MastodonFrameView2 >
 	 *            the GUI state map.
 	 */
 	void restoreGuiState( T view, Map< String, Object > guiState );
-
 	/**
 	 * Serializes the current GUI state of the specified view in a map.
 	 *
@@ -143,4 +142,5 @@ public interface MastodonViewFactory< T extends MastodonFrameView2 >
 	 * @return the menu text for the command.
 	 */
 	String getCommandMenuText();
+
 }

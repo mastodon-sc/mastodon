@@ -63,7 +63,7 @@ public abstract class AbstractMastodonViewFactory<
 {
 
 	@Override
-	public T show( final AppModel< ?, ?, ?, ?, T, ? > appModel, final Map< String, Object > guiState )
+	public T show( final AppModel< ?, ?, ?, ?, ? > appModel, final Map< String, Object > guiState )
 	{
 		final T view = create( appModel );
 		restoreGuiState( view, guiState );

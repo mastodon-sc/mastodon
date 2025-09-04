@@ -115,7 +115,7 @@ public class MastodonViewTrackScheme2<
 	private final ColorBarOverlay colorBarOverlay;
 
 	public MastodonViewTrackScheme2(
-			final AppModel< M, G, V, E, ?, ? > appModel,
+			final AppModel< M, G, V, E, ? > appModel,
 			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
 		this(
@@ -128,7 +128,7 @@ public class MastodonViewTrackScheme2<
 
 	public MastodonViewTrackScheme2(
 			final M dataModel,
-			final UIModel< ?, ? > uiModel,
+			final UIModel< ? > uiModel,
 			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
 		this( dataModel, uiModel, modelGraphProperties,
@@ -138,7 +138,7 @@ public class MastodonViewTrackScheme2<
 
 	public MastodonViewTrackScheme2(
 			final M dataModel,
-			final UIModel< ?, ? > uiModel,
+			final UIModel< ? > uiModel,
 			final ModelGraphProperties< V, E > modelGraphProperties,
 			final int timepointMin,
 			final int timepointMax )

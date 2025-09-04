@@ -72,7 +72,7 @@ public abstract class MastodonViewTrackSchemeFactory<
 	protected abstract ModelGraphProperties< ?, ? > getModelGraphProperties( G graph );
 
 	@Override
-	public T create( final AppModel< ?, ?, ?, ?, T, ? > appModel )
+	public T create( final AppModel< ?, ?, ?, ?, ? > appModel )
 	{
 		@SuppressWarnings( "unchecked" )
 		final ModelGraphProperties< ?, ? > modelGraphProperties = getModelGraphProperties( ( G ) appModel.dataModel().getGraph() );
