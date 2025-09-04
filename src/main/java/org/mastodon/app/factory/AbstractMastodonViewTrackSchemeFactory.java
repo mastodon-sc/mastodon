@@ -18,6 +18,10 @@ import com.google.common.reflect.TypeToken;
  * Base class for view factories that create TrackScheme views. This abstract
  * class is specific to a view (TrackScheme) and to a model type.
  * <p>
+ * The factory has still a generic type for the view it creates, that must
+ * extends {@link MastodonViewTrackScheme2}. This is required to have
+ * app-specific factories, discoverable separately.
+ * <p>
  * The GUI state is specified as a map of strings to objects. The accepted key
  * and value types are:
  * <ul>
@@ -45,16 +49,8 @@ import com.google.common.reflect.TypeToken;
  *
  * @author Jean-Yves Tinevez
  *
- * @param <M>
- *            the type of app model used in the application.
- * @param <G>
- *            the type of graph used in the model.
- * @param <V>
- *            the type of vertex in the graph.
- * @param <E>
- *            the type of edge in the graph.
  */
-public abstract class MastodonViewTrackSchemeFactory<
+public abstract class AbstractMastodonViewTrackSchemeFactory<
 		T extends MastodonViewTrackScheme2< ?, ?, ?, ? >,
 		G extends ListenableReadOnlyGraph< ?, ? > >
 		extends AbstractMastodonViewFactory< T >
@@ -71,12 +67,12 @@ public abstract class MastodonViewTrackSchemeFactory<
 	 */
 	protected abstract ModelGraphProperties< ?, ? > getModelGraphProperties( G graph );
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public T create( final AppModel< ?, ?, ?, ?, ? > appModel )
 	{
-		@SuppressWarnings( "unchecked" )
 		final ModelGraphProperties< ?, ? > modelGraphProperties = getModelGraphProperties( ( G ) appModel.dataModel().getGraph() );
-		@SuppressWarnings( { "rawtypes", "unchecked" } )
+		@SuppressWarnings( "rawtypes" )
 		final MastodonViewTrackScheme2< ?, G, ?, ? > view = new MastodonViewTrackScheme2( appModel, modelGraphProperties );
 		return ( T ) view;
 	}

@@ -28,8 +28,9 @@
  */
 package org.mastodon.mamut.views.trackscheme;
 
-import org.mastodon.app.factory.MastodonViewTrackSchemeFactory;
+import org.mastodon.app.factory.AbstractMastodonViewTrackSchemeFactory;
 import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.ModelGraphTrackSchemeProperties;
 import org.mastodon.mamut.model.Spot;
@@ -40,8 +41,8 @@ import org.scijava.plugin.Plugin;
 
 @Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
 public class MamutViewTrackSchemeFactory2
-		extends MastodonViewTrackSchemeFactory< MastodonViewTrackScheme2, ModelGraph >
-		implements MamutViewFactory2< MastodonViewTrackScheme2 >
+		extends AbstractMastodonViewTrackSchemeFactory< MastodonViewTrackScheme2< Model, ModelGraph, Spot, Link >, ModelGraph >
+		implements MamutViewFactory2< MastodonViewTrackScheme2< Model, ModelGraph, Spot, Link > >
 {
 
 	@Override
