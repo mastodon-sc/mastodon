@@ -42,7 +42,7 @@ public class AbstractMastodonView2<
 		MV extends Vertex< ME >,
 		ME extends Edge< MV >,
 		V extends Vertex< E >,
-		E extends Edge< V > > implements MastodonView2< M, VG, MV, ME, V, E >
+		E extends Edge< V > > implements MastodonView2
 {
 
 	protected final M dataModel;

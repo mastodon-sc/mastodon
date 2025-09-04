@@ -62,7 +62,7 @@ public class AbstractMastodonFrameView2<
 			V extends Vertex< E >,
 			E extends Edge< V > >
 		extends AbstractMastodonView2< M, VG, MV, ME, V, E >
-		implements MastodonFrameView2< M, VG, MV, ME, V, E >
+		implements MastodonFrameView2
 {
 
 	protected ViewFrame frame;

@@ -30,8 +30,8 @@ package org.mastodon.mamut.views.trackscheme;
 
 import org.mastodon.app.AppModel;
 import org.mastodon.app.factory.MastodonViewTrackSchemeFactory;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.Link;
-import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.ModelGraphTrackSchemeProperties;
 import org.mastodon.mamut.model.Spot;
@@ -40,23 +40,21 @@ import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-
 @Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
 public class MamutViewTrackSchemeFactory2
-		extends MastodonViewTrackSchemeFactory< Model, ModelGraph, Spot, Link >
-		implements MamutViewFactory2
+		extends MastodonViewTrackSchemeFactory< MamutViewTrackScheme2, ModelGraph >
+		implements MamutViewFactory2< MamutViewTrackScheme2 >
 {
+
+	@Override
+	public MamutViewTrackScheme2 create( final AppModel< ?, ?, ?, ?, MamutViewTrackScheme2, ? > appModel )
+	{
+		return new MamutViewTrackScheme2( ( MamutAppModel ) appModel );
+	}
 
 	@Override
 	protected ModelGraphProperties< Spot, Link > getModelGraphProperties( final ModelGraph graph )
 	{
 		return new ModelGraphTrackSchemeProperties( graph );
-	}
-
-	@Override
-	public MamutViewTrackScheme2< Model, ModelGraph, Spot, Link > create( final AppModel< Model, ModelGraph, Spot, Link > appModel )
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

@@ -54,9 +54,7 @@ import org.scijava.plugin.SciJavaPlugin;
  * @param <E>
  *            the type of edge in the graph.
  */
-public interface MastodonViewFactory<
-		T extends MastodonFrameView2< ?, ?, ?, ?, ?, ? > >
-		extends MastodonFactory
+public interface MastodonViewFactory< T extends MastodonFrameView2 >
 {
 
 	/**
@@ -117,4 +115,32 @@ public interface MastodonViewFactory<
 	 * @return the view class.
 	 */
 	Class< T > getViewClass();
+
+	/**
+	 * Returns the name of the command that will use this factory.
+	 *
+	 * @return the command name.
+	 */
+	String getCommandName();
+
+	/**
+	 * Returns the list of default keystrokes of the command.
+	 *
+	 * @return the default keystrokes0
+	 */
+	String[] getCommandKeys();
+
+	/**
+	 * Returns the description of the command.
+	 *
+	 * @return the description.
+	 */
+	String getCommandDescription();
+
+	/**
+	 * Returns the text of the command to appear in menus.
+	 *
+	 * @return the menu text for the command.
+	 */
+	String getCommandMenuText();
 }

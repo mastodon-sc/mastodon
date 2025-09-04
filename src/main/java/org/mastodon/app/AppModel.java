@@ -60,8 +60,8 @@ import bdv.ui.keymap.Keymap;
 import bdv.ui.keymap.KeymapManager;
 
 /**
- * Data class that stores the data model and the application model of a Mastodon
- * application.
+ * Base data class that stores the data model and the application model of a
+ * Mastodon application.
  * <p>
  * This aggregates the {@link MastodonModel} and the {@link UIModel}, and
  * creates some of the sub-components that need both components to be
@@ -86,17 +86,23 @@ import bdv.ui.keymap.KeymapManager;
  * @author Tobias Pietzsch
  * @param <M>
  *            the type of the model used in the application.
+ * @param <G>
+ *            the type of the graph in the model.
  * @param <V>
  *            the type of vertices in the model graph.
  * @param <E>
  *            the type of edges in the model graph.
+ * @param <T>
+ *            the type of views that can display and edit the model.
+ * @param <VF>
+ *            the type of view factories that can create views of type T.
  */
 public class AppModel<
 		M extends MastodonModel< G, V, E >,
 		G extends ReadOnlyGraph< V, E >,
 		V extends Vertex< E >,
 		E extends Edge< V >,
-		T extends MastodonFrameView2< M, ?, V, E, ?, ? >,
+		T extends MastodonFrameView2,
 		VF extends MastodonViewFactory< T > & SciJavaPlugin >
 {
 
@@ -111,10 +117,14 @@ public class AppModel<
 	/**
 	 * Instantiate a new Mastodon-app model.
 	 *
-	 * @param numGroups
-	 *            the number of groups to create in the group manager,
+	 * @param context
+	 *            the SciJava context.
 	 * @param model
 	 *            the data model.
+	 * @param viewFactoryType
+	 *            the type of the view factory used in the specific app. This
+	 *            will be used to retrieve view factories specific to the app,
+	 *            and instantiate views displaying and editing the data model.
 	 * @param keyPressedManager
 	 *            the key-pressed manager.
 	 * @param keymapManager
@@ -126,6 +136,14 @@ public class AppModel<
 	 * @param keyConfigContexts
 	 *            keyconf contexts for appActions (actions that should be
 	 *            available in all views)
+	 * @param scope
+	 *            the scope for the command descriptions provided by this app.
+	 * @param numGroups
+	 *            the number of groups to create in the group manager,
+	 * @param minTimepoint
+	 *            the minimum timepoint in the dataset, inclusive.
+	 * @param maxTimepoint
+	 *            the maximum timepoint in the dataset, inclusive.
 	 */
 	public AppModel(
 			final Context context,
@@ -144,7 +162,16 @@ public class AppModel<
 		this.model = model;
 		this.minTimepoint = minTimepoint;
 		this.maxTimepoint = maxTimepoint;
-		this.uiModel = new UIModel<>( context, numGroups, keyPressedManager, keymapManager, plugins, globalActions, keyConfigContexts, scope );
+		this.uiModel = new UIModel<>(
+				context,
+				viewFactoryType,
+				numGroups,
+				keyPressedManager,
+				keymapManager,
+				plugins,
+				globalActions,
+				keyConfigContexts,
+				scope );
 
 		/*
 		 * Singletons and managers.

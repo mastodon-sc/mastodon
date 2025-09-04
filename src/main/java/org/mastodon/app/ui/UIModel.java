@@ -68,7 +68,7 @@ import bdv.util.InvokeOnEDT;
  *
  * @author Jean-Yves Tinevez
  */
-public class UIModel< V extends MastodonFrameView2< ?, ?, ?, ?, ?, ? >, VF extends MastodonViewFactory< V > & SciJavaPlugin >
+public class UIModel< V extends MastodonFrameView2, VF extends MastodonViewFactory< V > & SciJavaPlugin >
 {
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
@@ -151,6 +151,7 @@ public class UIModel< V extends MastodonFrameView2< ?, ?, ?, ?, ?, ? >, VF exten
 	 */
 	public UIModel(
 			final Context context,
+			final Class< VF > viewFactoryType,
 			final int numGroups,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
@@ -225,6 +226,11 @@ public class UIModel< V extends MastodonFrameView2< ?, ?, ?, ?, ?, ? >, VF exten
 		this.viewFactories = new ViewFactories();
 		final Consumer< VF > registerViewFactory = factory -> viewFactories.register( factory );
 		PluginUtils.forEachDiscoveredPlugin( viewFactoryType, registerViewFactory, context );
+	}
+
+	public ViewFactories getViewFactories()
+	{
+		return viewFactories;
 	}
 
 	public Context getContext()

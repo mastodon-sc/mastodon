@@ -55,7 +55,7 @@ public class ViewMenu2
 {
 	private static final boolean USE_ACCELERATORS = MastodonDebugSettings.getInstance().isUseMenuAccelerators(); // TODO: remove, once Fiji ships at least jdk1.8.0_162
 
-	private MastodonFrameView2< ?, ?, ?, ?, ?, ? > view;
+	private MastodonFrameView2 view;
 
 	private final JMenuBar menubar;
 
@@ -63,7 +63,7 @@ public class ViewMenu2
 
 	private final Set< String > contexts;
 
-	public ViewMenu2( final MastodonFrameView2< ?, ?, ?, ?, ?, ? > view, final Keymap keymap, final String... contexts )
+	public ViewMenu2( final MastodonFrameView2 view, final Keymap keymap, final String... contexts )
 	{
 		this( view.getFrame().menubar, keymap, contexts );
 		this.view = view;

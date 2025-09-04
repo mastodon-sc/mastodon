@@ -39,7 +39,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.mastodon.app.ui.UIModel;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.ProjectModel;
@@ -198,7 +197,7 @@ public class ProjectLoader2
 
 		// Restore GUI state.
 		if ( restoreGUIState )
-			loadGUI( project, appModel.uiModel() );
+			loadGUI( project, appModel );
 
 		return appModel;
 	}
@@ -313,7 +312,7 @@ public class ProjectLoader2
 	 * @throws IOException
 	 *             if there is a problem reading the project.
 	 */
-	public static final void loadGUI( final MamutProject project, final UIModel< ? > uiModel ) throws IOException
+	public static final void loadGUI( final MamutProject project, final MamutAppModel appModel ) throws IOException
 	{
 		final boolean isNewProject = project.getProjectRoot() == null;
 		if ( isNewProject )
@@ -342,7 +341,7 @@ public class ProjectLoader2
 				if ( null == windowsEl )
 					return;
 
-				MamutViewStateXMLSerialization.fromXml( windowsEl, uiModel );
+				MamutViewStateXMLSerialization.fromXml( windowsEl, appModel );
 			}
 			catch ( final FileNotFoundException fnfe )
 			{

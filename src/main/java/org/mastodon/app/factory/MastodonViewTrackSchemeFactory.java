@@ -4,11 +4,9 @@ import java.util.Map;
 
 import org.mastodon.app.AbstractMastodonViewFactory;
 import org.mastodon.app.AppModel;
-import org.mastodon.graph.Edge;
+import org.mastodon.app.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
-import org.mastodon.graph.Vertex;
-import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme2;
-import org.mastodon.model.MastodonModel;
+import org.mastodon.mamut.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
@@ -57,11 +55,10 @@ import com.google.common.reflect.TypeToken;
  *            the type of edge in the graph.
  */
 public abstract class MastodonViewTrackSchemeFactory<
-		M extends MastodonModel< G, V, E >,
-		G extends ListenableReadOnlyGraph< V, E >,
-		V extends Vertex< E >,
-		E extends Edge< V > >
-		extends AbstractMastodonViewFactory< MamutViewTrackScheme2< M, G, V, E > >
+		T extends MastodonViewTrackScheme2< ?, ?, ?, ? >,
+		G extends ListenableReadOnlyGraph< ?, ? > >
+		extends AbstractMastodonViewFactory< T >
+		implements MastodonViewFactory< T >
 {
 
 	/**
@@ -72,16 +69,16 @@ public abstract class MastodonViewTrackSchemeFactory<
 	 *            the graph.
 	 * @return the model graph properties.
 	 */
-	protected abstract ModelGraphProperties< V, E > getModelGraphProperties( G graph );
+	protected abstract ModelGraphProperties< ?, ? > getModelGraphProperties( G graph );
 
 	@Override
-	public MamutViewTrackScheme2< M, G, V, E > create( final AppModel< ?, ?, ?, ?, MamutViewTrackScheme2< M, G, V, E >, ? > appModel )
+	public T create( final AppModel< ?, ?, ?, ?, T, ? > appModel )
 	{
 		@SuppressWarnings( "unchecked" )
-		final ModelGraphProperties< V, E > modelGraphProperties = getModelGraphProperties( ( G ) appModel.dataModel().getGraph() );
-		@SuppressWarnings( "unchecked" )
-		final MamutViewTrackScheme2< M, G, V, E > view = new MamutViewTrackScheme2<>( ( AppModel< M, G, V, E, ?, ? > ) appModel, modelGraphProperties );
-		return view;
+		final ModelGraphProperties< ?, ? > modelGraphProperties = getModelGraphProperties( ( G ) appModel.dataModel().getGraph() );
+		@SuppressWarnings( { "rawtypes", "unchecked" } )
+		final MastodonViewTrackScheme2< ?, G, ?, ? > view = new MastodonViewTrackScheme2( appModel, modelGraphProperties );
+		return ( T ) view;
 	}
 
 	@Override
@@ -104,16 +101,16 @@ public abstract class MastodonViewTrackSchemeFactory<
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public Class< MamutViewTrackScheme2< M, G, V, E > > getViewClass()
+	public Class< T > getViewClass()
 	{
 		// We use Guava type token to capture the generic parameters.
-		final TypeToken< MamutViewTrackScheme2< M, G, V, E > > typeToken = new TypeToken< MamutViewTrackScheme2< M, G, V, E > >()
+		final TypeToken< T > typeToken = new TypeToken< T >()
 		{};
-		return ( Class< MamutViewTrackScheme2< M, G, V, E > > ) typeToken.getRawType();
+		return ( Class< T > ) typeToken.getRawType();
 	}
 
 	@Override
-	public Map< String, Object > getGuiState( final MamutViewTrackScheme2< M, G, V, E > view )
+	public Map< String, Object > getGuiState( final T view )
 	{
 		final Map< String, Object > guiState = super.getGuiState( view );
 		storeTrackSchemeTransform( view.getFrame().getTrackschemePanel(), guiState );
@@ -121,7 +118,7 @@ public abstract class MastodonViewTrackSchemeFactory<
 	}
 
 	@Override
-	public void restoreGuiState( final MamutViewTrackScheme2< M, G, V, E > view, final Map< String, Object > guiState )
+	public void restoreGuiState( final T view, final Map< String, Object > guiState )
 	{
 		super.restoreGuiState( view, guiState );
 		restoreTrackSchemeTransform( view.getFrame().getTrackschemePanel(), guiState );

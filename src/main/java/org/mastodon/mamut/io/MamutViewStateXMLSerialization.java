@@ -68,14 +68,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.jdom2.Element;
-import org.mastodon.app.ui.MastodonFrameView;
+import org.mastodon.app.AppModel;
+import org.mastodon.app.MastodonViewFactory;
+import org.mastodon.app.ui.MastodonFrameView2;
 import org.mastodon.app.ui.UIModel;
-import org.mastodon.app.ui.UIModel.ViewFactories;
 import org.mastodon.mamut.MamutViews;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.ScreenTransform;
+import org.scijava.plugin.SciJavaPlugin;
 
 import mpicbg.spim.data.XmlHelpers;
 import net.imglib2.realtransform.AffineGet;
@@ -242,13 +244,13 @@ public class MamutViewStateXMLSerialization
 	 *            the XML element that stores the GUI state of a view.
 	 * @param uiModel
 	 *            the application {@link WindowManager}.
+	 * @param appModel
 	 */
-	public static void fromXml( final Element windowsEl, final UIModel< ? > uiModel )
+	public static < V extends MastodonFrameView2, VF extends MastodonViewFactory< V > & SciJavaPlugin > void fromXml( final Element windowsEl, final AppModel< ?, ?, ?, ?, V, VF > appModel )
 	{
-		@SuppressWarnings( "rawtypes" )
-		final ViewFactories viewFactories = uiModel.getViewFactories();
-		@SuppressWarnings( "unchecked" )
-		final Collection< Class< ? extends MastodonFrameView< ?, ?, ?, ?, ?, ? > > > classes = viewFactories.getKeys();
+		final UIModel< V, VF > uiModel = appModel.uiModel();
+		final UIModel< V, VF >.ViewFactories viewFactories = uiModel.getViewFactories();
+		final Collection< Class< ? extends V > > classes = viewFactories.getKeys();
 
 		final List< Element > viewEls = windowsEl.getChildren( WINDOW_TAG );
 		for ( final Element viewEl : viewEls )
@@ -257,8 +259,8 @@ public class MamutViewStateXMLSerialization
 			final String typeStr = ( String ) guiState.get( VIEW_TYPE_KEY );
 
 			// First check that we know of the view type in the window manager.
-			Class< ? extends MastodonFrameView< ?, ?, ?, ?, ?, ? > > klass = null;
-			for ( final Class< ? extends MastodonFrameView< ?, ?, ?, ?, ?, ? > > cl : classes )
+			Class< ? extends V > klass = null;
+			for ( final Class< ? extends V > cl : classes )
 			{
 				if ( cl.getSimpleName().equals( typeStr ) )
 				{
@@ -273,7 +275,9 @@ public class MamutViewStateXMLSerialization
 			}
 
 			// Create, register the view and sets its GUI state.
-			viewFactories.createView( klass, guiState );
+			uiModel.createView( appModel, klass, guiState );
+
+			// TODO TODO
 		}
 	}
 

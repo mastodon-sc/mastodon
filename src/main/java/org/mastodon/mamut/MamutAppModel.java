@@ -7,7 +7,9 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
+import org.mastodon.mamut.views.MamutView2;
 import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme2;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.MastodonKeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
@@ -17,7 +19,17 @@ import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.ui.keymap.KeymapManager;
 
-public class MamutAppModel extends BdvAppModel< Model, ModelGraph, Spot, Link >
+/**
+ * Core app model for the Mastodon app 'Mamut', that displays cells as
+ * ellipsoids. It is typed against {@link Spot} and {@link Link}.
+ */
+public class MamutAppModel extends BdvAppModel<
+		Model,
+		ModelGraph,
+		Spot,
+		Link,
+		MamutView2,
+		MamutViewFactory2 >
 {
 
 	public static MamutAppModel create( final Context context, final Model model, final SharedBigDataViewerData imageData, final MamutProject project )
@@ -45,6 +57,12 @@ public class MamutAppModel extends BdvAppModel< Model, ModelGraph, Spot, Link >
 				new MamutPlugins( keymapManager.getForwardSelectedKeymap() ),
 				new Actions( keymapManager.getForwardSelectedKeymap().getConfig(), KeyConfigContexts.MASTODON ),
 				new String[] { KeyConfigContexts.MASTODON },
+				KeyConfigScopes.MAMUT,
 				NUM_GROUPS );
+	}
+
+	public MamutViewTrackScheme2 createTrackScheme()
+	{
+		return uiModel.createView( this, MamutViewTrackScheme2.class );
 	}
 }

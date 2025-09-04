@@ -41,7 +41,7 @@ import bdv.ui.settings.SettingsPage;
  *
  * @param <T>
  *            the type of style manager created by this factory.
- * 
+ *
  */
 public interface StyleManagerFactory2< T > extends SciJavaPlugin
 {
@@ -54,7 +54,7 @@ public interface StyleManagerFactory2< T > extends SciJavaPlugin
 	 *
 	 * @return a new manager instance.
 	 */
-	public T create( final UIModel uiModel );
+	public T create( final UIModel< ?, ? > uiModel );
 
 	/**
 	 * Returns <code>true</code> if the manager handled by this factory has a
