@@ -8,7 +8,7 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.mamut.views.MamutViewFactory2;
-import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme2;
+import org.mastodon.mamut.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.MastodonKeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
@@ -22,6 +22,7 @@ import bdv.ui.keymap.KeymapManager;
  * Core app model for the Mastodon app 'Mamut', that displays cells as
  * ellipsoids. It is typed against {@link Spot} and {@link Link}.
  */
+@SuppressWarnings( "rawtypes" )
 public class MamutAppModel extends BdvAppModel<
 		Model,
 		ModelGraph,
@@ -59,8 +60,9 @@ public class MamutAppModel extends BdvAppModel<
 				NUM_GROUPS );
 	}
 
-	public MamutViewTrackScheme2 createTrackScheme()
+	@SuppressWarnings( "unchecked" )
+	public MastodonViewTrackScheme2< Model, ModelGraph, Spot, Link > createTrackScheme()
 	{
-		return uiModel.createView( this, MamutViewTrackScheme2.class );
+		return uiModel.createView( this, MastodonViewTrackScheme2.class );
 	}
 }
