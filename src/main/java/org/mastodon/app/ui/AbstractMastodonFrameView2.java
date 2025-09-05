@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.mastodon.app.ViewGraph;
-import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;

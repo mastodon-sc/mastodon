@@ -1,7 +1,7 @@
 package org.mastodon.app;
 
 import org.mastodon.app.factory.MastodonViewFactory;
-import org.mastodon.app.plugin.MastodonPlugins;
+import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.DefaultFeatureProjectionsManager;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
@@ -39,7 +39,7 @@ public class BdvAppModel<
 			final Class< VF > viewFactoryType,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
-			final MastodonPlugins< ?, ? > plugins,
+			final MastodonPlugins2< ?, ? > plugins,
 			final Actions globalActions,
 			final String[] keyConfigContexts,
 			final Scope scope,

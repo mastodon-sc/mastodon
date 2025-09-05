@@ -1,6 +1,6 @@
 package org.mastodon.app.ui;
 
-import static org.mastodon.mamut.MamutMenuBuilder.windowMenu;
+import static org.mastodon.mamut.MamutMenuBuilder2.windowMenu;
 
 import java.awt.Window;
 import java.awt.event.WindowEvent;
@@ -19,14 +19,14 @@ import javax.swing.ActionMap;
 
 import org.mastodon.app.AppModel;
 import org.mastodon.app.factory.MastodonViewFactory;
-import org.mastodon.app.plugin.MastodonPlugins;
+import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.app.plugin.PluginUtils;
-import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
+import org.mastodon.app.ui.ViewMenuBuilder2.MenuItem;
 import org.mastodon.grouping.GroupManager;
 import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.mamut.CloseListener;
 import org.mastodon.mamut.KeyConfigScopes;
-import org.mastodon.mamut.MamutMenuBuilder;
+import org.mastodon.mamut.MamutMenuBuilder2;
 import org.mastodon.mamut.PreferencesDialog;
 import org.mastodon.mamut.managers.StyleManagerFactory2;
 import org.mastodon.mamut.model.Spot;
@@ -79,7 +79,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 
 	private final KeymapManager keymapManager;
 
-	private final MastodonPlugins< ?, ? > plugins;
+	private final MastodonPlugins2< ?, ? > plugins;
 
 	private final String[] keyConfigContexts;
 
@@ -159,7 +159,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 			final int numGroups,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
-			final MastodonPlugins< ?, ? > plugins,
+			final MastodonPlugins2< ?, ? > plugins,
 			final Actions globalActions,
 			final String[] keyConfigContexts,
 			final Scope scope )
@@ -297,7 +297,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	 *
 	 * @return the plugins.
 	 */
-	public MastodonPlugins< ?, ? > getPlugins()
+	public MastodonPlugins2< ?, ? > getPlugins()
 	{
 		return plugins;
 	}
@@ -676,7 +676,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 			if ( !factories.containsValue( factory ) )
 			{
 				factories.put( factory.getViewClass(), factory );
-				menuItems.add( ViewMenuBuilder.item( factory.getCommandName() ) );
+				menuItems.add( ViewMenuBuilder2.item( factory.getCommandName() ) );
 				menuTexts.put( factory.getCommandName(), factory.getCommandMenuText() );
 			}
 		}
@@ -720,9 +720,9 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 			};
 		}
 
-		void addWindowMenuTo( final ViewMenu menu, final ActionMap actionMap )
+		public void addWindowMenuTo( final ViewMenu2 menu, final ActionMap actionMap )
 		{
-			MamutMenuBuilder.build( menu, actionMap, menuTexts, windowMenu( menuItems.toArray( new MenuItem[ 0 ] ) ) );
+			MamutMenuBuilder2.build( menu, actionMap, menuTexts, windowMenu( menuItems.toArray( new MenuItem[ 0 ] ) ) );
 		}
 	}
 

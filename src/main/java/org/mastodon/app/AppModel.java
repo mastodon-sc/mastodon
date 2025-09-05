@@ -36,7 +36,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.mastodon.app.factory.MastodonViewFactory;
-import org.mastodon.app.plugin.MastodonPlugins;
+import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.app.ui.UIModel;
 import org.mastodon.app.ui.UIUtils;
 import org.mastodon.graph.Edge;
@@ -150,7 +150,7 @@ public class AppModel<
 			final Class< VF > viewFactoryType,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
-			final MastodonPlugins< ?, ? > plugins,
+			final MastodonPlugins2< ?, ? > plugins,
 			final Actions globalActions,
 			final String[] keyConfigContexts,
 			final Scope scope,
