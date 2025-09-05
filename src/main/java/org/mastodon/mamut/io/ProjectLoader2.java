@@ -42,7 +42,7 @@ import org.jdom2.input.SAXBuilder;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
+import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -284,7 +284,7 @@ public class ProjectLoader2
 			{
 				final FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
 				// Load features.
-				MamutRawFeatureModelIO.deserialize(
+				MamutRawFeatureModelIO2.deserialize(
 						context,
 						model,
 						idmap,
@@ -431,5 +431,14 @@ public class ProjectLoader2
 	private static long roundUp( final double x )
 	{
 		return ( long ) Math.ceil( x );
+	}
+
+	public static void main( final String[] args ) throws IOException, SpimDataException
+	{
+
+		final String projectPath = "samples/drosophila_crop.mastodon";
+		final MamutAppModel appModel = ProjectLoader2.open( projectPath, new Context() );
+		appModel.createTrackScheme();
+
 	}
 }
