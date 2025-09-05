@@ -69,7 +69,7 @@ import java.util.Map.Entry;
 
 import org.jdom2.Element;
 import org.mastodon.app.AppModel;
-import org.mastodon.app.MastodonViewFactory;
+import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.ui.MastodonFrameView2;
 import org.mastodon.app.ui.UIModel;
 import org.mastodon.mamut.MamutViews;

@@ -1,5 +1,6 @@
 package org.mastodon.app;
 
+import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;

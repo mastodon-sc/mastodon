@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.ui.UIModel;
 import org.mastodon.app.ui.UIUtils;

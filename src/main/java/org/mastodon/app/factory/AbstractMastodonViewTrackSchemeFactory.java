@@ -2,9 +2,7 @@ package org.mastodon.app.factory;
 
 import java.util.Map;
 
-import org.mastodon.app.AbstractMastodonViewFactory;
 import org.mastodon.app.AppModel;
-import org.mastodon.app.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.mamut.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;

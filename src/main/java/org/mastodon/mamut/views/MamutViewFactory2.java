@@ -1,6 +1,6 @@
 package org.mastodon.mamut.views;
 
-import org.mastodon.app.MastodonViewFactory;
+import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.ui.MastodonFrameView2;
 import org.scijava.plugin.SciJavaPlugin;
 
