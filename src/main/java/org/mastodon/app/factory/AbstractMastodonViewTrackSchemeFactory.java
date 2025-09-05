@@ -98,7 +98,7 @@ public abstract class AbstractMastodonViewTrackSchemeFactory<
 	public Class< T > getViewClass()
 	{
 		// We use Guava type token to capture the generic parameters.
-		final TypeToken< T > typeToken = new TypeToken< T >()
+		final TypeToken< T > typeToken = new TypeToken< T >( getClass() )
 		{};
 		return ( Class< T > ) typeToken.getRawType();
 	}
