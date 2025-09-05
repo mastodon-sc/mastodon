@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 import javax.swing.ActionMap;
 
 import org.mastodon.app.AppModel;
-import org.mastodon.app.MastodonViewFactory;
+import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.plugin.PluginUtils;
 import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
@@ -31,7 +31,6 @@ import org.mastodon.mamut.CloseListener;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.PreferencesDialog;
-import org.mastodon.mamut.WindowManager.ViewCreatedListener;
 import org.mastodon.mamut.managers.StyleManagerFactory2;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.ForwardingNavigationHandler;
@@ -115,8 +114,17 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	/** Stores the different lists of data views currently opened. */
 	private final Map< Class< ? >, List< MastodonFrameView2 > > openedViews = new HashMap<>();
 
+	/** Listeners that are notified when a view is created. */
+	private final Map< Class< ? extends MastodonFrameView2 >, Listeners.List< ViewCreatedListener< ? extends MastodonFrameView2 > > > creationListeners = new HashMap<>();
+
 	/** Manages the collections of view factories. */
 	protected final ViewFactories viewFactories;
+
+	/**
+	 * The {@link ContextProvider}s of all currently opened
+	 * {@link HasContextProvider} views.
+	 */
+	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
 
 	/** Collection of listeners that are notified when the project is closed. */
 	private final Listeners.List< CloseListener > closeListeners = new Listeners.List<>();
@@ -521,7 +529,6 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	 * @return a new instance of the view, or <code>null</code> if the view
 	 *         class is unknown to the window manager.
 	 */
-	@SuppressWarnings( "unchecked" )
 	public synchronized < T extends MastodonFrameView2 > T createView(
 			final AppModel< ?, ?, ?, ?, VF > appModel,
 			final Class< T > klass,
@@ -532,7 +539,8 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 
 		// Return null if the view type is unknown to us.
 		if ( factory == null )
-			return null;
+			throw new UnsupportedOperationException( "No view factory that can create views of type "
+					+ klass.getName() + " have been registered to this UI model." );
 
 		// Create the view.
 		@SuppressWarnings( "unchecked" )
@@ -542,7 +550,9 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		UIUtils.adjustTitle( view.getFrame(), appModel.getProjectName() );
 
 		// Restore the view GUI state.
-		( ( MastodonViewFactory< T > ) factory ).restoreGuiState( view, guiState );
+		@SuppressWarnings( "unchecked" )
+		final MastodonViewFactory< T > f = ( ( MastodonViewFactory< T > ) factory );
+		f.restoreGuiState( view, guiState );
 
 		// Store the view for window manager.
 		openedViews.computeIfAbsent( klass, ( v ) -> new ArrayList<>() ).add( view );
@@ -605,7 +615,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		@SuppressWarnings( "rawtypes" )
 		final Listeners.List l1 = creationListeners.get( klass );
 		@SuppressWarnings( "unchecked" )
-		final Listeners.List< ViewCreatedListener< V > > list = l1;
+		final Listeners.List< ViewCreatedListener< T > > list = l1;
 		if ( list != null )
 			list.list.forEach( l -> l.viewCreated( view ) );
 
@@ -664,7 +674,6 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 			menuTexts = new HashMap<>();
 		}
 
-		@SuppressWarnings( "unchecked" )
 		synchronized void register( final VF factory )
 		{
 			if ( !factories.containsValue( factory ) )
@@ -718,6 +727,25 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		{
 			MamutMenuBuilder.build( menu, actionMap, menuTexts, windowMenu( menuItems.toArray( new MenuItem[ 0 ] ) ) );
 		}
+	}
+
+	/**
+	 * Interface for listeners that are notified of the creation of views of the
+	 * specified class. Registered listeners will be notified when a view of the
+	 * specific class is created.
+	 *
+	 * @param <T>
+	 *            the class of the view to listen for the creation of.
+	 */
+	public interface ViewCreatedListener< T extends MastodonFrameView2 >
+	{
+		/**
+		 * Called when a view of the class is created, just before it is shown.
+		 *
+		 * @param view
+		 *            the view that was just created.
+		 */
+		void viewCreated( final T view );
 	}
 
 	private static final String PREFERENCES_DIALOG = "Preferences";
