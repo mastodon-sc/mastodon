@@ -22,9 +22,6 @@ import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.plugin.PluginUtils;
 import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
-import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.feature.ui.DefaultFeatureProjectionsManager;
-import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.grouping.GroupManager;
 import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.mamut.CloseListener;
@@ -37,7 +34,6 @@ import org.mastodon.model.ForwardingNavigationHandler;
 import org.mastodon.model.ForwardingTimepointModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
 import org.mastodon.views.context.ContextChooser;
@@ -129,7 +125,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	/** Collection of listeners that are notified when the project is closed. */
 	private final Listeners.List< CloseListener > closeListeners = new Listeners.List<>();
 
-	private final PreferencesDialog settings;
+	protected final PreferencesDialog settings;
 
 	private final Scope scope;
 
@@ -185,6 +181,13 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		this.modelActions = new Actions( keyconf, keyConfigContexts );
 
 		/*
+		 * Discover view factories.
+		 */
+		this.viewFactories = new ViewFactories();
+		final Consumer< VF > registerViewFactory = factory -> viewFactories.register( factory );
+		PluginUtils.forEachDiscoveredPlugin( viewFactoryType, registerViewFactory, context );
+
+		/*
 		 * Preferences dialog.
 		 */
 		final Keymap keymap = keymapManager.getForwardSelectedKeymap();
@@ -205,11 +208,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		/*
 		 * Extra settings pages.
 		 */
-		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
-		registerInstance( featureColorModeManager );
-		final DefaultFeatureProjectionsManager featureProjectionsManager = new DefaultFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		settings.addPage( new KeymapSettingsPage( "Settings > Keymap", keymapManager, descriptions ) );
-		settings.addPage( new FeatureColorModeConfigPage( "Settings > Feature Color Modes", featureColorModeManager, featureProjectionsManager, "Vertex", "Edge" ) );
 		settings.pack();
 
 		/*
@@ -227,13 +226,6 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 				settings.addPage( factory.createSettingsPage( manager ) );
 		};
 		PluginUtils.forEachDiscoveredPlugin( StyleManagerFactory2.class, registerAction, context );
-
-		/*
-		 * Discover view factories.
-		 */
-		this.viewFactories = new ViewFactories();
-		final Consumer< VF > registerViewFactory = factory -> viewFactories.register( factory );
-		PluginUtils.forEachDiscoveredPlugin( viewFactoryType, registerViewFactory, context );
 	}
 
 	public ViewFactories getViewFactories()
@@ -339,6 +331,11 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	public Listeners.List< CloseListener > closeListeners()
 	{
 		return closeListeners;
+	}
+
+	public PreferencesDialog getPreferencesDialog()
+	{
+		return settings;
 	}
 
 	/*

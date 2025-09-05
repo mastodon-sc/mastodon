@@ -2,11 +2,15 @@ package org.mastodon.app;
 
 import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins;
+import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.feature.ui.DefaultFeatureProjectionsManager;
+import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.spatial.HasTimepoint;
+import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
 import org.scijava.plugin.SciJavaPlugin;
@@ -24,6 +28,7 @@ public class BdvAppModel<
 		VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		extends AppModel< M, G, V, E, VF >
 {
+
 
 	private final SharedBigDataViewerData sharedBdvData;
 
@@ -54,6 +59,16 @@ public class BdvAppModel<
 				0,
 				sharedBdvData.getNumTimepoints() - 1 );
 		this.sharedBdvData = sharedBdvData;
+
+		/*
+		 * Add a settings page for feature color modes, that depends on the data
+		 * model and on the number of sources in the bdv data
+		 */
+		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
+		uiModel.registerInstance( featureColorModeManager );
+		final DefaultFeatureProjectionsManager featureProjectionsManager = new DefaultFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
+		featureProjectionsManager.setModel( model, model.getFeatureModel(), sharedBdvData.getSources().size() );
+		uiModel.getPreferencesDialog().addPage( new FeatureColorModeConfigPage( "Settings > Feature Color Modes", featureColorModeManager, featureProjectionsManager, "Vertex", "Edge" ) );
 	}
 
 	public SharedBigDataViewerData imageData()
