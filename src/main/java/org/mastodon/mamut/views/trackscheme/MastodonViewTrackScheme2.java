@@ -68,7 +68,6 @@ import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColoringModel;
-import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.commandfinder.CommandFinder;
@@ -175,7 +174,6 @@ public class MastodonViewTrackScheme2<
 		 */
 		final TrackSchemeStyleManager trackSchemeStyleManager = uiModel.getInstance( TrackSchemeStyleManager.class );
 		final TrackSchemeStyle forwardDefaultStyle = trackSchemeStyleManager.getForwardDefaultStyle();
-		final GraphColorGeneratorAdapter< V, E, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final KeyPressedManager keyPressedManager = uiModel.getKeyPressedManager();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
