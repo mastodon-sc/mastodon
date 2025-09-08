@@ -30,15 +30,10 @@ package org.mastodon.graph.revised;
 
 import java.io.IOException;
 
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.io.importer.ModelImporter;
-import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.views.bdv.SharedBigDataViewerData;
-import org.scijava.Context;
 
 public class CreateLargeModelExample
 {
@@ -184,11 +179,11 @@ public class CreateLargeModelExample
 				( Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() ) / 1e6d ) );
 
 
-		final Context context = new Context();
-		final SharedBigDataViewerData imagedata = SharedBigDataViewerData.fromDummyFilename( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" );
-		final MamutProject project = new MamutProject( "./large_model_example.mastodon" );
-		final ProjectModel appModel = ProjectModel.create( context, model, imagedata, project  );
-		final WindowManager wm = new WindowManager( appModel  );
+//		final Context context = new Context();
+//		final SharedBigDataViewerData imagedata = SharedBigDataViewerData.fromDummyFilename( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" );
+//		final MamutProject project = new MamutProject( "./large_model_example.mastodon" );
+//		final ProjectModel appModel = ProjectModel.create( context, model, imagedata, project  );
+//		final WindowManager wm = new WindowManager( appModel  );
 
 //		start = System.currentTimeMillis();
 //		wm.createBigDataViewer();

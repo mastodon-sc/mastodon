@@ -43,7 +43,6 @@ import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
-import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
