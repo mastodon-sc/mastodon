@@ -45,7 +45,6 @@ import com.google.gson.JsonSerializer;
 public class OmeZarrMultiscalesAdapter implements JsonDeserializer< OmeZarrMultiscales >, JsonSerializer< OmeZarrMultiscales >
 {
 
-	@SuppressWarnings( "serial" )
 	@Override
     public OmeZarrMultiscales deserialize( final JsonElement json, final Type typeOfT, final JsonDeserializationContext context ) throws JsonParseException
     {
