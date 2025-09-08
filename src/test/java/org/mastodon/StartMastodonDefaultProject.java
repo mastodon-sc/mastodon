@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,8 +34,8 @@ public class StartMastodonDefaultProject
 	public static void main( final String[] args )
 	{
 //		final String projectPath = "samples/MaMuT_Parhyale_small.mastodon";
-//		final String projectPath = "/Users/tinevez/Google Drive/Mastodon/Datasets/Remote/ParhyaleHawaiensis/MaMuT_Parhyale_demo-mamut.mastodon";
-		final String projectPath = "samples/drosophila_crop_LONG_NAME_LONGLONGLONG_SUPERLONG.mastodon";
+		final String projectPath = "/Users/tinevez/Library/CloudStorage/GoogleDrive-jeanyves.tinevez@gmail.com/My Drive/Mastodon/Datasets/Remote/BDV/Tribolium/CTC_TRIF_trainingVideo02_jy-GT-done.mastodon";
+//		final String projectPath = "samples/drosophila_crop_LONG_NAME_LONGLONGLONG_SUPERLONG.mastodon";
 //		final String projectPath = "samples/drosophila_crop.mastodon";
 		StartMastodonOnProject.launch( projectPath );
 	}
