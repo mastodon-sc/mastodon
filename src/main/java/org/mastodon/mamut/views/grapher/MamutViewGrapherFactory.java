@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,9 +31,12 @@ package org.mastodon.mamut.views.grapher;
 import java.util.Map;
 
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.AbstractMamutViewFactory;
 import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
+import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
@@ -82,7 +85,9 @@ public class MamutViewGrapherFactory extends AbstractMamutViewFactory< MamutView
 	public Map< String, Object > getGuiState( final MamutViewGrapher view )
 	{
 		final Map< String, Object > guiState = super.getGuiState( view );
-		GrapherGuiState.writeGuiState( view, guiState );
+		DataDisplayFrame< Spot, Link > frame = view.getFrame();
+		GrapherGuiState.writeGuiState( frame.getDataDisplayPanel().getScreenTransform(), frame.getVertexSidePanel().getGraphConfig(),
+				guiState );
 		return guiState;
 	}
 
@@ -91,7 +96,9 @@ public class MamutViewGrapherFactory extends AbstractMamutViewFactory< MamutView
 	public void restoreGuiState( final MamutViewGrapher view, final Map< String, Object > guiState )
 	{
 		super.restoreGuiState( view, guiState );
-		GrapherGuiState.loadGuiState( view, guiState, MamutViewGrapher.getFeatureGraphConfig() );
+		DataDisplayFrame< Spot, Link > frame = view.getFrame();
+		GrapherGuiState.loadGuiState( guiState, frame.getDataDisplayPanel().getScreenTransform(), frame.getVertexSidePanel(),
+				MamutViewGrapher.getFeatureGraphConfig(), view.getFrame() );
 	}
 
 	@Override

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,10 +38,11 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.model.HasLabel;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
-import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.mastodon.views.grapher.display.FeatureGraphConfig;
 import org.mastodon.views.grapher.display.FeatureSpecPair;
 import org.mastodon.views.grapher.display.GrapherSidePanel;
+import org.mastodon.views.grapher.display.Plotable;
+import org.mastodon.views.grapher.display.ScreenTransformState;
 
 public class GrapherGuiState
 {
@@ -100,40 +101,39 @@ public class GrapherGuiState
 	 */
 	public static final String GRAPHER_SHOW_EDGES_KEY = "GrapherShowEdges";
 
-	static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
-			writeGuiState( final DataDisplayFrameSupplier< V, E > frameProvider, final Map< String, Object > guiState )
+	public static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
+			writeGuiState( final ScreenTransformState screenTransformState, final FeatureGraphConfig config,
+					final Map< String, Object > guiState )
 	{
-		DataDisplayFrame< V, E > frame = frameProvider.getFrame();
 		// Transform.
-		final ScreenTransform transform = frame.getDataDisplayPanel().getScreenTransform().get();
+		final ScreenTransform transform = screenTransformState.get();
 		guiState.put( GRAPHER_TRANSFORM_KEY, transform );
 		// Feature graph config.
-		writeFeatureGraphConfig( frame, guiState );
+		writeFeatureGraphConfig( config, guiState );
 	}
 
-	static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
-			loadGuiState( final DataDisplayFrameSupplier< V, E > frameSupplier, final Map< String, Object > guiState,
-					final FeatureGraphConfig defaultConfig )
+	public static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
+			loadGuiState( final Map< String, Object > guiState, final ScreenTransformState screenTransformState,
+					final GrapherSidePanel<V, E> sidePanel, final FeatureGraphConfig defaultConfig,
+					final Plotable plotable )
 	{
-		DataDisplayFrame< V, E > frame = frameSupplier.getFrame();
-
 		// Read Screen Transform.
 		final ScreenTransform screenTransform = ( ScreenTransform ) guiState.get( GRAPHER_TRANSFORM_KEY );
 		if ( null != screenTransform )
-			frame.getDataDisplayPanel().getScreenTransform().set( screenTransform );
+			screenTransformState.set( screenTransform );
 
 		// Read Feature graph config.
-		FeatureGraphConfig config = loadFeatureGraphConfig( frame, guiState, defaultConfig );
-		frame.getVertexSidePanel().setGraphConfig( config );
+		FeatureGraphConfig config = loadFeatureGraphConfig( sidePanel, guiState, defaultConfig );
+		sidePanel.setGraphConfig( config );
 
 		// Plot with loaded transform and config.
-		frame.plot( screenTransform );
+		if ( plotable != null )
+			plotable.plot( screenTransform );
 	}
 
 	private static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > void
-			writeFeatureGraphConfig( final DataDisplayFrame< V, E > frame, final Map< String, Object > guiState )
+			writeFeatureGraphConfig( final FeatureGraphConfig config, final Map< String, Object > guiState )
 	{
-		FeatureGraphConfig config = frame.getVertexSidePanel().getGraphConfig();
 		// X-axis feature.
 		FeatureSpecPair featureSpecPairX = config.getXFeature();
 		guiState.put( GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY, featureSpecPairX.isEdgeFeature() );
@@ -150,11 +150,12 @@ public class GrapherGuiState
 		guiState.put( GRAPHER_SHOW_EDGES_KEY, config.drawConnected() );
 	}
 
-	private static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > FeatureGraphConfig
-			loadFeatureGraphConfig( final DataDisplayFrame< V, E > frame, final Map< String, Object > guiState,
-					final FeatureGraphConfig defaultConfig )
+	public static < V extends Vertex< E > & HasTimepoint & HasLabel & Ref< V >, E extends Edge< V > & Ref< E > > FeatureGraphConfig
+			loadFeatureGraphConfig(
+					final GrapherSidePanel<V, E> sidePanel, final Map< String, Object > guiState,
+					final FeatureGraphConfig defaultConfig
+			)
 	{
-		GrapherSidePanel sidePanel = frame.getVertexSidePanel();
 		FeatureSpecPair featureSpecPairX = loadFeatureSpecPair( guiState, sidePanel, GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY,
 				GRAPHER_X_AXIS_FEATURE_SPEC_KEY, GRAPHER_X_AXIS_FEATURE_PROJECTION_KEY, GRAPHER_X_AXIS_INCOMING_EDGE_KEY );
 		FeatureSpecPair featureSpecPairY = loadFeatureSpecPair( guiState, sidePanel, GRAPHER_Y_AXIS_FEATURE_IS_EDGE_KEY,
@@ -165,7 +166,7 @@ public class GrapherGuiState
 		return new FeatureGraphConfig( featureSpecPairX, featureSpecPairY, FeatureGraphConfig.GraphDataItemsSource.CONTEXT, showEdges );
 	}
 
-	private static FeatureSpecPair loadFeatureSpecPair( final Map< String, Object > guiState, final GrapherSidePanel sidePanel,
+	private static < V extends Vertex< E >,  E extends Edge< V > > FeatureSpecPair loadFeatureSpecPair( final Map< String, Object > guiState, final GrapherSidePanel<V, E> sidePanel,
 			final String edgeKey, final String featureSpecKey, final String projectionKey, final String incomingEdgeKey )
 	{
 		Boolean isEdgeFeature = ( Boolean ) guiState.get( edgeKey );

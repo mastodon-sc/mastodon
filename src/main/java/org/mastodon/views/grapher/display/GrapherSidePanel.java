@@ -56,6 +56,8 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.project.MamutProject;
@@ -68,16 +70,17 @@ import org.mastodon.ui.context.ContextChooserPanel;
 import org.mastodon.ui.util.EverythingDisablerAndReenabler;
 import org.mastodon.util.FeatureUtils;
 import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.grapher.display.FeatureGraphConfig.GraphDataItemsSource;
 import org.scijava.Context;
 
 /**
  * Panel that lets the user specifies what to plot. The user specifications are
  * bundled as a {@link FeatureGraphConfig} object.
- * 
+ *
  * @author Jean-Yves Tinevez
  */
-public class GrapherSidePanel extends JPanel
+public class GrapherSidePanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel implements HasContextChooser< V >
 {
 
 	private static final long serialVersionUID = 1L;
@@ -102,10 +105,13 @@ public class GrapherSidePanel extends JPanel
 
 	private final JButton btnPlot;
 
-	public GrapherSidePanel( final int nSources, final ContextChooser< ? > contextChooser )
+	private final ContextChooser< V > contextChooser;
+
+	public GrapherSidePanel( final int nSources, final ContextChooser< V > contextChooser )
 	{
 		this.nSources = nSources;
 		this.specs = new ArrayList<>();
+		this.contextChooser = contextChooser;
 
 		final GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 150, 0 };
@@ -261,7 +267,7 @@ public class GrapherSidePanel extends JPanel
 
 	/**
 	 * Exposes the plot button of this panel.
-	 * 
+	 *
 	 * @return the plot button.
 	 */
 	public JButton getBtnPlot()
@@ -430,6 +436,11 @@ public class GrapherSidePanel extends JPanel
 		return null;
 	}
 
+	public ContextChooser< V > getContextChooser()
+	{
+		return this.contextChooser;
+	}
+
 	private static final FeatureModel demoFM()
 	{
 		final Model model = new Model();
@@ -463,7 +474,7 @@ public class GrapherSidePanel extends JPanel
 				FeatureUtils.collectFeatureMap( fm, Spot.class );
 		final Map< FeatureSpec< ?, Link >, Feature< Link > > linkFeatures =
 				FeatureUtils.collectFeatureMap( fm, Link.class );
-		final GrapherSidePanel gsp = new GrapherSidePanel( 2, new ContextChooser<>( null ) );
+		final GrapherSidePanel<Spot, Link> gsp = new GrapherSidePanel<Spot, Link>( 2, new ContextChooser<>( null ) );
 		gsp.setFeatures( spotFeatures, linkFeatures );
 
 		final JFrame frame = new JFrame( "Grapher side panel" );

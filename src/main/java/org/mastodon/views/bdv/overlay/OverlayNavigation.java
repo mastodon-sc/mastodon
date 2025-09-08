@@ -46,6 +46,10 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 
 	private NavigationBehaviour< V, E > navigationBehaviour;
 
+	private long lastNavigationTime = 0;
+
+	private static final int ANIMATION_DURATION = 300;
+
 	public OverlayNavigation(
 			final AbstractViewerPanel panel,
 			final OverlayGraph< V, E > graph )
@@ -82,6 +86,9 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 	@Override
 	public void navigateToVertex( final V vertex )
 	{
+		if (shouldThrottle())
+			return; // Throttle navigation requests.
+
 		// Always move in T.
 		final int tp = vertex.getTimepoint();
 		panel.state().setCurrentTimepoint( tp );
@@ -90,17 +97,20 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 		final double[] target = navigationBehaviour.navigateToVertex( vertex, currentTransform );
 		if ( target != null )
 		{
-			final TranslationAnimator animator = new TranslationAnimator( currentTransform, target, 300 );
-			animator.setTime( System.currentTimeMillis() );
+			final TranslationAnimator animator = new TranslationAnimator( currentTransform, target, ANIMATION_DURATION );
+			lastNavigationTime = System.currentTimeMillis();
+			animator.setTime( lastNavigationTime );
 			panel.setTransformAnimator( animator );
 		}
-
 		panel.requestRepaint();
 	}
 
 	@Override
 	public void navigateToEdge( final E edge )
 	{
+		if ( shouldThrottle() )
+			return; // Throttle navigation requests.
+
 		// Always move in T.
 		final V ref = graph.vertexRef();
 		final int tp = edge.getTarget( ref ).getTimepoint();
@@ -111,12 +121,19 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 		final double[] target = navigationBehaviour.navigateToEdge( edge, currentTransform );
 		if ( target != null )
 		{
-			final TranslationAnimator animator = new TranslationAnimator( currentTransform, target, 300 );
-			animator.setTime( System.currentTimeMillis() );
+			final TranslationAnimator animator = new TranslationAnimator( currentTransform, target, ANIMATION_DURATION );
+			lastNavigationTime = System.currentTimeMillis();
+			animator.setTime( lastNavigationTime );
 			panel.setTransformAnimator( animator );
 		}
 
 		panel.requestRepaint();
+	}
+
+	private boolean shouldThrottle()
+	{
+		final long now = System.currentTimeMillis();
+		return ( now - lastNavigationTime < ANIMATION_DURATION );
 	}
 
 	/*

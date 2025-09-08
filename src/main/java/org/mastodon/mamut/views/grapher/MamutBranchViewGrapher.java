@@ -57,7 +57,7 @@ import java.util.Iterator;
 import java.util.function.BiConsumer;
 
 public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSpot, BranchLink >, DataVertex, DataEdge >
-		implements HasColoringModel, HasColorBarOverlay, DataDisplayFrameSupplier< BranchSpot, BranchLink >
+		implements HasColoringModel, HasColorBarOverlay
 {
 
 	private final GrapherInitializer< BranchSpot, BranchLink > grapherInitializer;
@@ -82,6 +82,7 @@ public class MamutBranchViewGrapher extends MamutBranchView< DataGraph< BranchSp
 		setFrame( grapherInitializer.getFrame() ); // this creates viewActions and viewBehaviours thus must be called before installActions
 		grapherInitializer.installActions( viewActions, viewBehaviours );
 		grapherInitializer.addSearchPanel( viewActions );
+		grapherInitializer.addCommandFinder( viewActions, keyConfigContexts );
 
 		TriFunction< JMenuHandle, GraphColorGeneratorAdapter< BranchSpot, BranchLink, DataVertex, DataEdge >,
 				DataDisplayPanel< BranchSpot, BranchLink >, ColoringModel > colorModelRegistration =

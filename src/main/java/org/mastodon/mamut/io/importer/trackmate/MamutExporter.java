@@ -54,6 +54,7 @@ import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FILTER_V
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FOLDER_ATTRIBUTE;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FRAME_ATTRIBUTE;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FRAME_FEATURE_NAME;
+import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.FRAME_INTERVAL_ATTRIBUTE;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.GUI_STATE_TAG;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.HEIGHT_ATTRIBUTE;
 import static org.mastodon.mamut.io.importer.trackmate.TrackMateXMLKeys.ID_FEATURE_NAME;
@@ -361,6 +362,7 @@ public class MamutExporter
 		attributes.add( new Attribute( PIXEL_WIDTH_ATTRIBUTE, Double.toString( pixelWidth ) ) );
 		attributes.add( new Attribute( PIXEL_HEIGHT_ATTRIBUTE, Double.toString( pixelHeight ) ) );
 		attributes.add( new Attribute( VOXEL_DEPTH_ATTRIBUTE, Double.toString( voxelDepth ) ) );
+		attributes.add( new Attribute( FRAME_INTERVAL_ATTRIBUTE, Double.toString( 1. ) ) );
 
 		final Element timePointsElement = document
 				.getRootElement()
@@ -424,9 +426,9 @@ public class MamutExporter
 						public void processVertexLate( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
 						{
 							/*
-							 * 1 root = 1 track, unless a track has several roots. Add
-							 * the iterated vertex to the list of root to skip if
-							 * needed.
+							 * 1 root = 1 track, unless a track has several
+							 * roots. Add the iterated vertex to the list of
+							 * root to skip if needed.
 							 */
 							if ( vertex.incomingEdges().isEmpty() )
 								toSkip.add( vertex );
@@ -520,6 +522,15 @@ public class MamutExporter
 		return spotCollectionElement;
 	}
 
+	/**
+	 * Collection of link feature names that we want to export in the mamut
+	 * file, but computed from the link data currently set in Mastodon. We used
+	 * this collection to avoid exporting a feature with identical name in the
+	 * case a feature imported as the same name.
+	 */
+	private final static Set< String > IMPORTED_LINK_BUILTIN_FEATURES = new HashSet<>( Arrays.asList(
+			EDGE_SOURCE_ATTRIBUTE, EDGE_TARGET_ATTRIBUTE ) );
+
 	private Element edgeToXml( final Link edge, final int sourceSpotID, final int targetSpotID )
 	{
 		final Collection< Attribute > attributes = new ArrayList<>();
@@ -529,9 +540,45 @@ public class MamutExporter
 		attributes.add( new Attribute( EDGE_TARGET_ATTRIBUTE, Integer.toString( targetSpotID ) ) );
 
 		// Link features.
-		linkFeatureProjections.forEach( p -> attributes.add( new Attribute(
-				p.attributeName,
-				Double.toString( p.projection.value( edge ) ) ) ) );
+		for ( final ExportFeatureProjection< Link > p : linkFeatureProjections )
+		{
+			final String origName = p.attributeName;
+			/*
+			 * Do not export link features that are common TrackMate features
+			 * and that we already exported above.
+			 */
+			if ( CommonTrackMateFeatureDeclarations.redundantLinkProjectionKeys.contains( origName ) )
+				continue;
+
+			final String attName;
+			/*
+			 * If the model to export was imported from a TrackMate or a MaMuT
+			 * file, it will already contain features with the same name that
+			 * the builtin feature we added just above. Which will cause an
+			 * error.
+			 * 
+			 * To avoid this, rename these imported features.
+			 */
+			if ( IMPORTED_LINK_BUILTIN_FEATURES.contains( origName ) )
+			{
+				final String importedAttName = "IMPORTED_" + origName;
+				attName = importedAttName;
+			}
+			else if ( origName.startsWith( "IMPORTED_" ) )
+			{
+				// We skip features that have been re-imported.
+				continue;
+			}
+			else
+			{
+				// All good.
+				attName = origName;
+			}
+
+			attributes.add( new Attribute(
+					attName,
+					Double.toString( p.projection.value( edge ) ) ) );
+		}
 
 		final Element edgeElement = new Element( EDGE_TAG );
 		edgeElement.setAttributes( attributes );
@@ -556,9 +603,20 @@ public class MamutExporter
 		return trackElement;
 	}
 
+	/**
+	 * Collection of spot feature names that we want to export in the mamut
+	 * file, but computed from the actual position, etc, currently set in
+	 * Mastodon. We used this collection to avoid exporting a feature with
+	 * identical name in the case a feature imported as the same name.
+	 */
+	private final static Set< String > IMPORTED_SPOT_BUILTIN_FEATURES = new HashSet<>( Arrays.asList( ID_FEATURE_NAME, LABEL_FEATURE_NAME, POSITION_X_FEATURE_NAME,
+			POSITION_Y_FEATURE_NAME, POSITION_Z_FEATURE_NAME, FRAME_FEATURE_NAME,
+			POSITION_T_FEATURE_NAME, QUALITY_FEATURE_NAME, VISIBILITY_FEATURE_NAME,
+			RADIUS_FEATURE_NAME ) );
+
 	private Element spotToXml( final Spot spot )
 	{
-		final Collection< Attribute > attributes = new ArrayList<>();
+		final List< Attribute > attributes = new ArrayList<>();
 
 		// Id.
 		attributes.add( new Attribute( ID_FEATURE_NAME, Integer.toString( spot.getInternalPoolIndex() ) ) );
@@ -583,10 +641,54 @@ public class MamutExporter
 		final double meanRadius = Arrays.stream( eig.getRealEigenvalues() ).map( Math::sqrt ).average().getAsDouble();
 		attributes.add( new Attribute( RADIUS_FEATURE_NAME, Double.toString( meanRadius ) ) );
 
-		// Spot features.
-		spotFeatureProjections.forEach( p -> attributes.add( new Attribute(
-				p.attributeName,
-				Double.toString( p.projection.value( spot ) ) ) ) );
+		for (final ExportFeatureProjection< Spot > p : spotFeatureProjections )
+		{
+			final String origName = p.attributeName;
+			/*
+			 * Do not export spot features that are common TrackMate features
+			 * and that we already exported above.
+			 */
+			if ( CommonTrackMateFeatureDeclarations.redundantSpotProjectionKeys.contains( origName ) )
+				continue;
+
+			final String attName;
+			/*
+			 * If the model to export was imported from a TrackMate or a MaMuT
+			 * file, it will already contain features with the same name that
+			 * the builtin feature we added just above. Which will cause an
+			 * error.
+			 * 
+			 * To avoid this, rename these imported features.
+			 */
+			if ( IMPORTED_SPOT_BUILTIN_FEATURES.contains( origName ) )
+			{
+				final String importedAttName = "IMPORTED_" + origName;
+				attName = importedAttName;
+			}
+			else if ( origName.startsWith( "IMPORTED_" ) )
+			{
+				// We skip features that have been re-imported.
+				continue;
+			}
+			else
+			{
+				// All good.
+				attName = origName;
+			}
+			
+			
+			String val;
+			if ( p.projection instanceof IntFeatureProjection )
+			{
+				val = Integer.toString( (int) p.projection.value( spot ) );
+			}
+			else
+			{
+				// Assume double.
+				val = Double.toString( p.projection.value( spot ) );
+			}
+			attributes.add( new Attribute( attName, val ) );
+		}
 
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
 		spotElement.setAttributes( attributes );
@@ -596,6 +698,7 @@ public class MamutExporter
 	private Element featuresDeclarationToXml()
 	{
 		final Element featuresElement = new Element( FEATURE_DECLARATION_TAG );
+		appendBasicFeatureDeclarations( featuresElement );
 		appendFeaturesDeclarationOfClass( Spot.class, featuresElement, SPOT_FEATURE_DECLARATION_TAG );
 		appendFeaturesDeclarationOfClass( Link.class, featuresElement, EDGE_FEATURE_DECLARATION_TAG );
 		// Create an empty declaration for track features, for now.
@@ -603,21 +706,53 @@ public class MamutExporter
 		return featuresElement;
 	}
 
+	private void appendBasicFeatureDeclarations( final Element featuresElement )
+	{
+		// Spots.
+		final Element spotFeaturesElement = getOrAddChild( featuresElement, SPOT_FEATURE_DECLARATION_TAG );
+		CommonTrackMateFeatureDeclarations.spotFeatureDeclarations.forEach( cf -> spotFeaturesElement.addContent( cf.toElement() ) );
+
+		// Edges.
+		final Element edgeFeaturesElement = getOrAddChild( featuresElement, EDGE_FEATURE_DECLARATION_TAG );
+		CommonTrackMateFeatureDeclarations.edgeFeatureDeclarations.forEach( cf -> edgeFeaturesElement.addContent( cf.toElement() ) );
+
+		// Tracks.
+		final Element trackFeaturesElement = getOrAddChild( featuresElement, TRACK_FEATURE_DECLARATION_TAG );
+		CommonTrackMateFeatureDeclarations.trackFeatureDeclarations.forEach( cf -> trackFeaturesElement.addContent( cf.toElement() ) );
+	}
+
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	private < T > void appendFeaturesDeclarationOfClass( final Class< T > clazz, final Element featuresElement,
 			final String classFeatureDeclarationTag )
 	{
 		final List< ExportFeatureProjection< T > > projections;
+		List< String > redundantFeatures;
 		if ( clazz.equals( Spot.class ) )
+		{
 			projections = ( List ) spotFeatureProjections;
+			redundantFeatures = CommonTrackMateFeatureDeclarations.redundantSpotProjectionKeys;
+		}
 		else if ( clazz.equals( Link.class ) )
+		{
 			projections = ( List ) linkFeatureProjections;
+			redundantFeatures = CommonTrackMateFeatureDeclarations.redundantLinkProjectionKeys;
+		}
 		else
+		{
 			projections = Collections.emptyList();
+			redundantFeatures = CommonTrackMateFeatureDeclarations.redundantTrackProjectionKeys;
+		}
 
-		final Element classFeaturesElement = new Element( classFeatureDeclarationTag );
+		final Element classFeaturesElement = getOrAddChild( featuresElement, classFeatureDeclarationTag );
 		for ( final ExportFeatureProjection< T > p : projections )
 		{
+			/*
+			 * Do not export features that are common TrackMate features and
+			 * that we already declared.
+			 */
+			if ( redundantFeatures.contains( p.attributeName ) )
+				continue;
+
 			final String isint = ( p.projection instanceof IntFeatureProjection )
 					? "true"
 					: "false";
@@ -633,7 +768,17 @@ public class MamutExporter
 			fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
 			classFeaturesElement.addContent( fel );
 		}
-		featuresElement.addContent( classFeaturesElement );
+	}
+
+	private Element getOrAddChild( final Element parent, final String childName )
+	{
+		Element child = parent.getChild( childName );
+		if ( null == child )
+		{
+			child = new Element( childName );
+			parent.addContent( child );
+		}
+		return child;
 	}
 
 	private static Document getSAXParsedDocument( final String fileName )
@@ -652,8 +797,8 @@ public class MamutExporter
 	}
 
 	/**
-	 * Tries to recover the TrackMate dimension from the unit string and the spatial and
-	 * time units.
+	 * Tries to recover the TrackMate dimension from the unit string and the
+	 * spatial and time units.
 	 *
 	 * @param units
 	 *            the unit string.
@@ -914,4 +1059,5 @@ public class MamutExporter
 		exporter.appendGuiState();
 		exporter.write( target );
 	}
+
 }

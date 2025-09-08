@@ -59,7 +59,7 @@ import org.mastodon.views.grapher.display.FeatureSpecPair;
 import net.imglib2.loops.LoopBuilder;
 
 public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge >
-		implements HasContextChooser< Spot >, HasColoringModel, HasColorBarOverlay, DataDisplayFrameSupplier< Spot, Link >
+		implements HasContextChooser< Spot >, HasColoringModel, HasColorBarOverlay
 {
 
 	private final GrapherInitializer< Spot, Link > grapherInitializer;
@@ -83,6 +83,7 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		setFrame( grapherInitializer.getFrame() ); // this creates viewActions and viewBehaviours thus must be called before installActions
 		grapherInitializer.installActions( viewActions, viewBehaviours );
 		grapherInitializer.addSearchPanel( viewActions );
+		grapherInitializer.addCommandFinder( viewActions, keyConfigContexts );
 
 		final TriFunction< ViewMenuBuilder.JMenuHandle, GraphColorGeneratorAdapter< Spot, Link, DataVertex, DataEdge >,
 				DataDisplayPanel< Spot, Link >, ColoringModel > colorModelRegistration = ( menuHandle, coloringAdaptor,
@@ -95,20 +96,6 @@ public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVe
 		grapherInitializer.addMenusAndRegisterColors( colorModelRegistration, colorBarRegistration, tagSetMenuRegistration,
 				keyConfigContexts );
 		grapherInitializer.layout();
-
-		final CommandFinder cf = CommandFinder.build()
-				.context( appModel.getContext() )
-				.inputTriggerConfig( appModel.getKeymap().getConfig() )
-				.keyConfigContexts( keyConfigContexts )
-				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
-				.register( viewActions )
-				.register( appModel.getModelActions() )
-				.register( appModel.getProjectActions() )
-				.register( appModel.getPlugins().getPluginActions() )
-				.modificationListeners( appModel.getKeymap().updateListeners() )
-				.parent( frame )
-				.installOn( viewActions );
-		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 	}
 
 	static FeatureGraphConfig getFeatureGraphConfig()
