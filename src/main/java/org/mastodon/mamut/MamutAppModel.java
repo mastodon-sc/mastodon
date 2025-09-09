@@ -8,6 +8,7 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.table.MastodonViewTable2;
 import org.mastodon.mamut.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.MastodonKeymapManager;
@@ -64,5 +65,11 @@ public class MamutAppModel extends BdvAppModel<
 	public MastodonViewTrackScheme2< Model, ModelGraph, Spot, Link > createTrackScheme()
 	{
 		return uiModel.createView( this, MastodonViewTrackScheme2.class );
+	}
+
+	@SuppressWarnings( "unchecked" )
+	public MastodonViewTable2< Model, ModelGraph, Spot, Link > createTable()
+	{
+		return uiModel.createView( this, MastodonViewTable2.class );
 	}
 }
