@@ -10,19 +10,14 @@ import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.graph.Edge;
-import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.HasBranchModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 
 /**
@@ -128,43 +123,5 @@ public class AbstractMastodonView2<
 	public GroupHandle getGroupHandle()
 	{
 		return groupHandle;
-	}
-
-	/**
-	 * Creates a branch-graph navigation handler adapter, that maps the
-	 * navigation on the branch graph to navigation on the view graph.
-	 *
-	 * @param <BV>
-	 *            the vertex type of the branch graph.
-	 * @param <BE>
-	 *            the edge type of the branch graph.
-	 * @param dataModel
-	 *            the mastodon model, that must implement
-	 *            {@link HasBranchModel}.
-	 * @param navigationHandler
-	 *            the navigation handler for the view graph.
-	 * @return the navigation handler for the branch graph.
-	 * @throws IllegalArgumentException
-	 *             if the data model has no branch graph, i.e., does not
-	 *             implement {@link HasBranchModel}.
-	 */
-	@SuppressWarnings( "unchecked" )
-	protected < BV extends Vertex< BE >, BE extends Edge< BV > > NavigationHandler< BV, BE > branchGraphNavigation(
-			final M dataModel,
-			final NavigationHandler< V, E > navigationHandler )
-	{
-		if ( !( dataModel instanceof HasBranchModel ) )
-			throw new IllegalArgumentException( "Data model has no branch graph." );
-
-		final ReadOnlyGraph< V, E > graph = ( ReadOnlyGraph< V, E > ) dataModel.getGraph();
-		final BranchGraph< BV, BE, V, E > branchGraph = ( BranchGraph< BV, BE, V, E > ) ( ( HasBranchModel< ?, BV, BE > ) dataModel ).branchModel().getGraph();
-		final GraphIdBimap< V, E > idMap = ( GraphIdBimap< V, E > ) dataModel.getGraphIdBimap();
-		final NavigationHandler< BV, BE > branchGraphNavigation =
-				new BranchGraphNavigationHandlerAdapter< V, E, BV, BE >(
-						branchGraph,
-						graph,
-						idMap,
-						navigationHandler );
-		return branchGraphNavigation;
 	}
 }
