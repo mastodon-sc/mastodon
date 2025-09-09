@@ -29,18 +29,19 @@
 package org.mastodon.mamut.views.table;
 
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
-import static org.mastodon.app.ui.ViewMenuBuilder.item;
-import static org.mastodon.app.ui.ViewMenuBuilder.menu;
-import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
-import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
+import static org.mastodon.app.ui.ViewMenuBuilder2.item;
+import static org.mastodon.app.ui.ViewMenuBuilder2.menu;
+import static org.mastodon.app.ui.ViewMenuBuilder2.separator;
+import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
+import static org.mastodon.mamut.MamutMenuBuilder2.tagSetMenu;
+import static org.mastodon.mamut.MamutMenuBuilder2.viewMenu;
 
-import java.util.List;
+import java.awt.Component;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.mastodon.app.IdentityViewGraph;
 import org.mastodon.app.ViewGraph;
@@ -49,37 +50,23 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.UIModel;
 import org.mastodon.app.ui.ViewFrame;
-import org.mastodon.app.ui.ViewMenu;
-import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.app.ui.ViewMenu2;
+import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableReadOnlyGraph;
+import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
-import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutMenuBuilder;
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.MamutMenuBuilder2;
 import org.mastodon.mamut.UndoActions;
-import org.mastodon.mamut.model.Link;
-import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.SpotPool;
-import org.mastodon.mamut.model.branch.BranchLink;
-import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasBranchModel;
 import org.mastodon.model.HasLabel;
-import org.mastodon.model.HighlightModel;
 import org.mastodon.model.MastodonModel;
-import org.mastodon.model.SelectionModel;
-import org.mastodon.model.TimepointModel;
+import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.branch.BranchGraphEdgeBimap;
-import org.mastodon.model.branch.BranchGraphFocusAdapter;
-import org.mastodon.model.branch.BranchGraphHighlightAdapter;
-import org.mastodon.model.branch.BranchGraphSelectionAdapter;
-import org.mastodon.model.branch.BranchGraphTagSetAdapter;
+import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.model.branch.BranchGraphVertexBimap;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.properties.PropertyChangeListener;
@@ -123,21 +110,29 @@ public class MastodonViewTable2<
 
 	private static final String[] CONTEXTS = new String[] { KeyConfigContexts.TABLE };
 
-	public MastodonViewTable2( final M dataModel, final UIModel< ? > uiModel )
+	private final ColoringModel coloringModel;
+
+	private final ColoringModel branchColoringModel;
+
+	public MastodonViewTable2(
+			final M dataModel,
+			final UIModel< ? > uiModel,
+			final TableModelGraphProperties< V > properties )
 	{
-		this( dataModel, uiModel, false );
+		this( dataModel, uiModel, properties, false );
 	}
 
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	protected MastodonViewTable2(
 			final M dataModel,
 			final UIModel< ? > uiModel,
+			final TableModelGraphProperties< V > properties,
 			final boolean selectionTable )
 	{
 		super( dataModel, uiModel, createViewGraph( dataModel ), CONTEXTS );
 
 		// Create tables.
-		final TableViewFrameBuilder builder = new TableViewFrameBuilder()
-				.groupHandle( groupHandle );
+		final TableViewFrameBuilder builder = new TableViewFrameBuilder().groupHandle( groupHandle );
 		if ( dataModel instanceof UndoPointMarker )
 		{
 			builder.undo( ( UndoPointMarker ) dataModel );
@@ -152,43 +147,45 @@ public class MastodonViewTable2<
 				.navigationHandler( navigationHandler )
 				.coloring( coloringAdapter )
 				.listenToContext( true )
-				.selectionTable( selectionTable );
-		// Check if the core vertices have labels.
-		final V v = dataModel.getGraph().vertices().iterator().next();
-		if ( v instanceof HasLabel )
-		{
-			gtbCore
-					.vertexLabelSetter( ( s, label ) -> ( ( HasLabel ) s ).setLabel( label ) )
-					.vertexLabelGetter( s -> ( ( HasLabel ) s ).getLabel() );
-
-		}
-		gtbCore.done();
+				.selectionTable( selectionTable )
+				.vertexLabelSetter( ( s, label ) -> properties.setLabel( s, label ) )
+				.vertexLabelGetter( s -> properties.getLabel( s ) )
+				.done();
 
 		// Tables for branch graph.
+		final GraphColorGeneratorAdapter branchColoringAdapter;
 		if ( dataModel instanceof HasBranchModel )
 		{
 			final HasBranchModel bm = ( HasBranchModel ) dataModel;
 			final MastodonModel branchModel = bm.branchModel();
 			final BranchGraph branchGraph = ( BranchGraph ) branchModel.getGraph();
+			final ViewGraph viewBranchGraph = IdentityViewGraph.wrap( branchGraph, branchGraph.getGraphIdBimap() );
 			final GraphTableBuilder gtbBranch = builder.addGraph( branchGraph );
+			branchColoringAdapter = new GraphColorGeneratorAdapter<>( viewBranchGraph.getVertexMap(), viewBranchGraph.getEdgeMap() );
+
 			// Do we have a label property?
 			final Object bv = branchGraph.vertices().iterator().next();
 			if ( bv instanceof HasLabel )
 			{
 				gtbBranch
 						.vertexLabelGetter( s -> ( ( HasLabel ) s ).getLabel() )
-						.vertexLabelSetter( ( s, label ) -> ( ( HasLabel ) s ).setLabel( label ) );
+						.vertexLabelSetter( ( s, label ) -> ( ( HasLabel ) s ).setLabel( ( String ) label ) );
 			}
 			gtbBranch
 					.featureModel( branchModel.getFeatureModel() )
 					.tagSetModel( branchModel.getTagSetModel() )
 					.selectionModel( branchModel.getSelectionModel() )
-					.highlightModel( branchModel.getHighlightModel() ) // TODO: timepoint model
+					.highlightModel( branchModel.getHighlightModel() )
+					// TODO timepoint model for the branch highlight model.
 					.focusModel( branchModel.getFocusModel() )
 					.navigationHandler( branchGraphNavigation( dataModel, navigationHandler ) )
-					.coloring( branchColoringAdapter() )
+					.coloring( branchColoringAdapter )
 					.selectionTable( selectionTable )
 					.done();
+		}
+		else
+		{
+			branchColoringAdapter = null;
 		}
 		builder.title(
 				selectionTable ? "Selection table" : "Data table" )
@@ -201,42 +198,27 @@ public class MastodonViewTable2<
 		setFrame( frame );
 		frame.setIconImages( TABLE_VIEW_ICON );
 
-		// Search panels.
-		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel,
-				focusModel, frame.getCurrentlyDisplayedTable() );
-		frame.getSettingsPanel().add( searchPanel );
-
-		// Table actions.
-		MastodonFrameViewActions.install( viewActions, this );
-		TableViewActions.install( viewActions, frame );
-		final CommandFinder cf = CommandFinder.build()
-				.context( appModel.getContext() )
-				.inputTriggerConfig( appModel.getKeymap().getConfig() )
-				.keyConfigContexts( keyConfigContexts )
-				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
-				.register( viewActions )
-				.register( appModel.getModelActions() )
-				.register( appModel.getProjectActions() )
-				.register( appModel.getPlugins().getPluginActions() )
-				.modificationListeners( appModel.getKeymap().updateListeners() )
-				.parent( frame )
-				.installOn( viewActions );
-		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
+		/*
+		 * Register a listener to vertex label property changes, will update the
+		 * table-view when the label change.
+		 */
+		final PropertyChangeListener< V > labelChangedRefresher = e -> SwingUtilities.invokeLater( () -> frame.repaint() );
+		properties.addVertexLabelListener( labelChangedRefresher );
+		onClose( () -> properties.removeVertexLabelListener( labelChangedRefresher ) );
 
 		// Menus
-		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), projectModel.getKeymap(), CONTEXTS );
+		final ViewMenu2 menu = new ViewMenu2( frame.getJMenuBar(), uiModel.getKeymap(), CONTEXTS );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		final JMenuHandle colorMenuHandle = new JMenuHandle();
 		final JMenuHandle colorBranchMenuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
-		MainWindow.addMenus( menu, actionMap );
-		appModel.getWindowManager().addWindowMenu( menu, actionMap );
-		MamutMenuBuilder.build( menu, actionMap,
+		uiModel.getViewFactories().addWindowMenuTo( menu, actionMap );
+		MamutMenuBuilder2.build( menu, actionMap,
 				fileMenu(
 						menu( "Export",
 								item( TableViewActions.EXPORT_TO_CSV ) ) ),
 				viewMenu(
-						MamutMenuBuilder.colorMenu( colorMenuHandle ),
+						MamutMenuBuilder2.colorMenu( colorMenuHandle ),
 						menu( "Branch coloring", colorBranchMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
@@ -256,35 +238,147 @@ public class MastodonViewTable2<
 				menu( "Settings",
 						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
 						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
-		projectModel.getPlugins().addMenus( menu );
+		uiModel.getPlugins().addMenus( menu );
 
 		coloringModel = registerColoring( coloringAdapter, colorMenuHandle, () -> frame.repaint() );
-		branchColoringModel = registerBranchColoring( projectModel, branchColoringAdapter, colorBranchMenuHandle,
-				() -> frame.repaint(), runOnClose );
+		if ( dataModel instanceof HasBranchModel )
+		{
+			branchColoringModel = registerBranchColoring( branchColoringAdapter, colorBranchMenuHandle, () -> frame.repaint() );
+		}
+		else
+		{
+			branchColoringModel = null;
+		}
 
 		// Set the tag-set menu and listen to user selecting a tag in it.
 		registerTagSetMenu( tagSetMenuHandle, () -> frame.repaint() );
 
-		/*
-		 * Register a listener to vertex label property changes, will update the
-		 * table-view when the label change.
-		 */
-		final SpotPool spotPool = ( SpotPool ) projectModel.getModel().getGraph().vertices().getRefPool();
-		final PropertyChangeListener< Spot > labelChangedRefresher = v -> frame.repaint();
-		spotPool.labelProperty().propertyChangeListeners().add( labelChangedRefresher );
-		onClose( () -> spotPool.labelProperty().propertyChangeListeners().remove( labelChangedRefresher ) );
+		// Search panels.
+		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler,
+				selectionModel, focusModel, frame.getCurrentlyDisplayedTable(), ( vertex ) -> properties.getLabel( vertex ) );
+		searchPanel.setAlignmentY( Component.CENTER_ALIGNMENT );
+		frame.getSettingsPanel().add( searchPanel );
+
+		// Table actions.
+		MastodonFrameViewActions.install( viewActions, this );
+		TableViewActions.install( viewActions, frame );
+		final CommandFinder cf = CommandFinder.build()
+				.context( uiModel.getContext() )
+				.inputTriggerConfig( uiModel.getKeymap().getConfig() )
+				.keyConfigContexts( keyConfigContexts )
+				.descriptionProvider( uiModel.getViewFactories().getCommandDescriptions() )
+				.register( viewActions )
+				.register( uiModel.getModelActions() )
+				.register( uiModel.getProjectActions() )
+				.register( uiModel.getPlugins().getPluginActions() )
+				.modificationListeners( uiModel.getKeymap().updateListeners() )
+				.parent( frame )
+				.installOn( viewActions );
+		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 	}
 
-	private static final ColoringModel registerBranchColoring(
-			final ProjectModel appModel,
-			final GraphColorGeneratorAdapter< BranchSpot, BranchLink, BranchSpot, BranchLink > colorGeneratorAdapter,
-			final JMenuHandle menuHandle,
-			final Runnable refresh,
-			final List< Runnable > runOnClose )
+	@Override
+	public MyTableViewFrame getFrame()
 	{
-		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
-		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
-		final FeatureColorModeManager featureColorModeManager = appModel.getWindowManager().getManager( FeatureColorModeManager.class );
+		final ViewFrame f = super.getFrame();
+		final MyTableViewFrame vf = ( MyTableViewFrame ) f;
+		return vf;
+	}
+
+	@Override
+	@SuppressWarnings( "unchecked" )
+	public ContextChooser< V > getContextChooser()
+	{
+		/*
+		 * We configured the table creator so that only the first table pair,
+		 * for the core graph, has a context.
+		 */
+		return ( ContextChooser< V > ) getFrame().getContextChoosers().get( 0 );
+	}
+
+	@Override
+	public ColoringModel getColoringModel()
+	{
+		return coloringModel;
+	}
+
+	/**
+	 * Returns the branch-graph coloring model, or <code>null</code> if the data
+	 * model has no branch graph.
+	 *
+	 * @return the branch-graph coloring model, or <code>null</code>.
+	 */
+	public ColoringModel getBranchColoringModel()
+	{
+		return branchColoringModel;
+	}
+
+	/*
+	 * Functions.
+	 */
+
+	private static < V extends Vertex< E >, E extends Edge< V > > ViewGraph< V, E, V, E > createViewGraph( final MastodonModel< ?, V, E > model )
+	{
+		return IdentityViewGraph.wrap( model.getGraph(), model.getGraphIdBimap() );
+	}
+
+	/**
+	 * Creates a branch-graph navigation handler adapter, that maps the
+	 * navigation on the branch graph to navigation on the view graph.
+	 *
+	 * @param <BV>
+	 *            the vertex type of the branch graph.
+	 * @param <BE>
+	 *            the edge type of the branch graph.
+	 * @param dataModel
+	 *            the mastodon model, that must implement
+	 *            {@link HasBranchModel}.
+	 * @param navigationHandler
+	 *            the navigation handler for the view graph.
+	 * @return the navigation handler for the branch graph.
+	 * @throws IllegalArgumentException
+	 *             if the data model has no branch graph, i.e., does not
+	 *             implement {@link HasBranchModel}.
+	 */
+	@SuppressWarnings( "unchecked" )
+	private final < BV extends Vertex< BE >, BE extends Edge< BV > > NavigationHandler< BV, BE > branchGraphNavigation(
+			final M dataModel,
+			final NavigationHandler< V, E > navigationHandler )
+	{
+		if ( !( dataModel instanceof HasBranchModel ) )
+			throw new IllegalArgumentException( "Data model has no branch graph." );
+
+		final ReadOnlyGraph< V, E > graph = dataModel.getGraph();
+		final BranchGraph< BV, BE, V, E > branchGraph = ( BranchGraph< BV, BE, V, E > ) ( ( HasBranchModel< ?, BV, BE > ) dataModel ).branchModel().getGraph();
+		final GraphIdBimap< V, E > idMap = dataModel.getGraphIdBimap();
+		final NavigationHandler< BV, BE > branchGraphNavigation =
+				new BranchGraphNavigationHandlerAdapter< V, E, BV, BE >(
+						branchGraph,
+						graph,
+						idMap,
+						navigationHandler );
+		return branchGraphNavigation;
+	}
+
+	private final < BV extends Vertex< BE >, BE extends Edge< BV > > ColoringModel registerBranchColoring(
+			final GraphColorGeneratorAdapter< BV, BE, BV, BE > colorGeneratorAdapter,
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		if ( !( dataModel instanceof HasBranchModel ) )
+			throw new IllegalArgumentException( "Data model has no branch graph." );
+
+		final ReadOnlyGraph< V, E > graph = dataModel.getGraph();
+		@SuppressWarnings( "unchecked" )
+		final MastodonModel< ?, BV, BE > branchModel = ( ( HasBranchModel< ?, BV, BE > ) dataModel ).branchModel();
+		@SuppressWarnings( "unchecked" )
+		final BranchGraph< BV, BE, V, E > branchGraph = ( BranchGraph< BV, BE, V, E > ) branchModel.getGraph();
+		final TagSetModel< BV, BE > branchTagSetModel = branchModel.getTagSetModel();
+
+
+		final TagSetModel< V, E > tagSetModel = dataModel.getTagSetModel();
+		final FeatureModel featureModel = dataModel.getFeatureModel();
+		final FeatureColorModeManager featureColorModeManager = uiModel.getInstance( FeatureColorModeManager.class );
 		final ColoringModelBranchGraph< ?, ? > coloringModel =
 				new ColoringModelBranchGraph<>( tagSetModel, featureColorModeManager, featureModel );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
@@ -304,24 +398,23 @@ public class MastodonViewTable2<
 
 		// Handle track color generator.
 		@SuppressWarnings( "unchecked" )
-		final TrackGraphColorGenerator< Spot, Link > tgcg = appModel.getWindowManager().getManager( TrackGraphColorGenerator.class );
+		final TrackGraphColorGenerator< V, E > tgcg = uiModel.getInstance( TrackGraphColorGenerator.class );
 		// Adapt it so that is a color generator for the branch graph.
-		final Model m = appModel.getModel();
-		final GraphColorGeneratorAdapter< Spot, Link, BranchSpot, BranchLink > branchTgcg = new GraphColorGeneratorAdapter<>(
-				new BranchGraphVertexBimap<>( m.getBranchGraph(), m.getGraph() ),
-				new BranchGraphEdgeBimap<>( m.getBranchGraph(), m.getGraph() ) );
+		final GraphColorGeneratorAdapter< V, E, BV, BE > branchTgcg = new GraphColorGeneratorAdapter<>(
+				new BranchGraphVertexBimap<>( branchGraph, graph ),
+				new BranchGraphEdgeBimap<>( branchGraph,graph ) );
 		branchTgcg.setColorGenerator( tgcg );
 
 		@SuppressWarnings( "unchecked" )
 		final ColoringModelMain.ColoringChangedListener coloringChangedListener = () -> {
-			final GraphColorGenerator< BranchSpot, BranchLink > colorGenerator;
+			final GraphColorGenerator< BV, BE > colorGenerator;
 			switch ( coloringModel.getColoringStyle() )
 			{
 			case BY_FEATURE:
-				colorGenerator = ( GraphColorGenerator< BranchSpot, BranchLink > ) coloringModel.getFeatureGraphColorGenerator();
+				colorGenerator = ( GraphColorGenerator< BV, BE > ) coloringModel.getFeatureGraphColorGenerator();
 				break;
 			case BY_TAGSET:
-				colorGenerator = new TagSetGraphColorGenerator<>( branchTagSetModel( appModel ), coloringModel.getTagSet() );
+				colorGenerator = new TagSetGraphColorGenerator<>( branchTagSetModel, coloringModel.getTagSet() );
 				break;
 			case BY_TRACK:
 				colorGenerator = branchTgcg;
@@ -338,91 +431,5 @@ public class MastodonViewTable2<
 		coloringModel.listeners().add( coloringChangedListener );
 
 		return coloringModel;
-	}
-
-	private static TagSetModel< BranchSpot, BranchLink > branchTagSetModel( final ProjectModel appModel )
-	{
-		final ModelGraph graph = appModel.getModel().getGraph();
-		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
-		final BranchGraphTagSetAdapter< Spot, Link, BranchSpot, BranchLink > branchGraphTagSetModel =
-				new BranchGraphTagSetAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), tagSetModel );
-		return branchGraphTagSetModel;
-	}
-
-
-
-	private static HighlightModel< BranchSpot, BranchLink > branchHighlightModel( final ProjectModel appModel,
-			final TimepointModel timepointModel )
-	{
-		final ModelGraph graph = appModel.getModel().getGraph();
-		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		final HighlightModel< Spot, Link > graphHighlightModel = appModel.getHighlightModel();
-		final HighlightModel< BranchSpot, BranchLink > branchHighlightModel =
-				new BranchGraphHighlightAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphHighlightModel, timepointModel );
-		return branchHighlightModel;
-	}
-
-	private static FocusModel< BranchSpot > branchFocusfocusModel( final ProjectModel appModel )
-	{
-		final ModelGraph graph = appModel.getModel().getGraph();
-		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		final FocusModel< Spot > graphFocusModel = appModel.getFocusModel();
-		final FocusModel< BranchSpot > branchFocusfocusModel =
-				new BranchGraphFocusAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphFocusModel );
-		return branchFocusfocusModel;
-	}
-
-	private static SelectionModel< BranchSpot, BranchLink > branchSelectionModel( final ProjectModel appModel )
-	{
-		final ModelGraph graph = appModel.getModel().getGraph();
-		final ModelBranchGraph branchGraph = appModel.getModel().getBranchGraph();
-		final SelectionModel< Spot, Link > graphSelectionModel = appModel.getSelectionModel();
-		final SelectionModel< BranchSpot, BranchLink > branchSelectionModel =
-				new BranchGraphSelectionAdapter<>( branchGraph, graph, graph.getGraphIdBimap(), graphSelectionModel );
-		return branchSelectionModel;
-	}
-
-	@Override
-	public MyTableViewFrame getFrame()
-	{
-		final ViewFrame f = super.getFrame();
-		final MyTableViewFrame vf = ( MyTableViewFrame ) f;
-		return vf;
-	}
-
-	@Override
-	@SuppressWarnings( "unchecked" )
-	public ContextChooser< Spot > getContextChooser()
-	{
-		/*
-		 * We configured the table creator so that only the first table pair,
-		 * for the core graph, has a context.
-		 */
-		return ( ContextChooser< Spot > ) getFrame().getContextChoosers().get( 0 );
-	}
-
-	/*
-	 * De/serialization related methods.
-	 */
-
-	@Override
-	public ColoringModelMain< Spot, Link, BranchSpot, BranchLink > getColoringModel()
-	{
-		return coloringModel;
-	}
-
-	public ColoringModel getBranchColoringModel()
-	{
-		return branchColoringModel;
-	}
-
-	/*
-	 * Functions.
-	 */
-
-	private static < V extends Vertex< E >, E extends Edge< V > > ViewGraph< V, E, V, E > createViewGraph( final MastodonModel< ?, V, E > model )
-	{
-		return IdentityViewGraph.wrap( model.getGraph(), model.getGraphIdBimap() );
 	}
 }
