@@ -48,7 +48,11 @@ import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.table.MastodonViewTable2;
+import org.mastodon.mamut.views.table.TableModelGraphProperties;
+import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.util.DummySpimData;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
@@ -63,6 +67,7 @@ import mpicbg.spim.data.generic.sequence.BasicViewSetup;
  */
 public class ProjectLoader2
 {
+
 
 	static final String GUI_TAG = "MamutGui";
 
@@ -436,9 +441,47 @@ public class ProjectLoader2
 	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
 
-		final String projectPath = "samples/drosophila_crop.mastodon";
+//		final String projectPath = "samples/drosophila_crop.mastodon";
+		final String projectPath = "/Users/tinevez/Library/CloudStorage/GoogleDrive-jeanyves.tinevez@gmail.com/My Drive/Mastodon/Datasets/Remote/BDV/Tribolium/CTC_TRIF_trainingVideo02_jy-GT-done.mastodon";
 		final MamutAppModel appModel = ProjectLoader2.open( projectPath, new Context() );
 		appModel.createTrackScheme();
+		final MastodonViewTable2< Model, ModelGraph, Spot, Link > table = new MastodonViewTable2<>( appModel.dataModel(), appModel.uiModel(), new MyTableProperties( appModel.dataModel().getGraph() ) );
+		table.getFrame().setVisible( true );
+	}
 
+	private static class MyTableProperties implements TableModelGraphProperties< Spot >
+	{
+
+		private final ModelGraph graph;
+
+		public MyTableProperties( final ModelGraph graph )
+		{
+			this.graph = graph;
+		}
+
+		@Override
+		public void addVertexLabelListener( final PropertyChangeListener< Spot > listener )
+		{
+			graph.addVertexLabelListener( listener );
+
+		}
+
+		@Override
+		public void removeVertexLabelListener( final PropertyChangeListener< Spot > listener )
+		{
+			graph.removeVertexLabelListener( listener );
+		}
+
+		@Override
+		public String getLabel( final Spot vertex )
+		{
+			return vertex.getLabel();
+		}
+
+		@Override
+		public void setLabel( final Spot vertex, final String label )
+		{
+			vertex.setLabel( label );
+		}
 	}
 }
