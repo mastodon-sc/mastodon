@@ -61,6 +61,7 @@ import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.RootsModel;
+import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
@@ -319,7 +320,9 @@ public class MastodonViewTrackScheme2<
 		registerTagSetMenu( tagSetMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		// Listen to vertex labels being changed.
-		modelGraphProperties.addVertexLabelListener( v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() ) );
+		final PropertyChangeListener< V > vertexLabelListener = v -> SwingUtilities.invokeLater( () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+		modelGraphProperties.addVertexLabelListener( vertexLabelListener );
+		onClose( () -> modelGraphProperties.removeVertexLabelListener( vertexLabelListener ) );
 
 		frame.getTrackschemePanel().getDisplay().overlays().add( colorBarOverlay );
 

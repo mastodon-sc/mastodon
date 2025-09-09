@@ -97,4 +97,11 @@ public class DefaultModelGraphProperties< V extends Vertex< E > & HasTimepoint &
 	{
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void removeVertexLabelListener( final PropertyChangeListener< V > listener )
+	{
+		throw new UnsupportedOperationException();
+	}
+
 }

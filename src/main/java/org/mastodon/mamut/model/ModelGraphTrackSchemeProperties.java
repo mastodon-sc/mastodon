@@ -82,4 +82,10 @@ public class ModelGraphTrackSchemeProperties extends DefaultModelGraphProperties
 	{
 		modelGraph.addVertexLabelListener( listener );
 	}
+
+	@Override
+	public void removeVertexLabelListener( final PropertyChangeListener< Spot > listener )
+	{
+		modelGraph.removeVertexLabelListener( listener );
+	}
 }

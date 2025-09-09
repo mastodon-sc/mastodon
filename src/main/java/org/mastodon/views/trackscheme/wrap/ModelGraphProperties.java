@@ -85,4 +85,6 @@ public interface ModelGraphProperties< V, E >
 
 	public void addVertexLabelListener( final PropertyChangeListener< V > listener );
 
+	public void removeVertexLabelListener( PropertyChangeListener< V > vertexLabelListener );
+
 }
