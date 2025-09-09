@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,6 +39,7 @@ import java.awt.event.FocusListener;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import javax.swing.ActionMap;
 import javax.swing.Icon;
@@ -78,7 +79,7 @@ import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
-public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E extends Edge< V > >
+public class SearchVertexLabel< V extends Vertex< E >, E extends Edge< V > >
 {
 
 	private static final String UNFOCUSED_TEXT = "Search...";
@@ -114,7 +115,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 
 	/**
 	 * Installs the search vertex label action.
-	 * 
+	 *
 	 * @param actions
 	 *            the {@link Actions} to add the search vertex action to.
 	 * @param graph
@@ -130,7 +131,9 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 	 *            the search text field.
 	 * @return a new panel containing the search field.
 	 * @param <V>
-	 *            the type of vertices in the graph to search.
+	 *            the type of vertices in the graph to search. In this version
+	 *            of the method, the vertex class must implement
+	 *            {@link HasLabel} to provide a label.
 	 * @param <E>
 	 *            the type of edges in the graph to search.
 	 */
@@ -143,8 +146,46 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 					final FocusModel< V > focus,
 					final JComponent cancelEntryFocusTarget )
 	{
+		final Function< V, String > labelProvider = v -> v.getLabel();
+		return install( actions, graph, navigation, selection, focus, cancelEntryFocusTarget, labelProvider );
+	}
+
+	/**
+	 * Installs the search vertex label action.
+	 *
+	 * @param actions
+	 *            the {@link Actions} to add the search vertex action to.
+	 * @param graph
+	 *            the graph to operate the search on.
+	 * @param navigation
+	 *            the navigation model to navigate to search results.
+	 * @param selection
+	 *            the selection model used to take a starting point from.
+	 * @param focus
+	 *            the focus model used to take a starting point from.
+	 * @param cancelEntryFocusTarget
+	 *            the component to focus back to, when the use presses ESCAPE in
+	 *            the search text field.
+	 * @param labelProvider
+	 *            a function that provides the label of a vertex.
+	 * @return a new panel containing the search field.
+	 * @param <V>
+	 *            the type of vertices in the graph to search.
+	 * @param <E>
+	 *            the type of edges in the graph to search.
+	 */
+	public static < V extends Vertex< E >, E extends Edge< V > > JPanel
+			install(
+					final Actions actions,
+					final ReadOnlyGraph< V, E > graph,
+					final NavigationHandler< V, E > navigation,
+					final SelectionModel< V, E > selection,
+					final FocusModel< V > focus,
+					final JComponent cancelEntryFocusTarget,
+					final Function< V, String > labelProvider )
+	{
 		final SearchVertexLabel< V, E > search =
-				new SearchVertexLabel<>( graph, navigation, selection, focus, cancelEntryFocusTarget );
+				new SearchVertexLabel<>( graph, navigation, selection, focus, cancelEntryFocusTarget, labelProvider );
 		actions.runnableAction( () -> search.searchField.requestFocusInWindow(), SEARCH, SEARCH_KEYS );
 		return search.searchPanel;
 	}
@@ -176,7 +217,8 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 			final NavigationHandler< V, E > navigation,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
-			final JComponent cancelFocusTarget )
+			final JComponent cancelFocusTarget,
+			final Function< V, String > labelProvider )
 	{
 		searchPanel = new JPanel();
 		searchPanel.setMaximumSize( new Dimension( 310, 25 ) );
@@ -220,7 +262,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 		gbc_chckbxstartswith.gridy = 0;
 		searchPanel.add( chckbxstartswith, gbc_chckbxstartswith );
 
-		final SearchAction< V, E > sa = new SearchAction<>( graph, navigation, selection, focus );
+		final SearchAction< V, E > sa = new SearchAction<>( graph, navigation, selection, focus, labelProvider );
 		searchField.addFocusListener( sa );
 		labelIcon.addActionListener( ( event ) -> searchField.requestFocusInWindow() );
 
@@ -284,7 +326,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 		}
 	}
 
-	private static class SearchAction< V extends Vertex< E > & HasLabel & Ref< V >, E extends Edge< V > >
+	private static class SearchAction< V extends Vertex< E >, E extends Edge< V > >
 			extends AbstractGraphAlgorithm< V, E >
 			implements FocusListener
 	{
@@ -304,16 +346,20 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 
 		private boolean gotOne;
 
+		private final Function< V, String > labelProvider;
+
 		public SearchAction(
 				final ReadOnlyGraph< V, E > graph,
 				final NavigationHandler< V, E > navigation,
 				final SelectionModel< V, E > selection,
-				final FocusModel< V > focus )
+				final FocusModel< V > focus,
+				final Function< V, String > labelProvider )
 		{
 			super( graph );
 			this.navigation = navigation;
 			this.selection = selection;
 			this.focus = focus;
+			this.labelProvider = labelProvider;
 			this.start = graph.vertexRef();
 			this.firstFound = graph.vertexRef();
 			getStartFromUI();
@@ -332,7 +378,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 			while ( iterator.hasNext() )
 			{
 				final V v = iterator.next();
-				final String label = v.getLabel();
+				final String label = labelProvider.apply( v );
 				if ( startsWith ? label.startsWith( text ) : label.contains( text ) )
 				{
 					if ( !gotOne )
@@ -395,7 +441,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 
 		private synchronized void reinit( final V from )
 		{
-			iterator = new SearchIterator< V, E >( graph, from );
+			iterator = new SearchIterator< V, E >( graph, from, labelProvider );
 		}
 
 		@Override
@@ -457,7 +503,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 	 * @param <E>
 	 *            the type of edges in the graph.
 	 */
-	private static class SearchIterator< V extends Vertex< E > & HasLabel, E extends Edge< V > >
+	private static class SearchIterator< V extends Vertex< E >, E extends Edge< V > >
 			extends AbstractGraphAlgorithm< V, E > implements Iterator< V >
 	{
 
@@ -465,7 +511,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 
 		private final Iterator< V > iterator2;
 
-		public SearchIterator( final ReadOnlyGraph< V, E > graph, final V from )
+		public SearchIterator( final ReadOnlyGraph< V, E > graph, final V from, final Function< V, String > labelProvider )
 		{
 			super( graph );
 
@@ -513,7 +559,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 			 */
 			final RefList< V > sortedRoots = RefCollections.createRefList( graph.vertices(), roots.size() );
 			sortedRoots.addAll( roots );
-			sortedRoots.sort( ( v1, v2 ) -> AlphanumCompare.compare( v1.getLabel(), v2.getLabel() ) );
+			sortedRoots.sort( ( v1, v2 ) -> AlphanumCompare.compare( labelProvider.apply( v1 ), labelProvider.apply( v2 ) ) );
 
 			final int iroot = sortedRoots.indexOf( root );
 			final RefList< V > iteratedRoots = RefCollections.createRefList( graph.vertices(), roots.size() );
