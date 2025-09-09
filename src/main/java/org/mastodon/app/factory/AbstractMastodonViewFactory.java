@@ -58,10 +58,22 @@ import org.mastodon.ui.coloring.HasColorBarOverlay;
 import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 
+import com.google.common.reflect.TypeToken;
+
 public abstract class AbstractMastodonViewFactory<
 		T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > >
 		implements MastodonViewFactory< T >
 {
+
+	@SuppressWarnings( "unchecked" )
+	@Override
+	public Class< T > getViewClass()
+	{
+		// We use Guava type token to capture the generic parameters.
+		final TypeToken< T > typeToken = new TypeToken< T >( getClass() )
+		{};
+		return ( Class< T > ) typeToken.getRawType();
+	}
 
 	@Override
 	public T show( final AppModel< ?, ?, ?, ?, ? > appModel, final Map< String, Object > guiState )

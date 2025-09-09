@@ -10,8 +10,6 @@ import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 
-import com.google.common.reflect.TypeToken;
-
 /**
  * Base class for view factories that create TrackScheme views. This abstract
  * class is specific to a view (TrackScheme) and to a model type.
@@ -91,16 +89,6 @@ public abstract class AbstractMastodonViewTrackSchemeFactory<
 	public String getCommandMenuText()
 	{
 		return "New TrackScheme";
-	}
-
-	@SuppressWarnings( "unchecked" )
-	@Override
-	public Class< T > getViewClass()
-	{
-		// We use Guava type token to capture the generic parameters.
-		final TypeToken< T > typeToken = new TypeToken< T >( getClass() )
-		{};
-		return ( Class< T > ) typeToken.getRawType();
 	}
 
 	@Override
