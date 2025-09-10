@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.feature.branch;
 
-import net.imglib2.util.Util;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -39,6 +38,8 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+
+import net.imglib2.util.Util;
 
 /**
  * Computes the {@link BranchDisplacementDurationFeature}
@@ -56,7 +57,7 @@ public class BranchDisplacementDurationFeatureComputer implements MamutFeatureCo
 	@Override
 	public void createOutput()
 	{
-		final ModelBranchGraph branchGraph = model.getBranchGraph();
+		final ModelBranchGraph branchGraph = model.branchModel().getGraph();
 		if ( null == output )
 			output = new BranchDisplacementDurationFeature(
 					new DoublePropertyMap<>( branchGraph.vertices().getRefPool(), Double.NaN ),
@@ -67,7 +68,7 @@ public class BranchDisplacementDurationFeatureComputer implements MamutFeatureCo
 	@Override
 	public void run()
 	{
-		final ModelBranchGraph branchGraph = model.getBranchGraph();
+		final ModelBranchGraph branchGraph = model.branchModel().getGraph();
 		final ModelGraph graph = model.getGraph();
 		final Spot ref1 = graph.vertexRef();
 		final Spot ref2 = graph.vertexRef();
@@ -83,9 +84,9 @@ public class BranchDisplacementDurationFeatureComputer implements MamutFeatureCo
 		}
 	}
 
-	private void runForBranchSpot( BranchSpot branchSpot, Spot ref1, Spot ref2 )
+	private void runForBranchSpot( final BranchSpot branchSpot, final Spot ref1, final Spot ref2 )
 	{
-		final ModelBranchGraph branchGraph = model.getBranchGraph();
+		final ModelBranchGraph branchGraph = model.branchModel().getGraph();
 
 		// get source spot
 		Spot source = branchGraph.getFirstLinkedVertex( branchSpot, ref1 );
@@ -99,11 +100,11 @@ public class BranchDisplacementDurationFeatureComputer implements MamutFeatureCo
 		output.durMap.set( branchSpot, duration( source, target ) );
 	}
 
-	private double duration( Spot source, Spot target )
+	private double duration( final Spot source, final Spot target )
 	{
 		final double t1 = target.getTimepoint();
 		final double t2 = source.getTimepoint();
-		double abs = Math.abs( t2 - t1 );
+		final double abs = Math.abs( t2 - t1 );
 		return abs;
 	}
 }

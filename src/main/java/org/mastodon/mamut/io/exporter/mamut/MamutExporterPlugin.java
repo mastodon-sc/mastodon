@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,8 +28,8 @@
  */
 package org.mastodon.mamut.io.exporter.mamut;
 
-import static org.mastodon.app.ui.ViewMenuBuilder.item;
-import static org.mastodon.app.ui.ViewMenuBuilder.menu;
+import static org.mastodon.app.ui.ViewMenuBuilder2.item;
+import static org.mastodon.app.ui.ViewMenuBuilder2.menu;
 
 import java.awt.Component;
 import java.awt.Image;
@@ -43,9 +43,9 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import org.mastodon.app.MastodonIcons;
-import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.app.ui.ViewMenuBuilder2;
 import org.mastodon.mamut.KeyConfigScopes;
-import org.mastodon.mamut.MamutMenuBuilder;
+import org.mastodon.mamut.MamutMenuBuilder2;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.plugin.MamutPlugin;
@@ -91,10 +91,10 @@ public class MamutExporterPlugin implements MamutPlugin
 	}
 
 	@Override
-	public List< ViewMenuBuilder.MenuItem > getMenuItems()
+	public List< ViewMenuBuilder2.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				MamutMenuBuilder.fileMenu( menu( "Export", item( EXPORT_MAMUT ) ) ) );
+				MamutMenuBuilder2.fileMenu( menu( "Export", item( EXPORT_MAMUT ) ) ) );
 	}
 
 	@Override
