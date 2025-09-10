@@ -1,10 +1,11 @@
-package org.mastodon.app.factory;
+package org.mastodon.app.views.trackscheme;
 
 import java.util.Map;
 
 import org.mastodon.app.AppModel;
+import org.mastodon.app.views.AbstractMastodonViewFactory;
+import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
-import org.mastodon.mamut.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;

@@ -28,6 +28,11 @@
  */
 package org.mastodon.mamut.io;
 
+import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_DISPLAYED;
+import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_ELEMENT;
+import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_NAME;
+import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_VISIBLE_POS;
+import static org.mastodon.app.views.trackscheme.AbstractMastodonViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
 import static org.mastodon.mamut.views.MamutBranchView.BRANCH_GRAPH;
 import static org.mastodon.mamut.views.MamutView.COLORBAR_POSITION_KEY;
 import static org.mastodon.mamut.views.MamutView.COLORBAR_VISIBLE_KEY;
@@ -51,11 +56,6 @@ import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FE
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_PROJECTION_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_SPEC_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_INCOMING_EDGE_KEY;
-import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_DISPLAYED;
-import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_ELEMENT;
-import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_NAME;
-import static org.mastodon.mamut.views.table.MamutViewTableFactory.TABLE_VISIBLE_POS;
-import static org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -69,8 +69,8 @@ import java.util.Map.Entry;
 
 import org.jdom2.Element;
 import org.mastodon.app.AppModel;
-import org.mastodon.app.ui.MastodonFrameView2;
-import org.mastodon.app.ui.UIModel;
+import org.mastodon.app.UIModel;
+import org.mastodon.app.views.MastodonFrameView2;
 import org.mastodon.mamut.MamutViews;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.views.MamutViewI;

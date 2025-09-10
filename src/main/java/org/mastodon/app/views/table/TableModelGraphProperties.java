@@ -1,4 +1,4 @@
-package org.mastodon.mamut.views.table;
+package org.mastodon.app.views.table;
 
 import org.mastodon.properties.PropertyChangeListener;
 

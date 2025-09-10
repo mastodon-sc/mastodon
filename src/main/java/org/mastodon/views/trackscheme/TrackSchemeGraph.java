@@ -57,8 +57,8 @@ import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.views.trackscheme.wrap.DefaultModelGraphProperties;
-import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
+import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
+import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
 import org.scijava.listeners.Listeners;
 
 /**
@@ -95,9 +95,9 @@ import org.scijava.listeners.Listeners;
  * or plain objects, or it might be a wrapper around a graph stored in a
  * database. The only requirements on the model graph is that its vertices
  * implement {@link HasTimepoint}. Other properties (such as vertex labels or
- * selection states) are accessed through {@link ModelGraphProperties} that know
+ * selection states) are accessed through {@link TrackSchemeProperties} that know
  * how to retrieve/compute them for a given model vertex/edge ID. We provide a
- * default implementation of {@link DefaultModelGraphProperties} that should be
+ * default implementation of {@link DefaultTrackSchemeProperties} that should be
  * applicable for almost all model graphs.
  * <p>
  * {@link TrackSchemeGraph} registers as a {@link GraphChangeListener} with the
@@ -124,7 +124,7 @@ public class TrackSchemeGraph<
 {
 	private final ListenableReadOnlyGraph< V, E > modelGraph;
 
-	private final ModelGraphProperties< V, E > modelGraphProperties;
+	private final TrackSchemeProperties< V, E > modelGraphProperties;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -163,7 +163,7 @@ public class TrackSchemeGraph<
 	public TrackSchemeGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties )
+			final TrackSchemeProperties< V, E > modelGraphProperties )
 	{
 		this( modelGraph, idmap, modelGraphProperties, new ReentrantReadWriteLock() );
 	}
@@ -183,7 +183,7 @@ public class TrackSchemeGraph<
 	public TrackSchemeGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties,
+			final TrackSchemeProperties< V, E > modelGraphProperties,
 			final ReentrantReadWriteLock lock )
 	{
 		this( modelGraph, idmap, modelGraphProperties, lock, 10000 );
@@ -208,7 +208,7 @@ public class TrackSchemeGraph<
 	public TrackSchemeGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties,
+			final TrackSchemeProperties< V, E > modelGraphProperties,
 			final ReentrantReadWriteLock lock,
 			final int initialCapacity )
 	{

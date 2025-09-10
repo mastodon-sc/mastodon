@@ -43,6 +43,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.MenuElement;
 
+import org.mastodon.app.views.MastodonFrameView;
 import org.mastodon.util.HasSelectedState;
 import org.mastodon.util.MastodonDebugSettings;
 import org.scijava.ui.behaviour.InputTrigger;

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app;
+package org.mastodon.app.views;
 
 import java.util.ArrayList;
 
@@ -36,6 +36,8 @@ import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
+import org.mastodon.app.MastodonAppModel;
+import org.mastodon.app.ViewGraph;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
@@ -61,9 +63,9 @@ import org.mastodon.model.TimepointModel;
  * @param <ME>
  *            model edge type.
  * @param <V>
- *            view vertex type.
+ *            view graph vertex type.
  * @param <E>
- *            view edge type.
+ *            view graph edge type.
  *
  * @author Tobias Pietzsch
  */
@@ -152,7 +154,7 @@ public class MastodonView<
 
 	/**
 	 * Exposes the {@link GroupHandle} of this view.
-	 * 
+	 *
 	 * @return the {@link GroupHandle} of this view.
 	 */
 	public GroupHandle getGroupHandle()

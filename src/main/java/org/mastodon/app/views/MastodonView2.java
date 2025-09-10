@@ -1,4 +1,4 @@
-package org.mastodon.app.ui;
+package org.mastodon.app.views;
 
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.model.MastodonModel;

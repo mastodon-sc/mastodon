@@ -1,4 +1,4 @@
-package org.mastodon.app.ui;
+package org.mastodon.app.views;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.mastodon.app.UIModel;
 import org.mastodon.app.ViewGraph;
+import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
@@ -107,28 +109,28 @@ public class AbstractMastodonFrameView2<
 		final Actions projectActions = uiModel.getProjectActions();
 		if ( projectActions != null )
 		{
-			frame.keybindings.addActionMap( "project", new WrappedActionMap( projectActions.getActionMap() ) );
-			frame.keybindings.addInputMap( "project", new WrappedInputMap( projectActions.getInputMap() ) );
+			frame.getKeybindings().addActionMap( "project", new WrappedActionMap( projectActions.getActionMap() ) );
+			frame.getKeybindings().addInputMap( "project", new WrappedInputMap( projectActions.getInputMap() ) );
 		}
 
 		final Actions pluginActions = uiModel.getPlugins().getPluginActions();
 		if ( pluginActions != null )
 		{
-			frame.keybindings.addActionMap( "plugin", new WrappedActionMap( pluginActions.getActionMap() ) );
-			frame.keybindings.addInputMap( "plugin", new WrappedInputMap( pluginActions.getInputMap() ) );
+			frame.getKeybindings().addActionMap( "plugin", new WrappedActionMap( pluginActions.getActionMap() ) );
+			frame.getKeybindings().addInputMap( "plugin", new WrappedInputMap( pluginActions.getInputMap() ) );
 		}
 
 		final Actions modelActions = uiModel.getModelActions();
-		frame.keybindings.addActionMap( "model", new WrappedActionMap( modelActions.getActionMap() ) );
-		frame.keybindings.addInputMap( "model", new WrappedInputMap( modelActions.getInputMap() ) );
+		frame.getKeybindings().addActionMap( "model", new WrappedActionMap( modelActions.getActionMap() ) );
+		frame.getKeybindings().addInputMap( "model", new WrappedInputMap( modelActions.getInputMap() ) );
 
 		final Keymap keymap = uiModel.getKeymap();
 
 		viewActions = new Actions( keymap.getConfig(), keyConfigContexts );
-		viewActions.install( frame.keybindings, "view" );
+		viewActions.install( frame.getKeybindings(), "view" );
 
 		viewBehaviours = new Behaviours( keymap.getConfig(), keyConfigContexts );
-		viewBehaviours.install( frame.triggerbindings, "view" );
+		viewBehaviours.install( frame.getTriggerbindings(), "view" );
 
 		final UpdateListener updateListener = () -> {
 			viewBehaviours.updateKeyConfig( keymap.getConfig() );

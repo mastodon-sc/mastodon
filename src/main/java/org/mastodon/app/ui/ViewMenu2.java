@@ -43,6 +43,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.MenuElement;
 
+import org.mastodon.app.views.MastodonFrameView2;
 import org.mastodon.util.HasSelectedState;
 import org.mastodon.util.MastodonDebugSettings;
 import org.scijava.ui.behaviour.InputTrigger;
@@ -65,7 +66,7 @@ public class ViewMenu2
 
 	public ViewMenu2( final MastodonFrameView2 view, final Keymap keymap, final String... contexts )
 	{
-		this( view.getFrame().menubar, keymap, contexts );
+		this( view.getFrame().getJMenuBar(), keymap, contexts );
 		this.view = view;
 
 		final Keymap.UpdateListener updateListener = this::updateKeymap;

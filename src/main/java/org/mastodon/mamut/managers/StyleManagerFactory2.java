@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.app.ui.UIModel;
+import org.mastodon.app.UIModel;
 import org.scijava.plugin.SciJavaPlugin;
 
 import bdv.ui.settings.SettingsPage;

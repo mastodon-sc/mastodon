@@ -39,11 +39,11 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
  * To make {@link TrackSchemeGraph} adaptable to various model graph type
  * without requiring the graph to implement specific interfaces, we access
  * properties of model vertices and edges (for example the label of a vertex)
- * through {@link ModelGraphProperties}.
+ * through {@link TrackSchemeProperties}.
  * <p>
  * For model graphs that implement the required additional interfaces (
  * {@link HasTimepoint}, {@link HasLabel}, etc),
- * {@link DefaultModelGraphProperties} can be used.
+ * {@link DefaultTrackSchemeProperties} can be used.
  *
  * @param <V>
  *            the type of vertices in the model graph (not the TrackScheme
@@ -53,7 +53,7 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
  *
  * @author Tobias Pietzsch
  */
-public interface ModelGraphProperties< V, E >
+public interface TrackSchemeProperties< V, E >
 {
 	public int getTimepoint( V v );
 

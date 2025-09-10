@@ -95,8 +95,8 @@ import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOver
 import org.mastodon.views.trackscheme.display.TrackSchemeZoom;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
-import org.mastodon.views.trackscheme.wrap.DefaultModelGraphProperties;
-import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
+import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
+import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
 
 public class MamutBranchViewTrackScheme
 		extends MamutBranchView< TrackSchemeGraph< BranchSpot, BranchLink >, TrackSchemeVertex, TrackSchemeEdge >
@@ -357,8 +357,8 @@ public class MamutBranchViewTrackScheme
 			final Model model = appModel.getModel();
 			final ModelBranchGraph graph = model.getBranchGraph();
 			final GraphIdBimap< BranchSpot, BranchLink > idmap = graph.getGraphIdBimap();
-			final ModelGraphProperties< BranchSpot, BranchLink > properties =
-					new DefaultModelGraphProperties< BranchSpot, BranchLink >()
+			final TrackSchemeProperties< BranchSpot, BranchLink > properties =
+					new DefaultTrackSchemeProperties< BranchSpot, BranchLink >()
 					{
 
 						@Override

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,6 +41,12 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 
+/**
+ * TODO: move to mamut specific package or make generic.
+ *
+ * @author Jean-Yves Tinevez
+ *
+ */
 public class TreeUtils
 {
 
@@ -56,7 +62,7 @@ public class TreeUtils
 	 * order of the outgoing edges of the graphs vertices.
 	 * <p>
 	 * Example {@code graph}:
-	 * 
+	 *
 	 * <pre>
 	 *   A                B
 	 *  / \             /   \
@@ -69,7 +75,7 @@ public class TreeUtils
 	 *
 	 * If {@code selectedVertices} contains: {@code {a2, a4, a5, b1, b3, b4,
 	 * b6}}, then the returned list will be: {@code [a2, b1, b6]}.
-	 * 
+	 *
 	 * @param <V>
 	 *            the type vertices in the graph.
 	 * @param graph
@@ -122,7 +128,7 @@ public class TreeUtils
 	 * that contain any of the given {@code nodes}.
 	 * <p>
 	 * Example:
-	 * 
+	 *
 	 * <pre>
 	 *   A                B      C
 	 *  / \             /   \  /
@@ -138,7 +144,7 @@ public class TreeUtils
 	 * <p>
 	 * If {@code nodes} contains {@code {a2, a4, b4}} then the method will
 	 * return {@code {A, B, C}}.
-	 * 
+	 *
 	 * @param <V>
 	 *            the type of vertices in the graph.
 	 * @param <E>
@@ -157,7 +163,7 @@ public class TreeUtils
 	/**
 	 * Returns the set of predecessors of the given {@code nodes}. Please note
 	 * that returned set also contains all the given {@code nodes}.
-	 * 
+	 *
 	 * @param <V>
 	 *            the type of vertices in the graph.
 	 * @param <E>
@@ -211,7 +217,7 @@ public class TreeUtils
 	 * Returns a subset of the given {@code nodes} that contains only those
 	 * nodes that are roots of the {@code graph}. (A note is considered a root
 	 * if it has no incoming edges.)
-	 * 
+	 *
 	 * @param <V>
 	 *            the type of vertices in the graph.
 	 * @param <E>
@@ -271,6 +277,6 @@ public class TreeUtils
 	 */
 	public static Spot getFirstSpot( final Model model, final BranchSpot branchSpot, final Spot ref )
 	{
-		return model.getBranchGraph().getFirstLinkedVertex( branchSpot, ref );
+		return model.branchModel().getGraph().getFirstLinkedVertex( branchSpot, ref );
 	}
 }

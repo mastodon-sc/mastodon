@@ -1,7 +1,7 @@
 package org.mastodon.mamut.views;
 
-import org.mastodon.app.factory.MastodonViewFactory;
-import org.mastodon.app.ui.MastodonFrameView2;
+import org.mastodon.app.views.MastodonFrameView2;
+import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.mamut.MamutAppModel;
 import org.scijava.plugin.SciJavaPlugin;
 

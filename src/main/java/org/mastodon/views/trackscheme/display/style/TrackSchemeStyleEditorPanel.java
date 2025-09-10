@@ -97,8 +97,8 @@ import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 import org.mastodon.views.trackscheme.display.style.dummygraph.DummyEdge;
 import org.mastodon.views.trackscheme.display.style.dummygraph.DummyGraph;
 import org.mastodon.views.trackscheme.display.style.dummygraph.DummyVertex;
-import org.mastodon.views.trackscheme.wrap.DefaultModelGraphProperties;
-import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
+import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
+import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
 
 public class TrackSchemeStyleEditorPanel extends JPanel
 {
@@ -117,7 +117,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final DummyGraph.Examples ex = DummyGraph.Examples.CELEGANS;
 		final DummyGraph example = ex.getGraph();
 		final GraphIdBimap< DummyVertex, DummyEdge > idmap = example.getIdBimap();
-		final ModelGraphProperties< DummyVertex, DummyEdge > dummyProps = new DefaultModelGraphProperties<>();
+		final TrackSchemeProperties< DummyVertex, DummyEdge > dummyProps = new DefaultTrackSchemeProperties<>();
 		final TrackSchemeGraph< DummyVertex, DummyEdge > graph = new TrackSchemeGraph<>( example, idmap, dummyProps );
 		final RefBimap< DummyVertex, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( graph );
 		final RefBimap< DummyEdge, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( graph );

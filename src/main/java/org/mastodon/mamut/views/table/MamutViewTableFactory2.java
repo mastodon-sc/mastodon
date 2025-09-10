@@ -28,7 +28,8 @@
  */
 package org.mastodon.mamut.views.table;
 
-import org.mastodon.app.factory.AbstractMastodonViewTableFactory;
+import org.mastodon.app.views.table.AbstractMastodonViewTableFactory;
+import org.mastodon.app.views.table.TableModelGraphProperties;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;

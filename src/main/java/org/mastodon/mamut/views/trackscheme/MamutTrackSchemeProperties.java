@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,66 +26,69 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.views.table;
+package org.mastodon.mamut.views.trackscheme;
 
-import java.util.Map;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.properties.PropertyChangeListener;
+import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
 
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.views.AbstractMamutViewFactory;
-import org.mastodon.mamut.views.MamutViewFactory;
-import org.scijava.Priority;
-import org.scijava.plugin.Plugin;
-
-@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 3 )
-public class MamutViewSelectionTableFactory extends AbstractMamutViewFactory< MamutViewSelectionTable >
+public class MamutTrackSchemeProperties extends DefaultTrackSchemeProperties< Spot, Link >
 {
+	private final ModelGraph modelGraph;
 
-	public static final String NEW_SELECTION_TABLE_VIEW = "new selection table view";
-
-	@Override
-	public MamutViewSelectionTable create( final ProjectModel projectModel )
+	public MamutTrackSchemeProperties( final ModelGraph modelGraph )
 	{
-		return new MamutViewSelectionTable( projectModel );
+		this.modelGraph = modelGraph;
 	}
 
 	@Override
-	public Map< String, Object > getGuiState( final MamutViewSelectionTable view )
+	public Link addEdge( final Spot source, final Spot target, final Link ref )
 	{
-		final Map< String, Object > guiState = super.getGuiState( view );
-		MamutViewTableFactory.getGuiStateTable( view, guiState );
-		return guiState;
+		return modelGraph.addEdge( source, target, ref );
 	}
 
 	@Override
-	public void restoreGuiState( final MamutViewSelectionTable view, final Map< String, Object > guiState )
+	public Link insertEdge( final Spot source, final int sourceOutIndex, final Spot target, final int targetInIndex,
+			final Link ref )
 	{
-		super.restoreGuiState( view, guiState );
-		MamutViewTableFactory.restoreGuiStateTable( view, guiState );
+		return modelGraph.insertEdge( source, sourceOutIndex, target, targetInIndex, ref );
 	}
 
 	@Override
-	public String getCommandName()
+	public Link initEdge( final Link link )
 	{
-		return NEW_SELECTION_TABLE_VIEW;
+		return link.init();
 	}
 
 	@Override
-	public String getCommandMenuText()
+	public void removeEdge( final Link link )
 	{
-		return "New Selection Table view";
+		modelGraph.remove( link );
 	}
 
 	@Override
-	public String getCommandDescription()
+	public void removeVertex( final Spot spot )
 	{
-		return "Open a new selection table view. "
-				+ "The table only displays the current selection and "
-				+ "is updated as the selection changes.";
+		modelGraph.remove( spot );
 	}
 
 	@Override
-	public Class< MamutViewSelectionTable > getViewClass()
+	public void notifyGraphChanged()
 	{
-		return MamutViewSelectionTable.class;
+		modelGraph.notifyGraphChanged();
+	}
+
+	@Override
+	public void addVertexLabelListener( final PropertyChangeListener< Spot > listener )
+	{
+		modelGraph.addVertexLabelListener( listener );
+	}
+
+	@Override
+	public void removeVertexLabelListener( final PropertyChangeListener< Spot > listener )
+	{
+		modelGraph.removeVertexLabelListener( listener );
 	}
 }

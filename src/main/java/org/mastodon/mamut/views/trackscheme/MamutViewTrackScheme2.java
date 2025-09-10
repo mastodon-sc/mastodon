@@ -1,10 +1,10 @@
 package org.mastodon.mamut.views.trackscheme;
 
+import org.mastodon.app.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.ModelGraphTrackSchemeProperties;
 import org.mastodon.mamut.model.Spot;
 
 /**
@@ -18,6 +18,6 @@ public class MamutViewTrackScheme2 extends MastodonViewTrackScheme2< Model, Mode
 
 	public MamutViewTrackScheme2( final MamutAppModel appModel )
 	{
-		super( appModel, new ModelGraphTrackSchemeProperties( appModel.dataModel().getGraph() ) );
+		super( appModel, new MamutTrackSchemeProperties( appModel.dataModel().getGraph() ) );
 	}
 }

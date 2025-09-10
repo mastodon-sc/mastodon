@@ -36,7 +36,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.mastodon.app.plugin.MastodonPlugins2;
-import org.mastodon.app.ui.UIModel;
 import org.mastodon.app.ui.UIUtils;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ListenableReadOnlyGraph;

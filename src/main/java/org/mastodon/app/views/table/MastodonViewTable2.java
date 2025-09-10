@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.views.table;
+package org.mastodon.app.views.table;
 
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder2.item;
@@ -43,15 +43,15 @@ import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.app.IdentityViewGraph;
+import org.mastodon.app.UIModel;
 import org.mastodon.app.ViewGraph;
-import org.mastodon.app.ui.AbstractMastodonFrameView2;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
-import org.mastodon.app.ui.UIModel;
+import org.mastodon.app.ui.UIUtils;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenu2;
 import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
+import org.mastodon.app.views.AbstractMastodonFrameView2;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
@@ -159,7 +159,7 @@ public class MastodonViewTable2<
 			final HasBranchModel bm = ( HasBranchModel ) dataModel;
 			final MastodonModel branchModel = bm.branchModel();
 			final BranchGraph branchGraph = ( BranchGraph ) branchModel.getGraph();
-			final ViewGraph viewBranchGraph = IdentityViewGraph.wrap( branchGraph, branchGraph.getGraphIdBimap() );
+			final ViewGraph viewBranchGraph = UIUtils.wrap( branchGraph, branchGraph.getGraphIdBimap() );
 			final GraphTableBuilder gtbBranch = builder.addGraph( branchGraph );
 			branchColoringAdapter = new GraphColorGeneratorAdapter<>( viewBranchGraph.getVertexMap(), viewBranchGraph.getEdgeMap() );
 
@@ -319,7 +319,7 @@ public class MastodonViewTable2<
 
 	private static < V extends Vertex< E >, E extends Edge< V > > ViewGraph< V, E, V, E > createViewGraph( final MastodonModel< ?, V, E > model )
 	{
-		return IdentityViewGraph.wrap( model.getGraph(), model.getGraphIdBimap() );
+		return UIUtils.wrap( model.getGraph(), model.getGraphIdBimap() );
 	}
 
 	/**

@@ -31,17 +31,17 @@ package org.mastodon.views.trackscheme;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
-import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
+import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
 
 public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 {
 	final GraphIdBimap< V, E > idmap;
 
-	final ModelGraphProperties< V, E > modelGraphProperties;
+	final TrackSchemeProperties< V, E > modelGraphProperties;
 
 	ModelGraphWrapper(
 			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties )
+			final TrackSchemeProperties< V, E > modelGraphProperties )
 	{
 		this.idmap = idmap;
 		this.modelGraphProperties = modelGraphProperties;

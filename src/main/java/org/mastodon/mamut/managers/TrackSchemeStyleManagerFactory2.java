@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.app.ui.UIModel;
+import org.mastodon.app.UIModel;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Priority;

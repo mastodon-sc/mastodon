@@ -39,8 +39,8 @@ import org.mastodon.adapter.FadingModelAdapter;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.ModelGraphTrackSchemeProperties;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.trackscheme.MamutTrackSchemeProperties;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.DefaultSelectionModel;
 import org.mastodon.model.FadingModel;
@@ -70,7 +70,7 @@ public class LineageTreeLayoutImpTest
 		// setup
 		ModelGraph graph = initDiamondModelGraph();
 		TrackSchemeGraph< Spot, Link > tsGraph =
-				new TrackSchemeGraph<>( graph, graph.getGraphIdBimap(), new ModelGraphTrackSchemeProperties( graph ) );
+				new TrackSchemeGraph<>( graph, graph.getGraphIdBimap(), new MamutTrackSchemeProperties( graph ) );
 		ScreenEntities screenEntities = new ScreenEntities( tsGraph );
 		ScreenTransform transform = initScreenTransform();
 		LineageTreeLayout layout = initLineageTreeLayout( graph, tsGraph );

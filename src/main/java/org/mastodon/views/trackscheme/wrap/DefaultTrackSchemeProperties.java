@@ -34,8 +34,18 @@ import org.mastodon.model.HasLabel;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.HasTimepoint;
 
-public class DefaultModelGraphProperties< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > >
-		implements ModelGraphProperties< V, E >
+/**
+ * Defautl implementation of {@link TrackSchemeProperties} for graphs whose
+ * vertices implement {@link HasTimepoint} and {@link HasLabel}.
+ *
+ * @param <V>
+ *            the type of vertices in the model graph (not the TrackScheme
+ *            graph).
+ * @param <E>
+ *            the type of edges in the graph.
+ */
+public class DefaultTrackSchemeProperties< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > >
+		implements TrackSchemeProperties< V, E >
 {
 	@Override
 	public int getTimepoint( final V v )

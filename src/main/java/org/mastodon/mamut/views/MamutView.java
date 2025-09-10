@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.app.ViewGraph;
-import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.app.views.MastodonFrameView;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;

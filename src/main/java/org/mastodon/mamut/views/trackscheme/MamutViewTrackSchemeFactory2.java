@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.views.trackscheme;
 
-import org.mastodon.app.factory.AbstractMastodonViewTrackSchemeFactory;
+import org.mastodon.app.views.trackscheme.AbstractMastodonViewTrackSchemeFactory;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.views.MamutViewFactory2;

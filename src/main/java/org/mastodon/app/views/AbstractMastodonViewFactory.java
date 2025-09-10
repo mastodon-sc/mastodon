@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.factory;
+package org.mastodon.app.views;
 
 import static org.mastodon.mamut.views.MamutView.COLORBAR_POSITION_KEY;
 import static org.mastodon.mamut.views.MamutView.COLORBAR_VISIBLE_KEY;
@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.app.AppModel;
-import org.mastodon.app.ui.AbstractMastodonFrameView2;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.model.tag.TagSetStructure.TagSet;

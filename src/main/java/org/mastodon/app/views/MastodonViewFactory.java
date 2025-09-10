@@ -26,12 +26,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.factory;
+package org.mastodon.app.views;
 
 import java.util.Map;
 
 import org.mastodon.app.AppModel;
-import org.mastodon.app.ui.MastodonFrameView2;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**

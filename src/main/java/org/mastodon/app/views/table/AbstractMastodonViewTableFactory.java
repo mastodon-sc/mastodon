@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.views.table;
+package org.mastodon.app.views.table;
 
 import static org.mastodon.mamut.views.MamutBranchView.BRANCH_GRAPH;
 
@@ -40,10 +40,11 @@ import java.util.Map;
 
 import javax.swing.JViewport;
 
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.views.AbstractMamutViewFactory;
+import org.mastodon.app.AppModel;
+import org.mastodon.app.views.AbstractMastodonViewFactory;
+import org.mastodon.app.views.MastodonViewFactory;
+import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.mamut.views.MamutViewFactory;
-import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
@@ -77,7 +78,12 @@ import org.scijava.plugin.Plugin;
  * </ul>
  */
 @Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 2 )
-public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTable >
+public abstract class AbstractMastodonViewTableFactory<
+			T extends MastodonViewTable2< ?, ?, ?, ? >,
+			G extends ListenableReadOnlyGraph< ?, ? >,
+			AM extends AppModel< AM, ?, G, ?, ? > >
+		extends AbstractMastodonViewFactory< T, AM >
+		implements MastodonViewFactory< T, AM >
 {
 
 	public static final String NEW_TABLE_VIEW = "new full table view";
@@ -127,21 +133,17 @@ public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTa
 	 */
 	public static final String TABLE_EDGE_TABLE_VISIBLE_POS = "TableEdgeTableVisibleRect";
 
-	@Override
-	public MamutViewTable create( final ProjectModel projectModel )
-	{
-		return new MamutViewTable( projectModel );
-	}
+	protected abstract TableModelGraphProperties< ? > getModelGraphProperties( G graph );
 
 	@Override
-	public Map< String, Object > getGuiState( final MamutViewTable view )
+	public Map< String, Object > getGuiState( final T view )
 	{
 		final Map< String, Object > guiState = super.getGuiState( view );
 		getGuiStateTable( view, guiState );
 		return guiState;
 	}
 
-	static void getGuiStateTable( final MamutViewTable view, final Map< String, Object > guiState )
+	static < T extends MastodonViewTable2< ?, ?, ?, ? > > void getGuiStateTable( final T view, final Map< String, Object > guiState )
 	{
 		// Currently displayed table.
 		final FeatureTagTablePanel< ? > currentlyDisplayedTable = view.getFrame().getCurrentlyDisplayedTable();
@@ -185,13 +187,13 @@ public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTa
 	}
 
 	@Override
-	public void restoreGuiState( final MamutViewTable view, final Map< String, Object > guiState )
+	public void restoreGuiState( final T view, final Map< String, Object > guiState )
 	{
 		super.restoreGuiState( view, guiState );
 		restoreGuiStateTable( view, guiState );
 	}
 
-	static final void restoreGuiStateTable( final MamutViewTable view, final Map< String, Object > guiState )
+	static final < T extends MastodonViewTable2< ?, ?, ?, ? > > void restoreGuiStateTable( final T view, final Map< String, Object > guiState )
 	{
 		// Restore branch-graph coloring.
 		@SuppressWarnings( "unchecked" )
@@ -240,11 +242,5 @@ public class MamutViewTableFactory extends AbstractMamutViewFactory< MamutViewTa
 	public String getCommandMenuText()
 	{
 		return "New Data table";
-	}
-
-	@Override
-	public Class< MamutViewTable > getViewClass()
-	{
-		return MamutViewTable.class;
 	}
 }

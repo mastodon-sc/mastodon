@@ -1,4 +1,4 @@
-package org.mastodon.app.ui;
+package org.mastodon.app.views;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
+import org.mastodon.app.UIModel;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;

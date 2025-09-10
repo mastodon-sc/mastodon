@@ -1,4 +1,4 @@
-package org.mastodon.app.ui;
+package org.mastodon.app;
 
 import static org.mastodon.mamut.MamutMenuBuilder2.windowMenu;
 
@@ -17,11 +17,16 @@ import java.util.function.Consumer;
 
 import javax.swing.ActionMap;
 
-import org.mastodon.app.AppModel;
-import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.app.plugin.PluginUtils;
+import org.mastodon.app.ui.UIUtils;
+import org.mastodon.app.ui.ViewMenu2;
+import org.mastodon.app.ui.ViewMenuBuilder2;
 import org.mastodon.app.ui.ViewMenuBuilder2.MenuItem;
+import org.mastodon.app.views.AbstractMastodonFrameView2;
+import org.mastodon.app.views.AbstractMastodonView2;
+import org.mastodon.app.views.MastodonFrameView2;
+import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.grouping.GroupManager;
 import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.mamut.CloseListener;
