@@ -29,25 +29,22 @@
 package org.mastodon.mamut.views.trackscheme;
 
 import org.mastodon.app.factory.AbstractMastodonViewTrackSchemeFactory;
-import org.mastodon.mamut.model.Link;
-import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.ModelGraphTrackSchemeProperties;
-import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory2;
-import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
 public class MamutViewTrackSchemeFactory2
-		extends AbstractMastodonViewTrackSchemeFactory< MastodonViewTrackScheme2< Model, ModelGraph, Spot, Link >, ModelGraph >
-		implements MamutViewFactory2< MastodonViewTrackScheme2< Model, ModelGraph, Spot, Link > >
+		extends AbstractMastodonViewTrackSchemeFactory< MamutViewTrackScheme2, ModelGraph, MamutAppModel >
+		implements MamutViewFactory2< MamutViewTrackScheme2 >
 {
 
 	@Override
-	protected ModelGraphProperties< Spot, Link > getModelGraphProperties( final ModelGraph graph )
+	public MamutViewTrackScheme2 create( final MamutAppModel appModel )
 	{
-		return new ModelGraphTrackSchemeProperties( graph );
+		return new MamutViewTrackScheme2( appModel );
 	}
+
 }

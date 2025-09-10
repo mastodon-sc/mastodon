@@ -129,7 +129,7 @@ public class MastodonViewTrackScheme2<
 	private final ColorBarOverlay colorBarOverlay;
 
 	public MastodonViewTrackScheme2(
-			final AppModel< M, G, V, E, ? > appModel,
+			final AppModel< ?, M, G, V, E > appModel,
 			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
 		this(

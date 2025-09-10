@@ -37,9 +37,9 @@ import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
-public class MamutViewTableFactory2
-		extends AbstractMastodonViewTableFactory< MamutViewTable2, ModelGraph, MamutAppModel >
-		implements MamutViewFactory2< MamutViewTable2 >
+public class MamutViewSelectionTableFactory2
+		extends AbstractMastodonViewTableFactory< MamutViewSelectionTable2, ModelGraph, MamutAppModel >
+		implements MamutViewFactory2< MamutViewSelectionTable2 >
 {
 
 	@Override
@@ -49,9 +49,9 @@ public class MamutViewTableFactory2
 	}
 
 	@Override
-	public MamutViewTable2 create( final MamutAppModel appModel )
+	public MamutViewSelectionTable2 create( final MamutAppModel appModel )
 	{
 		final TableModelGraphProperties< Spot > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
-		return new MamutViewTable2( appModel.dataModel(), appModel.uiModel(), modelGraphProperties );
+		return new MamutViewSelectionTable2( appModel.dataModel(), appModel.uiModel(), modelGraphProperties );
 	}
 }
