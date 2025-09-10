@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.app.ui.UIModel;
 import org.mastodon.app.ui.UIUtils;
@@ -50,7 +49,6 @@ import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.ui.coloring.TrackGraphColorGenerator;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.Context;
-import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider.Scope;
 import org.scijava.ui.behaviour.util.Actions;
@@ -98,16 +96,16 @@ import bdv.ui.keymap.KeymapManager;
  *            the type of view factories that can create views of type T.
  */
 public class AppModel<
+		AM extends AppModel< AM, M, G, V, E >,
 		M extends MastodonModel< G, V, E >,
 		G extends ReadOnlyGraph< V, E >,
 		V extends Vertex< E >,
-		E extends Edge< V >,
-		VF extends MastodonViewFactory< ? > & SciJavaPlugin >
+		E extends Edge< V > >
 {
 
 	protected final M model;
 
-	protected final UIModel< VF > uiModel;
+	protected final UIModel< AM > uiModel;
 
 	private final int minTimepoint;
 
@@ -147,7 +145,7 @@ public class AppModel<
 	public AppModel(
 			final Context context,
 			final M model,
-			final Class< VF > viewFactoryType,
+			@SuppressWarnings( "rawtypes" ) final Class viewFactoryType,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
 			final MastodonPlugins2< ?, ? > plugins,
@@ -233,7 +231,7 @@ public class AppModel<
 		return model;
 	}
 
-	public UIModel< VF > uiModel()
+	public UIModel< AM > uiModel()
 	{
 		return uiModel;
 	}

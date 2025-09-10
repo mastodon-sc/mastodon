@@ -46,16 +46,8 @@ import org.scijava.plugin.SciJavaPlugin;
  *
  * @param <T>
  *            the type of view created by this factory.
- * @param <M>
- *            the type of app model used in the application.
- * @param <G>
- *            the type of graph used in the model.
- * @param <V>
- *            the type of vertex in the graph.
- * @param <E>
- *            the type of edge in the graph.
  */
-public interface MastodonViewFactory< T extends MastodonFrameView2 >
+public interface MastodonViewFactory< T extends MastodonFrameView2, AM extends AppModel< AM, ?, ?, ?, ? > > extends SciJavaPlugin
 {
 
 	/**
@@ -73,7 +65,7 @@ public interface MastodonViewFactory< T extends MastodonFrameView2 >
 	 *
 	 * @return a new view.
 	 */
-	T create( AppModel< ?, ?, ?, ?, ? > appModel );
+	T create( AM appModel );
 
 	/**
 	 * Creates and shows a new view for the specified project model, and restore
@@ -85,7 +77,7 @@ public interface MastodonViewFactory< T extends MastodonFrameView2 >
 	 *            the GUI state map.
 	 * @return a new view.
 	 */
-	T show( AppModel< ?, ?, ?, ?, ? > appModel, Map< String, Object > guiState );
+	T show( AM appModel, Map< String, Object > guiState );
 
 	/**
 	 * Restores the GUI state stored in the specified map for the specified

@@ -1,6 +1,5 @@
 package org.mastodon.app;
 
-import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.DefaultFeatureProjectionsManager;
@@ -13,7 +12,6 @@ import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
-import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider.Scope;
 import org.scijava.ui.behaviour.util.Actions;
@@ -21,12 +19,12 @@ import org.scijava.ui.behaviour.util.Actions;
 import bdv.ui.keymap.KeymapManager;
 
 public class BdvAppModel<
+		AM extends BdvAppModel< AM, M, G, V, E >,
 		M extends MastodonModel< G, V, E >,
 		G extends ReadOnlyGraph< V, E >,
 		V extends Vertex< E > & HasTimepoint,
-		E extends Edge< V >,
-		VF extends MastodonViewFactory< ? > & SciJavaPlugin >
-		extends AppModel< M, G, V, E, VF >
+		E extends Edge< V > >
+		extends AppModel< AM, M, G, V, E >
 {
 
 
@@ -36,7 +34,7 @@ public class BdvAppModel<
 			final Context context,
 			final M model,
 			final SharedBigDataViewerData sharedBdvData,
-			final Class< VF > viewFactoryType,
+			@SuppressWarnings( "rawtypes" ) final Class viewFactoryType,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
 			final MastodonPlugins2< ?, ? > plugins,

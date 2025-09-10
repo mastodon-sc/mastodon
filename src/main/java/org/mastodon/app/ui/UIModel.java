@@ -42,7 +42,6 @@ import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.context.HasContextProvider;
 import org.scijava.Context;
 import org.scijava.listeners.Listeners;
-import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
@@ -63,7 +62,7 @@ import bdv.util.InvokeOnEDT;
  *
  * @author Jean-Yves Tinevez
  */
-public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
+public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 {
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
@@ -152,10 +151,12 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	 *            the global actions that are available in this application.
 	 * @param keyConfigContexts
 	 *            the key config contexts of the views managed by this app.
+	 * @param vft
 	 */
+	@SuppressWarnings( "unchecked" )
 	public UIModel(
 			final Context context,
-			final Class< VF > viewFactoryType,
+			@SuppressWarnings( "rawtypes" ) final Class viewFactoryType,
 			final int numGroups,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
@@ -184,7 +185,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		 * Discover view factories.
 		 */
 		this.viewFactories = new ViewFactories();
-		final Consumer< VF > registerViewFactory = factory -> viewFactories.register( factory );
+		final Consumer< ? extends MastodonViewFactory< ?, AM > > registerViewFactory = factory -> viewFactories.register( factory );
 		PluginUtils.forEachDiscoveredPlugin( viewFactoryType, registerViewFactory, context );
 
 		/*
@@ -217,7 +218,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		 * to an app. Solution is to have an app-specific interface that extends
 		 * StyleManagerFactory2, and ask callers to provide that interface.
 		 */
-		@SuppressWarnings( { "unchecked", "rawtypes" } )
+		@SuppressWarnings( "rawtypes" )
 		final Consumer< StyleManagerFactory2 > registerAction = ( factory ) -> {
 			final Object manager = factory.create( this );
 			registerInstance( manager );
@@ -503,7 +504,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	 *            the view class.
 	 * @return a new instance of the view, that was shown.
 	 */
-	public < T extends MastodonFrameView2 > T createView( final AppModel< ?, ?, ?, ?, VF > appModel, final Class< T > klass )
+	public < T extends MastodonFrameView2 > T createView( final AM appModel, final Class< T > klass )
 	{
 		return createView( appModel, klass, Collections.emptyMap() );
 	}
@@ -527,12 +528,12 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	 *         class is unknown to the window manager.
 	 */
 	public synchronized < T extends MastodonFrameView2 > T createView(
-			final AppModel< ?, ?, ?, ?, VF > appModel,
+			final AM appModel,
 			final Class< T > klass,
 			final Map< String, Object > guiState )
 	{
 		// Get the right factory.
-		final VF factory = viewFactories.getFactory( klass );
+		final MastodonViewFactory< ?, AM > factory = viewFactories.getFactory( klass );
 
 		// Return null if the view type is unknown to us.
 		if ( factory == null )
@@ -548,7 +549,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 
 		// Restore the view GUI state.
 		@SuppressWarnings( "unchecked" )
-		final MastodonViewFactory< T > f = ( ( MastodonViewFactory< T > ) factory );
+		final MastodonViewFactory< T, AM > f = ( ( MastodonViewFactory< T, AM > ) factory );
 		f.restoreGuiState( view, guiState );
 
 		// Store the view for window manager.
@@ -645,7 +646,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 			@Override
 			public void getCommandDescriptions( final CommandDescriptions descriptions )
 			{
-				for ( final VF viewFactory : viewFactories.factories.values() )
+				for ( final MastodonViewFactory< ?, AM > viewFactory : viewFactories.factories.values() )
 					descriptions.add( viewFactory.getCommandName(), viewFactory.getCommandKeys(), viewFactory.getCommandDescription() );
 			}
 		};
@@ -659,7 +660,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 	public class ViewFactories
 	{
 
-		private final Map< Class< ? extends MastodonFrameView2 >, VF > factories = new HashMap<>();
+		private final Map< Class< ? extends MastodonFrameView2 >, MastodonViewFactory< ?, AM > > factories = new HashMap<>();
 
 		private final ArrayList< MenuItem > menuItems;
 
@@ -671,7 +672,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 			menuTexts = new HashMap<>();
 		}
 
-		synchronized void register( final VF factory )
+		synchronized void register( final MastodonViewFactory< ?, AM > factory )
 		{
 			if ( !factories.containsValue( factory ) )
 			{
@@ -701,7 +702,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 		 * @return a view factory, or <code>null</code> if the specified class
 		 *         is unknown.
 		 */
-		public < T > VF getFactory( final Class< T > klass )
+		public < T > MastodonViewFactory< ?, AM > getFactory( final Class< T > klass )
 		{
 			return factories.get( klass );
 		}
@@ -714,7 +715,7 @@ public class UIModel< VF extends MastodonViewFactory< ? > & SciJavaPlugin >
 				@Override
 				public void getCommandDescriptions( final CommandDescriptions descriptions )
 				{
-					for ( final VF factory : factories.values() )
+					for ( final MastodonViewFactory< ?, AM > factory : factories.values() )
 						descriptions.add( factory.getCommandName(), factory.getCommandKeys(), factory.getCommandDescription() );
 				}
 			};

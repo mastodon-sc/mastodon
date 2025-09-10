@@ -69,7 +69,6 @@ import java.util.Map.Entry;
 
 import org.jdom2.Element;
 import org.mastodon.app.AppModel;
-import org.mastodon.app.factory.MastodonViewFactory;
 import org.mastodon.app.ui.MastodonFrameView2;
 import org.mastodon.app.ui.UIModel;
 import org.mastodon.mamut.MamutViews;
@@ -77,7 +76,6 @@ import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.ScreenTransform;
-import org.scijava.plugin.SciJavaPlugin;
 
 import mpicbg.spim.data.XmlHelpers;
 import net.imglib2.realtransform.AffineGet;
@@ -246,10 +244,10 @@ public class MamutViewStateXMLSerialization
 	 *            the application {@link WindowManager}.
 	 * @param appModel
 	 */
-	public static < VF extends MastodonViewFactory< ? > & SciJavaPlugin > void fromXml( final Element windowsEl, final AppModel< ?, ?, ?, ?, VF > appModel )
+	public static < AM extends AppModel< AM, ?, ?, ?, ? > > void fromXml( final Element windowsEl, final AM appModel )
 	{
-		final UIModel< VF > uiModel = appModel.uiModel();
-		final UIModel< VF >.ViewFactories viewFactories = uiModel.getViewFactories();
+		final UIModel< AM > uiModel = appModel.uiModel();
+		final UIModel< AM >.ViewFactories viewFactories = uiModel.getViewFactories();
 		final Collection< Class< ? extends MastodonFrameView2 > > classes = viewFactories.getKeys();
 
 		final List< Element > viewEls = windowsEl.getChildren( WINDOW_TAG );

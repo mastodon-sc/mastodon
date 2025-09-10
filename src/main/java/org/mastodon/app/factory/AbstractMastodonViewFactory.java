@@ -61,8 +61,9 @@ import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import com.google.common.reflect.TypeToken;
 
 public abstract class AbstractMastodonViewFactory<
-		T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > >
-		implements MastodonViewFactory< T >
+		T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? >,
+		AM extends AppModel< AM, ?, ?, ?, ? > >
+		implements MastodonViewFactory< T, AM >
 {
 
 	@SuppressWarnings( "unchecked" )
@@ -76,7 +77,7 @@ public abstract class AbstractMastodonViewFactory<
 	}
 
 	@Override
-	public T show( final AppModel< ?, ?, ?, ?, ? > appModel, final Map< String, Object > guiState )
+	public T show( final AM appModel, final Map< String, Object > guiState )
 	{
 		final T view = create( appModel );
 		restoreGuiState( view, guiState );

@@ -80,9 +80,10 @@ import org.scijava.plugin.Plugin;
 @Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 2 )
 public abstract class AbstractMastodonViewTableFactory<
 			T extends MastodonViewTable2< ?, ?, ?, ? >,
-			G extends ListenableReadOnlyGraph< ?, ? > >
-		extends AbstractMastodonViewFactory< T >
-		implements MastodonViewFactory< T >
+			G extends ListenableReadOnlyGraph< ?, ? >,
+			AM extends AppModel< AM, ?, G, ?, ? > >
+		extends AbstractMastodonViewFactory< T, AM >
+		implements MastodonViewFactory< T, AM >
 {
 
 	public static final String NEW_TABLE_VIEW = "new full table view";
@@ -133,16 +134,6 @@ public abstract class AbstractMastodonViewTableFactory<
 	public static final String TABLE_EDGE_TABLE_VISIBLE_POS = "TableEdgeTableVisibleRect";
 
 	protected abstract TableModelGraphProperties< ? > getModelGraphProperties( G graph );
-
-	@SuppressWarnings( "unchecked" )
-	@Override
-	public T create( final AppModel< ?, ?, ?, ?, ? > appModel )
-	{
-		final TableModelGraphProperties< ? > modelGraphProperties = getModelGraphProperties( ( G ) appModel.dataModel().getGraph() );
-		@SuppressWarnings( "rawtypes" )
-		final MastodonViewTable2< ?, G, ?, ? > view = new MastodonViewTable2( appModel.dataModel(), appModel.uiModel(), modelGraphProperties );
-		return ( T ) view;
-	}
 
 	@Override
 	public Map< String, Object > getGuiState( final T view )

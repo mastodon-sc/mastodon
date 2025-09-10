@@ -8,7 +8,6 @@ import org.mastodon.mamut.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
-import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
 
 /**
  * Base class for view factories that create TrackScheme views. This abstract
@@ -48,30 +47,11 @@ import org.mastodon.views.trackscheme.wrap.ModelGraphProperties;
  */
 public abstract class AbstractMastodonViewTrackSchemeFactory<
 		T extends MastodonViewTrackScheme2< ?, ?, ?, ? >,
-		G extends ListenableReadOnlyGraph< ?, ? > >
-		extends AbstractMastodonViewFactory< T >
-		implements MastodonViewFactory< T >
+		G extends ListenableReadOnlyGraph< ?, ? >,
+		AM extends AppModel< AM, ?, G, ?, ? > >
+		extends AbstractMastodonViewFactory< T, AM >
+		implements MastodonViewFactory< T, AM >
 {
-
-	/**
-	 * Returns a {@link ModelGraphProperties} for the specific graph type this
-	 * TrackScheme view should be created.
-	 *
-	 * @param graph
-	 *            the graph.
-	 * @return the model graph properties.
-	 */
-	protected abstract ModelGraphProperties< ?, ? > getModelGraphProperties( G graph );
-
-	@SuppressWarnings( "unchecked" )
-	@Override
-	public T create( final AppModel< ?, ?, ?, ?, ? > appModel )
-	{
-		final ModelGraphProperties< ?, ? > modelGraphProperties = getModelGraphProperties( ( G ) appModel.dataModel().getGraph() );
-		@SuppressWarnings( "rawtypes" )
-		final MastodonViewTrackScheme2< ?, G, ?, ? > view = new MastodonViewTrackScheme2( appModel, modelGraphProperties );
-		return ( T ) view;
-	}
 
 	@Override
 	public String getCommandName()
