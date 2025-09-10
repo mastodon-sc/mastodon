@@ -77,6 +77,8 @@ import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.TimepointAndNumberOfSpotsPanel;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
+import org.mastodon.views.trackscheme.LineageTreeLayout;
+import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
 import org.mastodon.views.trackscheme.TrackSchemeContextListener;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
@@ -87,6 +89,7 @@ import org.mastodon.views.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.views.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions;
+import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOverlayFactory;
 import org.mastodon.views.trackscheme.display.TrackSchemeZoom;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
@@ -128,6 +131,16 @@ public class MastodonViewTrackScheme2<
 
 	private final ColorBarOverlay colorBarOverlay;
 
+	/**
+	 * Creates a TrackScheme view with the default overlay and layout. The
+	 * timepoint range is set to the min and max timepoints found in the app
+	 * model.
+	 *
+	 * @param appModel
+	 *            the application model.
+	 * @param modelGraphProperties
+	 *            the model graph properties.
+	 */
 	public MastodonViewTrackScheme2(
 			final AppModel< ?, M, G, V, E > appModel,
 			final TrackSchemeProperties< V, E > modelGraphProperties )
@@ -140,6 +153,18 @@ public class MastodonViewTrackScheme2<
 				appModel.getTimepointMax());
 	}
 
+	/**
+	 * Creates a TrackScheme view with the default overlay and layout. The
+	 * timepoint range is set to the min and max timepoints found in the graph
+	 * in the specified model..
+	 *
+	 * @param dataModel
+	 *            the model containing the graph to display.
+	 * @param uiModel
+	 *            the application UI model.
+	 * @param modelGraphProperties
+	 *            the model graph properties.
+	 */
 	public MastodonViewTrackScheme2(
 			final M dataModel,
 			final UIModel< ? > uiModel,
@@ -150,10 +175,58 @@ public class MastodonViewTrackScheme2<
 				maxTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ) );
 	}
 
+	/**
+	 * Creates a TrackScheme view with the default overlay and layout.
+	 *
+	 * @param dataModel
+	 *            the model containing the graph to display.
+	 * @param uiModel
+	 *            the application UI model.
+	 * @param modelGraphProperties
+	 *            the model graph properties.
+	 * @param timepointMin
+	 *            the minimum timepoint to display.
+	 * @param timepointMax
+	 *            the maximum timepoint to display.
+	 */
 	public MastodonViewTrackScheme2(
 			final M dataModel,
 			final UIModel< ? > uiModel,
 			final TrackSchemeProperties< V, E > modelGraphProperties,
+			final int timepointMin,
+			final int timepointMax )
+	{
+		this( dataModel, uiModel, modelGraphProperties,
+				new TrackSchemeOverlayFactory(),
+				LineageTreeLayoutImp::new,
+				timepointMin,
+				timepointMax );
+	}
+
+	/**
+	 * Creates a TrackScheme view, with a custom layout and overlay.
+	 *
+	 * @param dataModel
+	 *            the model containing the graph to display.
+	 * @param uiModel
+	 *            the application UI model.
+	 * @param modelGraphProperties
+	 *            the model graph properties.
+	 * @param overlayFactory
+	 *            the factory to create the overlay.
+	 * @param lineageTreeLayoutFactory
+	 *            the factory to create the lineage tree layout.
+	 * @param timepointMin
+	 *            the minimum timepoint to display.
+	 * @param timepointMax
+	 *            the maximum timepoint to display.
+	 */
+	public MastodonViewTrackScheme2(
+			final M dataModel,
+			final UIModel< ? > uiModel,
+			final TrackSchemeProperties< V, E > modelGraphProperties,
+			final TrackSchemeOverlayFactory overlayFactory,
+			final LineageTreeLayout.LineageTreeLayoutFactory lineageTreeLayoutFactory,
 			final int timepointMin,
 			final int timepointMax )
 	{
@@ -179,7 +252,9 @@ public class MastodonViewTrackScheme2<
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
 				.style( forwardDefaultStyle )
-				.graphColorGenerator( coloringAdapter );
+				.graphColorGenerator( coloringAdapter )
+				.trackSchemeOverlayFactory( overlayFactory )
+				.lineageTreeLayoutFactory( lineageTreeLayoutFactory );
 
 		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler, timepointModel );
 
@@ -263,7 +338,6 @@ public class MastodonViewTrackScheme2<
 					.installOn( viewActions );
 			cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 		}
-
 
 		final JMenuHandle coloringMenuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
