@@ -442,5 +442,6 @@ public class ProjectLoader2
 		final MamutAppModel appModel = ProjectLoader2.open( projectPath, new Context() );
 		appModel.createTrackScheme();
 		appModel.createTable();
+		appModel.createSelectionTable();
 	}
 }
