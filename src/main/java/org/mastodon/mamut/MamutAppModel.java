@@ -8,8 +8,9 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.mamut.views.MamutViewFactory2;
-import org.mastodon.mamut.views.table.MastodonViewTable2;
-import org.mastodon.mamut.views.trackscheme.MastodonViewTrackScheme2;
+import org.mastodon.mamut.views.table.MamutViewSelectionTable2;
+import org.mastodon.mamut.views.table.MamutViewTable2;
+import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme2;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.MastodonKeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
@@ -23,13 +24,12 @@ import bdv.ui.keymap.KeymapManager;
  * Core app model for the Mastodon app 'Mamut', that displays cells as
  * ellipsoids. It is typed against {@link Spot} and {@link Link}.
  */
-@SuppressWarnings( "rawtypes" )
 public class MamutAppModel extends BdvAppModel<
+		MamutAppModel,
 		Model,
 		ModelGraph,
 		Spot,
-		Link,
-		MamutViewFactory2 >
+		Link >
 {
 
 	public static MamutAppModel create( final Context context, final Model model, final SharedBigDataViewerData imageData, final MamutProject project )
@@ -61,15 +61,18 @@ public class MamutAppModel extends BdvAppModel<
 				NUM_GROUPS );
 	}
 
-	@SuppressWarnings( "unchecked" )
-	public MastodonViewTrackScheme2< Model, ModelGraph, Spot, Link > createTrackScheme()
+	public MamutViewTrackScheme2 createTrackScheme()
 	{
-		return uiModel.createView( this, MastodonViewTrackScheme2.class );
+		return uiModel.createView( this, MamutViewTrackScheme2.class );
 	}
 
-	@SuppressWarnings( "unchecked" )
-	public MastodonViewTable2< Model, ModelGraph, Spot, Link > createTable()
+	public MamutViewTable2 createTable()
 	{
-		return uiModel.createView( this, MastodonViewTable2.class );
+		return uiModel.createView( this, MamutViewTable2.class );
+	}
+
+	public MamutViewSelectionTable2 createSelectionTable()
+	{
+		return uiModel.createView( this, MamutViewSelectionTable2.class );
 	}
 }
