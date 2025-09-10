@@ -73,4 +73,16 @@ public class BdvAppModel<
 	{
 		return sharedBdvData;
 	}
+
+	@Override
+	public int getTimepointMin()
+	{
+		return 0;
+	}
+
+	@Override
+	public int getTimepointMax()
+	{
+		return sharedBdvData.getNumTimepoints() - 1;
+	}
 }
