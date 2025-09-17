@@ -66,7 +66,7 @@ import org.janelia.saalfeldlab.n5.ij.N5Importer;
 import org.janelia.saalfeldlab.n5.metadata.N5ViewerMultichannelMetadata;
 import org.janelia.saalfeldlab.n5.ui.DatasetSelectorDialog;
 import org.janelia.saalfeldlab.n5.universe.N5Factory;
-import org.janelia.saalfeldlab.n5.universe.N5Factory.StorageFormat;
+import org.janelia.saalfeldlab.n5.universe.StorageFormat;
 import org.janelia.saalfeldlab.n5.universe.metadata.MultiscaleMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.N5SingleScaleMetadata;
@@ -404,21 +404,14 @@ class NewFromUrlPanel extends JPanel
 			String rootPath = null;
 			if ( n5UriOrPath.contains( "?" ) )
 			{
-				try
-				{
-					// need to strip off storage format for n5uri to correctly
-					// remove query;
-					final Pair< StorageFormat, URI > fmtUri = N5Factory.StorageFormat.parseUri( n5UriOrPath );
-					final StorageFormat format = fmtUri.getA();
+				// need to strip off storage format for n5uri to correctly
+				// remove query;
+				final Pair< StorageFormat, URI > fmtUri = StorageFormat.parseUri( n5UriOrPath );
+				final StorageFormat format = fmtUri.getA();
 
-					final N5URI n5uri = new N5URI( URI.create( fmtUri.getB().toString() ) );
-					// add the format prefix back if it was present
-					rootPath = format == null ? n5uri.getContainerPath() : format.toString().toLowerCase() + ":" + n5uri.getContainerPath();
-				}
-				catch ( final URISyntaxException e )
-				{
-					messenger.accept( "The URI is not valid or credentials are missing: " + n5UriOrPath );
-				}
+				final N5URI n5uri = new N5URI( URI.create( fmtUri.getB().toString() ) );
+				// add the format prefix back if it was present
+				rootPath = format == null ? n5uri.getContainerPath() : format.toString().toLowerCase() + ":" + n5uri.getContainerPath();
 			}
 
 			if ( rootPath == null )

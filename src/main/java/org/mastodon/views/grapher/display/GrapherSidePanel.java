@@ -275,7 +275,7 @@ public class GrapherSidePanel< V extends Vertex< E >, E extends Edge< V > > exte
 		return btnPlot;
 	}
 
-	public < V, E > void setFeatures(
+	public void setFeatures(
 			final Map< FeatureSpec< ?, V >, Feature< V > > vertexFeatures,
 			final Map< FeatureSpec< ?, E >, Feature< E > > edgeFeatures )
 	{
@@ -436,6 +436,7 @@ public class GrapherSidePanel< V extends Vertex< E >, E extends Edge< V > > exte
 		return null;
 	}
 
+	@Override
 	public ContextChooser< V > getContextChooser()
 	{
 		return this.contextChooser;
