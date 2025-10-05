@@ -36,11 +36,20 @@ import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
 
 public class MamutBranchTrackSchemeProperties extends DefaultTrackSchemeProperties< BranchSpot, BranchLink >
 {
-	private final ModelBranchGraph modelGraph;
 
 	public MamutBranchTrackSchemeProperties( final ModelBranchGraph modelGraph )
+	{}
+
+	@Override
+	public int getFirstTimePoint( final BranchSpot v )
 	{
-		this.modelGraph = modelGraph;
+		return v.getFirstTimePoint();
+	}
+
+	@Override
+	public String getFirstLabel( final BranchSpot v )
+	{
+		return v.getFirstLabel();
 	}
 
 	@Override
