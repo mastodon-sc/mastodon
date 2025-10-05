@@ -35,6 +35,12 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
 
+/*
+ * TODO: Generalize. This does not need to be Mamut-specific.
+ * However we must be careful that it should only be used with a 
+ * branch graph, lest we have many vertices with the same Y-position
+ * on a single branch.
+ */
 public class MamutHierarchyTrackSchemeProperties extends DefaultTrackSchemeProperties< BranchSpot, BranchLink >
 {
 

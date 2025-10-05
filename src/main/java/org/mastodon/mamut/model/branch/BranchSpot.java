@@ -38,6 +38,9 @@ import org.mastodon.spatial.HasTimepoint;
 
 import net.imglib2.RealLocalizable;
 
+/*
+ * TODO: Generalize. There should be a generic interface specific to branch vertices and edge vertices.
+ */
 public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink, BranchSpotPool, ByteMappedElement >
 		implements HasTimepoint, HasLabel, RealLocalizable
 {
