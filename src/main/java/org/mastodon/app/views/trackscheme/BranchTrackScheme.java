@@ -35,6 +35,7 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.PaintBranchGraph;
 import org.mastodon.views.trackscheme.display.PaintDecorations;
+import org.mastodon.views.trackscheme.display.PaintHierarchicalGraph;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.views.trackscheme.display.TrackSchemeOverlay;
 import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOverlayFactory;
@@ -44,6 +45,23 @@ import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOver
  */
 public class BranchTrackScheme
 {
+
+	/**
+	 * An overlay factory suitable to paint a hierarchical view of the graph.
+	 */
+	public static class HierarchyTrackSchemeOverlayFactory extends TrackSchemeOverlayFactory
+	{
+		@Override
+		public TrackSchemeOverlay create(
+				final TrackSchemeGraph< ?, ? > graph,
+				final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
+				final FocusModel< TrackSchemeVertex > focus,
+				final TrackSchemeOptions options )
+		{
+			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(),
+					new PaintHierarchicalGraph(), options );
+		}
+	}
 
 	/**
 	 * An overlay factory suitable to paint a branch graph.
