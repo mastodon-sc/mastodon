@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,6 +32,7 @@ import org.mastodon.RefPool;
 import org.mastodon.graph.ref.AbstractListenableVertex;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HasLabel;
+import org.mastodon.model.branch.BranchVertex;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.attributes.IntAttributeValue;
 import org.mastodon.spatial.HasTimepoint;
@@ -42,7 +43,7 @@ import net.imglib2.RealLocalizable;
  * TODO: Generalize. There should be a generic interface specific to branch vertices and edge vertices.
  */
 public class BranchSpot extends AbstractListenableVertex< BranchSpot, BranchLink, BranchSpotPool, ByteMappedElement >
-		implements HasTimepoint, HasLabel, RealLocalizable
+		implements HasTimepoint, HasLabel, RealLocalizable, BranchVertex
 {
 
 	private final RefPool< Spot > vertexBimap;
