@@ -1,13 +1,14 @@
 package org.mastodon.mamut.views.trackscheme;
 
+import org.mastodon.app.views.trackscheme.BranchTrackScheme.BranchTrackSchemeOverlayFactory;
 import org.mastodon.app.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackScheme.BranchTrackSchemeOverlayFactory;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
+import org.mastodon.views.trackscheme.wrap.MastodonBranchTrackSchemeProperties;
 
 /**
  * Mamut app-specific TrackScheme view.
@@ -27,7 +28,7 @@ public class MamutViewBranchTrackScheme2 extends MastodonViewTrackScheme2<
 		super(
 				appModel.dataModel().branchModel(),
 				appModel.uiModel(),
-				new MamutBranchTrackSchemeProperties( appModel.dataModel().branchModel().getGraph() ),
+				new MastodonBranchTrackSchemeProperties<>(),
 				new BranchTrackSchemeOverlayFactory(),
 				LongEdgesLineageTreeLayout::new,
 				appModel.getTimepointMin(),

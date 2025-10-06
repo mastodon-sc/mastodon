@@ -9,6 +9,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
+import org.mastodon.views.trackscheme.wrap.MastodonHierarchyTrackSchemeProperties;
 
 /**
  * Mamut app-specific TrackScheme view.
@@ -30,7 +31,7 @@ public class MamutViewHierarchyTrackScheme2 extends MastodonViewTrackScheme2<
 		super(
 				appModel.dataModel().branchModel(),
 				appModel.uiModel(),
-				new MamutHierarchyTrackSchemeProperties( appModel.dataModel().branchModel().getGraph() ),
+				new MastodonHierarchyTrackSchemeProperties<>( appModel.dataModel().branchModel().getGraph() ),
 				new HierarchyTrackSchemeOverlayFactory(),
 				LongEdgesLineageTreeLayout::new,
 				0,
