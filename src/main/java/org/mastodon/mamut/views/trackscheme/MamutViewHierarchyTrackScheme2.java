@@ -36,5 +36,9 @@ public class MamutViewHierarchyTrackScheme2 extends MastodonViewTrackScheme2<
 				LongEdgesLineageTreeLayout::new,
 				0,
 				Math.max( Graphs.maxDepth( appModel.dataModel().getGraph() ), MINIMUM_NUMBER_OF_HIERARCHY_LEVELS_SCROLLABLE ) );
+
+		// Adjust title.
+		final String title = getFrame().getTitle().replace( "TrackScheme", "TrackScheme Hierarchy" );
+		getFrame().setTitle( title );
 	}
 }

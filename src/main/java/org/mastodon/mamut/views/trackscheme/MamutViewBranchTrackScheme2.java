@@ -33,5 +33,9 @@ public class MamutViewBranchTrackScheme2 extends MastodonViewTrackScheme2<
 				LongEdgesLineageTreeLayout::new,
 				appModel.getTimepointMin(),
 				appModel.getTimepointMax() );
+
+		// Adjust title.
+		final String title = getFrame().getTitle().replace( "TrackScheme", "TrackScheme Branch" );
+		getFrame().setTitle( title );
 	}
 }

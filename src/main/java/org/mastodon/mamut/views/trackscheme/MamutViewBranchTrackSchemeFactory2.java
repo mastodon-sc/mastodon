@@ -46,5 +46,4 @@ public class MamutViewBranchTrackSchemeFactory2
 	{
 		return new MamutViewBranchTrackScheme2( appModel );
 	}
-
 }
