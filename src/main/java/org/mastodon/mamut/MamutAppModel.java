@@ -11,6 +11,7 @@ import org.mastodon.mamut.views.MamutViewFactory2;
 import org.mastodon.mamut.views.table.MamutViewSelectionTable2;
 import org.mastodon.mamut.views.table.MamutViewTable2;
 import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackScheme2;
+import org.mastodon.mamut.views.trackscheme.MamutViewHierarchyTrackScheme2;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme2;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.MastodonKeymapManager;
@@ -70,6 +71,11 @@ public class MamutAppModel extends BdvAppModel<
 	public MamutViewBranchTrackScheme2 createBranchTrackScheme()
 	{
 		return uiModel.createView( this, MamutViewBranchTrackScheme2.class );
+	}
+
+	public MamutViewHierarchyTrackScheme2 createHierarchyTrackScheme()
+	{
+		return uiModel.createView( this, MamutViewHierarchyTrackScheme2.class );
 	}
 
 	public MamutViewTable2 createTable()
