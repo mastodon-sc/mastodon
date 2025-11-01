@@ -753,7 +753,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 
 	public static final String PREFERENCES_DIALOG = "Preferences";
 
-	private static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
+	public static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 
 	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
 

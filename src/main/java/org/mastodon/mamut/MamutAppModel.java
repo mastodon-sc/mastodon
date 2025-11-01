@@ -1,5 +1,14 @@
 package org.mastodon.mamut;
 
+import static org.mastodon.app.AppModel.COMPUTE_FEATURE_DIALOG_KEYS;
+import static org.mastodon.app.AppModel.OPEN_ONLINE_DOCUMENTATION_KEYS;
+import static org.mastodon.app.UIModel.COMPUTE_FEATURE_DIALOG;
+import static org.mastodon.app.UIModel.OPEN_ONLINE_DOCUMENTATION;
+import static org.mastodon.app.UIModel.PREFERENCES_DIALOG;
+import static org.mastodon.app.UIModel.PREFERENCES_DIALOG_KEYS;
+import static org.mastodon.app.UIModel.TAGSETS_DIALOG;
+import static org.mastodon.app.UIModel.TAGSETS_DIALOG_KEYS;
+
 import org.mastodon.app.BdvAppModel;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
@@ -17,7 +26,10 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.MastodonKeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.ui.keymap.KeymapManager;
@@ -89,5 +101,26 @@ public class MamutAppModel extends BdvAppModel<
 	public MamutViewSelectionTable2 createSelectionTable()
 	{
 		return uiModel.createView( this, MamutViewSelectionTable2.class );
+	}
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = CommandDescriptionProvider.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigScopes.MAMUT, KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
+			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
+			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS, "Show the feature computation dialog." );
+			descriptions.add( OPEN_ONLINE_DOCUMENTATION, OPEN_ONLINE_DOCUMENTATION_KEYS, "Open a browser with the online documentation for Mastodon." );
+		}
 	}
 }

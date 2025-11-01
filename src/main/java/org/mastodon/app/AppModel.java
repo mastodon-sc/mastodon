@@ -285,7 +285,7 @@ public class AppModel<
 
 	private final static String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 
-	private final static String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
+	public final static String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 
-	private final static String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
+	public final static String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
 }
