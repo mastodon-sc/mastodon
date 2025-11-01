@@ -751,7 +751,20 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 		void viewCreated( final T view );
 	}
 
-	private static final String PREFERENCES_DIALOG = "Preferences";
+	public static final String PREFERENCES_DIALOG = "Preferences";
 
-	private final static String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
+	private static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
+
+	public static final String OPEN_ONLINE_DOCUMENTATION = "open online documentation";
+
+	private static final String[] OPEN_ONLINE_DOCUMENTATION_KEYS = new String[] { "not mapped" };
+
+	public static final String TAGSETS_DIALOG = "edit tag sets";
+
+	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
+
+	public static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
+
+	private static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
+
 }
