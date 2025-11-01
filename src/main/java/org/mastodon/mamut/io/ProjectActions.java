@@ -36,7 +36,7 @@ import javax.swing.JOptionPane;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.mamut.KeyConfigScopes;
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
 import org.mastodon.mamut.launcher.LauncherUtil;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -112,7 +112,7 @@ public class ProjectActions
 	 *            a component to use as parent in dialog (can be
 	 *            <code>null</code>).
 	 */
-	public static void installAppActions( final Actions actions, final ProjectModel appModel, final Frame parentComponent )
+	public static void installAppActions( final Actions actions, final MamutAppModel appModel, final Frame parentComponent )
 	{
 		final RunnableAction saveProjectAction = new RunnableAction( SAVE_PROJECT, runInNewThread( () -> ProjectSaver.saveProject( appModel, parentComponent ) ) );
 		final RunnableAction saveProjectAsAction = new RunnableAction( SAVE_PROJECT_AS, runInNewThread( () -> ProjectSaver.saveProjectAs( appModel, parentComponent ) ) );
@@ -129,7 +129,7 @@ public class ProjectActions
 		actions.namedAction( fixDatasetPathAction, FIX_DATASET_PATH_KEYS );
 	}
 
-	private static void tweakDatasetPath( final ProjectModel appModel, final Frame parentComponent )
+	private static void tweakDatasetPath( final MamutAppModel appModel, final Frame parentComponent )
 	{
 		if ( appModel.getProject() instanceof MamutImagePlusProject )
 		{

@@ -29,8 +29,8 @@
 package org.mastodon.mamut.io;
 
 import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
-import static org.mastodon.mamut.io.ProjectLoader.GUI_TAG;
-import static org.mastodon.mamut.io.ProjectLoader.WINDOWS_TAG;
+import static org.mastodon.mamut.io.ProjectLoader2.GUI_TAG;
+import static org.mastodon.mamut.io.ProjectLoader2.WINDOWS_TAG;
 import static org.mastodon.mamut.io.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT;
 import static org.mastodon.mamut.io.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATTRIBUTE_NAME;
 
@@ -54,12 +54,12 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mastodon.app.MastodonIcons;
+import org.mastodon.app.UIModel;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
+import org.mastodon.io.ViewStateXMLSerialization;
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutViews;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.WindowManager;
-import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProject.ProjectWriter;
@@ -67,7 +67,7 @@ import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.views.MamutViewFactory;
+import org.mastodon.mamut.views.MamutViewFactory2;
 import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
@@ -96,7 +96,7 @@ public class ProjectSaver
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
 	 */
-	public static synchronized void saveProjectAs( final ProjectModel appModel, final Component parentComponent )
+	public static synchronized void saveProjectAs( final MamutAppModel appModel, final Component parentComponent )
 	{
 		final MamutProject project = appModel.getProject();
 		final String projectRoot = getProposedProjectRoot( project );
@@ -213,7 +213,7 @@ public class ProjectSaver
 	 *            a component to use as parent to show dialogs during opening.
 	 *            Can be <code>null</code>.
 	 */
-	public static void saveProject( final ProjectModel appModel, final Component parentComponent )
+	public static void saveProject( final MamutAppModel appModel, final Component parentComponent )
 	{
 		final MamutProject project = appModel.getProject();
 		// If a Mastodon project was not yet created, ask to create one.
@@ -250,11 +250,11 @@ public class ProjectSaver
 	 * @throws IOException
 	 *             if there is an error writing to the file.
 	 */
-	public static synchronized void saveProject( final File saveTo, final ProjectModel appModel ) throws IOException
+	public static synchronized void saveProject( final File saveTo, final MamutAppModel appModel ) throws IOException
 	{
 		// Current project.
 		final MamutProject project = appModel.getProject();
-		final File tmpDatasetXml = ProjectLoader.originalOrBackupDatasetXml( project );
+		final File tmpDatasetXml = ProjectLoader2.originalOrBackupDatasetXml( project );
 
 		// Possibly update project root.
 		project.setProjectRoot( saveTo );
@@ -262,14 +262,14 @@ public class ProjectSaver
 		{
 			MamutProjectIO.save( project, writer );
 			// Synchronize branch graph with main graph before saving. This is required to make saved state consistent.
-			appModel.getBranchGraphSync().sync();
-			final Model model = appModel.getModel();
+			appModel.dataModel().branchGraphSync().sync();
+			final Model model = appModel.dataModel();
 			// Save Raw Graph Model
 			final GraphToFileIdMap< Spot, Link > idmap = model.saveRaw( writer );
 			// Serialize feature model.
-			MamutRawFeatureModelIO.serialize( appModel.getContext(), model, idmap, writer );
+			MamutRawFeatureModelIO2.serialize( appModel.uiModel().getContext(), model, idmap, writer );
 			// Serialize GUI state.
-			saveGUI( writer, appModel.getWindowManager() );
+			saveGUI( writer, appModel.uiModel() );
 			// Save a copy of the Spim Data Xml File
 			saveBackupDatasetXml( tmpDatasetXml, writer );
 			// Set save point.
@@ -279,12 +279,12 @@ public class ProjectSaver
 		// Save BDV settings.
 		// Imperfect because a full saving requires have a view opened,
 		// which is not necessarily our case.
-		final SharedBigDataViewerData sbdv = appModel.getSharedBdvData();
+		final SharedBigDataViewerData sbdv = appModel.imageData();
 		if ( sbdv.getProposedSettingsFile() != null )
 		{
 			final String settingsFile = sbdv.getProposedSettingsFile().getAbsolutePath();
 			final AtomicBoolean alreadySaved = new AtomicBoolean( false );
-			appModel.getWindowManager().forEachView( MamutViewBdv.class, ( v ) -> {
+			appModel.uiModel().forEachView( MamutViewBdv.class, ( v ) -> {
 				if ( !alreadySaved.get() )
 				{
 					try
@@ -309,17 +309,18 @@ public class ProjectSaver
 	 * @throws IOException
 	 *             if an error occurs when writing to the GUI file.
 	 */
-	private static void saveGUI( final ProjectWriter writer, final WindowManager windowManager ) throws IOException
+	private static void saveGUI( final ProjectWriter writer, final UIModel< MamutAppModel > uiModel ) throws IOException
 	{
 		final Element guiRoot = new Element( GUI_TAG );
 		guiRoot.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
 		final Element windows = new Element( WINDOWS_TAG );
-		final MamutViews viewFactories = windowManager.getViewFactories();
-		windowManager.forEachView( ( view ) -> {
+		final UIModel< MamutAppModel >.ViewFactories viewFactories = uiModel.getViewFactories();
+		uiModel.forEachView( ( view ) -> {
 			@SuppressWarnings( "rawtypes" )
-			final MamutViewFactory factory = viewFactories.getFactory( view.getClass() );
+			final
+			MamutViewFactory2 factory = ( MamutViewFactory2 ) viewFactories.getFactory( view.getClass() );
 			@SuppressWarnings( "unchecked" )
-			final Element element = MamutViewStateXMLSerialization.toXml( factory.getGuiState( view ) );
+			final Element element = ViewStateXMLSerialization.toXml( factory.getGuiState( view ) );
 			windows.addContent( element );
 
 		} );
@@ -371,7 +372,7 @@ public class ProjectSaver
 				: fn;
 	}
 
-	private static void saveAndReopenImagePlusProject( final ProjectModel appModel, final Component parentComponent ) throws IOException
+	private static void saveAndReopenImagePlusProject( final MamutAppModel appModel, final Component parentComponent ) throws IOException
 	{
 		final MamutImagePlusProject project = ( MamutImagePlusProject ) appModel.getProject();
 
@@ -387,7 +388,7 @@ public class ProjectSaver
 		 * imp.
 		 */
 		final Element root = new Element( "Settings" );
-		final SharedBigDataViewerData sbdv = appModel.getSharedBdvData();
+		final SharedBigDataViewerData sbdv = appModel.imageData();
 		root.addContent( sbdv.getManualTransformation().toXml() );
 		root.addContent( sbdv.toXmlSetupAssignments() );
 		root.addContent( sbdv.getBookmarks().toXml() );
@@ -421,9 +422,9 @@ public class ProjectSaver
 		}
 
 		// And now the weird part: we reopen the project we just created.
-		final Context context = appModel.getContext();
-		final Model model = appModel.getModel();
-		final ProjectModel nmam = ProjectModel.create( context, model, sbdv, np );
+		final Context context = appModel.uiModel().getContext();
+		final Model model = appModel.dataModel();
+		final MamutAppModel nmam = MamutAppModel.create( context, model, sbdv, np );
 
 		// Offer to save the new project.
 		final File file = FileChooser.chooseFile( true,

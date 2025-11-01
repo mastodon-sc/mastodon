@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.io.importer.simi.SimiImportDialog;
 import org.mastodon.mamut.io.importer.tgmm.TgmmImportDialog;
 import org.mastodon.mamut.io.importer.trackmate.TrackMateImporter;
@@ -63,10 +63,10 @@ public class ProjectImporter
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the user
-	 *         cancels loading or if there is a problem reading the data.
+	 * @return the loaded {@link MamutAppModel}, or <code>null</code> if the
+	 *         user cancels loading or if there is a problem reading the data.
 	 */
-	public static synchronized ProjectModel openMamutWithDialog( final Component parentComponent, final Context context, final Consumer< String > errorConsumer )
+	public static synchronized MamutAppModel openMamutWithDialog( final Component parentComponent, final Context context, final Consumer< String > errorConsumer )
 	{
 		final File file = FileChooser.chooseFile(
 				parentComponent,
@@ -81,9 +81,9 @@ public class ProjectImporter
 		try
 		{
 			final TrackMateImporter importer = new TrackMateImporter( file );
-			final ProjectModel appModel = LauncherUtil.openWithDialog( importer.createProject(), context, parentComponent, errorConsumer );
+			final MamutAppModel appModel = LauncherUtil.openWithDialog( importer.createProject(), context, parentComponent, errorConsumer );
 			final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
-			importer.readModel( appModel.getModel(), featureSpecsService );
+			importer.readModel( appModel.dataModel(), featureSpecsService );
 			return appModel;
 		}
 		catch ( final IOException e )
@@ -105,10 +105,10 @@ public class ProjectImporter
 	 * @param parentComponent
 	 *            a frame to use as parent for the dialog.
 	 */
-	public static synchronized void importSimiDataWithDialog( final ProjectModel appModel, final Frame parentComponent )
+	public static synchronized void importSimiDataWithDialog( final MamutAppModel appModel, final Frame parentComponent )
 	{
 		final SimiImportDialog simiImportDialog = new SimiImportDialog( parentComponent );
-		simiImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );
+		simiImportDialog.showImportDialog( appModel.imageData().getSpimData(), appModel.dataModel() );
 	}
 
 	/**
@@ -123,9 +123,9 @@ public class ProjectImporter
 	 * @param parentComponent
 	 *            a frame to use as parent for the dialog.
 	 */
-	public static synchronized void importTgmmDataWithDialog( final ProjectModel appModel, final Frame parentComponent )
+	public static synchronized void importTgmmDataWithDialog( final MamutAppModel appModel, final Frame parentComponent )
 	{
 		final TgmmImportDialog tgmmImportDialog = new TgmmImportDialog( parentComponent );
-		tgmmImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );
+		tgmmImportDialog.showImportDialog( appModel.imageData().getSpimData(), appModel.dataModel() );
 	}
 }

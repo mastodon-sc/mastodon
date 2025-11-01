@@ -61,7 +61,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.WindowConstants;
 
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
@@ -73,7 +73,7 @@ public class DatasetPathDialog extends JDialog
 
 	private final Path projectRootWoMastodonFile;
 
-	public DatasetPathDialog( final Frame owner, final ProjectModel appModel )
+	public DatasetPathDialog( final Frame owner, final MamutAppModel appModel )
 	{
 		super( owner, "Edit Dataset Path...", true );
 
@@ -303,7 +303,7 @@ public class DatasetPathDialog extends JDialog
 
 		private static final long serialVersionUID = 1L;
 
-		public DummyImageDataParams( final Frame owner, final ProjectModel appModel )
+		public DummyImageDataParams( final Frame owner, final MamutAppModel appModel )
 		{
 			super( owner, "Adjust Dummy Dataset Parameters", true );
 
@@ -356,7 +356,7 @@ public class DatasetPathDialog extends JDialog
 				fromSpots.addActionListener( l -> {
 					final double[] max = new double[ 3 ];
 					final double[] pos = new double[ 3 ];
-					appModel.getModel()
+					appModel.dataModel()
 							.getSpatioTemporalIndex()
 							.forEach( s -> {
 								s.localize( pos );
@@ -370,7 +370,7 @@ public class DatasetPathDialog extends JDialog
 					xSpinner.setValue( ( int ) Math.floor( 1.1 * max[ 0 ] ) );
 					ySpinner.setValue( ( int ) Math.floor( 1.1 * max[ 1 ] ) );
 					zSpinner.setValue( ( int ) Math.floor( 1.1 * max[ 2 ] ) );
-					tpSpinner.setValue( appModel.getMaxTimepoint() + 1 );
+					tpSpinner.setValue( appModel.getTimepointMax() + 1 );
 				} );
 			}
 			content.add( fromSpots, c );

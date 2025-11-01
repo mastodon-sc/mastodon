@@ -44,7 +44,7 @@ import org.mastodon.collection.RefMaps;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjectionKey;
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.io.importer.ModelImporter;
 import org.mastodon.mamut.io.importer.trackmate.TrackMateImportedFeatures;
 import org.mastodon.mamut.model.Link;
@@ -95,10 +95,10 @@ public class GraphMLImporter extends ModelImporter
 	 * @throws IOException
 	 *             if the GraphML file misses some of the required information.
 	 */
-	public static final void importGraphML( final String graphMLFile, final ProjectModel pm, final int setupID, final double spotRadius ) throws IOException
+	public static final void importGraphML( final String graphMLFile, final MamutAppModel pm, final int setupID, final double spotRadius ) throws IOException
 	{
-		final Model model = pm.getModel();
-		final SourceAndConverter< ? > sac = pm.getSharedBdvData().getSources().get( setupID );
+		final Model model = pm.dataModel();
+		final SourceAndConverter< ? > sac = pm.imageData().getSources().get( setupID );
 		final Source< ? > source = sac.getSpimSource();
 		final double[] pixelSizes = new double[ 3 ];
 		source.getVoxelDimensions().dimensions( pixelSizes );

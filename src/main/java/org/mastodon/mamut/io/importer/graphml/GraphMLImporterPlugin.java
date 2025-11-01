@@ -43,9 +43,9 @@ import javax.swing.JOptionPane;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenuBuilder2;
 import org.mastodon.mamut.KeyConfigScopes;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.MamutMenuBuilder2;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.plugin.MamutPlugin;
+import org.mastodon.mamut.app.MamutPlugin2;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
@@ -55,14 +55,14 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 
 import bdv.viewer.SourceAndConverter;
 
-@Plugin( type = MamutPlugin.class )
-public class GraphMLImporterPlugin implements MamutPlugin
+@Plugin( type = MamutPlugin2.class )
+public class GraphMLImporterPlugin implements MamutPlugin2
 {
 
 	private static final String IMPORT_GRAPHML = "import graphml";
 	private static final String[] IMPORT_GRAPHML_KEYS = new String[] { "not mapped" };
 
-	private ProjectModel projectModel;
+	private MamutAppModel projectModel;
 
 	private final RunnableAction importGraphMLAction;
 
@@ -74,11 +74,11 @@ public class GraphMLImporterPlugin implements MamutPlugin
 	}
 
 	@Override
-	public void setAppPluginModel( final ProjectModel projectModel )
+	public void setAppModel( final MamutAppModel projectModel )
 	{
 		this.projectModel = projectModel;
-		final ArrayList< SourceAndConverter< ? > > sources = projectModel.getSharedBdvData().getSources();
-		this.panel = new GraphMLImporterPanel( sources, projectModel.getModel().getSpaceUnits() );
+		final ArrayList< SourceAndConverter< ? > > sources = projectModel.imageData().getSources();
+		this.panel = new GraphMLImporterPanel( sources, projectModel.dataModel().getSpaceUnits() );
 	}
 
 	@Override

@@ -45,10 +45,10 @@ import javax.swing.JOptionPane;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenuBuilder2;
 import org.mastodon.mamut.KeyConfigScopes;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.MamutMenuBuilder2;
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.app.MamutPlugin2;
 import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
-import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.DialogType;
@@ -59,15 +59,14 @@ import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
-@Plugin( type = MamutPlugin.class )
-public class MamutExporterPlugin implements MamutPlugin
+public class MamutExporterPlugin implements MamutPlugin2
 {
 
 	private static final String EXPORT_MAMUT = "export mamut";
 
 	private static final String[] EXPORT_MAMUT_KEYS = new String[] { "not mapped" };
 
-	private ProjectModel projectModel;
+	private MamutAppModel appModel;
 
 	private final RunnableAction exportAction;
 
@@ -77,9 +76,9 @@ public class MamutExporterPlugin implements MamutPlugin
 	}
 
 	@Override
-	public void setAppPluginModel( final ProjectModel projectModel )
+	public void setAppModel( final MamutAppModel appModel )
 	{
-		this.projectModel = projectModel;
+		this.appModel = appModel;
 	}
 
 	@Override
@@ -124,7 +123,7 @@ public class MamutExporterPlugin implements MamutPlugin
 	private void export()
 	{
 		final Component parent = null;
-		final String selectedFile = projectModel.getProjectName() + "-mamut.xml";
+		final String selectedFile = appModel.getProjectName() + "-mamut.xml";
 		final String dialogTitle = "Export to a MaMuT file";
 		final DialogType dialogType = DialogType.SAVE;
 		final Image image = MastodonIcons.MAMUT_EXPORT_ICON_LARGE.getImage();
@@ -134,7 +133,7 @@ public class MamutExporterPlugin implements MamutPlugin
 
 		try
 		{
-			MamutExporter.export( file, projectModel.getModel(), projectModel.getProject() );
+			MamutExporter.export( file, appModel.dataModel(), appModel.getProject() );
 		}
 		catch ( final IOException e )
 		{

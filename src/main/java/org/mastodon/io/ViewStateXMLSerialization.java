@@ -26,24 +26,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io;
+package org.mastodon.io;
 
+import static org.mastodon.app.views.MastodonViewFactory.BRANCH_GRAPH;
+import static org.mastodon.app.views.MastodonViewFactory.COLORBAR_POSITION_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.COLORBAR_VISIBLE_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.FEATURE_COLOR_MODE_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.FRAME_POSITION_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.GROUP_HANDLE_ID_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.NO_COLORING_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.SETTINGS_PANEL_VISIBLE_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.TAG_SET_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.TRACK_COLORING_KEY;
+import static org.mastodon.app.views.MastodonViewFactory.VIEW_TYPE_KEY;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_DISPLAYED;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_ELEMENT;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_NAME;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_VISIBLE_POS;
 import static org.mastodon.app.views.trackscheme.AbstractMastodonViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
-import static org.mastodon.mamut.views.MamutBranchView.BRANCH_GRAPH;
-import static org.mastodon.mamut.views.MamutView.COLORBAR_POSITION_KEY;
-import static org.mastodon.mamut.views.MamutView.COLORBAR_VISIBLE_KEY;
-import static org.mastodon.mamut.views.MamutView.FEATURE_COLOR_MODE_KEY;
-import static org.mastodon.mamut.views.MamutView.FRAME_POSITION_KEY;
-import static org.mastodon.mamut.views.MamutView.GROUP_HANDLE_ID_KEY;
-import static org.mastodon.mamut.views.MamutView.NO_COLORING_KEY;
-import static org.mastodon.mamut.views.MamutView.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.mamut.views.MamutView.TAG_SET_KEY;
-import static org.mastodon.mamut.views.MamutView.TRACK_COLORING_KEY;
-import static org.mastodon.mamut.views.MamutViewFactory.VIEW_TYPE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
 import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_SHOW_EDGES_KEY;
@@ -71,12 +71,10 @@ import org.jdom2.Element;
 import org.mastodon.app.AppModel;
 import org.mastodon.app.UIModel;
 import org.mastodon.app.views.MastodonFrameView2;
-import org.mastodon.mamut.MamutViews;
-import org.mastodon.mamut.WindowManager;
-import org.mastodon.mamut.views.MamutViewI;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.trackscheme.ScreenTransform;
 
+import ij.WindowManager;
 import mpicbg.spim.data.XmlHelpers;
 import net.imglib2.realtransform.AffineGet;
 
@@ -84,7 +82,7 @@ import net.imglib2.realtransform.AffineGet;
  * Utility class that can transform a GUI state
  * <code>Map&lt; String, Object &gt;</code> to XML and vice versa.
  */
-public class MamutViewStateXMLSerialization
+public class ViewStateXMLSerialization
 {
 
 	private static final String WINDOW_TAG = "Window";
@@ -200,46 +198,6 @@ public class MamutViewStateXMLSerialization
 	 *
 	 * @param windowsEl
 	 *            the XML element that stores the GUI state of a view.
-	 * @param windowManager
-	 *            the application {@link WindowManager}.
-	 */
-	public static void fromXml( final Element windowsEl, final WindowManager windowManager )
-	{
-		final MamutViews viewFactories = windowManager.getViewFactories();
-		final Collection< Class< ? extends MamutViewI > > classes = viewFactories.getKeys();
-
-		final List< Element > viewEls = windowsEl.getChildren( WINDOW_TAG );
-		for ( final Element viewEl : viewEls )
-		{
-			final Map< String, Object > guiState = xmlToMap( viewEl );
-			final String typeStr = ( String ) guiState.get( VIEW_TYPE_KEY );
-
-			// First check that we know of the view type in the window manager.
-			Class< ? extends MamutViewI > klass = null;
-			for ( final Class< ? extends MamutViewI > cl : classes )
-			{
-				if ( cl.getSimpleName().equals( typeStr ) )
-				{
-					klass = cl;
-					break;
-				}
-			}
-			if ( klass == null )
-			{
-				System.err.println( "Deserializing GUI state: Unknown view type: " + typeStr + "." );
-				continue;
-			}
-
-			// Create, register the view and sets its GUI state.
-			windowManager.createView( klass, guiState );
-		}
-	}
-
-	/**
-	 * Deserializes a GUI state from XML and recreate view windows as specified.
-	 *
-	 * @param windowsEl
-	 *            the XML element that stores the GUI state of a view.
 	 * @param uiModel
 	 *            the application {@link WindowManager}.
 	 * @param appModel
@@ -274,8 +232,6 @@ public class MamutViewStateXMLSerialization
 
 			// Create, register the view and sets its GUI state.
 			uiModel.createView( appModel, klass, guiState );
-
-			// TODO TODO
 		}
 	}
 

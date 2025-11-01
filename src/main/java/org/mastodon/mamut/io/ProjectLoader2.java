@@ -40,8 +40,8 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.io.ViewStateXMLSerialization;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
 import org.mastodon.mamut.io.project.MamutProject;
@@ -76,7 +76,7 @@ public class ProjectLoader2
 	 *            path to a Mastodon file.
 	 * @param context
 	 *            the current context.
-	 * @return the loaded {@link ProjectModel}.
+	 * @return the loaded {@link MamutAppModel}.
 	 * @throws IOException
 	 *             if the project points to a regular image file for image data,
 	 *             and that file cannot be opened properly, or if there is a
@@ -99,7 +99,7 @@ public class ProjectLoader2
 	 *            the object describing the project on disk.
 	 * @param context
 	 *            the current context.
-	 * @return the loaded {@link ProjectModel}.
+	 * @return the loaded {@link MamutAppModel}.
 	 * @throws IOException
 	 *             if the project points to a regular image file for image data,
 	 *             and that file cannot be opened properly, or if there is a
@@ -127,7 +127,7 @@ public class ProjectLoader2
 	 *            if <code>true</code>, and if the image data cannot be loaded,
 	 *            a dummy image data will be substituted. In that case a
 	 *            {@link SpimDataException} is never thrown.
-	 * @return the loaded {@link ProjectModel}.
+	 * @return the loaded {@link MamutAppModel}.
 	 * @throws IOException
 	 *             if the project points to a regular image file for image data,
 	 *             and that file cannot be opened properly, or if there is a
@@ -156,7 +156,7 @@ public class ProjectLoader2
 	 *            if <code>true</code>, and if the image data cannot be loaded,
 	 *            a dummy image data will be substituted. In that case a
 	 *            {@link SpimDataException} is never thrown.
-	 * @return the loaded {@link ProjectModel}.
+	 * @return the loaded {@link MamutAppModel}.
 	 * @throws IOException
 	 *             if the project points to a regular image file for image data,
 	 *             and that file cannot be opened properly, or if there is a
@@ -342,7 +342,7 @@ public class ProjectLoader2
 				if ( null == windowsEl )
 					return;
 
-				MamutViewStateXMLSerialization.fromXml( windowsEl, appModel );
+				ViewStateXMLSerialization.fromXml( windowsEl, appModel );
 			}
 			catch ( final FileNotFoundException fnfe )
 			{
