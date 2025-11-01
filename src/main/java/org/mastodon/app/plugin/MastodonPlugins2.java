@@ -41,7 +41,7 @@ import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.ui.keymap.Keymap;
 
-public class MastodonPlugins2< PL extends MastodonPlugin2< M >, M extends MastodonAppPluginModel >
+public class MastodonPlugins2< PL extends MastodonPlugin2< M >, M >
 {
 	private final ArrayList< PL > plugins = new ArrayList<>();
 

@@ -44,11 +44,11 @@ import org.scijava.ui.behaviour.util.Actions;
  * is built.
  *
  * @param <M>
- *            the type of {@link MastodonAppPluginModel} this plugin will use.
+ *            the type of app model this plugin will use.
  */
-public interface MastodonPlugin2< M extends MastodonAppPluginModel > extends SciJavaPlugin
+public interface MastodonPlugin2< M > extends SciJavaPlugin
 {
-	void setAppPluginModel( final M appPluginModel );
+	void setAppModel( final M appPluginModel );
 
 	default List< MenuItem > getMenuItems()
 	{

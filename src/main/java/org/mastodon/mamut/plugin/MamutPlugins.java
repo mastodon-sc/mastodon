@@ -29,11 +29,12 @@
 package org.mastodon.mamut.plugin;
 
 import org.mastodon.app.plugin.MastodonPlugins2;
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.app.MamutPlugin2;
 
 import bdv.ui.keymap.Keymap;
 
-public class MamutPlugins extends MastodonPlugins2< MamutPlugin, ProjectModel >
+public class MamutPlugins extends MastodonPlugins2< MamutPlugin2, MamutAppModel >
 {
 
 	public MamutPlugins( final Keymap keymap )
