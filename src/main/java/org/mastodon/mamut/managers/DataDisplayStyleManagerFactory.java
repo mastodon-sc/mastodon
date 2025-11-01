@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.app.UIModel;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
 import org.scijava.Priority;
@@ -36,12 +36,12 @@ import org.scijava.plugin.Plugin;
 
 import bdv.ui.settings.SettingsPage;
 
-@Plugin( type = StyleManagerFactory.class, priority = Priority.NORMAL - 2 )
-public class DataDisplayStyleManagerFactory implements StyleManagerFactory< DataDisplayStyleManager >
+@Plugin( type = StyleManagerFactory2.class, priority = Priority.NORMAL - 2 )
+public class DataDisplayStyleManagerFactory implements StyleManagerFactory2< DataDisplayStyleManager >
 {
 
 	@Override
-	public DataDisplayStyleManager create( final ProjectModel projectModel )
+	public DataDisplayStyleManager create( final UIModel< ? > appModel )
 	{
 		return new DataDisplayStyleManager();
 	}
