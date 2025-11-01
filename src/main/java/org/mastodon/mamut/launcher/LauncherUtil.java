@@ -62,8 +62,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.app.MastodonIcons;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.ui.util.EverythingDisablerAndReenabler;
@@ -105,11 +105,11 @@ public class LauncherUtil
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * @return a new {@link ProjectModel} or <code>null</code> if the user
+	 * @return a new {@link MamutAppModel} or <code>null</code> if the user
 	 *         clicked cancel, or if the BDV file is faulty and the user
 	 *         declined to substitute a dummy dataset.
 	 */
-	public static synchronized ProjectModel createProjectWithDialog( final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
+	public static synchronized MamutAppModel createProjectWithDialog( final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
 	{
 		final File file = FileChooser.chooseFile(
 				parentComponent,
@@ -141,9 +141,9 @@ public class LauncherUtil
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * @return a new {@link ProjectModel}.
+	 * @return a new {@link MamutAppModel}.
 	 */
-	public static ProjectModel createProjectFromBdvFileWithDialog( final File file, final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
+	public static MamutAppModel createProjectFromBdvFileWithDialog( final File file, final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
 	{
 		final MamutProject project = MamutProjectIO.fromBdvFile( file );
 		return openWithDialog( project, context, parentComponent, errorConsumer );
@@ -166,11 +166,11 @@ public class LauncherUtil
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the
+	 * @return the loaded {@link MamutAppModel}, or <code>null</code> if the
 	 *         image cannot be loaded and the user declined to substitute a
 	 *         dummy dataset.
 	 */
-	public static final ProjectModel openWithDialog( final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
+	public static final MamutAppModel openWithDialog( final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
 	{
 		String fn = null;
 		if ( proposedProjectRoot != null )
@@ -222,10 +222,10 @@ public class LauncherUtil
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * @return the loaded {@link ProjectModel}.
+	 * @return the loaded {@link MamutAppModel}.
 	 * 
 	 */
-	public static synchronized ProjectModel openWithDialog( final String mastodonFile, final Context context, final Consumer< String > errorConsumer )
+	public static synchronized MamutAppModel openWithDialog( final String mastodonFile, final Context context, final Consumer< String > errorConsumer )
 	{
 		MamutProject project = null;
 		try
@@ -256,11 +256,11 @@ public class LauncherUtil
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the
+	 * @return the loaded {@link MamutAppModel}, or <code>null</code> if the
 	 *         image cannot be loaded and the user declined to substitute a
 	 *         dummy dataset.
 	 */
-	public static synchronized ProjectModel openWithDialog( final MamutProject project, final Context context, final Consumer< String > errorConsumer )
+	public static synchronized MamutAppModel openWithDialog( final MamutProject project, final Context context, final Consumer< String > errorConsumer )
 	{
 		return openWithDialog( project, context, null, errorConsumer );
 	}
@@ -284,9 +284,9 @@ public class LauncherUtil
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * @return the loaded {@link ProjectModel}.
+	 * @return the loaded {@link MamutAppModel}.
 	 */
-	public static synchronized ProjectModel openWithDialog( final String mastodonFile, final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
+	public static synchronized MamutAppModel openWithDialog( final String mastodonFile, final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
 	{
 		MamutProject project = null;
 		try
@@ -321,15 +321,15 @@ public class LauncherUtil
 	 * @param errorConsumer
 	 *            a consumer that will receive an user-readable error message if
 	 *            something wrong happens.
-	 * @return the loaded {@link ProjectModel}, or <code>null</code> if the
+	 * @return the loaded {@link MamutAppModel}, or <code>null</code> if the
 	 *         image cannot be loaded and the user declined to substitute a
 	 *         dummy dataset.
 	 */
-	public static synchronized ProjectModel openWithDialog( final MamutProject project, final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
+	public static synchronized MamutAppModel openWithDialog( final MamutProject project, final Context context, final Component parentComponent, final Consumer< String > errorConsumer )
 	{
 		try
 		{
-			return ProjectLoader.open( project, context, true, false );
+			return ProjectLoader2.open( project, context, true, false );
 		}
 		catch ( final SpimDataException | IOException | RuntimeException e )
 		{
@@ -337,7 +337,7 @@ public class LauncherUtil
 			{
 				try
 				{
-					return ProjectLoader.open( project, context, true, true );
+					return ProjectLoader2.open( project, context, true, true );
 				}
 				catch ( final Exception e1 )
 				{

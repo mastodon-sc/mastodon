@@ -35,7 +35,7 @@ import static org.mastodon.app.MastodonIcons.MAMUT_IMPORT_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.NEW_FROM_URL_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.NEW_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TGMM_IMPORT_ICON_MEDIUM;
-import static org.mastodon.mamut.WindowManager.DOCUMENTATION_URL;
+import static org.mastodon.mamut.MamutAppModel.DOCUMENTATION_URL;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
