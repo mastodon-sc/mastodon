@@ -42,6 +42,8 @@ public class MamutAppModel extends BdvAppModel<
 
 	private static final int NUM_GROUPS = 3;
 
+	public static final String DOCUMENTATION_URL = "https://mastodon.readthedocs.io/en/latest/";
+
 	private MamutAppModel(
 			final Context context,
 			final Model model,
@@ -58,6 +60,7 @@ public class MamutAppModel extends BdvAppModel<
 				new MastodonKeymapManager( true ),
 				new MamutPlugins( keymapManager.getForwardSelectedKeymap() ),
 				new Actions( keymapManager.getForwardSelectedKeymap().getConfig(), KeyConfigContexts.MASTODON ),
+				project,
 				new String[] { KeyConfigContexts.MASTODON },
 				KeyConfigScopes.MAMUT,
 				NUM_GROUPS );

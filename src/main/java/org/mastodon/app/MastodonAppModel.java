@@ -28,7 +28,7 @@
  */
 package org.mastodon.app;
 
-import org.mastodon.app.plugin.MastodonPlugins;
+import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.ref.AbstractListenableEdge;
@@ -90,7 +90,7 @@ public class MastodonAppModel<
 
 	private final KeymapManager keymapManager;
 
-	private final MastodonPlugins< ?, ? > plugins;
+	private final MastodonPlugins2< ?, ? > plugins;
 
 	private final String[] keyConfigContexts;
 
@@ -129,7 +129,7 @@ public class MastodonAppModel<
 			final M model,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
-			final MastodonPlugins< ?, ? > plugins,
+			final MastodonPlugins2< ?, ? > plugins,
 			final Actions globalActions,
 			final String[] keyConfigContexts )
 	{
@@ -137,6 +137,7 @@ public class MastodonAppModel<
 		this.plugins = plugins;
 		this.projectActions = globalActions;
 
+		@SuppressWarnings( "unchecked" )
 		final ListenableReadOnlyGraph< V, E > graph = ( ListenableReadOnlyGraph< V, E > ) model.getGraph();
 		final GraphIdBimap< V, E > idmap = model.getGraphIdBimap();
 
@@ -209,7 +210,7 @@ public class MastodonAppModel<
 		return keymapManager;
 	}
 
-	public MastodonPlugins< ?, ? > getPlugins()
+	public MastodonPlugins2< ?, ? > getPlugins()
 	{
 		return plugins;
 	}

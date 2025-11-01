@@ -1,5 +1,7 @@
 package org.mastodon.app;
 
+import java.io.File;
+
 import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.DefaultFeatureProjectionsManager;
@@ -7,6 +9,7 @@ import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
@@ -30,6 +33,8 @@ public class BdvAppModel<
 
 	private final SharedBigDataViewerData sharedBdvData;
 
+	private final MamutProject project;
+
 	public BdvAppModel(
 			final Context context,
 			final M model,
@@ -39,6 +44,7 @@ public class BdvAppModel<
 			final KeymapManager keymapManager,
 			final MastodonPlugins2< ?, ? > plugins,
 			final Actions globalActions,
+			final MamutProject project,
 			final String[] keyConfigContexts,
 			final Scope scope,
 			final int numGroups )
@@ -57,6 +63,7 @@ public class BdvAppModel<
 				0,
 				sharedBdvData.getNumTimepoints() - 1 );
 		this.sharedBdvData = sharedBdvData;
+		this.project = project;
 
 		/*
 		 * Add a settings page for feature color modes, that depends on the data
@@ -73,6 +80,11 @@ public class BdvAppModel<
 	{
 		return sharedBdvData;
 	}
+	
+	public MamutProject getProject()
+	{
+		return project;
+	}
 
 	@Override
 	public int getTimepointMin()
@@ -84,5 +96,28 @@ public class BdvAppModel<
 	public int getTimepointMax()
 	{
 		return sharedBdvData.getNumTimepoints() - 1;
+	}
+
+	@Override
+	public String getProjectName()
+	{
+		String name = "";
+		if ( project != null )
+		{
+			final File projectRoot = project.getProjectRoot();
+			if ( projectRoot != null )
+			{
+				name = projectRoot.getName();
+			}
+			else
+			{
+				final File datasetXmlFile = project.getDatasetXmlFile();
+				if ( datasetXmlFile != null )
+					name = datasetXmlFile.getName();
+			}
+		}
+		final int index = name.lastIndexOf( '.' );
+		name = ( index < 0 ) ? name : name.substring( 0, index );
+		return name;
 	}
 }

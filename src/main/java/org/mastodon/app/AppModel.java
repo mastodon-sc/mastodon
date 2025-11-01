@@ -42,7 +42,6 @@ import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.CloseListener;
-import org.mastodon.mamut.MamutFeatureComputation;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.ui.coloring.TrackGraphColorGenerator;
