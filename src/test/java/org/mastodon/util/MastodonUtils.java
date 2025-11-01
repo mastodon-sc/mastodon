@@ -32,13 +32,13 @@ import java.io.IOException;
 
 import javax.swing.WindowConstants;
 
+import org.mastodon.app.UIModel;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.WindowManager;
-import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
@@ -77,7 +77,7 @@ public class MastodonUtils
 				{
 					final RawGraphIO.FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
 					// Load features.
-					MamutRawFeatureModelIO.deserialize( context, model, idmap, reader );
+					MamutRawFeatureModelIO2.deserialize( context, model, idmap, reader );
 				}
 				catch ( final ClassNotFoundException e )
 				{
@@ -92,15 +92,15 @@ public class MastodonUtils
 		}
 	}
 
-	public static WindowManager showGui( final String projectPath )
+	public static UIModel< MamutAppModel > showGui( final String projectPath )
 	{
 		try
 		{
-			final ProjectModel appModel = ProjectLoader.open( MamutProjectIO.load( projectPath ), new Context() );
+			final MamutAppModel appModel = ProjectLoader2.open( MamutProjectIO.load( projectPath ), new Context() );
 			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 			mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-			return appModel.getWindowManager();
+			return appModel.uiModel();
 		}
 		catch ( IOException | SpimDataException e )
 		{
@@ -108,20 +108,20 @@ public class MastodonUtils
 		}
 	}
 
-	public static void logMastodonEvents( final ProjectModel appModel )
+	public static void logMastodonEvents( final MamutAppModel appModel )
 	{
-		final GroupHandle groupHandle = appModel.getGroupManager().createGroupHandle();
+		final GroupHandle groupHandle = appModel.uiModel().getGroupManager().createGroupHandle();
 		groupHandle.setGroupId( 0 );
-		logNavigationHandle( groupHandle.getModel( appModel.NAVIGATION ) );
-		logTimePointModel( groupHandle.getModel( appModel.TIMEPOINT ) );
+		logNavigationHandle( groupHandle.getModel( appModel.uiModel().NAVIGATION ) );
+		logTimePointModel( groupHandle.getModel( appModel.uiModel().TIMEPOINT ) );
 		logFocusModel( appModel );
 		logTagSetModel( appModel );
 	}
 
-	private static void logFocusModel( final ProjectModel appModel )
+	private static void logFocusModel( final MamutAppModel appModel )
 	{
-		final FocusModel< Spot > focusModel = appModel.getFocusModel();
-		final ModelGraph graph = appModel.getModel().getGraph();
+		final FocusModel< Spot > focusModel = appModel.dataModel().getFocusModel();
+		final ModelGraph graph = appModel.dataModel().getGraph();
 		focusModel.listeners().add( () -> {
 			final Spot ref = graph.vertexRef();
 			final Spot focusedSpot = focusModel.getFocusedVertex( ref );
@@ -130,7 +130,8 @@ public class MastodonUtils
 		} );
 	}
 
-	private static void logNavigationHandle( final NavigationHandler< Spot, Link > navigationHandler )
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	private static void logNavigationHandle( final NavigationHandler navigationHandler )
 	{
 		navigationHandler.listeners().add( new NavigationListener< Spot, Link >()
 		{
@@ -153,10 +154,10 @@ public class MastodonUtils
 		model.listeners().add( () -> log( "Time point changed: (to " + model.getTimepoint() + ")" ) );
 	}
 
-	private static void logTagSetModel( final ProjectModel appModel )
+	private static void logTagSetModel( final MamutAppModel appModel )
 	{
 		// TODO
-		final Model model = appModel.getModel();
+		final Model model = appModel.dataModel();
 		final TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
 		tagSetModel.listeners().add( () -> log( "tag set changed" ) );
 	}

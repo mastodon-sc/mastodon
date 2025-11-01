@@ -28,6 +28,22 @@
  */
 package org.mastodon.mamut.io;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Objects;
+
+import org.junit.Test;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.views.bdv.SharedBigDataViewerData;
+import org.scijava.Context;
+
 import ij.ImagePlus;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
@@ -36,21 +52,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImgToVirtualStack;
 import net.imglib2.type.numeric.real.FloatType;
-import org.junit.Test;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.project.MamutProject;
-import org.mastodon.mamut.model.Model;
-import org.mastodon.views.bdv.SharedBigDataViewerData;
-import org.scijava.Context;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Objects;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class ProjectSaverTest
 {
@@ -62,7 +63,7 @@ public class ProjectSaverTest
 			Model model = new Model();
 			Img< FloatType > image = ArrayImgs.floats( 1, 1, 1 );
 			File mastodonFile = File.createTempFile( "test", ".mastodon" );
-			ProjectModel appModel = wrapAsAppModel( image, model, context, mastodonFile );
+			MamutAppModel appModel = wrapAsAppModel( image, model, context, mastodonFile );
 			ProjectSaver.saveProject( mastodonFile, appModel );
 			assertNotNull( mastodonFile );
 			assertTrue( mastodonFile.exists() );
@@ -86,7 +87,7 @@ public class ProjectSaverTest
 			Model model = new Model();
 			Img< FloatType > image = ArrayImgs.floats( 1, 1, 1 );
 			File mastodonDirectory = Files.createTempDirectory( "test" ).toFile();
-			ProjectModel appModel = wrapAsAppModel( image, model, context, mastodonDirectory );
+			MamutAppModel appModel = wrapAsAppModel( image, model, context, mastodonDirectory );
 			ProjectSaver.saveProject( mastodonDirectory, appModel );
 			assertNotNull( mastodonDirectory );
 			assertTrue( mastodonDirectory.exists() );
@@ -106,14 +107,14 @@ public class ProjectSaverTest
 		}
 	}
 
-	private static ProjectModel wrapAsAppModel( final Img< FloatType > image, final Model model, final Context context, final File file )
+	private static MamutAppModel wrapAsAppModel( final Img< FloatType > image, final Model model, final Context context, final File file )
 			throws IOException
 	{
 		final SharedBigDataViewerData sharedBigDataViewerData = asSharedBdvDataXyz( image );
 		MamutProject mamutProject = new MamutProject( file );
 		File datasetXmlFile = File.createTempFile( "test", ".xml" );
 		mamutProject.setDatasetXmlFile( datasetXmlFile );
-		return ProjectModel.create( context, model, sharedBigDataViewerData, mamutProject );
+		return MamutAppModel.create( context, model, sharedBigDataViewerData, mamutProject );
 	}
 
 	private static SharedBigDataViewerData asSharedBdvDataXyz( final Img< FloatType > image1 )

@@ -39,13 +39,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelUtils;
+import org.mastodon.util.ModelUtils;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
@@ -62,15 +62,15 @@ public class SerializeFeatureExample
 
 		// Load project.
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
-		final Model model = appModel.getModel();
+		final MamutAppModel appModel = ProjectLoader2.open( project, new Context() );
+		final Model model = appModel.dataModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		// Compute features.
 		final MamutFeatureComputerService featureComputerService =
-				MamutFeatureComputerService.newInstance( appModel.getContext() );
+				MamutFeatureComputerService.newInstance( appModel.uiModel().getContext() );
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.imageData() );
 		System.out.println( "\nComputing features..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =
@@ -88,9 +88,9 @@ public class SerializeFeatureExample
 
 		System.out.println( "\nReloading." );
 		final MamutProject project2 = MamutProjectIO.load( targetFile.getAbsolutePath() );
-		final ProjectModel appModel2 = ProjectLoader.open( project2, appModel.getContext() );
+		final MamutAppModel appModel2 = ProjectLoader2.open( project2, appModel.uiModel().getContext() );
 		System.out.println( "Done." );
 
-		System.out.println( "\n" + ModelUtils.dump( appModel2.getModel(), 4 ) );
+		System.out.println( "\n" + ModelUtils.dump( appModel2.dataModel(), appModel2.dataModel().getSpaceUnits() ) );
 	}
 }

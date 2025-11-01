@@ -33,8 +33,8 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.scijava.Context;
 import org.scijava.thread.ThreadService;
 
@@ -59,7 +59,7 @@ public class StartMastodonOnProject
 			threadService.run( () -> {
 				try
 				{
-					final ProjectModel appModel = ProjectLoader.open( projectPath, context, true, false );
+					final MamutAppModel appModel = ProjectLoader2.open( projectPath, context, true, false );
 					final MainWindow win = new MainWindow( appModel );
 					win.setVisible( true );
 					win.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );

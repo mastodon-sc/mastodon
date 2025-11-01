@@ -43,8 +43,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -65,15 +65,15 @@ public class RawDeserializationExample
 
 		// Load project.
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
-		final Model model = appModel.getModel();
+		final MamutAppModel appModel = ProjectLoader2.open( project, new Context() );
+		final Model model = appModel.dataModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		// Compute features.
 		final MamutFeatureComputerService featureComputerService =
-				MamutFeatureComputerService.newInstance( appModel.getContext() );
+				MamutFeatureComputerService.newInstance( appModel.uiModel().getContext() );
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.imageData() );
 		System.out.println( "\nComputing features..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =

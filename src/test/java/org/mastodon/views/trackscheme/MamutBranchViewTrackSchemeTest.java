@@ -28,12 +28,14 @@
  */
 package org.mastodon.views.trackscheme;
 
-import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.type.numeric.real.FloatType;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.Test;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.ProjectModelTestUtils;
 import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
@@ -41,14 +43,13 @@ import org.mastodon.mamut.feature.branch.BranchDisplacementDurationFeature;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackScheme;
-import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeHierarchy;
+import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackScheme2;
+import org.mastodon.mamut.views.trackscheme.MamutViewHierarchyTrackScheme2;
 import org.scijava.Context;
 
-import java.io.File;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.type.numeric.real.FloatType;
 
 public class MamutBranchViewTrackSchemeTest
 {
@@ -61,18 +62,18 @@ public class MamutBranchViewTrackSchemeTest
 		{
 			File mastodonFile = File.createTempFile( "test", ".mastodon" );
 			Img< FloatType > image = ArrayImgs.floats( 1, 1, 1 );
-			ProjectModel projectModel = ProjectModelTestUtils.wrapAsAppModel( image, model, context, mastodonFile );
+			MamutAppModel projectModel = ProjectModelTestUtils.wrapAsAppModel( image, model, context, mastodonFile );
 			final MamutFeatureComputerService computerService = MamutFeatureComputerService.newInstance( context );
 			computerService.setModel( model );
 			FeatureProjection< BranchSpot > durationProjection =
 					FeatureComputerTestUtils.getFeatureProjection( context, model, BranchDisplacementDurationFeature.SPEC,
 							BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC );
 			double duration = durationProjection.value( graph.branchSpotA );
-			new MamutBranchViewTrackScheme( projectModel );
+			new MamutViewBranchTrackScheme2( projectModel );
 			Thread.sleep( 1_000 );
 			double durationAfterCreatingTrackSchemeBranch = durationProjection.value( graph.branchSpotA );
 			assertEquals( duration, durationAfterCreatingTrackSchemeBranch, 0 );
-			new MamutBranchViewTrackSchemeHierarchy( projectModel );
+			new MamutViewHierarchyTrackScheme2( projectModel );
 			Thread.sleep( 1_000 );
 			double durationAfterCreatingTrackSchemeHierarchyBranch = durationProjection.value( graph.branchSpotA );
 			assertEquals( duration, durationAfterCreatingTrackSchemeHierarchyBranch, 0 );

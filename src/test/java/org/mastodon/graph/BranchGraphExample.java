@@ -35,8 +35,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.scijava.Context;
 
 public class BranchGraphExample
@@ -50,7 +50,7 @@ public class BranchGraphExample
 			final String projectPath = "samples/test_branchgraph.mastodon";
 			//			final String projectPath = "samples/mette_e1.mastodon";
 			//			final String projectPath = "samples/mette_e1_small.mastodon";
-			final ProjectModel appModel = ProjectLoader.open( projectPath, context );
+			final MamutAppModel appModel = ProjectLoader2.open( projectPath, context );
 			new MainWindow( appModel ).setVisible( true );
 		}
 		catch ( final Exception e1 )

@@ -33,7 +33,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.scijava.Context;
 
@@ -74,7 +74,7 @@ public class StartMastodonWithMissingImageDemo extends JFrame
 		try
 		{
 			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-			final ProjectModel appModel = ProjectLoader.open( MamutProjectIO.load( file ), new Context() );
+			final MamutAppModel appModel = ProjectLoader2.open( MamutProjectIO.load( file ), new Context() );
 			final MainWindow win = new MainWindow( appModel );
 			win.setVisible( true );
 
