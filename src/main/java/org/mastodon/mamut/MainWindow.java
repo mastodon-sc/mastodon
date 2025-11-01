@@ -37,10 +37,10 @@ import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TABLE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_ICON_MEDIUM;
-import static org.mastodon.app.ui.ViewMenuBuilder.item;
-import static org.mastodon.app.ui.ViewMenuBuilder.menu;
-import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.app.ui.ViewMenuBuilder2.item;
+import static org.mastodon.app.ui.ViewMenuBuilder2.menu;
+import static org.mastodon.app.ui.ViewMenuBuilder2.separator;
+import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -68,15 +68,17 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.MastodonIcons;
-import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.UIModel;
+import org.mastodon.app.ui.UIUtils;
+import org.mastodon.app.ui.ViewMenu2;
 import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
 import org.mastodon.mamut.views.grapher.MamutViewGrapherFactory;
-import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory;
-import org.mastodon.mamut.views.table.MamutViewTableFactory;
-import org.mastodon.mamut.views.trackscheme.MamutBranchViewTrackSchemeFactory;
-import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory;
+import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory2;
+import org.mastodon.mamut.views.table.MamutViewTableFactory2;
+import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackSchemeFactory2;
+import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory2;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.RunnableActionPair;
@@ -92,11 +94,11 @@ public class MainWindow extends JFrame
 
 	protected final JMenuBar menubar;
 
-	private final ViewMenu menu;
+	private final ViewMenu2 menu;
 
-	private final ProjectModel appModel;
+	private final MamutAppModel appModel;
 
-	public MainWindow( final ProjectModel appModel )
+	public MainWindow( final MamutAppModel appModel )
 	{
 		super( makeName( appModel ) );
 		this.appModel = appModel;
@@ -106,8 +108,8 @@ public class MainWindow extends JFrame
 
 		// Re-register save actions, this time using this frame as parent
 		// component.
-		ProjectActions.installAppActions( appModel.getProjectActions(), appModel, this );
-		final ActionMap projectActionMap = appModel.getProjectActions().getActionMap();
+		ProjectActions.installAppActions( appModel.uiModel().getProjectActions(), appModel, this );
+		final ActionMap projectActionMap = appModel.uiModel().getProjectActions().getActionMap();
 
 		// Main Panel
 		final JPanel buttonsPanel = new JPanel();
@@ -132,7 +134,7 @@ public class MainWindow extends JFrame
 		viewsLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( viewsLabel, "span, wrap" );
 
-		final JButton tableButton = new JButton( projectActionMap.get( MamutViewTableFactory.NEW_TABLE_VIEW ) );
+		final JButton tableButton = new JButton( projectActionMap.get( MamutViewTableFactory2.NEW_TABLE_VIEW ) );
 		prepareButton( tableButton, "table", TABLE_ICON_MEDIUM );
 		buttonsPanel.add( tableButton, "grow" );
 
@@ -142,13 +144,13 @@ public class MainWindow extends JFrame
 		prepareButton( bdvButton, "bdv", BDV_ICON_MEDIUM );
 		buttonsPanel.add( bdvButton, "grow, wrap" );
 
-		final JButton selectionTableButton = new JButton( projectActionMap.get( MamutViewSelectionTableFactory.NEW_SELECTION_TABLE_VIEW ) );
+		final JButton selectionTableButton = new JButton( projectActionMap.get( MamutViewSelectionTableFactory2.NEW_SELECTION_TABLE_VIEW ) );
 		prepareButton( selectionTableButton, "selection table", TABLE_ICON_MEDIUM );
 		buttonsPanel.add( selectionTableButton, "grow" );
 
-		final JButton trackschemeButton = new JButton( new RunnableActionPair( MamutViewTrackSchemeFactory.NEW_TRACKSCHEME_VIEW,
-				() -> projectActionMap.get( MamutViewTrackSchemeFactory.NEW_TRACKSCHEME_VIEW ).actionPerformed( null ),
-				() -> projectActionMap.get( MamutBranchViewTrackSchemeFactory.NEW_BRANCH_TRACKSCHEME_VIEW ).actionPerformed( null ) ) );
+		final JButton trackschemeButton = new JButton( new RunnableActionPair( MamutViewTrackSchemeFactory2.NEW_TRACKSCHEME_VIEW,
+				() -> projectActionMap.get( MamutViewTrackSchemeFactory2.NEW_TRACKSCHEME_VIEW ).actionPerformed( null ),
+				() -> projectActionMap.get( MamutViewBranchTrackSchemeFactory2.NEW_BRANCH_TRACKSCHEME_VIEW ).actionPerformed( null ) ) );
 		prepareButton( trackschemeButton, "trackscheme", TRACKSCHEME_ICON_MEDIUM );
 		buttonsPanel.add( trackschemeButton, "grow, wrap" );
 
@@ -163,11 +165,11 @@ public class MainWindow extends JFrame
 		prepareButton( grapherButton, "grapher", FEATURES_ICON_MEDIUM );
 		buttonsPanel.add( grapherButton, "grow" );
 
-		final JButton featureComputationButton = new JButton( projectActionMap.get( WindowManager.COMPUTE_FEATURE_DIALOG ) );
+		final JButton featureComputationButton = new JButton( projectActionMap.get( UIModel.COMPUTE_FEATURE_DIALOG ) );
 		prepareButton( featureComputationButton, "compute features", FEATURES_ICON_MEDIUM );
 		buttonsPanel.add( featureComputationButton, "grow, wrap" );
 
-		final JButton editTagSetsButton = new JButton( projectActionMap.get( WindowManager.TAGSETS_DIALOG ) );
+		final JButton editTagSetsButton = new JButton( projectActionMap.get( UIModel.TAGSETS_DIALOG ) );
 		prepareButton( editTagSetsButton, "configure tags", TAGS_ICON_MEDIUM );
 		buttonsPanel.add( editTagSetsButton, "grow, wrap" );
 
@@ -212,12 +214,12 @@ public class MainWindow extends JFrame
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
-		final Keymap keymap = appModel.getKeymapManager().getForwardSelectedKeymap();
-		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
+		final Keymap keymap = appModel.uiModel().getKeymapManager().getForwardSelectedKeymap();
+		menu = new ViewMenu2( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, projectActionMap );
-		appModel.getWindowManager().addWindowMenu( menu, projectActionMap );
-		appModel.getPlugins().addMenus( menu );
+		appModel.uiModel().getViewFactories().addWindowMenuTo( menu, projectActionMap );
+		appModel.uiModel().getPlugins().addMenus( menu );
 
 		setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		addWindowListener( new WindowAdapter()
@@ -233,7 +235,7 @@ public class MainWindow extends JFrame
 		setResizable( false );
 
 		// Register to when the project model is closed.
-		appModel.projectClosedListeners().add( () -> dispose() );
+		appModel.uiModel().closeListeners().add( () -> dispose() );
 
 		// Command finder.
 		final InputActionBindings keybindings = new InputActionBindings();
@@ -243,14 +245,14 @@ public class MainWindow extends JFrame
 		final Actions mwActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
 		mwActions.install( keybindings, "main" );
 		CommandFinder.build()
-				.context( appModel.getContext() )
-				.inputTriggerConfig( appModel.getKeymap().getConfig() )
-				.descriptionProvider( appModel.getWindowManager().getViewFactories().getCommandDescriptions() )
+				.context( appModel.uiModel().getContext() )
+				.inputTriggerConfig( appModel.uiModel().getKeymap().getConfig() )
+				.descriptionProvider( appModel.uiModel().getViewFactories().getCommandDescriptions() )
 				.keyConfigContext( KeyConfigContexts.MASTODON )
-				.register( appModel.getModelActions() )
-				.register( appModel.getProjectActions() )
-				.register( appModel.getPlugins().getPluginActions() )
-				.modificationListeners( appModel.getKeymap().updateListeners() )
+				.register( appModel.uiModel().getModelActions() )
+				.register( appModel.uiModel().getProjectActions() )
+				.register( appModel.uiModel().getPlugins().getPluginActions() )
+				.modificationListeners( appModel.uiModel().getKeymap().updateListeners() )
 				.parent( this )
 				.installOn( mwActions );
 	}
@@ -283,11 +285,11 @@ public class MainWindow extends JFrame
 
 	private void updateWindowNames()
 	{
-		appModel.getWindowManager().forEachWindow( w -> WindowManager.adjustTitle( w, appModel.getProjectName() ) );
+		appModel.uiModel().forEachWindow( w -> UIUtils.adjustTitle( w, appModel.getProjectName() ) );
 		setTitle( makeName( appModel ) );
 	}
 
-	private static final String makeName( final ProjectModel pm )
+	private static final String makeName( final MamutAppModel pm )
 	{
 		final String extra = pm.getProjectName();
 		if ( extra == null || extra.isEmpty() )
@@ -305,8 +307,8 @@ public class MainWindow extends JFrame
 	 */
 	public boolean close()
 	{
-		final Action saveAction = appModel.getModelActions().getActionMap().get( ProjectActions.SAVE_PROJECT );
-		if ( appModel.getModel().isSavePoint() )
+		final Action saveAction = appModel.uiModel().getModelActions().getActionMap().get( ProjectActions.SAVE_PROJECT );
+		if ( appModel.dataModel().isSavePoint() )
 		{
 			appModel.close();
 			return true;
@@ -354,9 +356,9 @@ public class MainWindow extends JFrame
 		button.add( clickMe, BorderLayout.CENTER );
 	}
 
-	public static void addMenus( final ViewMenu menu, final ActionMap actionMap )
+	public static void addMenus( final ViewMenu2 menu, final ActionMap actionMap )
 	{
-		MamutMenuBuilder.build( menu, actionMap,
+		MamutMenuBuilder2.build( menu, actionMap,
 				fileMenu(
 						// item( ProjectActions.CREATE_PROJECT ),
 						// item( ProjectActions.CREATE_PROJECT_FROM_URL ),
@@ -374,8 +376,8 @@ public class MainWindow extends JFrame
 						// item( ProjectActions.IMPORT_MAMUT ),
 						// item( ProjectActions.EXPORT_MAMUT ),
 						// separator(),
-						item( WindowManager.PREFERENCES_DIALOG ),
+						item( UIModel.PREFERENCES_DIALOG ),
 						separator(),
-						item( WindowManager.OPEN_ONLINE_DOCUMENTATION ) ) );
+						item( UIModel.OPEN_ONLINE_DOCUMENTATION ) ) );
 	}
 }

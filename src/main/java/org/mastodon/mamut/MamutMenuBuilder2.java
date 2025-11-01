@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.swing.ActionMap;
 
+import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu2;
 import org.mastodon.app.ui.ViewMenuBuilder2;
@@ -65,8 +66,8 @@ public class MamutMenuBuilder2 extends ViewMenuBuilder2
 		menuTexts.put( ProjectActions.IMPORT_MAMUT, "Import MaMuT project" );
 		menuTexts.put( ProjectActions.EXPORT_MAMUT, "Export MaMuT project" );
 
-		menuTexts.put( WindowManager.OPEN_ONLINE_DOCUMENTATION, "Open online documentation" );
-		menuTexts.put( WindowManager.PREFERENCES_DIALOG, "Preferences..." );
+		menuTexts.put( UIModel.OPEN_ONLINE_DOCUMENTATION, "Open online documentation" );
+		menuTexts.put( UIModel.PREFERENCES_DIALOG, "Preferences..." );
 
 		menuTexts.put( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL, "Settings Toolbar" );
 
