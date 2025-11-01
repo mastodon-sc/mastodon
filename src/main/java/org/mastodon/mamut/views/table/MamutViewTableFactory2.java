@@ -43,6 +43,8 @@ public class MamutViewTableFactory2
 		implements MamutViewFactory2< MamutViewTable2 >
 {
 
+	public static final String NEW_TABLE_VIEW = "new full table view";
+
 	@Override
 	protected TableModelGraphProperties< Spot > getModelGraphProperties( final ModelGraph graph )
 	{
@@ -54,5 +56,11 @@ public class MamutViewTableFactory2
 	{
 		final TableModelGraphProperties< Spot > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
 		return new MamutViewTable2( appModel.dataModel(), appModel.uiModel(), modelGraphProperties );
+	}
+
+	@Override
+	public String getCommandName()
+	{
+		return NEW_TABLE_VIEW;
 	}
 }

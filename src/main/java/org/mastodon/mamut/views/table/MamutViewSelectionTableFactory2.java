@@ -43,6 +43,8 @@ public class MamutViewSelectionTableFactory2
 		implements MamutViewFactory2< MamutViewSelectionTable2 >
 {
 
+	public static final String NEW_SELECTION_TABLE_VIEW = "new selection table view";
+
 	@Override
 	protected TableModelGraphProperties< Spot > getModelGraphProperties( final ModelGraph graph )
 	{
@@ -54,5 +56,11 @@ public class MamutViewSelectionTableFactory2
 	{
 		final TableModelGraphProperties< Spot > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
 		return new MamutViewSelectionTable2( appModel.dataModel(), appModel.uiModel(), modelGraphProperties );
+	}
+
+	@Override
+	public String getCommandName()
+	{
+		return NEW_SELECTION_TABLE_VIEW;
 	}
 }

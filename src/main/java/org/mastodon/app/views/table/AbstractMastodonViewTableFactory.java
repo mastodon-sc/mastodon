@@ -28,8 +28,6 @@
  */
 package org.mastodon.app.views.table;
 
-import static org.mastodon.mamut.views.MamutBranchView.BRANCH_GRAPH;
-
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,12 +42,9 @@ import org.mastodon.app.AppModel;
 import org.mastodon.app.views.AbstractMastodonViewFactory;
 import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
-import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
-import org.scijava.Priority;
-import org.scijava.plugin.Plugin;
 
 /**
  * Factory to create and display Tables.
@@ -77,7 +72,6 @@ import org.scijava.plugin.Plugin;
  * position of the colorbar.
  * </ul>
  */
-@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 2 )
 public abstract class AbstractMastodonViewTableFactory<
 			T extends MastodonViewTable2< ?, ?, ?, ? >,
 			G extends ListenableReadOnlyGraph< ?, ? >,
@@ -85,8 +79,6 @@ public abstract class AbstractMastodonViewTableFactory<
 		extends AbstractMastodonViewFactory< T, AM >
 		implements MastodonViewFactory< T, AM >
 {
-
-	public static final String NEW_TABLE_VIEW = "new full table view";
 
 	/**
 	 * Key that specifies whether a table is currently showing the vertex table.
@@ -224,12 +216,6 @@ public abstract class AbstractMastodonViewTableFactory<
 						viewPos[ 1 ] ) );
 			}
 		}
-	}
-
-	@Override
-	public String getCommandName()
-	{
-		return NEW_TABLE_VIEW;
 	}
 
 	@Override

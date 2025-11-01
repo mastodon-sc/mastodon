@@ -41,9 +41,17 @@ public class MamutViewHierarchyTrackSchemeFactory2
 		implements MamutViewFactory2< MamutViewHierarchyTrackScheme2 >
 {
 
+	public static final String NEW_HIERARCHY_TRACKSCHEME_VIEW = "new hierarchy trackscheme view";
+
 	@Override
 	public MamutViewHierarchyTrackScheme2 create( final MamutAppModel appModel )
 	{
 		return new MamutViewHierarchyTrackScheme2( appModel );
+	}
+
+	@Override
+	public String getCommandName()
+	{
+		return NEW_HIERARCHY_TRACKSCHEME_VIEW;
 	}
 }

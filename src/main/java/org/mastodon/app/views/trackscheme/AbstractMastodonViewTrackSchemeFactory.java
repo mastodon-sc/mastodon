@@ -55,12 +55,6 @@ public abstract class AbstractMastodonViewTrackSchemeFactory<
 {
 
 	@Override
-	public String getCommandName()
-	{
-		return NEW_TRACKSCHEME_VIEW;
-	}
-
-	@Override
 	public String getCommandDescription()
 	{
 		return "Open a new TrackScheme view.";
@@ -101,8 +95,6 @@ public abstract class AbstractMastodonViewTrackSchemeFactory<
 		if ( null != tLoaded )
 			trackSchemePanel.getScreenTransform().set( tLoaded );
 	}
-
-	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 
 	/**
 	 * Key for the transform in a TrackScheme view. Value is a

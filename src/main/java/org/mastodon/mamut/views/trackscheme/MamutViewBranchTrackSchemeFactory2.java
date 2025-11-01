@@ -41,9 +41,17 @@ public class MamutViewBranchTrackSchemeFactory2
 		implements MamutViewFactory2< MamutViewBranchTrackScheme2 >
 {
 
+	public static final String NEW_BRANCH_TRACKSCHEME_VIEW = "new branch trackscheme view";
+
 	@Override
 	public MamutViewBranchTrackScheme2 create( final MamutAppModel appModel )
 	{
 		return new MamutViewBranchTrackScheme2( appModel );
+	}
+
+	@Override
+	public String getCommandName()
+	{
+		return NEW_BRANCH_TRACKSCHEME_VIEW;
 	}
 }
