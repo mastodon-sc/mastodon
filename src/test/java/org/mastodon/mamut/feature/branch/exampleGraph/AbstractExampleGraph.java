@@ -55,7 +55,7 @@ public abstract class AbstractExampleGraph
 	{
 		this.model = new Model();
 		this.modelGraph = model.getGraph();
-		this.modelBranchGraph = model.getBranchGraph();
+		this.modelBranchGraph = model.branchModel().getGraph();
 		this.branchGraphRequiresRebuild = false;
 	}
 
@@ -66,13 +66,13 @@ public abstract class AbstractExampleGraph
 		return model;
 	}
 
-	public BranchSpot getBranchSpot(@Nonnull Spot spot)
+	public BranchSpot getBranchSpot(@Nonnull final Spot spot)
 	{
 		rebuiltGraphIfRequired();
 		return modelBranchGraph.getBranchVertex( spot, modelBranchGraph.vertexRef() );
 	}
 
-	public BranchLink getBranchLink( @Nonnull Link link )
+	public BranchLink getBranchLink( @Nonnull final Link link )
 	{
 		rebuiltGraphIfRequired();
 		return modelBranchGraph.getBranchEdge( link, modelBranchGraph.edgeRef() );
@@ -82,22 +82,22 @@ public abstract class AbstractExampleGraph
 	{
 		if ( ! branchGraphRequiresRebuild )
 			return;
-		this.model.getBranchGraph().graphRebuilt();
+		this.model.branchModel().getGraph().graphRebuilt();
 		branchGraphRequiresRebuild = false;
 	}
 
-	protected Spot addNode( @Nonnull String label, int timepoint, double[] xyz )
+	protected Spot addNode( @Nonnull final String label, final int timepoint, final double[] xyz )
 	{
-		Spot spot = modelGraph.addVertex();
+		final Spot spot = modelGraph.addVertex();
 		spot.init( timepoint, xyz, 0 );
 		spot.setLabel( label );
 		branchGraphRequiresRebuild = true;
 		return spot;
 	}
 
-	protected Link addEdge( @Nonnull Spot source, @Nonnull Spot target )
+	protected Link addEdge( @Nonnull final Spot source, @Nonnull final Spot target )
 	{
-		Link link = modelGraph.addEdge( source, target );
+		final Link link = modelGraph.addEdge( source, target );
 		branchGraphRequiresRebuild = true;
 		return link;
 	}

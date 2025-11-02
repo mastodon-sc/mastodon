@@ -56,7 +56,7 @@ public class BranchTrackSchemeRootsModelTest
 		final Model model = new Model();
 		final ModelGraph modelGraph = model.getGraph();
 		final Spot spotA = modelGraph.addVertex().init( 0, new double[ 3 ], 1 );
-		final ModelBranchGraph branchGraph = model.getBranchGraph();
+		final ModelBranchGraph branchGraph = model.branchModel().getGraph();
 		branchGraph.graphRebuilt();
 		final TrackSchemeGraph< BranchSpot, BranchLink > viewGraph = createTrackSchemeGraph( branchGraph );
 		final TrackSchemeVertex vertexA = viewGraph.getRoots().iterator().next();
@@ -70,7 +70,7 @@ public class BranchTrackSchemeRootsModelTest
 		assertEquals( 0, rootsModel.getRoots().size() );
 	}
 
-	private static TrackSchemeGraph< BranchSpot, BranchLink > createTrackSchemeGraph( ModelBranchGraph branchGraph )
+	private static TrackSchemeGraph< BranchSpot, BranchLink > createTrackSchemeGraph( final ModelBranchGraph branchGraph )
 	{
 		final TrackSchemeProperties< BranchSpot, BranchLink > properties =
 				new DefaultTrackSchemeProperties< BranchSpot, BranchLink >()

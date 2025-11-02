@@ -30,8 +30,7 @@ package org.mastodon.graph.revised;
 
 import java.io.IOException;
 
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.io.importer.ModelImporter;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
@@ -187,16 +186,15 @@ public class CreateLargeModelExample
 		final Context context = new Context();
 		final SharedBigDataViewerData imagedata = SharedBigDataViewerData.fromDummyFilename( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" );
 		final MamutProject project = new MamutProject( "./large_model_example.mastodon" );
-		final ProjectModel appModel = ProjectModel.create( context, model, imagedata, project  );
-		final WindowManager wm = new WindowManager( appModel  );
+		final MamutAppModel appModel = MamutAppModel.create( context, model, imagedata, project );
 
 //		start = System.currentTimeMillis();
-//		wm.createBigDataViewer();
+//		appModel.createBigDataViewer();
 //		end = System.currentTimeMillis();
 //		System.out.println( "Rendering in the main viewer done in " + ( end - start ) / 1000. + " s." );
 //
 //		start = System.currentTimeMillis();
-//		wm.createTrackScheme( );
+//		appModel.createTrackScheme();
 //		end = System.currentTimeMillis();
 //		System.out.println( "Rendering in TrackScheme done in " + ( end - start ) / 1000. + " s." );
 	}

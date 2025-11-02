@@ -31,8 +31,8 @@ package org.mastodon.mamut.feature;
 import java.io.IOException;
 
 import org.jdom2.JDOMException;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
@@ -52,14 +52,14 @@ public class SpotIntensityBenchmark
 		 */
 
 		final MamutProject project = MamutProjectIO.load( "/Users/tinevez/Projects/JYTinevez/MaMuT/Mastodon-dataset/MaMuT_Parhyale_demo.mastodon" );
-		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
-		final Model model = appModel.getModel();
+		final MamutAppModel appModel = ProjectLoader2.open( project, new Context() );
+		final Model model = appModel.dataModel();
 
 		// Just keep the 1st time-point, or else....
 		System.out.println( "Removing all time-points but the first one." );
 		model.getSpatioTemporalIndex().getSpatialIndex( 0 );
-		final int minTimepoint = appModel.getMinTimepoint();
-		final int maxTimepoint = appModel.getMaxTimepoint();
+		final int minTimepoint = appModel.getTimepointMin();
+		final int maxTimepoint = appModel.getTimepointMax();
 		for ( int t = minTimepoint + 1; t < maxTimepoint; t++ )
 		{
 			for ( final Spot spot : model.getSpatioTemporalIndex().getSpatialIndex( t ) )
@@ -71,11 +71,11 @@ public class SpotIntensityBenchmark
 		 * 1.1a. Compute spot intensity feature for all.
 		 */
 
-		final Context context = appModel.getContext();
+		final Context context = appModel.uiModel().getContext();
 		final MamutFeatureComputerService featureComputerService =
 				MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.imageData() );
 		System.out.println( "Computing spot intensity..." );
 		for ( int i = 0; i < 5; i++ )
 		{

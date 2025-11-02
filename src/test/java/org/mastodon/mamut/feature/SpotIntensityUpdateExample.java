@@ -38,8 +38,8 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
@@ -59,8 +59,8 @@ public class SpotIntensityUpdateExample
 		 */
 
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
-		final Model model = appModel.getModel();
+		final MamutAppModel appModel = ProjectLoader2.open( project, new Context() );
+		final Model model = appModel.dataModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		// Keep a spot for later
@@ -70,11 +70,11 @@ public class SpotIntensityUpdateExample
 		 * 1.1a. Compute spot intensity feature for all.
 		 */
 
-		final Context context = appModel.getContext();
+		final Context context = appModel.uiModel().getContext();
 		final MamutFeatureComputerService featureComputerService =
 				MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.imageData() );
 		System.out.println( "Computing spot intensity..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute(

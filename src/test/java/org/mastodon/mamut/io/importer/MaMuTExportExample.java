@@ -39,16 +39,16 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.TrackSizeFeature;
-import org.mastodon.mamut.io.ProjectLoader;
+import org.mastodon.mamut.io.ProjectLoader2;
 import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
 import org.mastodon.mamut.io.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelUtils;
+import org.mastodon.util.ModelUtils;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
@@ -63,20 +63,20 @@ public class MaMuTExportExample
 		 */
 
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final ProjectModel appModel = ProjectLoader.open( project, new Context() );
-		final Model model = appModel.getModel();
+		final MamutAppModel appModel = ProjectLoader2.open( project, new Context() );
+		final Model model = appModel.dataModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		/*
 		 * 1.1a. Compute all features.
 		 */
 
-		final Context context = appModel.getContext();
+		final Context context = appModel.uiModel().getContext();
 		final MamutFeatureComputerService featureComputerService =
 				MamutFeatureComputerService.newInstance( context );
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.imageData() );
 		System.out.println( "Computing all discovered features: " + featureKeys );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute( featureKeys );
 		System.out.println( "Done." );
@@ -101,7 +101,7 @@ public class MaMuTExportExample
 
 		System.out.println();
 		System.out.println( "Model BEFORE serialization:" );
-		System.out.println( ModelUtils.dump( model, 10 ) );
+		System.out.println( ModelUtils.dump( model, model.getSpaceUnits() ) );
 		System.out.println();
 
 		/*
@@ -124,7 +124,7 @@ public class MaMuTExportExample
 		new TrackMateImporter( targetFile ).readModel( importedModel );
 		System.out.println();
 		System.out.println( "Model AFTER de-serialization:" );
-		System.out.println( ModelUtils.dump( importedModel, 10 ) );
+		System.out.println( ModelUtils.dump( importedModel, importedModel.getSpaceUnits() ) );
 
 		/*
 		 * Test for name clash: recompute a feature that we already imported,
@@ -132,7 +132,7 @@ public class MaMuTExportExample
 		 */
 
 		featureComputerService.setModel( importedModel );
-		featureComputerService.setSharedBdvData( appModel.getSharedBdvData() );
+		featureComputerService.setSharedBdvData( appModel.imageData() );
 		System.out.println( "Computing feature: " + TrackSizeFeature.SPEC );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 =
 				featureComputerService.compute( Collections.singleton( TrackSizeFeature.SPEC ) );
@@ -142,7 +142,7 @@ public class MaMuTExportExample
 
 		System.out.println();
 		System.out.println( "Model BEFORE serialization:" );
-		System.out.println( ModelUtils.dump( importedModel, 10 ) );
+		System.out.println( ModelUtils.dump( importedModel, importedModel.getSpaceUnits() ) );
 		System.out.println();
 
 		MamutExporter.export( targetFile, importedModel, project );
@@ -150,6 +150,6 @@ public class MaMuTExportExample
 		new TrackMateImporter( targetFile ).readModel( importedModel );
 		System.out.println();
 		System.out.println( "Model AFTER de-serialization EXTRA:" );
-		System.out.println( ModelUtils.dump( importedModel, 10 ) );
+		System.out.println( ModelUtils.dump( importedModel, importedModel.getSpaceUnits() ) );
 	}
 }

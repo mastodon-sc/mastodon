@@ -62,7 +62,7 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.algorithm.ConnectedComponents;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
+import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
@@ -314,7 +314,7 @@ public class MaMuTExporterTest
 		try (final MamutProject.ProjectReader reader = project.openForReading())
 		{
 			final RawGraphIO.FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
-			MamutRawFeatureModelIO.deserialize( context, model, idmap, reader );
+			MamutRawFeatureModelIO2.deserialize( context, model, idmap, reader );
 		}
 		catch ( final ClassNotFoundException e )
 		{

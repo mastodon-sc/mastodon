@@ -41,6 +41,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.mastodon.mamut.io.importer.ModelImporter;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.ModelUtils;
 import org.mastodon.util.TagSetUtils;
 
 /**
@@ -201,7 +202,7 @@ public class ModelUndoRedoTest
 
 		private static String modelAsString( final Model model )
 		{
-			return ModelUtils.dump( model, ModelUtils.DumpFlags.PRINT_TAGS );
+			return ModelUtils.dump( model, model.getSpaceUnits(), 100000000, ModelUtils.DumpFlags.PRINT_TAGS );
 		}
 	}
 

@@ -35,6 +35,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
+import org.mastodon.util.ModelUtils;
 import org.mastodon.util.TagHelper;
 import org.mastodon.util.TagSetUtils;
 
@@ -53,7 +54,7 @@ public class ModelUtilsTest
 		a.setLabel( "A" );
 		b.setLabel( "B" );
 		graph.addEdge( a, b ).init();
-		final String actual = ModelUtils.dump( model );
+		final String actual = ModelUtils.dump( model, model.getSpaceUnits() );
 		final String expexted = "Model " + model + "\n"
 				+ "Spots:\n"
 				+ "       Id      Label   Frame          X          Y          Z    N incoming links    N outgoing links    Spot N links    Spot frame          X          Y          Z    Spot radius\n"
@@ -88,7 +89,7 @@ public class ModelUtilsTest
 		final TagHelper tag2 = new TagHelper( model, "my tag set", "tag2" );
 		tag2.tagSpot( b );
 		tag2.tagLink( edge );
-		final String actual = ModelUtils.dump( model, ModelUtils.DumpFlags.PRINT_TAGS );
+		final String actual = ModelUtils.dump( model, model.getSpaceUnits(), 1000000000, ModelUtils.DumpFlags.PRINT_TAGS );
 		final String expected = "Spots:\n"
 				+ "       Id      Label   Frame          X          Y          Z  my tag set\n"
 				+ "                                (pixel)    (pixel)    (pixel)            \n"
