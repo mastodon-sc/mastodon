@@ -38,6 +38,16 @@ import org.mastodon.views.grapher.datagraph.DataGraph.DataVertexPool;
 
 import net.imglib2.RealLocalizable;
 
+/**
+ * A vertex in a {@link DataGraph}, representing a model vertex, and holding
+ * layout information. The layout position is in 2D space (X,Y).
+ * <p>
+ * This data vertex also has a label, to display in the graph, and time-points.
+ * A time-point is normally not required to display data in a grapher, but this
+ * property is used to navigate within a track, e.g. to move across siblings.
+ *
+ * @author Jean-Yves Tinevez
+ */
 public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement >
 		implements HasLabel, HasTimepoint, RealLocalizable
 {

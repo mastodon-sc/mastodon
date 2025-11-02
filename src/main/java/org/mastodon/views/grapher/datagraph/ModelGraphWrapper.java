@@ -31,15 +31,19 @@ package org.mastodon.views.grapher.datagraph;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
-import org.mastodon.model.HasLabel;
 
-public class ModelGraphWrapper< V extends Vertex< E > & HasLabel, E extends Edge< V > >
+public class ModelGraphWrapper< 
+		V extends Vertex< E >, 
+		E extends Edge< V > >
 {
 	final GraphIdBimap< V, E > idmap;
 
-	ModelGraphWrapper( final GraphIdBimap< V, E > idmap )
+	private final DataGraphProperties< V, E > properties;
+
+	ModelGraphWrapper( final GraphIdBimap< V, E > idmap, final DataGraphProperties< V, E > properties )
 	{
 		this.idmap = idmap;
+		this.properties = properties;
 	}
 
 	ModelVertexWrapper createVertexWrapper( final DataVertex vertex )
@@ -66,12 +70,12 @@ public class ModelGraphWrapper< V extends Vertex< E > & HasLabel, E extends Edge
 
 		public String getLabel()
 		{
-			return getModelVertex().getLabel();
+			return properties.getLabel( getModelVertex() );
 		}
 
 		public void setLabel( final String label )
 		{
-			getModelVertex().setLabel( label );
+			properties.setLabel( getModelVertex(), label );
 		}
 
 		public V getReusableRef()
