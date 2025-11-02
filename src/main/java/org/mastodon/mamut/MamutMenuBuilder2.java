@@ -49,6 +49,11 @@ import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 
 import bdv.BigDataViewerActions;
 
+/**
+ * TODO: This lives in the Mamut specific package. However it could be made
+ * generic with a few changes. This is important, as a few core classes depend
+ * on it.
+ */
 public class MamutMenuBuilder2 extends ViewMenuBuilder2
 {
 	static Map< String, String > menuTexts = new HashMap<>();
