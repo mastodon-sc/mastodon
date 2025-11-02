@@ -15,6 +15,7 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.grapher.MamutViewBranchGrapher;
 import org.mastodon.mamut.views.grapher.MamutViewGrapher;
 import org.mastodon.mamut.views.table.MamutViewSelectionTable2;
 import org.mastodon.mamut.views.table.MamutViewTable2;
@@ -105,6 +106,11 @@ public class MamutAppModel extends BdvAppModel<
 	public MamutViewGrapher createGrapher()
 	{
 		return uiModel.createView( this, MamutViewGrapher.class );
+	}
+
+	public MamutViewBranchGrapher createBranchGrapher()
+	{
+		return uiModel.createView( this, MamutViewBranchGrapher.class );
 	}
 
 	/*
