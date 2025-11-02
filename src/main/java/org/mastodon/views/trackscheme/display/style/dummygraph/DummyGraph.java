@@ -42,6 +42,8 @@ import org.mastodon.graph.object.AbstractObjectGraph;
 import org.mastodon.graph.object.AbstractObjectIdGraph;
 import org.mastodon.model.DefaultSelectionModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.properties.PropertyChangeListener;
+import org.mastodon.views.grapher.datagraph.DataGraphProperties;
 
 public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge >
 		implements ListenableGraph< DummyVertex, DummyEdge >
@@ -97,7 +99,7 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge >
 
 		public SelectionModel< DummyVertex, DummyEdge > getSelectionModel()
 		{
-			DefaultSelectionModel< DummyVertex, DummyEdge > selectionModel = new DefaultSelectionModel<>( graph, graph.getIdBimap() );
+			final DefaultSelectionModel< DummyVertex, DummyEdge > selectionModel = new DefaultSelectionModel<>( graph, graph.getIdBimap() );
 			selectionModel.setEdgesSelected( edges, true );
 			selectionModel.setVerticesSelected( vertices, true );
 			return selectionModel;
@@ -330,5 +332,49 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge >
 	public boolean removeGraphChangeListener( final GraphChangeListener listener )
 	{
 		return false;
+	}
+
+	public DataGraphProperties< DummyVertex, DummyEdge > getDataGraphProperties()
+	{
+		return new DummyDataGraphProperties();
+	}
+
+	private class DummyDataGraphProperties implements DataGraphProperties< DummyVertex, DummyEdge >
+	{
+		@Override
+		public String getLabel( final DummyVertex v )
+		{
+			return v.getLabel();
+		}
+
+		@Override
+		public void setLabel( final DummyVertex v, final String label )
+		{
+			v.setLabel( label );
+		}
+
+		@Override
+		public void addVertexLabelListener( final PropertyChangeListener< DummyVertex > listener )
+		{}
+
+		@Override
+		public void removeVertexLabelListener( final PropertyChangeListener< DummyVertex > vertexLabelListener )
+		{}
+
+		@Override
+		public int getTimepoint( final DummyVertex v )
+		{
+			return v.getTimepoint();
+		}
+
+		@Override
+		public void notifyGraphChanged()
+		{}
+
+		@Override
+		public int getNSources()
+		{
+			return 1;
+		}
 	}
 }

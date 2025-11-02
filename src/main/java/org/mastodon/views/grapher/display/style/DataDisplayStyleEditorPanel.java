@@ -125,7 +125,7 @@ public class DataDisplayStyleEditorPanel extends JPanel
 		final DummyGraph.Examples ex = DummyGraph.Examples.DIVIDING_CELL;
 		final DummyGraph example = ex.getGraph();
 		final GraphIdBimap< DummyVertex, DummyEdge > idmap = example.getIdBimap();
-		final DataGraph< DummyVertex, DummyEdge > graph = new DataGraph<>( example, idmap );
+		final DataGraph< DummyVertex, DummyEdge > graph = new DataGraph<>( example, idmap, example.getDataGraphProperties() );
 		final RefBimap< DummyVertex, DataVertex > vertexMap = new DataVertexBimap<>( graph );
 		final RefBimap< DummyEdge, DataEdge > edgeMap = new DataEdgeBimap<>( graph );
 		final HighlightModel< DataVertex, DataEdge > highlight =
@@ -135,7 +135,7 @@ public class DataDisplayStyleEditorPanel extends JPanel
 		final SelectionModel< DataVertex, DataEdge > selection =
 				new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
 		final NavigationHandler< DataVertex, DataEdge > navigation = new DefaultNavigationHandler<>();
-		final DataDisplayOptions< DataVertex, DataEdge > options = DataDisplayOptions.options();
+		final DataDisplayOptions options = DataDisplayOptions.options();
 		options.style( style );
 
 		// Layout.
