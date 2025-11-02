@@ -1,7 +1,5 @@
 package org.mastodon.mamut;
 
-import static org.mastodon.app.AppModel.COMPUTE_FEATURE_DIALOG_KEYS;
-import static org.mastodon.app.AppModel.OPEN_ONLINE_DOCUMENTATION_KEYS;
 import static org.mastodon.app.UIModel.COMPUTE_FEATURE_DIALOG;
 import static org.mastodon.app.UIModel.OPEN_ONLINE_DOCUMENTATION;
 import static org.mastodon.app.UIModel.PREFERENCES_DIALOG;
@@ -17,6 +15,7 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.grapher.MamutViewGrapher;
 import org.mastodon.mamut.views.table.MamutViewSelectionTable2;
 import org.mastodon.mamut.views.table.MamutViewTable2;
 import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackScheme2;
@@ -101,6 +100,11 @@ public class MamutAppModel extends BdvAppModel<
 	public MamutViewSelectionTable2 createSelectionTable()
 	{
 		return uiModel.createView( this, MamutViewSelectionTable2.class );
+	}
+
+	public MamutViewGrapher createGrapher()
+	{
+		return uiModel.createView( this, MamutViewGrapher.class );
 	}
 
 	/*
