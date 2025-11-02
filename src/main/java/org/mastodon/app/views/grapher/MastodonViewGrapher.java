@@ -126,7 +126,7 @@ public class MastodonViewGrapher<
 
 	private final DataDisplayPanel< V, E > panel;
 
-	MastodonViewGrapher(
+	protected MastodonViewGrapher(
 			final M dataModel,
 			final UIModel< ? > uiModel,
 			final DataGraphProperties< V, E > properties
