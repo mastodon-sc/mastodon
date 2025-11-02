@@ -39,6 +39,16 @@ import static org.mastodon.app.views.MastodonViewFactory.SETTINGS_PANEL_VISIBLE_
 import static org.mastodon.app.views.MastodonViewFactory.TAG_SET_KEY;
 import static org.mastodon.app.views.MastodonViewFactory.TRACK_COLORING_KEY;
 import static org.mastodon.app.views.MastodonViewFactory.VIEW_TYPE_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_SHOW_EDGES_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_TRANSFORM_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_PROJECTION_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_SPEC_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_INCOMING_EDGE_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_IS_EDGE_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_PROJECTION_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_SPEC_KEY;
+import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_INCOMING_EDGE_KEY;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_DISPLAYED;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_ELEMENT;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_NAME;
@@ -46,16 +56,6 @@ import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABL
 import static org.mastodon.app.views.trackscheme.AbstractMastodonViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_SHOW_EDGES_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_TRANSFORM_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_PROJECTION_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_SPEC_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_INCOMING_EDGE_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_IS_EDGE_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_PROJECTION_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_SPEC_KEY;
-import static org.mastodon.mamut.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_INCOMING_EDGE_KEY;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
