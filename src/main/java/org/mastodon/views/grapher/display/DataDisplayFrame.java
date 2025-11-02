@@ -48,12 +48,9 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.HasLabel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.util.FeatureUtils;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.grapher.datagraph.DataEdge;
@@ -63,7 +60,7 @@ import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 
-public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends ViewFrame implements Plotable
+public class DataDisplayFrame< V extends Vertex< E >, E extends Edge< V > > extends ViewFrame implements Plotable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -82,10 +79,9 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final FocusModel< DataVertex > focus,
 			final SelectionModel< DataVertex, DataEdge > selection,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
-			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< V > contextChooser,
-			final DataDisplayOptions< DataVertex, DataEdge > optional )
+			final DataDisplayOptions optional )
 	{
 		super( "Grapher" );
 
@@ -192,7 +188,8 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 	 * Plots the grapher view.
 	 * @param keepCurrentScreenTransform if {@code true}, the current screen transform is kept, otherwise it zoomed out fully.
 	 */
-	public void plot( boolean keepCurrentScreenTransform )
+	@Override
+	public void plot( final boolean keepCurrentScreenTransform )
 	{
 		if ( keepCurrentScreenTransform )
 			plot( dataDisplayPanel.getScreenTransform().get() );
@@ -200,6 +197,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			plot( null );
 	}
 
+	@Override
 	public void plot( final ScreenTransform transform )
 	{
 		dataDisplayPanel.plot( sidePanel.getGraphConfig(), featureModel, transform );
