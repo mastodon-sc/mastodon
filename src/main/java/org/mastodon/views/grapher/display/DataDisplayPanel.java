@@ -55,14 +55,12 @@ import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.HasLabel;
 import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.NavigationEtiquette;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.context.Context;
@@ -82,7 +80,7 @@ import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TransformListener;
 import bdv.viewer.render.PainterThread;
 
-public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > extends JPanel
+public class DataDisplayPanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel
 		implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
@@ -210,14 +208,14 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 			final FocusModel< DataVertex > focus,
 			final SelectionModel< DataVertex, DataEdge > selection,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
-			final DataDisplayOptions< DataVertex, DataEdge > optional )
+			final DataDisplayOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.layout = layout;
 		this.selection = selection;
 
-		final Values< DataVertex, DataEdge > options = optional.values;
+		final Values options = optional.values;
 		animationMilleseconds = options.getAnimationDurationMillis();
 
 		/*
@@ -963,7 +961,7 @@ public class DataDisplayPanel< V extends Vertex< E > & HasTimepoint & HasLabel, 
 				else
 					transformEventHandler.zoomTo( transform.getMinX(), transform.getMaxX(), transform.getMinY(), transform.getMaxY() );
 			}
-			catch ( InterruptedException e )
+			catch ( final InterruptedException e )
 			{
 				Thread.currentThread().interrupt();
 			}

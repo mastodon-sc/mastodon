@@ -34,10 +34,6 @@ import java.awt.Graphics;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.Vertex;
-import org.mastodon.model.HasLabel;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
@@ -62,7 +58,7 @@ import bdv.viewer.TransformListener;
  * @param <E>
  *            the type of edges in the graph.
  */
-public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > >
+public class DataDisplayZoom
 		extends AbstractNamedBehaviour
 		implements DragBehaviour, OffsetAxesListener, TransformListener< ScreenTransform >
 {
@@ -89,10 +85,9 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		}
 	}
 
-	public static < V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > > void
-			install( final Behaviours behaviours, final DataDisplayPanel< V, E > panel )
+	public static void install( final Behaviours behaviours, final DataDisplayPanel< ?, ? > panel )
 	{
-		final DataDisplayZoom< V, E > zoom = new DataDisplayZoom<>( panel, panel.getTransformEventHandler() );
+		final DataDisplayZoom zoom = new DataDisplayZoom( panel, panel.getTransformEventHandler() );
 
 		// Create and register overlay.
 		zoom.transformChanged( panel.getScreenTransform().get() );

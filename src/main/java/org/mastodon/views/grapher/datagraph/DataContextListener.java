@@ -33,8 +33,6 @@ import java.util.concurrent.locks.Lock;
 
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
-import org.mastodon.model.HasLabel;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
 
@@ -48,7 +46,7 @@ import org.mastodon.views.context.ContextListener;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class DataContextListener< V extends Vertex< ? > & HasTimepoint & HasLabel > implements ContextListener< V >
+public class DataContextListener< V extends Vertex< ? > > implements ContextListener< V >
 {
 	private final GraphIdBimap< V, ? > idmap;
 

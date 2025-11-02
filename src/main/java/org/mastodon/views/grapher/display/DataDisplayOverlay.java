@@ -118,7 +118,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 			final FocusModel< DataVertex > focus,
 			final PaintDecorations paintDecorations,
 			final PaintGraph paintGraph,
-			final DataDisplayOptions< DataVertex, DataEdge > options )
+			final DataDisplayOptions options )
 	{
 		this.graph = graph;
 		this.highlight = highlight;
@@ -380,7 +380,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 				final DataGraph< ?, ? > graph,
 				final HighlightModel< DataVertex, DataEdge > highlight,
 				final FocusModel< DataVertex > focus,
-				final DataDisplayOptions< DataVertex, DataEdge > options )
+				final DataDisplayOptions options )
 		{
 			return new DataDisplayOverlay(
 					graph,
