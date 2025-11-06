@@ -29,13 +29,14 @@
 package org.mastodon.mamut;
 
 import java.awt.BorderLayout;
+import java.util.Iterator;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.mamut.model.Model;
 import org.mastodon.model.TimepointModel;
+import org.mastodon.spatial.SpatioTemporalIndex;
 
 /**
  * A component that displays the current timepoint and the number of spots in
@@ -54,9 +55,11 @@ public class TimepointAndNumberOfSpotsPanel extends JPanel
 
 	private final TimepointModel timepointModel;
 
-	private final Model model;
-
 	private final JLabel numberOfSpotsLabel = new JLabel();
+
+	private final SpatioTemporalIndex< ? > index;
+
+	private final String objName;
 
 	/**
 	 * Creates a new component that displays the current timepoint and the
@@ -68,15 +71,24 @@ public class TimepointAndNumberOfSpotsPanel extends JPanel
 	 * @param model
 	 *            the model to get the number of spots from
 	 */
-	public TimepointAndNumberOfSpotsPanel( final TimepointModel timepointModel, final Model model )
+	public TimepointAndNumberOfSpotsPanel( final TimepointModel timepointModel, final SpatioTemporalIndex< ? > index )
 	{
+		this.index = index;
 		setLayout( new BorderLayout() );
 		numberOfSpotsLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 		this.timepointModel = timepointModel;
-		this.model = model;
 		add( numberOfSpotsLabel, BorderLayout.CENTER );
 		this.timepointModel.listeners().add( this::updateTimepointAndNumberOfSpotsLabel );
 		updateTimepointAndNumberOfSpotsLabel();
+		this.objName = getObjectName( index );
+	}
+
+	private static String getObjectName( final SpatioTemporalIndex< ? > index )
+	{
+		final Iterator< ? > it = index.iterator();
+		if ( !it.hasNext() )
+			return "vertices";
+		return it.next().getClass().getSimpleName().toLowerCase() + "s";
 	}
 
 	private void updateTimepointAndNumberOfSpotsLabel()
@@ -84,7 +96,9 @@ public class TimepointAndNumberOfSpotsPanel extends JPanel
 		SwingUtilities.invokeLater( () -> numberOfSpotsLabel.setText(
 				"timepoint: "
 						+ timepointModel.getTimepoint()
-						+ "   spots: "
-						+ model.getSpatioTemporalIndex().getSpatialIndex( timepointModel.getTimepoint() ).size() ) );
+						+ "   "
+						+ objName
+						+ ": "
+						+ index.getSpatialIndex( timepointModel.getTimepoint() ).size() ) );
 	}
 }
