@@ -28,6 +28,11 @@
  */
 package org.mastodon.views.bdv.overlay.wrap;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.mastodon.properties.PropertyChangeListener;
+import org.mastodon.spatial.VertexPositionListener;
+
 public interface OverlayProperties< V, E > // TODO: rename to ModelGraphProperties ???
 {
 	public void localize( V v, final double[] position );
@@ -70,4 +75,33 @@ public interface OverlayProperties< V, E > // TODO: rename to ModelGraphProperti
 	public void removeVertex( V v );
 
 	public void notifyGraphChanged();
+
+	public ReentrantReadWriteLock getLock();
+
+	public void addVertexLabelListener( final PropertyChangeListener< V > listener );
+
+	public void removeVertexLabelListener( PropertyChangeListener< V > vertexLabelListener );
+
+	/**
+	 * Register a {@link VertexPositionListener} that will be notified when
+	 * position of vertices are changed.
+	 *
+	 * @param listener
+	 *            the listener to register.
+	 * @return {@code true} if the listener was successfully registered.
+	 *         {@code false} if it was already registered.
+	 */
+	public boolean addVertexPositionListener( final VertexPositionListener< V > listener );
+
+	/**
+	 * Removes the specified {@link VertexPositionListener} from the set of
+	 * listeners.
+	 *
+	 * @param listener
+	 *            the listener to remove.
+	 * @return {@code true} if the listener was present in the listeners of this
+	 *         model and was successfully removed.
+	 */
+	public boolean removeVertexPositionListener( final VertexPositionListener< V > listener );
+
 }
