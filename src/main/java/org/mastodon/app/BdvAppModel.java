@@ -11,7 +11,6 @@ import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.model.MastodonModel;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
@@ -25,7 +24,7 @@ public class BdvAppModel<
 		AM extends BdvAppModel< AM, M, G, V, E >,
 		M extends MastodonModel< G, V, E >,
 		G extends ReadOnlyGraph< V, E >,
-		V extends Vertex< E > & HasTimepoint,
+		V extends Vertex< E >,
 		E extends Edge< V > >
 		extends AppModel< AM, M, G, V, E >
 {
