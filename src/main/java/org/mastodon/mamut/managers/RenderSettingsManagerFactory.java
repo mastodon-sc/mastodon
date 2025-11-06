@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.mamut.ProjectModel;
+import org.mastodon.app.UIModel;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.scijava.Priority;
@@ -36,12 +36,12 @@ import org.scijava.plugin.Plugin;
 
 import bdv.ui.settings.SettingsPage;
 
-@Plugin( type = StyleManagerFactory.class, priority = Priority.NORMAL )
-public class RenderSettingsManagerFactory implements StyleManagerFactory< RenderSettingsManager >
+@Plugin( type = StyleManagerFactory2.class, priority = Priority.NORMAL )
+public class RenderSettingsManagerFactory implements StyleManagerFactory2< RenderSettingsManager >
 {
 
 	@Override
-	public RenderSettingsManager create( final ProjectModel projectModel )
+	public RenderSettingsManager create( final UIModel< ? > uiModel )
 	{
 		return new RenderSettingsManager();
 	}
