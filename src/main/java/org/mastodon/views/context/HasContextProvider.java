@@ -28,12 +28,10 @@
  */
 package org.mastodon.views.context;
 
-import org.mastodon.mamut.model.Spot;
-
 /**
  * Interface for classes that can return a {@link ContextProvider}.
  */
-public interface HasContextProvider
+public interface HasContextProvider< V >
 {
 
 	/**
@@ -41,6 +39,6 @@ public interface HasContextProvider
 	 * 
 	 * @return the {@link ContextProvider}.
 	 */
-	public ContextProvider< Spot > getContextProvider();
+	public ContextProvider< V > getContextProvider();
 
 }
