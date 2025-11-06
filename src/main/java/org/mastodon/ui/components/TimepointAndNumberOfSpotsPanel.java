@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut;
+package org.mastodon.ui.components;
 
 import java.awt.BorderLayout;
 import java.util.Iterator;
