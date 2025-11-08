@@ -78,9 +78,23 @@ public interface OverlayProperties< V, E > // TODO: rename to ModelGraphProperti
 
 	public ReentrantReadWriteLock getLock();
 
-	public void addVertexLabelListener( final PropertyChangeListener< V > listener );
+	/**
+	 * Register a listener that will be notified when vertex labels change.
+	 * 
+	 * @param listener
+	 *            the listener to register.
+	 * @return {@code true} if the listener was successfully registered,
+	 */
+	public boolean addVertexLabelListener( final PropertyChangeListener< V > listener );
 
-	public void removeVertexLabelListener( PropertyChangeListener< V > vertexLabelListener );
+	/**
+	 * Removes the specified vertex label listener from the set of listeners.
+	 * 
+	 * @param vertexLabelListener
+	 *            the listener to remove.
+	 * @return {@code true} if the listener was present in the listeners of this
+	 */
+	public boolean removeVertexLabelListener( PropertyChangeListener< V > vertexLabelListener );
 
 	/**
 	 * Register a {@link VertexPositionListener} that will be notified when

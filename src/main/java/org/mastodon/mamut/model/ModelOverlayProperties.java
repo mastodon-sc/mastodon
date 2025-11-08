@@ -28,6 +28,10 @@
  */
 package org.mastodon.mamut.model;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.mastodon.properties.PropertyChangeListener;
+import org.mastodon.spatial.VertexPositionListener;
 import org.mastodon.views.bdv.overlay.OverlayGraph;
 import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
 
@@ -177,5 +181,35 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	public void notifyGraphChanged()
 	{
 		modelGraph.notifyGraphChanged();
+	}
+
+	@Override
+	public ReentrantReadWriteLock getLock()
+	{
+		return modelGraph.getLock();
+	}
+
+	@Override
+	public boolean addVertexLabelListener( final PropertyChangeListener< Spot > listener )
+	{
+		return modelGraph.addVertexLabelListener( listener );
+	}
+
+	@Override
+	public boolean removeVertexLabelListener( final PropertyChangeListener< Spot > vertexLabelListener )
+	{
+		return modelGraph.removeVertexLabelListener( vertexLabelListener );
+	}
+
+	@Override
+	public boolean addVertexPositionListener( final VertexPositionListener< Spot > listener )
+	{
+		return modelGraph.addVertexPositionListener( listener );
+	}
+
+	@Override
+	public boolean removeVertexPositionListener( final VertexPositionListener< Spot > listener )
+	{
+		return modelGraph.removeVertexPositionListener( listener );
 	}
 }
