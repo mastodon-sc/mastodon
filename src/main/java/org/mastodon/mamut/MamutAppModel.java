@@ -9,12 +9,14 @@ import static org.mastodon.app.UIModel.TAGSETS_DIALOG_KEYS;
 
 import org.mastodon.app.BdvAppModel;
 import org.mastodon.mamut.io.project.MamutProject;
+import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
 import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.mastodon.mamut.views.grapher.MamutViewBranchGrapher;
 import org.mastodon.mamut.views.grapher.MamutViewGrapher;
 import org.mastodon.mamut.views.table.MamutViewSelectionTable2;
@@ -56,6 +58,8 @@ public class MamutAppModel extends BdvAppModel<
 
 	public static final String DOCUMENTATION_URL = "https://mastodon.readthedocs.io/en/latest/";
 
+	private final BoundingSphereRadiusStatistics radiusStats;
+
 	private MamutAppModel(
 			final Context context,
 			final Model model,
@@ -76,6 +80,12 @@ public class MamutAppModel extends BdvAppModel<
 				new String[] { KeyConfigContexts.MASTODON },
 				KeyConfigScopes.MAMUT,
 				NUM_GROUPS );
+		this.radiusStats = new BoundingSphereRadiusStatistics( model );
+	}
+
+	public MamutViewBdv createBdv()
+	{
+		return uiModel.createView( this, MamutViewBdv.class );
 	}
 
 	public MamutViewTrackScheme2 createTrackScheme()
@@ -132,5 +142,15 @@ public class MamutAppModel extends BdvAppModel<
 			descriptions.add( COMPUTE_FEATURE_DIALOG, COMPUTE_FEATURE_DIALOG_KEYS, "Show the feature computation dialog." );
 			descriptions.add( OPEN_ONLINE_DOCUMENTATION, OPEN_ONLINE_DOCUMENTATION_KEYS, "Open a browser with the online documentation for Mastodon." );
 		}
+	}
+
+	/**
+	 * Exposes the statistics about bounding sphere radii of spots in the model.
+	 * 
+	 * @return the radius statistics.
+	 */
+	public BoundingSphereRadiusStatistics getRadiusStats()
+	{
+		return radiusStats;
 	}
 }
