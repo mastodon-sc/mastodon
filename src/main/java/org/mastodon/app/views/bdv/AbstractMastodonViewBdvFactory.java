@@ -49,7 +49,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 /**
  * Abstract class for factories to create and display a BDV views. Concrete
  * implementations need to implement the
- * {@link AbtractMastodonViewBdvFactory#create(AppModel)} method, with the
+ * {@link AbstractMastodonViewBdvFactory#create(AppModel)} method, with the
  * specific {@link AppModel} and {@link OverlayProperties}.
  * <p>
  * The GUI state is specified as a map of strings to objects. The accepted key
@@ -80,7 +80,7 @@ import net.imglib2.realtransform.AffineTransform3D;
  * position of the colorbar.
  * </ul>
  */
-public abstract class AbtractMastodonViewBdvFactory< 
+public abstract class AbstractMastodonViewBdvFactory< 
 		T extends MastodonViewBdv< ?, ?, ?, ? >,
 		G extends ListenableReadOnlyGraph< ?, ? >,
 		AM extends AppModel< AM, ?, G, ?, ? > >
