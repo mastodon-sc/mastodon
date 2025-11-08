@@ -34,8 +34,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -45,6 +48,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.mastodon.graph.Vertex;
 
 import bdv.spimdata.SequenceDescriptionMinimal;
 import bdv.spimdata.SpimDataMinimal;
@@ -60,6 +64,7 @@ import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.TimePoints;
 import net.imglib2.Dimensions;
 import net.imglib2.FinalDimensions;
+import net.imglib2.RealLocalizable;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Cast;
@@ -178,6 +183,55 @@ public class DummySpimData
 		final AbstractSpimData< ? > spimData = new XmlIoSpimDataMinimal().load( modifiedXml.getAbsolutePath() );
 		setDummyImageLoader( spimData );
 		return spimData;
+	}
+
+	/**
+	 * Returns a new {@link AbstractSpimData} object that is big enough to
+	 * contain all given vertices.
+	 * 
+	 * @param <V>
+	 *            the vertex type.
+	 * @param vertices
+	 *            an iterable over the vertices.
+	 * @param positionMapper
+	 *            a function that maps a vertex to its position.
+	 * @param timepointMapper
+	 *            a function that maps a vertex to its timepoint.
+	 * @return a new {@link AbstractSpimData} object.
+	 * @throws SpimDataException
+	 */
+	public static < V extends Vertex< ? > > AbstractSpimData< ? > fromVertices(
+			final Iterable< V > vertices,
+			final Function< V, RealLocalizable > positionMapper,
+			final ToIntFunction< V > timepointMapper )
+			throws SpimDataException
+	{
+		final double[] max = new double[] { Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY };
+		int maxTimepoint = Integer.MIN_VALUE;
+		final Iterator< V > it = vertices.iterator();
+		if ( !it.hasNext() )
+		{
+			max[ 0 ] = max[ 1 ] = max[ 2 ] = 10.;
+			maxTimepoint = 10;
+		}
+		else
+		{
+			while ( it.hasNext() )
+			{
+				final V v = it.next();
+				final RealLocalizable pos = positionMapper.apply( v );
+				for ( int d = 0; d < 3; d++ )
+				{
+					final double p = pos.getDoublePosition( d );
+					if ( p > max[ d ] )
+						max[ d ] = p;
+				}
+				final int t = timepointMapper.applyAsInt( v );
+				if ( t > maxTimepoint )
+					maxTimepoint = t;
+			}
+		}
+		return tryCreate( ( int ) max[ 0 ] + 1, ( int ) max[ 1 ] + 1, ( int ) max[ 2 ], 1., 1., 1., maxTimepoint + 1 );
 	}
 
 	private static File getBdvXmlWithoutImageLoader( final File xmlFile )
