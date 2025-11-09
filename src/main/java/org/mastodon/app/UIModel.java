@@ -571,6 +571,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 		// Does it has a context provider?
 		if ( view instanceof HasContextProvider )
 		{
+			@SuppressWarnings( { "rawtypes", "unchecked" } )
 			final ContextProvider< Spot > cp = ( ( HasContextProvider ) view ).getContextProvider();
 			contextProviders.add( cp );
 			// Notify context choosers.
@@ -600,6 +601,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 			if ( view instanceof HasContextProvider )
 			{
 				// Remove it from the list of context providers.
+				@SuppressWarnings( { "rawtypes", "unchecked" } )
 				final ContextProvider< Spot > cp = ( ( HasContextProvider ) view ).getContextProvider();
 				contextProviders.remove( cp );
 				// Notify context choosers.
