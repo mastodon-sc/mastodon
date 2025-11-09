@@ -26,22 +26,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.model;
+package org.mastodon.mamut.views.bdv;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.properties.PropertyChangeListener;
+import org.mastodon.spatial.VertexPositionListener;
 import org.mastodon.views.bdv.overlay.OverlayGraph;
-import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
+import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
 
 /**
- * Provides branch vertex {@link OverlayProperties properties} for BDV
+ * Provides branch vertex {@link BdvOverlayProperties properties} for BDV
  * {@link OverlayGraph}.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  * @author Jean-Yves Tinevez
  */
-public class BranchGraphModelOverlayProperties implements OverlayProperties< BranchSpot, BranchLink >
+public class BranchModelOverlayProperties implements BdvOverlayProperties< BranchSpot, BranchLink >
 {
 	private final ModelBranchGraph branchGraph;
 
@@ -49,7 +58,13 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 
 	private final ModelGraph graph;
 
-	public BranchGraphModelOverlayProperties(
+	/** Keeps track of forwarded listeners, so that we can remove them later. */
+	private final Map< PropertyChangeListener< BranchSpot >, PropertyChangeListener< Spot > > forwardPropertyChangeListenerMap;
+
+	/** Keeps track of position listeners, so that we can remove them later. */
+	private final Map< VertexPositionListener< BranchSpot >, VertexPositionListener< Spot > > forwardPositionListenerMap;
+
+	public BranchModelOverlayProperties(
 			final ModelBranchGraph branchGraph,
 			final ModelGraph graph,
 			final BoundingSphereRadiusStatistics radiusStats )
@@ -57,6 +72,8 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 		this.branchGraph = branchGraph;
 		this.graph = graph;
 		this.radiusStats = radiusStats;
+		this.forwardPropertyChangeListenerMap = new WeakHashMap<>();
+		this.forwardPositionListenerMap = new WeakHashMap<>();
 	}
 
 	@Override
@@ -185,5 +202,76 @@ public class BranchGraphModelOverlayProperties implements OverlayProperties< Bra
 	public BranchLink initEdge( final BranchLink e )
 	{
 		throw new UnsupportedOperationException( "Cannot modify a branch graph." );
+	}
+
+	@Override
+	public ReentrantReadWriteLock getLock()
+	{
+		return branchGraph.getLock();
+	}
+
+	@Override
+	public boolean addVertexLabelListener( final PropertyChangeListener< BranchSpot > listener )
+	{
+		return graph.addVertexLabelListener( forwardListener( listener ) );
+	}
+
+	@Override
+	public boolean removeVertexLabelListener( final PropertyChangeListener< BranchSpot > vertexLabelListener )
+	{
+		final PropertyChangeListener< Spot > listener = forwardPropertyChangeListenerMap.remove( vertexLabelListener );
+		if ( listener != null )
+			return graph.removeVertexLabelListener( listener );
+		return false;
+	}
+
+	private PropertyChangeListener< Spot > forwardListener( final PropertyChangeListener< BranchSpot > listener )
+	{
+		final PropertyChangeListener< Spot > l = new PropertyChangeListener< Spot >()
+		{
+			@Override
+			public void propertyChanged( final Spot vertex )
+			{
+				final BranchSpot ref = branchGraph.vertexRef();
+				final BranchSpot branchSpot = branchGraph.getBranchVertex( vertex, ref );
+				listener.propertyChanged( branchSpot );
+				branchGraph.releaseRef( ref );
+			}
+		};
+		forwardPropertyChangeListenerMap.put( listener, l );
+		return l;
+	}
+
+	@Override
+	public boolean addVertexPositionListener( final VertexPositionListener< BranchSpot > listener )
+	{
+		return graph.addVertexPositionListener( forwardListener( listener ) );
+	}
+
+	private VertexPositionListener< Spot > forwardListener( final VertexPositionListener< BranchSpot > listener )
+	{
+		final VertexPositionListener< Spot > l = new VertexPositionListener< Spot >()
+		{
+			@Override
+			public void vertexPositionChanged( final Spot vertex )
+			{
+				final BranchSpot ref = branchGraph.vertexRef();
+				final BranchSpot branchSpot = branchGraph.getBranchVertex( vertex, ref );
+				listener.vertexPositionChanged( branchSpot );
+				branchGraph.releaseRef( ref );
+			}
+		};
+		forwardPositionListenerMap.put( listener, l );
+		return l;
+	}
+
+
+	@Override
+	public boolean removeVertexPositionListener( final VertexPositionListener< BranchSpot > listener )
+	{
+		final VertexPositionListener< Spot > l = forwardPositionListenerMap.remove( listener );
+		if ( l != null )
+			return graph.removeVertexPositionListener( l );
+		return false;
 	}
 }
