@@ -30,14 +30,18 @@ package org.mastodon.mamut.views.bdv;
 
 import java.util.Map;
 
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.views.AbstractMamutViewFactory;
-import org.mastodon.mamut.views.MamutViewFactory;
+import org.mastodon.app.views.bdv.AbstractMastodonViewBdvFactory;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.views.MamutViewFactory2;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 7 )
-public class MamutBranchViewBdvFactory extends AbstractMamutViewFactory< MamutBranchViewBdv >
+@Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 7 )
+public class MamutViewBranchBdvFactory
+		extends AbstractMastodonViewBdvFactory< MamutViewBranchBdv, ModelGraph, MamutAppModel >
+		implements MamutViewFactory2< MamutViewBranchBdv >
+
 {
 
 	public static final String NEW_BRANCH_BDV_VIEW = "new branch bdv view";
@@ -45,13 +49,13 @@ public class MamutBranchViewBdvFactory extends AbstractMamutViewFactory< MamutBr
 	public static final String[] NEW_BRANCH_BDV_VIEW_KEYS = new String[] { "not mapped" };
 
 	@Override
-	public MamutBranchViewBdv create( final ProjectModel projectModel )
+	public MamutViewBranchBdv create( final MamutAppModel appModel )
 	{
-		return new MamutBranchViewBdv( projectModel );
+		return new MamutViewBranchBdv( appModel );
 	}
 
 	@Override
-	public Map< String, Object > getGuiState( final MamutBranchViewBdv view )
+	public Map< String, Object > getGuiState( final MamutViewBranchBdv view )
 	{
 		final Map< String, Object > guiState = super.getGuiState( view );
 		MamutViewBdvFactory.getBdvGuiState( view.getViewerPanelMamut(), guiState );
@@ -59,7 +63,7 @@ public class MamutBranchViewBdvFactory extends AbstractMamutViewFactory< MamutBr
 	}
 
 	@Override
-	public void restoreGuiState( final MamutBranchViewBdv view, final Map< String, Object > guiState )
+	public void restoreGuiState( final MamutViewBranchBdv view, final Map< String, Object > guiState )
 	{
 		super.restoreGuiState( view, guiState );
 		MamutViewBdvFactory.restoreBdvGuiState( view.getViewerPanelMamut(), guiState );
@@ -87,11 +91,5 @@ public class MamutBranchViewBdvFactory extends AbstractMamutViewFactory< MamutBr
 	public String getCommandMenuText()
 	{
 		return "New Bdv Branch";
-	}
-
-	@Override
-	public Class< MamutBranchViewBdv > getViewClass()
-	{
-		return MamutBranchViewBdv.class;
 	}
 }
