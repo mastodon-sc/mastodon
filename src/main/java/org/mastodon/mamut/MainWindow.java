@@ -72,7 +72,7 @@ import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.UIUtils;
 import org.mastodon.app.ui.ViewMenu2;
 import org.mastodon.mamut.io.ProjectActions;
-import org.mastodon.mamut.views.bdv.MamutBranchViewBdvFactory;
+import org.mastodon.mamut.views.bdv.MamutViewBranchBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
 import org.mastodon.mamut.views.grapher.MamutViewGrapherFactory;
 import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory2;
@@ -140,7 +140,7 @@ public class MainWindow extends JFrame
 
 		final JButton bdvButton = new JButton( new RunnableActionPair( MamutViewBdvFactory.NEW_BDV_VIEW,
 				() -> projectActionMap.get( MamutViewBdvFactory.NEW_BDV_VIEW ).actionPerformed( null ),
-				() -> projectActionMap.get( MamutBranchViewBdvFactory.NEW_BRANCH_BDV_VIEW ).actionPerformed( null ) ) );
+				() -> projectActionMap.get( MamutViewBranchBdvFactory.NEW_BRANCH_BDV_VIEW ).actionPerformed( null ) ) );
 		prepareButton( bdvButton, "bdv", BDV_ICON_MEDIUM );
 		buttonsPanel.add( bdvButton, "grow, wrap" );
 
