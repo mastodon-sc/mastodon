@@ -36,7 +36,7 @@ import org.mastodon.app.views.AbstractMastodonViewFactory;
 import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
-import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
+import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
 
 import bdv.tools.InitializeViewerState;
 import bdv.viewer.AbstractViewerPanel;
@@ -50,7 +50,7 @@ import net.imglib2.realtransform.AffineTransform3D;
  * Abstract class for factories to create and display a BDV views. Concrete
  * implementations need to implement the
  * {@link AbstractMastodonViewBdvFactory#create(AppModel)} method, with the
- * specific {@link AppModel} and {@link OverlayProperties}.
+ * specific {@link AppModel} and {@link BdvOverlayProperties}.
  * <p>
  * The GUI state is specified as a map of strings to objects. The accepted key
  * and value types are:

@@ -93,7 +93,7 @@ import org.mastodon.views.bdv.overlay.RenderSettings.UpdateListener;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
-import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
+import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.context.HasContextProvider;
@@ -136,7 +136,7 @@ public class MastodonViewBdv<
 			final M dataModel,
 			final UIModel< ? > uiModel,
 			final SharedBigDataViewerData imageData,
-			final OverlayProperties< V, E > properties )
+			final BdvOverlayProperties< V, E > properties )
 	{
 		super( dataModel, uiModel,
 				new OverlayGraphWrapper< V, E >(

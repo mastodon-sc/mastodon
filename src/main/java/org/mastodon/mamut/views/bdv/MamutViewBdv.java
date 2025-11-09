@@ -33,7 +33,6 @@ import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.ModelOverlayProperties;
 import org.mastodon.mamut.model.Spot;
 
 /**
@@ -48,7 +47,7 @@ public class MamutViewBdv extends MastodonViewBdv< Model, ModelGraph, Spot, Link
 				appModel.dataModel(),
 				appModel.uiModel(),
 				appModel.imageData(),
-				new ModelOverlayProperties(
+				new MamutBdvOverlayProperties(
 						appModel.dataModel().getGraph(), 
 						appModel.getRadiusStats() ) );
 	}

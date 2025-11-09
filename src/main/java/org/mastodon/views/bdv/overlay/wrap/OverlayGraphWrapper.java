@@ -64,7 +64,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 
 	final GraphIdBimap< V, E > idmap;
 
-	final OverlayProperties< V, E > overlayProperties;
+	final BdvOverlayProperties< V, E > overlayProperties;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -83,7 +83,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 			final GraphIdBimap< V, E > idmap,
 			final SpatioTemporalIndex< V > graphIndex,
 			final ReentrantReadWriteLock lock,
-			final OverlayProperties< V, E > overlayProperties )
+			final BdvOverlayProperties< V, E > overlayProperties )
 	{
 		this.wrappedGraph = graph;
 		this.idmap = idmap;

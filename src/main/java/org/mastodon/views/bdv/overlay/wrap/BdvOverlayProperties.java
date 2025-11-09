@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.VertexPositionListener;
 
-public interface OverlayProperties< V, E > // TODO: rename to ModelGraphProperties ???
+public interface BdvOverlayProperties< V, E >
 {
 	public void localize( V v, final double[] position );
 

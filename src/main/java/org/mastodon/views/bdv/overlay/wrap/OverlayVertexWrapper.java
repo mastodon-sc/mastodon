@@ -55,7 +55,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	final EdgesWrapper edges;
 
-	private final OverlayProperties< V, E > overlayProperties;
+	private final BdvOverlayProperties< V, E > overlayProperties;
 
 	OverlayVertexWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{

@@ -26,27 +26,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.model;
+package org.mastodon.mamut.views.bdv;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.VertexPositionListener;
 import org.mastodon.views.bdv.overlay.OverlayGraph;
-import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
+import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
 
 /**
- * Provides spot {@link OverlayProperties properties} for BDV {@link OverlayGraph}.
+ * Provides spot {@link BdvOverlayProperties properties} for BDV
+ * {@link OverlayGraph}, specific to the Mamut app.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
-public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
+public class MamutBdvOverlayProperties implements BdvOverlayProperties< Spot, Link >
 {
 	private final ModelGraph modelGraph;
 
 	private final BoundingSphereRadiusStatistics radiusStats;
 
-	public ModelOverlayProperties(
+	public MamutBdvOverlayProperties(
 			final ModelGraph modelGraph,
 			final BoundingSphereRadiusStatistics radiusStats )
 	{

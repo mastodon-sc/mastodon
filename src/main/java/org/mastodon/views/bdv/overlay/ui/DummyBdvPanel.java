@@ -59,8 +59,8 @@ import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.ModelOverlayProperties;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.bdv.MamutBdvOverlayProperties;
 import org.mastodon.model.DefaultFocusModel;
 import org.mastodon.model.DefaultHighlightModel;
 import org.mastodon.model.DefaultSelectionModel;
@@ -231,7 +231,7 @@ public class DummyBdvPanel extends JPanel
 				idmap,
 				spatioTemporalIndex,
 				graph.getLock(),
-				new ModelOverlayProperties( graph, radiusStats ) );
+				new MamutBdvOverlayProperties( graph, radiusStats ) );
 		final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap = viewGraph.getVertexMap();
 		final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap = viewGraph.getEdgeMap();
 
