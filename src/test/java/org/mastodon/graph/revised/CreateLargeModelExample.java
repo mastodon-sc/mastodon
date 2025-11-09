@@ -174,9 +174,9 @@ public class CreateLargeModelExample
 		System.out.println( "OS: " + System.getProperty( "os.name" ) + " " + System.getProperty( "os.version" ) + " " + System.getProperty( "os.arch" ) );
 
 		final CreateLargeModelExample clme = new CreateLargeModelExample();
-		final long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		final Model model = clme.run();
-		final long end = System.currentTimeMillis();
+		long end = System.currentTimeMillis();
 		System.out.println( "Model created in " + ( end - start ) + " ms." );
 		System.out.println( "Total number of spots: " + model.getGraph().vertices().size() );
 		System.out.println( String.format( "Total memory used by the model: %.1f MB",
@@ -188,14 +188,14 @@ public class CreateLargeModelExample
 		final MamutProject project = new MamutProject( "./large_model_example.mastodon" );
 		final MamutAppModel appModel = MamutAppModel.create( context, model, imagedata, project );
 
-//		start = System.currentTimeMillis();
-//		appModel.createBigDataViewer();
-//		end = System.currentTimeMillis();
-//		System.out.println( "Rendering in the main viewer done in " + ( end - start ) / 1000. + " s." );
-//
-//		start = System.currentTimeMillis();
-//		appModel.createTrackScheme();
-//		end = System.currentTimeMillis();
-//		System.out.println( "Rendering in TrackScheme done in " + ( end - start ) / 1000. + " s." );
+		start = System.currentTimeMillis();
+		appModel.createBdv();
+		end = System.currentTimeMillis();
+		System.out.println( "Rendering in the main viewer done in " + ( end - start ) / 1000. + " s." );
+
+		start = System.currentTimeMillis();
+		appModel.createTrackScheme();
+		end = System.currentTimeMillis();
+		System.out.println( "Rendering in TrackScheme done in " + ( end - start ) / 1000. + " s." );
 	}
 }
