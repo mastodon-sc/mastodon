@@ -59,23 +59,23 @@ import bdv.ui.keymap.KeymapManager;
  * Base data class that stores the data model and the application model of a
  * Mastodon application.
  * <p>
- * This aggregates the {@link MastodonModel} and the {@link UIModel}, and
+ * This aggregates the {@link MastodonModel} and the {@link WindowManager}, and
  * creates some of the sub-components that need both components to be
  * initialized s (e.g. ui components that need to access or listen to the data
  * model).
  * <p>
  * Currently, this class does the following:
  * <ul>
- * <li>creates a UIModel,
+ * <li>creates a {@link WindowManager} to manage the application windows.,
  * <li>creates and registers a {@link TrackGraphColorGenerator} for the model's
  * graph, if it is a {@link ListenableReadOnlyGraph}, and stores it in the
- * UIModel as singleton.
+ * WindowManager as singleton.
  * <li>creates and registers a {@link TagSetDialog} if the model is an
  * {@link UndoPointMarker}, and binds it to a menu item and a shortcut. The
- * dialog is registered to the UIModel as a window.
+ * dialog is registered to the WindowManager as a window.
  * <li>creates and registers a {@link MamutFeatureComputation} dialog, and binds
- * it to a menu item and a shortcut. The dialog is registered to the UIModel as
- * a window.
+ * it to a menu item and a shortcut. The dialog is registered to the
+ * WindowManager as a window.
  * </ul>
  *
  * @author Jean-Yves Tinevez
@@ -103,7 +103,7 @@ public class AppModel<
 
 	protected final M model;
 
-	protected final UIModel< AM > uiModel;
+	protected final WindowManager< AM > windowManager;
 
 	private final int minTimepoint;
 
@@ -157,7 +157,7 @@ public class AppModel<
 		this.model = model;
 		this.minTimepoint = minTimepoint;
 		this.maxTimepoint = maxTimepoint;
-		this.uiModel = new UIModel<>(
+		this.windowManager = new WindowManager<>(
 				context,
 				viewFactoryType,
 				numGroups,
@@ -181,8 +181,8 @@ public class AppModel<
 			@SuppressWarnings( "unchecked" )
 			final ListenableReadOnlyGraph< V, E > lg = ( ListenableReadOnlyGraph< V, E > ) graph;
 			final TrackGraphColorGenerator< V, E > trackGraphColorGenerator = new TrackGraphColorGenerator< V, E >( lg );
-			uiModel.closeListeners().add( () -> trackGraphColorGenerator.close() );
-			uiModel.registerInstance( trackGraphColorGenerator );
+			windowManager.closeListeners().add( () -> trackGraphColorGenerator.close() );
+			windowManager.registerInstance( trackGraphColorGenerator );
 		}
 
 		/*
@@ -195,27 +195,27 @@ public class AppModel<
 			final Keymap keymap = keymapManager.getForwardSelectedKeymap();
 			final TagSetDialog tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), undo, keymap, keyConfigContexts );
 			final RunnableAction editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, () -> tagSetDialog.setVisible( true ) );
-			uiModel.getProjectActions().namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
+			windowManager.getProjectActions().namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 			tagSetDialog.setIconImages( TAGS_ICON );
-			uiModel.closeListeners().add( tagSetDialog::dispose );
-			uiModel.registerWindow( tagSetDialog );
+			windowManager.closeListeners().add( tagSetDialog::dispose );
+			windowManager.registerWindow( tagSetDialog );
 		}
 
 //		final JDialog featureComputationDialog = MamutFeatureComputation.getDialog( this, context );
 //		featureComputationDialog.setIconImages( FEATURES_ICON );
-//		uiModel.closeListeners().add( featureComputationDialog::dispose );
-//		uiModel.registerWindow( featureComputationDialog );
+//		windowManager.closeListeners().add( featureComputationDialog::dispose );
+//		windowManager.registerWindow( featureComputationDialog );
 //		final RunnableAction featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, () -> featureComputationDialog.setVisible( true ) );
-//		uiModel.getProjectActions().namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
+//		windowManager.getProjectActions().namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
 		/*
 		 * Online documentation.
 		 */
 		final RunnableAction openOnlineDocumentation = new RunnableAction( OPEN_ONLINE_DOCUMENTATION, this::openOnlineDocumentation );
-		uiModel.getProjectActions().namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
+		windowManager.getProjectActions().namedAction( openOnlineDocumentation, OPEN_ONLINE_DOCUMENTATION_KEYS );
 
 		// Adjust titles of all windows to include project name.
-		uiModel.forEachWindow( w -> UIUtils.adjustTitle( w, getProjectName() ) );
+		windowManager.forEachWindow( w -> UIUtils.adjustTitle( w, getProjectName() ) );
 	}
 
 	public String getProjectName()
@@ -229,15 +229,15 @@ public class AppModel<
 		return model;
 	}
 
-	public UIModel< AM > uiModel()
+	public WindowManager< AM > windowManager()
 	{
-		return uiModel;
+		return windowManager;
 	}
 
 	public void close()
 	{
-		uiModel.closeListeners().list.forEach( CloseListener::close );
-		uiModel.closeAllWindows();
+		windowManager.closeListeners().list.forEach( CloseListener::close );
+		windowManager.closeAllWindows();
 	}
 
 	public int getTimepointMin()

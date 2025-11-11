@@ -78,7 +78,7 @@ import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory2;
 import org.mastodon.mamut.views.table.MamutViewTableFactory2;
 import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackSchemeFactory2;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory2;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.RunnableActionPair;
@@ -108,8 +108,8 @@ public class MainWindow extends JFrame
 
 		// Re-register save actions, this time using this frame as parent
 		// component.
-		ProjectActions.installAppActions( appModel.uiModel().getProjectActions(), appModel, this );
-		final ActionMap projectActionMap = appModel.uiModel().getProjectActions().getActionMap();
+		ProjectActions.installAppActions( appModel.windowManager().getProjectActions(), appModel, this );
+		final ActionMap projectActionMap = appModel.windowManager().getProjectActions().getActionMap();
 
 		// Main Panel
 		final JPanel buttonsPanel = new JPanel();
@@ -165,11 +165,11 @@ public class MainWindow extends JFrame
 		prepareButton( grapherButton, "grapher", FEATURES_ICON_MEDIUM );
 		buttonsPanel.add( grapherButton, "grow" );
 
-		final JButton featureComputationButton = new JButton( projectActionMap.get( UIModel.COMPUTE_FEATURE_DIALOG ) );
+		final JButton featureComputationButton = new JButton( projectActionMap.get( WindowManager.COMPUTE_FEATURE_DIALOG ) );
 		prepareButton( featureComputationButton, "compute features", FEATURES_ICON_MEDIUM );
 		buttonsPanel.add( featureComputationButton, "grow, wrap" );
 
-		final JButton editTagSetsButton = new JButton( projectActionMap.get( UIModel.TAGSETS_DIALOG ) );
+		final JButton editTagSetsButton = new JButton( projectActionMap.get( WindowManager.TAGSETS_DIALOG ) );
 		prepareButton( editTagSetsButton, "configure tags", TAGS_ICON_MEDIUM );
 		buttonsPanel.add( editTagSetsButton, "grow, wrap" );
 
@@ -214,12 +214,12 @@ public class MainWindow extends JFrame
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
-		final Keymap keymap = appModel.uiModel().getKeymapManager().getForwardSelectedKeymap();
+		final Keymap keymap = appModel.windowManager().getKeymapManager().getForwardSelectedKeymap();
 		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, projectActionMap );
-		appModel.uiModel().getViewFactories().addWindowMenuTo( menu, projectActionMap );
-		appModel.uiModel().getPlugins().addMenus( menu );
+		appModel.windowManager().getViewFactories().addWindowMenuTo( menu, projectActionMap );
+		appModel.windowManager().getPlugins().addMenus( menu );
 
 		setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		addWindowListener( new WindowAdapter()
@@ -235,7 +235,7 @@ public class MainWindow extends JFrame
 		setResizable( false );
 
 		// Register to when the project model is closed.
-		appModel.uiModel().closeListeners().add( () -> dispose() );
+		appModel.windowManager().closeListeners().add( () -> dispose() );
 
 		// Command finder.
 		final InputActionBindings keybindings = new InputActionBindings();
@@ -245,14 +245,14 @@ public class MainWindow extends JFrame
 		final Actions mwActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
 		mwActions.install( keybindings, "main" );
 		CommandFinder.build()
-				.context( appModel.uiModel().getContext() )
-				.inputTriggerConfig( appModel.uiModel().getKeymap().getConfig() )
-				.descriptionProvider( appModel.uiModel().getViewFactories().getCommandDescriptions() )
+				.context( appModel.windowManager().getContext() )
+				.inputTriggerConfig( appModel.windowManager().getKeymap().getConfig() )
+				.descriptionProvider( appModel.windowManager().getViewFactories().getCommandDescriptions() )
 				.keyConfigContext( KeyConfigContexts.MASTODON )
-				.register( appModel.uiModel().getModelActions() )
-				.register( appModel.uiModel().getProjectActions() )
-				.register( appModel.uiModel().getPlugins().getPluginActions() )
-				.modificationListeners( appModel.uiModel().getKeymap().updateListeners() )
+				.register( appModel.windowManager().getModelActions() )
+				.register( appModel.windowManager().getProjectActions() )
+				.register( appModel.windowManager().getPlugins().getPluginActions() )
+				.modificationListeners( appModel.windowManager().getKeymap().updateListeners() )
 				.parent( this )
 				.installOn( mwActions );
 	}
@@ -285,7 +285,7 @@ public class MainWindow extends JFrame
 
 	private void updateWindowNames()
 	{
-		appModel.uiModel().forEachWindow( w -> UIUtils.adjustTitle( w, appModel.getProjectName() ) );
+		appModel.windowManager().forEachWindow( w -> UIUtils.adjustTitle( w, appModel.getProjectName() ) );
 		setTitle( makeName( appModel ) );
 	}
 
@@ -307,7 +307,7 @@ public class MainWindow extends JFrame
 	 */
 	public boolean close()
 	{
-		final Action saveAction = appModel.uiModel().getModelActions().getActionMap().get( ProjectActions.SAVE_PROJECT );
+		final Action saveAction = appModel.windowManager().getModelActions().getActionMap().get( ProjectActions.SAVE_PROJECT );
 		if ( appModel.dataModel().isSavePoint() )
 		{
 			appModel.close();
@@ -376,8 +376,8 @@ public class MainWindow extends JFrame
 						// item( ProjectActions.IMPORT_MAMUT ),
 						// item( ProjectActions.EXPORT_MAMUT ),
 						// separator(),
-						item( UIModel.PREFERENCES_DIALOG ),
+						item( WindowManager.PREFERENCES_DIALOG ),
 						separator(),
-						item( UIModel.OPEN_ONLINE_DOCUMENTATION ) ) );
+						item( WindowManager.OPEN_ONLINE_DOCUMENTATION ) ) );
 	}
 }

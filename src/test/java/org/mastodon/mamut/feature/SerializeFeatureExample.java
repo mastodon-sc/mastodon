@@ -68,7 +68,7 @@ public class SerializeFeatureExample
 
 		// Compute features.
 		final MamutFeatureComputerService featureComputerService =
-				MamutFeatureComputerService.newInstance( appModel.uiModel().getContext() );
+				MamutFeatureComputerService.newInstance( appModel.windowManager().getContext() );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( appModel.imageData() );
 		System.out.println( "\nComputing features..." );
@@ -88,7 +88,7 @@ public class SerializeFeatureExample
 
 		System.out.println( "\nReloading." );
 		final MamutProject project2 = MamutProjectIO.load( targetFile.getAbsolutePath() );
-		final MamutAppModel appModel2 = ProjectLoader2.open( project2, appModel.uiModel().getContext() );
+		final MamutAppModel appModel2 = ProjectLoader2.open( project2, appModel.windowManager().getContext() );
 		System.out.println( "Done." );
 
 		System.out.println( "\n" + ModelUtils.dump( appModel2.dataModel(), appModel2.dataModel().getSpaceUnits() ) );

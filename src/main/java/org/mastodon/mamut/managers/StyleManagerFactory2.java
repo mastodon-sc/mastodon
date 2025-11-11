@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.scijava.plugin.SciJavaPlugin;
 
 import bdv.ui.settings.SettingsPage;
@@ -47,14 +47,14 @@ public interface StyleManagerFactory2< T > extends SciJavaPlugin
 {
 
 	/**
-	 * Creates a new manager instance for the specified UI model.
+	 * Creates a new manager instance for the specified window manager.
 	 *
-	 * @param uiModel
-	 *            the UI model.
+	 * @param windowManager
+	 *            the window manager.
 	 *
 	 * @return a new manager instance.
 	 */
-	public T create( final UIModel< ? > uiModel );
+	public T create( final WindowManager< ? > windowManager );
 
 	/**
 	 * Returns <code>true</code> if the manager handled by this factory has a

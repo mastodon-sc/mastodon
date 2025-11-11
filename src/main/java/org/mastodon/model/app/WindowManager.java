@@ -67,7 +67,7 @@ import bdv.util.InvokeOnEDT;
  *
  * @author Jean-Yves Tinevez
  */
-public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
+public class WindowManager< AM extends AppModel< AM, ?, ?, ?, ? > >
 {
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
@@ -134,11 +134,11 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	private final Scope scope;
 
 	/**
-	 * Instantiates a UI model.
+	 * Instantiates a window manager.
 	 *
 	 * @param viewFactoryType
-	 *            the class of view factories managed by this UI model. It is
-	 *            specific to an app.
+	 *            the class of view factories managed by this window manager. It
+	 *            is specific to an app.
 	 * @param context
 	 *            the SciJava context.
 	 * @param numGroups
@@ -159,7 +159,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	 * @param vft
 	 */
 	@SuppressWarnings( "unchecked" )
-	public UIModel(
+	public WindowManager(
 			final Context context,
 			@SuppressWarnings( "rawtypes" ) final Class viewFactoryType,
 			final int numGroups,
@@ -543,7 +543,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 		// Return null if the view type is unknown to us.
 		if ( factory == null )
 			throw new UnsupportedOperationException( "No view factory that can create views of type "
-					+ klass.getName() + " have been registered to this UI model." );
+					+ klass.getName() + " have been registered to this window manager." );
 
 		// Create the view.
 		@SuppressWarnings( "unchecked" )

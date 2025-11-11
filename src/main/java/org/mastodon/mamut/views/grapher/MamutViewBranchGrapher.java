@@ -23,7 +23,7 @@ public class MamutViewBranchGrapher extends MastodonViewGrapher<
 	{
 		super(
 				appModel.dataModel().branchModel(),
-				appModel.uiModel(),
+				appModel.windowManager(),
 				new MamutDataBranchGraphProperties( appModel.dataModel().getGraph(), appModel.imageData().getSources().size() ) );
 	}
 }

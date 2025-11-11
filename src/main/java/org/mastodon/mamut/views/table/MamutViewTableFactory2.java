@@ -55,7 +55,7 @@ public class MamutViewTableFactory2
 	public MamutViewTable2 create( final MamutAppModel appModel )
 	{
 		final TableModelGraphProperties< Spot > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
-		return new MamutViewTable2( appModel.dataModel(), appModel.uiModel(), modelGraphProperties );
+		return new MamutViewTable2( appModel.dataModel(), appModel.windowManager(), modelGraphProperties );
 	}
 
 	@Override

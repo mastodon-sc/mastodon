@@ -27,7 +27,7 @@ public class MamutViewBranchTrackScheme2 extends MastodonViewTrackScheme2<
 	{
 		super(
 				appModel.dataModel().branchModel(),
-				appModel.uiModel(),
+				appModel.windowManager(),
 				new MastodonBranchTrackSchemeProperties<>(),
 				new BranchTrackSchemeOverlayFactory(),
 				LongEdgesLineageTreeLayout::new,

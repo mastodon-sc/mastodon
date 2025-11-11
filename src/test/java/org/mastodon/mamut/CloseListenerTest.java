@@ -58,7 +58,7 @@ public class CloseListenerTest
 			// setup
 			final MamutAppModel appModel = openTinyProject( context );
 			final int[] counter = new int[] { 0 };
-			appModel.uiModel().closeListeners().add( () -> counter[ 0 ]++ );
+			appModel.windowManager().closeListeners().add( () -> counter[ 0 ]++ );
 			// process
 			appModel.close();
 

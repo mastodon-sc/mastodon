@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.scijava.Priority;
@@ -41,7 +41,7 @@ public class RenderSettingsManagerFactory implements StyleManagerFactory2< Rende
 {
 
 	@Override
-	public RenderSettingsManager create( final UIModel< ? > uiModel )
+	public RenderSettingsManager create( final WindowManager< ? > wm )
 	{
 		return new RenderSettingsManager();
 	}

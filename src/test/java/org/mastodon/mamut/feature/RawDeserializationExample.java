@@ -71,7 +71,7 @@ public class RawDeserializationExample
 
 		// Compute features.
 		final MamutFeatureComputerService featureComputerService =
-				MamutFeatureComputerService.newInstance( appModel.uiModel().getContext() );
+				MamutFeatureComputerService.newInstance( appModel.windowManager().getContext() );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( appModel.imageData() );
 		System.out.println( "\nComputing features..." );

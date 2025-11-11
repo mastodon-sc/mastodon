@@ -30,7 +30,7 @@ public class MamutViewHierarchyTrackScheme2 extends MastodonViewTrackScheme2<
 	{
 		super(
 				appModel.dataModel().branchModel(),
-				appModel.uiModel(),
+				appModel.windowManager(),
 				new MastodonHierarchyTrackSchemeProperties<>( appModel.dataModel().branchModel().getGraph() ),
 				new HierarchyTrackSchemeOverlayFactory(),
 				LongEdgesLineageTreeLayout::new,

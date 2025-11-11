@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
 import org.scijava.Priority;
@@ -41,7 +41,7 @@ public class DataDisplayStyleManagerFactory implements StyleManagerFactory2< Dat
 {
 
 	@Override
-	public DataDisplayStyleManager create( final UIModel< ? > appModel )
+	public DataDisplayStyleManager create( final WindowManager< ? > appModel )
 	{
 		return new DataDisplayStyleManager();
 	}

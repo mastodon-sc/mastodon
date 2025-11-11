@@ -70,7 +70,7 @@ public class SpotIntensityUpdateExample
 		 * 1.1a. Compute spot intensity feature for all.
 		 */
 
-		final Context context = appModel.uiModel().getContext();
+		final Context context = appModel.windowManager().getContext();
 		final MamutFeatureComputerService featureComputerService =
 				MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );

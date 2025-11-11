@@ -57,7 +57,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;
@@ -133,11 +133,11 @@ public class MastodonViewBdv<
 
 	public MastodonViewBdv(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > windowManager,
 			final SharedBigDataViewerData imageData,
 			final BdvOverlayProperties< V, E > properties )
 	{
-		super( dataModel, uiModel,
+		super( dataModel, windowManager,
 				new OverlayGraphWrapper< V, E >(
 						dataModel.getGraph(),
 						dataModel.getGraphIdBimap(),
@@ -164,7 +164,7 @@ public class MastodonViewBdv<
 		final JMenuHandle menuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
-		final ViewMenu menu = new ViewMenu( this, uiModel.getKeymap(), keyConfigContexts );
+		final ViewMenu menu = new ViewMenu( this, windowManager.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		MamutMenuBuilder2.build( menu, actionMap,
 				fileMenu(),
@@ -234,9 +234,9 @@ public class MastodonViewBdv<
 
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		OverlayActions.install( viewActions, viewer, tracksOverlay );
-		final Runnable onCloseDialog = RecordMovieDialog.install( viewActions, bdv, tracksOverlay, colorBarOverlay, uiModel.getKeymap() );
+		final Runnable onCloseDialog = RecordMovieDialog.install( viewActions, bdv, tracksOverlay, colorBarOverlay, windowManager.getKeymap() );
 		onClose( onCloseDialog );
-		final Runnable onCloseMIPDialog = RecordMaxProjectionMovieDialog.install( viewActions, bdv, tracksOverlay, colorBarOverlay, uiModel.getKeymap() );
+		final Runnable onCloseMIPDialog = RecordMaxProjectionMovieDialog.install( viewActions, bdv, tracksOverlay, colorBarOverlay, windowManager.getKeymap() );
 		onClose( onCloseMIPDialog );
 
 		// Add the timepoint and number of spots panel.
@@ -259,7 +259,7 @@ public class MastodonViewBdv<
 
 		ExportViewActions.install( viewActions, frame.getViewerPanel().getDisplayComponent(), frame, "BDV" );
 
-		final RenderSettingsManager renderSettingsManager = uiModel.getInstance( RenderSettingsManager.class );
+		final RenderSettingsManager renderSettingsManager = windowManager.getInstance( RenderSettingsManager.class );
 		final RenderSettings renderSettings = renderSettingsManager.getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
 		final UpdateListener updateListener = () -> {
@@ -277,21 +277,21 @@ public class MastodonViewBdv<
 
 		// Command finder.
 		final CommandFinder cf = CommandFinder.build()
-				.context( uiModel.getContext() )
-				.inputTriggerConfig( uiModel.getKeymap().getConfig() )
+				.context( windowManager.getContext() )
+				.inputTriggerConfig( windowManager.getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
-				.descriptionProvider( uiModel.getViewFactories().getCommandDescriptions() )
+				.descriptionProvider( windowManager.getViewFactories().getCommandDescriptions() )
 				.register( viewActions )
-				.register( uiModel.getModelActions() )
-				.register( uiModel.getProjectActions() )
-				.register( uiModel.getPlugins().getPluginActions() )
-				.modificationListeners( uiModel.getKeymap().updateListeners() )
+				.register( windowManager.getModelActions() )
+				.register( windowManager.getProjectActions() )
+				.register( windowManager.getPlugins().getPluginActions() )
+				.modificationListeners( windowManager.getKeymap().updateListeners() )
 				.parent( frame )
 				.installOn( viewActions );
 		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
 
 		MainWindow.addMenus( menu, actionMap );
-		uiModel.getViewFactories().addWindowMenuTo( menu, actionMap );
+		windowManager.getViewFactories().addWindowMenuTo( menu, actionMap );
 		MamutMenuBuilder2.build( menu, actionMap,
 				fileMenu(
 						separator(),
@@ -316,7 +316,7 @@ public class MastodonViewBdv<
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
 						separator(),
 						tagSetMenu( tagSetMenuHandle ) ) );
-		uiModel.getPlugins().addMenus( menu );
+		windowManager.getPlugins().addMenus( menu );
 
 		registerTagSetMenu( tagSetMenuHandle, () -> viewer.getDisplay().repaint() );
 	}

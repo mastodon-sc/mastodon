@@ -55,7 +55,7 @@ import org.mastodon.mamut.MamutMenuBuilder2;
 import org.mastodon.mamut.UndoActions;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.MastodonModel;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;
@@ -128,11 +128,11 @@ public class MastodonViewGrapher<
 
 	protected MastodonViewGrapher(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > windowManager,
 			final DataGraphProperties< V, E > properties
 	)
 	{
-		super( dataModel, uiModel,
+		super( dataModel, windowManager,
 				new DataGraph<>(
 						dataModel.getGraph(),
 						dataModel.getGraphIdBimap(),
@@ -147,10 +147,10 @@ public class MastodonViewGrapher<
 		this.contextChooser = new ContextChooser<>( contextListener );
 
 		// Options
-		final DataDisplayStyleManager styleManager = uiModel.getInstance( DataDisplayStyleManager.class );
+		final DataDisplayStyleManager styleManager = windowManager.getInstance( DataDisplayStyleManager.class );
 		final DataDisplayStyle forwardDefaultStyle = styleManager.getForwardDefaultStyle();
 		final DataDisplayOptions options = DataDisplayOptions.options()
-				.shareKeyPressedEvents( uiModel.getKeyPressedManager() )
+				.shareKeyPressedEvents( windowManager.getKeyPressedManager() )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloringAdapter );
 
@@ -228,15 +228,15 @@ public class MastodonViewGrapher<
 
 		// Command finder
 		final CommandFinder cf = CommandFinder.build()
-				.context( uiModel.getContext() )
-				.inputTriggerConfig( uiModel.getKeymap().getConfig() )
+				.context( windowManager.getContext() )
+				.inputTriggerConfig( windowManager.getKeymap().getConfig() )
 				.keyConfigContexts( keyConfigContexts )
-				.descriptionProvider( uiModel.getViewFactories().getCommandDescriptions() )
+				.descriptionProvider( windowManager.getViewFactories().getCommandDescriptions() )
 				.register( viewActions )
-				.register( uiModel.getModelActions() )
-				.register( uiModel.getProjectActions() )
-				.register( uiModel.getPlugins().getPluginActions() )
-				.modificationListeners( uiModel.getKeymap().updateListeners() )
+				.register( windowManager.getModelActions() )
+				.register( windowManager.getProjectActions() )
+				.register( windowManager.getPlugins().getPluginActions() )
+				.modificationListeners( windowManager.getKeymap().updateListeners() )
 				.parent( frame )
 				.installOn( viewActions );
 		cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
@@ -246,9 +246,9 @@ public class MastodonViewGrapher<
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 
-		final ViewMenu viewMenu = new ViewMenu( this, uiModel.getKeymap(), keyConfigContexts );
+		final ViewMenu viewMenu = new ViewMenu( this, windowManager.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
-		uiModel.getViewFactories().addWindowMenuTo( viewMenu, actionMap );
+		windowManager.getViewFactories().addWindowMenuTo( viewMenu, actionMap );
 		MainWindow.addMenus( viewMenu, actionMap );
 		MamutMenuBuilder2.build( viewMenu, actionMap,
 				fileMenu(
@@ -270,7 +270,7 @@ public class MastodonViewGrapher<
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
 						separator(),
 						tagSetMenu( tagSetMenuHandle ) ) );
-		uiModel.getPlugins().addMenus( viewMenu );
+		windowManager.getPlugins().addMenus( viewMenu );
 
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> panel.entitiesAttributesChanged() );

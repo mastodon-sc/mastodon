@@ -1,11 +1,11 @@
 package org.mastodon.mamut;
 
-import static org.mastodon.model.app.UIModel.COMPUTE_FEATURE_DIALOG;
-import static org.mastodon.model.app.UIModel.OPEN_ONLINE_DOCUMENTATION;
-import static org.mastodon.model.app.UIModel.PREFERENCES_DIALOG;
-import static org.mastodon.model.app.UIModel.PREFERENCES_DIALOG_KEYS;
-import static org.mastodon.model.app.UIModel.TAGSETS_DIALOG;
-import static org.mastodon.model.app.UIModel.TAGSETS_DIALOG_KEYS;
+import static org.mastodon.model.app.WindowManager.COMPUTE_FEATURE_DIALOG;
+import static org.mastodon.model.app.WindowManager.OPEN_ONLINE_DOCUMENTATION;
+import static org.mastodon.model.app.WindowManager.PREFERENCES_DIALOG;
+import static org.mastodon.model.app.WindowManager.PREFERENCES_DIALOG_KEYS;
+import static org.mastodon.model.app.WindowManager.TAGSETS_DIALOG;
+import static org.mastodon.model.app.WindowManager.TAGSETS_DIALOG_KEYS;
 
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
@@ -86,47 +86,47 @@ public class MamutAppModel extends BdvAppModel<
 
 	public MamutViewBdv createBdv()
 	{
-		return uiModel.createView( this, MamutViewBdv.class );
+		return windowManager.createView( this, MamutViewBdv.class );
 	}
 
 	public MamutViewBranchBdv createBranchBdv()
 	{
-		return uiModel.createView( this, MamutViewBranchBdv.class );
+		return windowManager.createView( this, MamutViewBranchBdv.class );
 	}
 
 	public MamutViewTrackScheme2 createTrackScheme()
 	{
-		return uiModel.createView( this, MamutViewTrackScheme2.class );
+		return windowManager.createView( this, MamutViewTrackScheme2.class );
 	}
 
 	public MamutViewBranchTrackScheme2 createBranchTrackScheme()
 	{
-		return uiModel.createView( this, MamutViewBranchTrackScheme2.class );
+		return windowManager.createView( this, MamutViewBranchTrackScheme2.class );
 	}
 
 	public MamutViewHierarchyTrackScheme2 createHierarchyTrackScheme()
 	{
-		return uiModel.createView( this, MamutViewHierarchyTrackScheme2.class );
+		return windowManager.createView( this, MamutViewHierarchyTrackScheme2.class );
 	}
 
 	public MamutViewTable2 createTable()
 	{
-		return uiModel.createView( this, MamutViewTable2.class );
+		return windowManager.createView( this, MamutViewTable2.class );
 	}
 
 	public MamutViewSelectionTable2 createSelectionTable()
 	{
-		return uiModel.createView( this, MamutViewSelectionTable2.class );
+		return windowManager.createView( this, MamutViewSelectionTable2.class );
 	}
 
 	public MamutViewGrapher createGrapher()
 	{
-		return uiModel.createView( this, MamutViewGrapher.class );
+		return windowManager.createView( this, MamutViewGrapher.class );
 	}
 
 	public MamutViewBranchGrapher createBranchGrapher()
 	{
-		return uiModel.createView( this, MamutViewBranchGrapher.class );
+		return windowManager.createView( this, MamutViewBranchGrapher.class );
 	}
 
 	/*

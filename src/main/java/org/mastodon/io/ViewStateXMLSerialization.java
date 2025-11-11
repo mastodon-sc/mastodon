@@ -69,7 +69,7 @@ import java.util.Map.Entry;
 
 import org.jdom2.Element;
 import org.mastodon.model.app.AppModel;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.MastodonFrameView;
 import org.mastodon.views.trackscheme.graph.ScreenTransform;
@@ -198,14 +198,14 @@ public class ViewStateXMLSerialization
 	 *
 	 * @param windowsEl
 	 *            the XML element that stores the GUI state of a view.
-	 * @param uiModel
+	 * @param windowManager
 	 *            the application {@link WindowManager}.
 	 * @param appModel
 	 */
 	public static < AM extends AppModel< AM, ?, ?, ?, ? > > void fromXml( final Element windowsEl, final AM appModel )
 	{
-		final UIModel< AM > uiModel = appModel.uiModel();
-		final UIModel< AM >.ViewFactories viewFactories = uiModel.getViewFactories();
+		final WindowManager< AM > windowManager = appModel.windowManager();
+		final WindowManager< AM >.ViewFactories viewFactories = windowManager.getViewFactories();
 		final Collection< Class< ? extends MastodonFrameView > > classes = viewFactories.getKeys();
 
 		final List< Element > viewEls = windowsEl.getChildren( WINDOW_TAG );
@@ -231,7 +231,7 @@ public class ViewStateXMLSerialization
 			}
 
 			// Create, register the view and sets its GUI state.
-			uiModel.createView( appModel, klass, guiState );
+			windowManager.createView( appModel, klass, guiState );
 		}
 	}
 

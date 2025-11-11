@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Priority;
@@ -41,7 +41,7 @@ public class TrackSchemeStyleManagerFactory2 implements StyleManagerFactory2< Tr
 {
 
 	@Override
-	public TrackSchemeStyleManager create( final UIModel< ? > uiModel )
+	public TrackSchemeStyleManager create( final WindowManager< ? > wm )
 	{
 		return new TrackSchemeStyleManager();
 	}

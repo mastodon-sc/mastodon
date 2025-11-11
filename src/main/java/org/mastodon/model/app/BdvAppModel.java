@@ -69,10 +69,10 @@ public class BdvAppModel<
 		 * model and on the number of sources in the bdv data
 		 */
 		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
-		uiModel.registerInstance( featureColorModeManager );
+		windowManager.registerInstance( featureColorModeManager );
 		final DefaultFeatureProjectionsManager featureProjectionsManager = new DefaultFeatureProjectionsManager( context.getService( FeatureSpecsService.class ), featureColorModeManager );
 		featureProjectionsManager.setModel( model, model.getFeatureModel(), sharedBdvData.getSources().size() );
-		uiModel.getPreferencesDialog().addPage( new FeatureColorModeConfigPage( "Settings > Feature Color Modes", featureColorModeManager, featureProjectionsManager, "Vertex", "Edge" ) );
+		windowManager.getPreferencesDialog().addPage( new FeatureColorModeConfigPage( "Settings > Feature Color Modes", featureColorModeManager, featureProjectionsManager, "Vertex", "Edge" ) );
 	}
 
 	public SharedBigDataViewerData imageData()

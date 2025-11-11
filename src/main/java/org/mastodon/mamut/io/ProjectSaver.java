@@ -68,7 +68,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory2;
 import org.mastodon.mamut.views.bdv.MamutViewBdv;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
@@ -267,9 +267,9 @@ public class ProjectSaver
 			// Save Raw Graph Model
 			final GraphToFileIdMap< Spot, Link > idmap = model.saveRaw( writer );
 			// Serialize feature model.
-			MamutRawFeatureModelIO2.serialize( appModel.uiModel().getContext(), model, idmap, writer );
+			MamutRawFeatureModelIO2.serialize( appModel.windowManager().getContext(), model, idmap, writer );
 			// Serialize GUI state.
-			saveGUI( writer, appModel.uiModel() );
+			saveGUI( writer, appModel.windowManager() );
 			// Save a copy of the Spim Data Xml File
 			saveBackupDatasetXml( tmpDatasetXml, writer );
 			// Set save point.
@@ -284,7 +284,7 @@ public class ProjectSaver
 		{
 			final String settingsFile = sbdv.getProposedSettingsFile().getAbsolutePath();
 			final AtomicBoolean alreadySaved = new AtomicBoolean( false );
-			appModel.uiModel().forEachView( MamutViewBdv.class, ( v ) -> {
+			appModel.windowManager().forEachView( MamutViewBdv.class, ( v ) -> {
 				if ( !alreadySaved.get() )
 				{
 					try
@@ -306,16 +306,20 @@ public class ProjectSaver
 	/**
 	 * Serialize window positions and states.
 	 *
+	 * @param writer
+	 *            the writer to write to.
+	 * @param windowManager
+	 *            the window manager to get the windows from.
 	 * @throws IOException
 	 *             if an error occurs when writing to the GUI file.
 	 */
-	private static void saveGUI( final ProjectWriter writer, final UIModel< MamutAppModel > uiModel ) throws IOException
+	private static void saveGUI( final ProjectWriter writer, final WindowManager< MamutAppModel > windowManager ) throws IOException
 	{
 		final Element guiRoot = new Element( GUI_TAG );
 		guiRoot.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
 		final Element windows = new Element( WINDOWS_TAG );
-		final UIModel< MamutAppModel >.ViewFactories viewFactories = uiModel.getViewFactories();
-		uiModel.forEachView( ( view ) -> {
+		final WindowManager< MamutAppModel >.ViewFactories viewFactories = windowManager.getViewFactories();
+		windowManager.forEachView( ( view ) -> {
 			@SuppressWarnings( "rawtypes" )
 			final
 			MamutViewFactory2 factory = ( MamutViewFactory2 ) viewFactories.getFactory( view.getClass() );
@@ -422,7 +426,7 @@ public class ProjectSaver
 		}
 
 		// And now the weird part: we reopen the project we just created.
-		final Context context = appModel.uiModel().getContext();
+		final Context context = appModel.windowManager().getContext();
 		final Model model = appModel.dataModel();
 		final MamutAppModel nmam = MamutAppModel.create( context, model, sbdv, np );
 

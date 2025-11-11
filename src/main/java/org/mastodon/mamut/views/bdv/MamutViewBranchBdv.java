@@ -51,7 +51,7 @@ public class MamutViewBranchBdv
 	{
 		super(
 				appModel.dataModel().branchModel(),
-				appModel.uiModel(),
+				appModel.windowManager(),
 				appModel.imageData(),
 				new BranchModelOverlayProperties(
 						appModel.dataModel().branchModel().getGraph(),

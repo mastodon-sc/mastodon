@@ -60,7 +60,7 @@ import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.app.AppModel;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;
@@ -147,7 +147,7 @@ public class MastodonViewTrackScheme2<
 	{
 		this(
 				appModel.dataModel(),
-				appModel.uiModel(),
+				appModel.windowManager(),
 				modelGraphProperties,
 				appModel.getTimepointMin(),
 				appModel.getTimepointMax());
@@ -160,17 +160,17 @@ public class MastodonViewTrackScheme2<
 	 *
 	 * @param dataModel
 	 *            the model containing the graph to display.
-	 * @param uiModel
-	 *            the application UI model.
+	 * @param windowManager
+	 *            the window manager.
 	 * @param modelGraphProperties
 	 *            the model graph properties.
 	 */
 	public MastodonViewTrackScheme2(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > windowManager,
 			final TrackSchemeProperties< V, E > modelGraphProperties )
 	{
-		this( dataModel, uiModel, modelGraphProperties,
+		this( dataModel, windowManager, modelGraphProperties,
 				minTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ),
 				maxTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ) );
 	}
@@ -180,8 +180,8 @@ public class MastodonViewTrackScheme2<
 	 *
 	 * @param dataModel
 	 *            the model containing the graph to display.
-	 * @param uiModel
-	 *            the application UI model.
+	 * @param windowManager
+	 *            the window manager.
 	 * @param modelGraphProperties
 	 *            the model graph properties.
 	 * @param timepointMin
@@ -191,12 +191,12 @@ public class MastodonViewTrackScheme2<
 	 */
 	public MastodonViewTrackScheme2(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > windowManager,
 			final TrackSchemeProperties< V, E > modelGraphProperties,
 			final int timepointMin,
 			final int timepointMax )
 	{
-		this( dataModel, uiModel, modelGraphProperties,
+		this( dataModel, windowManager, modelGraphProperties,
 				new TrackSchemeOverlayFactory(),
 				LineageTreeLayoutImp::new,
 				timepointMin,
@@ -208,8 +208,8 @@ public class MastodonViewTrackScheme2<
 	 *
 	 * @param dataModel
 	 *            the model containing the graph to display.
-	 * @param uiModel
-	 *            the application UI model.
+	 * @param windowManager
+	 *            the window manager.
 	 * @param modelGraphProperties
 	 *            the model graph properties.
 	 * @param overlayFactory
@@ -223,14 +223,14 @@ public class MastodonViewTrackScheme2<
 	 */
 	public MastodonViewTrackScheme2(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > windowManager,
 			final TrackSchemeProperties< V, E > modelGraphProperties,
 			final TrackSchemeOverlayFactory overlayFactory,
 			final LineageTreeLayout.LineageTreeLayoutFactory lineageTreeLayoutFactory,
 			final int timepointMin,
 			final int timepointMax )
 	{
-		super( dataModel, uiModel,
+		super( dataModel, windowManager,
 				new TrackSchemeGraph<>(
 						dataModel.getGraph(),
 						dataModel.getGraphIdBimap(),
@@ -246,9 +246,9 @@ public class MastodonViewTrackScheme2<
 		/*
 		 * Show TrackSchemeFrame
 		 */
-		final TrackSchemeStyleManager trackSchemeStyleManager = uiModel.getInstance( TrackSchemeStyleManager.class );
+		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getInstance( TrackSchemeStyleManager.class );
 		final TrackSchemeStyle forwardDefaultStyle = trackSchemeStyleManager.getForwardDefaultStyle();
-		final KeyPressedManager keyPressedManager = uiModel.getKeyPressedManager();
+		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
 				.style( forwardDefaultStyle )
@@ -321,19 +321,19 @@ public class MastodonViewTrackScheme2<
 		frame.getTrackschemePanel().getTransformEventHandler().install( viewBehaviours );
 
 		// Command finder.
-		final Context context = uiModel.getContext();
+		final Context context = windowManager.getContext();
 		if ( context != null )
 		{
 			final CommandFinder cf = CommandFinder.build()
 					.context( context )
-					.inputTriggerConfig( uiModel.getKeymap().getConfig() )
+					.inputTriggerConfig( windowManager.getKeymap().getConfig() )
 					.keyConfigContexts( keyConfigContexts )
-					.descriptionProvider( uiModel.getCommandDescriptions() )
+					.descriptionProvider( windowManager.getCommandDescriptions() )
 					.register( viewActions )
-					.register( uiModel.getModelActions() )
-					.register( uiModel.getProjectActions() )
-					.register( uiModel.getPlugins().getPluginActions() )
-					.modificationListeners( uiModel.getKeymap().updateListeners() )
+					.register( windowManager.getModelActions() )
+					.register( windowManager.getProjectActions() )
+					.register( windowManager.getPlugins().getPluginActions() )
+					.modificationListeners( windowManager.getKeymap().updateListeners() )
 					.parent( frame )
 					.installOn( viewActions );
 			cf.getDialog().setTitle( cf.getDialog().getTitle() + " - " + frame.getTitle() );
@@ -343,9 +343,9 @@ public class MastodonViewTrackScheme2<
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 
-		final ViewMenu menu = new ViewMenu( this, uiModel.getKeymap(), keyConfigContexts );
+		final ViewMenu menu = new ViewMenu( this, windowManager.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
-		uiModel.getViewFactories().addWindowMenuTo( menu, actionMap );
+		windowManager.getViewFactories().addWindowMenuTo( menu, actionMap );
 		MamutMenuBuilder2.build( menu, actionMap,
 				fileMenu(
 						separator(),
@@ -381,7 +381,7 @@ public class MastodonViewTrackScheme2<
 						separator(),
 						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL ),
 						tagSetMenu( tagSetMenuHandle ) ) );
-		uiModel.getPlugins().addMenus( menu );
+		windowManager.getPlugins().addMenus( menu );
 
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );

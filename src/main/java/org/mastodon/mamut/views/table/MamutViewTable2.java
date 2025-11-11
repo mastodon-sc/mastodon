@@ -4,7 +4,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.views.table.MastodonViewTable2;
 import org.mastodon.views.table.TableModelGraphProperties;
 
@@ -14,8 +14,8 @@ import org.mastodon.views.table.TableModelGraphProperties;
 public class MamutViewTable2 extends MastodonViewTable2< Model, ModelGraph, Spot, Link >
 {
 
-	protected MamutViewTable2( final Model dataModel, final UIModel< ? > uiModel, final TableModelGraphProperties< Spot > properties )
+	protected MamutViewTable2( final Model dataModel, final WindowManager< ? > windowManager, final TableModelGraphProperties< Spot > properties )
 	{
-		super( dataModel, uiModel, properties, false );
+		super( dataModel, windowManager, properties, false );
 	}
 }

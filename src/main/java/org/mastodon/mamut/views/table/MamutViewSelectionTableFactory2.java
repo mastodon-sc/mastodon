@@ -55,7 +55,7 @@ public class MamutViewSelectionTableFactory2
 	public MamutViewSelectionTable2 create( final MamutAppModel appModel )
 	{
 		final TableModelGraphProperties< Spot > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
-		return new MamutViewSelectionTable2( appModel.dataModel(), appModel.uiModel(), modelGraphProperties );
+		return new MamutViewSelectionTable2( appModel.dataModel(), appModel.windowManager(), modelGraphProperties );
 	}
 
 	@Override

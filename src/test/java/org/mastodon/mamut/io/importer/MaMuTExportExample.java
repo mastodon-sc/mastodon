@@ -71,7 +71,7 @@ public class MaMuTExportExample
 		 * 1.1a. Compute all features.
 		 */
 
-		final Context context = appModel.uiModel().getContext();
+		final Context context = appModel.windowManager().getContext();
 		final MamutFeatureComputerService featureComputerService =
 				MamutFeatureComputerService.newInstance( context );
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();

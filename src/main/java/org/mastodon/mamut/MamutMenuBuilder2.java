@@ -38,7 +38,7 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.io.ProjectActions;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
 import org.mastodon.views.bdv.export.RecordMovieDialog;
@@ -71,8 +71,8 @@ public class MamutMenuBuilder2 extends ViewMenuBuilder
 		menuTexts.put( ProjectActions.IMPORT_MAMUT, "Import MaMuT project" );
 		menuTexts.put( ProjectActions.EXPORT_MAMUT, "Export MaMuT project" );
 
-		menuTexts.put( UIModel.OPEN_ONLINE_DOCUMENTATION, "Open online documentation" );
-		menuTexts.put( UIModel.PREFERENCES_DIALOG, "Preferences..." );
+		menuTexts.put( WindowManager.OPEN_ONLINE_DOCUMENTATION, "Open online documentation" );
+		menuTexts.put( WindowManager.PREFERENCES_DIALOG, "Preferences..." );
 
 		menuTexts.put( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL, "Settings Toolbar" );
 

@@ -48,7 +48,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.model.tag.TagSetModel;
 import org.scijava.Context;
 
@@ -92,7 +92,7 @@ public class MastodonUtils
 		}
 	}
 
-	public static UIModel< MamutAppModel > showGui( final String projectPath )
+	public static WindowManager< MamutAppModel > showGui( final String projectPath )
 	{
 		try
 		{
@@ -100,7 +100,7 @@ public class MastodonUtils
 			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 			mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-			return appModel.uiModel();
+			return appModel.windowManager();
 		}
 		catch ( IOException | SpimDataException e )
 		{
@@ -110,10 +110,10 @@ public class MastodonUtils
 
 	public static void logMastodonEvents( final MamutAppModel appModel )
 	{
-		final GroupHandle groupHandle = appModel.uiModel().getGroupManager().createGroupHandle();
+		final GroupHandle groupHandle = appModel.windowManager().getGroupManager().createGroupHandle();
 		groupHandle.setGroupId( 0 );
-		logNavigationHandle( groupHandle.getModel( appModel.uiModel().NAVIGATION ) );
-		logTimePointModel( groupHandle.getModel( appModel.uiModel().TIMEPOINT ) );
+		logNavigationHandle( groupHandle.getModel( appModel.windowManager().NAVIGATION ) );
+		logTimePointModel( groupHandle.getModel( appModel.windowManager().TIMEPOINT ) );
 		logFocusModel( appModel );
 		logTagSetModel( appModel );
 	}

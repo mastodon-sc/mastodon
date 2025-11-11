@@ -62,7 +62,7 @@ import org.mastodon.model.HasBranchModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.model.branch.BranchGraphEdgeBimap;
 import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.model.branch.BranchGraphVertexBimap;
@@ -116,16 +116,16 @@ public class MastodonViewTable2<
 
 	public MastodonViewTable2(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > windowManager,
 			final TableModelGraphProperties< V > properties )
 	{
-		this( dataModel, uiModel, properties, false );
+		this( dataModel, windowManager, properties, false );
 	}
 
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	protected MastodonViewTable2(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > uiModel,
 			final TableModelGraphProperties< V > properties,
 			final boolean selectionTable )
 	{
@@ -378,7 +378,7 @@ public class MastodonViewTable2<
 
 		final TagSetModel< V, E > tagSetModel = dataModel.getTagSetModel();
 		final FeatureModel featureModel = dataModel.getFeatureModel();
-		final FeatureColorModeManager featureColorModeManager = uiModel.getInstance( FeatureColorModeManager.class );
+		final FeatureColorModeManager featureColorModeManager = windowManager.getInstance( FeatureColorModeManager.class );
 		final ColoringModelBranchGraph< ?, ? > coloringModel =
 				new ColoringModelBranchGraph<>( tagSetModel, featureColorModeManager, featureModel );
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
@@ -398,7 +398,7 @@ public class MastodonViewTable2<
 
 		// Handle track color generator.
 		@SuppressWarnings( "unchecked" )
-		final TrackGraphColorGenerator< V, E > tgcg = uiModel.getInstance( TrackGraphColorGenerator.class );
+		final TrackGraphColorGenerator< V, E > tgcg = windowManager.getInstance( TrackGraphColorGenerator.class );
 		// Adapt it so that is a color generator for the branch graph.
 		final GraphColorGeneratorAdapter< V, E, BV, BE > branchTgcg = new GraphColorGeneratorAdapter<>(
 				new BranchGraphVertexBimap<>( branchGraph, graph ),

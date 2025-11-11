@@ -17,7 +17,7 @@ import org.mastodon.model.MastodonModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 
 /**
@@ -48,7 +48,7 @@ public class AbstractMastodonView<
 
 	protected final M dataModel;
 
-	protected final UIModel< ? > uiModel;
+	protected final WindowManager< ? > windowManager;
 
 	protected final VG viewGraph;
 
@@ -70,11 +70,11 @@ public class AbstractMastodonView<
 
 	public AbstractMastodonView(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > uiModel,
 			final VG viewGraph )
 	{
 		this.dataModel = dataModel;
-		this.uiModel = uiModel;
+		this.windowManager = uiModel;
 		this.viewGraph = viewGraph;
 		this.groupHandle = uiModel.getGroupManager().createGroupHandle();
 

@@ -20,7 +20,7 @@ public class MamutViewGrapher extends MastodonViewGrapher< Model, ModelGraph, Sp
 	{
 		super(
 				appModel.dataModel(),
-				appModel.uiModel(),
+				appModel.windowManager(),
 				new MamutDataGraphProperties( appModel.dataModel().getGraph(), appModel.imageData().getSources().size() ) );
 	}
 }

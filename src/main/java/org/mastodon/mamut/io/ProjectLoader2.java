@@ -308,8 +308,8 @@ public class ProjectLoader2
 	 *
 	 * @param project
 	 *            the project to read from.
-	 * @param uiModel
-	 *            a UIModel instance, used to create windows.
+	 * @param appModel
+	 *            the application model, used to restore the GUI state into.
 	 * @throws IOException
 	 *             if there is a problem reading the project.
 	 */

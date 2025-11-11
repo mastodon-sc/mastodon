@@ -15,7 +15,7 @@ import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.HasBranchModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.app.UIModel;
+import org.mastodon.model.app.WindowManager;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColorBarOverlay;
@@ -76,13 +76,13 @@ public class AbstractMastodonFrameView<
 
 	public AbstractMastodonFrameView(
 			final M dataModel,
-			final UIModel< ? > uiModel,
+			final WindowManager< ? > windowManager,
 			final VG viewGraph,
 			final String[] keyConfigContexts )
 	{
-		super( dataModel, uiModel, viewGraph );
+		super( dataModel, windowManager, viewGraph );
 
-		final Set< String > c = new LinkedHashSet<>( Arrays.asList( uiModel.getKeyConfigContexts() ) );
+		final Set< String > c = new LinkedHashSet<>( Arrays.asList( windowManager.getKeyConfigContexts() ) );
 		c.addAll( Arrays.asList( keyConfigContexts ) );
 		this.keyConfigContexts = c.toArray( new String[] {} );
 	}
@@ -105,25 +105,25 @@ public class AbstractMastodonFrameView<
 		} );
 		this.frame = frame;
 
-		final Actions projectActions = uiModel.getProjectActions();
+		final Actions projectActions = windowManager.getProjectActions();
 		if ( projectActions != null )
 		{
 			frame.getKeybindings().addActionMap( "project", new WrappedActionMap( projectActions.getActionMap() ) );
 			frame.getKeybindings().addInputMap( "project", new WrappedInputMap( projectActions.getInputMap() ) );
 		}
 
-		final Actions pluginActions = uiModel.getPlugins().getPluginActions();
+		final Actions pluginActions = windowManager.getPlugins().getPluginActions();
 		if ( pluginActions != null )
 		{
 			frame.getKeybindings().addActionMap( "plugin", new WrappedActionMap( pluginActions.getActionMap() ) );
 			frame.getKeybindings().addInputMap( "plugin", new WrappedInputMap( pluginActions.getInputMap() ) );
 		}
 
-		final Actions modelActions = uiModel.getModelActions();
+		final Actions modelActions = windowManager.getModelActions();
 		frame.getKeybindings().addActionMap( "model", new WrappedActionMap( modelActions.getActionMap() ) );
 		frame.getKeybindings().addInputMap( "model", new WrappedInputMap( modelActions.getInputMap() ) );
 
-		final Keymap keymap = uiModel.getKeymap();
+		final Keymap keymap = windowManager.getKeymap();
 
 		viewActions = new Actions( keymap.getConfig(), keyConfigContexts );
 		viewActions.install( frame.getKeybindings(), "view" );
@@ -218,7 +218,7 @@ public class AbstractMastodonFrameView<
 			final Runnable refresh )
 	{
 		final TagSetModel< MV, ME > tagSetModel = dataModel.getTagSetModel();
-		final FeatureColorModeManager featureColorModeManager = uiModel.getInstance( FeatureColorModeManager.class );
+		final FeatureColorModeManager featureColorModeManager = windowManager.getInstance( FeatureColorModeManager.class );
 		final FeatureModel featureModel = dataModel.getFeatureModel();
 
 		final ColoringModel coloringModel;
@@ -259,7 +259,7 @@ public class AbstractMastodonFrameView<
 				colorGenerator = new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() );
 				break;
 			case BY_TRACK:
-				final TrackGraphColorGenerator< MV, ME > tgcg = uiModel.getInstance( TrackGraphColorGenerator.class );
+				final TrackGraphColorGenerator< MV, ME > tgcg = windowManager.getInstance( TrackGraphColorGenerator.class );
 				colorGenerator = tgcg;
 				break;
 			case NONE:

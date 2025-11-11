@@ -45,7 +45,7 @@ public class MamutViewBdv extends MastodonViewBdv< Model, ModelGraph, Spot, Link
 	{
 		super(
 				appModel.dataModel(),
-				appModel.uiModel(),
+				appModel.windowManager(),
 				appModel.imageData(),
 				new MamutBdvOverlayProperties(
 						appModel.dataModel().getGraph(), 
