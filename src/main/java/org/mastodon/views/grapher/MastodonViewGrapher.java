@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.views.grapher;
+package org.mastodon.views.grapher;
 
 import static org.mastodon.app.ui.ViewMenuBuilder2.item;
 import static org.mastodon.app.ui.ViewMenuBuilder2.separator;

@@ -1,11 +1,11 @@
 package org.mastodon.mamut.views.grapher;
 
-import org.mastodon.app.views.grapher.MastodonViewGrapher;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.MastodonModel;
+import org.mastodon.views.grapher.MastodonViewGrapher;
 
 /**
  * Mamut app-specific Grapher view for the branch data.

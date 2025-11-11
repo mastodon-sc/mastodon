@@ -28,10 +28,10 @@
  */
 package org.mastodon.mamut.views.grapher;
 
-import org.mastodon.app.views.grapher.AbstractMastodonViewGrapherFactory;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.views.grapher.AbstractMastodonViewGrapherFactory;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 

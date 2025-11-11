@@ -1,4 +1,4 @@
-package org.mastodon.app.views.grapher;
+package org.mastodon.views.grapher;
 
 import java.util.Map;
 
