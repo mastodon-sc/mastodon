@@ -1,9 +1,9 @@
 package org.mastodon.mamut.views.table;
 
-import org.mastodon.app.views.table.TableModelGraphProperties;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.PropertyChangeListener;
+import org.mastodon.views.table.TableModelGraphProperties;
 
 public class MamutTableProperties implements TableModelGraphProperties< Spot >
 {

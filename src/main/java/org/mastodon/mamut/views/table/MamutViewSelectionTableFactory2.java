@@ -28,12 +28,12 @@
  */
 package org.mastodon.mamut.views.table;
 
-import org.mastodon.app.views.table.AbstractMastodonViewTableFactory;
-import org.mastodon.app.views.table.TableModelGraphProperties;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.views.table.AbstractMastodonViewTableFactory;
+import org.mastodon.views.table.TableModelGraphProperties;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 

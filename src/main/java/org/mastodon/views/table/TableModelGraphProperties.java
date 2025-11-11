@@ -1,4 +1,4 @@
-package org.mastodon.app.views.table;
+package org.mastodon.views.table;
 
 import org.mastodon.properties.PropertyChangeListener;
 

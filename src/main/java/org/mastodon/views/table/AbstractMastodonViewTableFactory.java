@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.views.table;
+package org.mastodon.views.table;
 
 import java.awt.Point;
 import java.util.ArrayList;

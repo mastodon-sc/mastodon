@@ -1,12 +1,12 @@
 package org.mastodon.mamut.views.table;
 
 import org.mastodon.app.UIModel;
-import org.mastodon.app.views.table.MastodonViewTable2;
-import org.mastodon.app.views.table.TableModelGraphProperties;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.views.table.MastodonViewTable2;
+import org.mastodon.views.table.TableModelGraphProperties;
 
 /**
  * Mamut app-specific table view.

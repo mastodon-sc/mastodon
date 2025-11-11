@@ -49,12 +49,12 @@ import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEAT
 import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_PROJECTION_KEY;
 import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_FEATURE_SPEC_KEY;
 import static org.mastodon.app.views.grapher.GrapherGuiState.GRAPHER_Y_AXIS_INCOMING_EDGE_KEY;
-import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_DISPLAYED;
-import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_ELEMENT;
-import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_NAME;
-import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_VISIBLE_POS;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
+import static org.mastodon.views.table.AbstractMastodonViewTableFactory.TABLE_DISPLAYED;
+import static org.mastodon.views.table.AbstractMastodonViewTableFactory.TABLE_ELEMENT;
+import static org.mastodon.views.table.AbstractMastodonViewTableFactory.TABLE_NAME;
+import static org.mastodon.views.table.AbstractMastodonViewTableFactory.TABLE_VISIBLE_POS;
 import static org.mastodon.views.trackscheme.AbstractMastodonViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.awt.GraphicsDevice;
