@@ -30,9 +30,9 @@ package org.mastodon.views.trackscheme.display;
 
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
-import org.mastodon.views.trackscheme.LineageTreeLayout;
-import org.mastodon.views.trackscheme.ScreenTransform;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayout;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 import org.scijava.listeners.Listeners;
 
 import bdv.viewer.TransformListener;

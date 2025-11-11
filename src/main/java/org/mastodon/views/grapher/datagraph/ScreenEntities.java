@@ -30,7 +30,7 @@ package org.mastodon.views.grapher.datagraph;
 
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.ref.RefArrayList;
-import org.mastodon.views.trackscheme.ScreenVertexRange;
+import org.mastodon.views.trackscheme.graph.ScreenVertexRange;
 
 /**
  * A collection of layouted screen objects to paint. Comprises lists of

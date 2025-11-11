@@ -8,7 +8,7 @@ import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.MastodonModel;
-import org.mastodon.views.trackscheme.LongEdgesLineageTreeLayout;
+import org.mastodon.views.trackscheme.graph.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.wrap.MastodonHierarchyTrackSchemeProperties;
 
 /**

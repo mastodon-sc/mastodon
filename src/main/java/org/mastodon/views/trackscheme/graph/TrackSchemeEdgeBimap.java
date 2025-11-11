@@ -26,47 +26,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme.display.animate;
+package org.mastodon.views.trackscheme.graph;
 
-import org.mastodon.views.trackscheme.graph.ScreenTransform;
+import org.mastodon.adapter.RefBimap;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.GraphIdBimap;
+import org.mastodon.graph.Vertex;
 
-public class InterpolateScreenTransformAnimator extends AbstractTransformAnimator< ScreenTransform >
+public class TrackSchemeEdgeBimap< V extends Vertex< E >, E extends Edge< V > >
+		implements RefBimap< E, TrackSchemeEdge >
 {
-	private final ScreenTransform t0;
+	private final GraphIdBimap< V, E > idmap;
 
-	private final ScreenTransform t1;
+	private final TrackSchemeGraph< V, E > tsgraph;
 
-	private final ScreenTransform transform = new ScreenTransform();
-
-	/**
-	 * Animate {@link ScreenTransform} by interpolating between {@code t0} and
-	 * {@code t1}.
-	 *
-	 * @param t0
-	 *            transform at begin of animation.
-	 * @param t1
-	 *            transform at end of animation.
-	 * @param duration
-	 *            duration of animation.
-	 */
-	public InterpolateScreenTransformAnimator( final ScreenTransform t0, final ScreenTransform t1, final long duration )
+	public TrackSchemeEdgeBimap(
+			final TrackSchemeGraph< V, E > tsgraph )
 	{
-		super( duration );
-		this.t0 = t0.copy();
-		this.t1 = t1.copy();
+		this.idmap = tsgraph.getGraphIdBimap();
+		this.tsgraph = tsgraph;
 	}
 
 	@Override
-	protected ScreenTransform get( final double t )
+	public E getLeft( final TrackSchemeEdge right )
 	{
-		if ( t <= 0 )
-			return t0;
-		else if ( t > 1 )
-			return t1;
-		else
-		{
-			transform.interpolate( t0, t1, t );
-			return transform;
-		}
+		return right == null ? null : idmap.getEdge( right.getModelEdgeId(), reusableLeftRef( right ) );
+	}
+
+	@Override
+	public TrackSchemeEdge getRight( final E left, final TrackSchemeEdge ref )
+	{
+		return left == null ? null : tsgraph.getTrackSchemeEdgeForModelId( idmap.getEdgeId( left ), ref );
+	}
+
+	@SuppressWarnings( "unchecked" )
+	@Override
+	public E reusableLeftRef( final TrackSchemeEdge ref )
+	{
+		return ( E ) ref.modelEdge.getReusableRef();
+	}
+
+	@Override
+	public TrackSchemeEdge reusableRightRef()
+	{
+		return tsgraph.edgeRef();
+	}
+
+	@Override
+	public void releaseRef( final TrackSchemeEdge ref )
+	{
+		tsgraph.releaseRef( ref );
 	}
 }

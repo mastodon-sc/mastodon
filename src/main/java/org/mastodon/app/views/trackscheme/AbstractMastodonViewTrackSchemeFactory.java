@@ -7,8 +7,8 @@ import org.mastodon.app.views.AbstractMastodonViewFactory;
 import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
-import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
 
 /**
  * Base class for view factories that create TrackScheme views. This abstract

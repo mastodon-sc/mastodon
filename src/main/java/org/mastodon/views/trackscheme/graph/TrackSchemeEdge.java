@@ -26,13 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractEdge;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
-import org.mastodon.views.trackscheme.TrackSchemeGraph.TrackSchemeEdgePool;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph.TrackSchemeEdgePool;
 
 public class TrackSchemeEdge
 		extends AbstractEdge< TrackSchemeEdge, TrackSchemeVertex, TrackSchemeEdgePool, ByteMappedElement >

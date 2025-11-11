@@ -441,9 +441,13 @@ public class ProjectLoader2
 		final String projectPath = "/Users/tinevez/Library/CloudStorage/GoogleDrive-jeanyves.tinevez@gmail.com/My Drive/Mastodon/Datasets/Remote/BDV/Tribolium/CTC_TRIF_trainingVideo02_jy-GT-done.mastodon";
 		final MamutAppModel appModel = ProjectLoader2.open( projectPath, new Context() );
 		appModel.dataModel().branchGraphSync().sync();
-		appModel.createTrackScheme();
+//		appModel.createTrackScheme();
 //		appModel.createTable();
 //		appModel.createSelectionTable();
-		appModel.createBranchTrackScheme();
+//		appModel.createBranchTrackScheme();
+//		appModel.createGrapher();
+//		appModel.createBranchGrapher();
+		appModel.createBdv();
+		appModel.createBranchBdv();
 	}
 }

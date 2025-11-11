@@ -28,7 +28,7 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import org.mastodon.views.trackscheme.ScreenTransform;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
 import org.scijava.listeners.Listeners;
 
 import bdv.viewer.TransformListener;

@@ -34,11 +34,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import org.mastodon.model.HighlightModel;
-import org.mastodon.views.trackscheme.ScreenTransform;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
-import org.mastodon.views.trackscheme.TrackSchemeGraph;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
+import org.mastodon.views.trackscheme.graph.TrackSchemeEdge;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 
 public class MouseHighlightHandler
 		implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetHeadersListener

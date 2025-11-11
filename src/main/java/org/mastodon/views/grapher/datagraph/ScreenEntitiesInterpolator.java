@@ -28,11 +28,11 @@
  */
 package org.mastodon.views.grapher.datagraph;
 
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.APPEAR;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.DESELECTING;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.DISAPPEAR;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.NONE;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.SELECTING;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.APPEAR;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.DESELECTING;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.DISAPPEAR;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.NONE;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.SELECTING;
 
 import org.mastodon.collection.ref.IntRefHashMap;
 

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;

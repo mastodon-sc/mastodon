@@ -28,10 +28,10 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.APPEAR;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.DISAPPEAR;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.NONE;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.SELECTING;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.APPEAR;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.DISAPPEAR;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.NONE;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.SELECTING;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -45,12 +45,12 @@ import java.awt.geom.Rectangle2D;
 import org.mastodon.collection.RefList;
 import org.mastodon.util.ColorUtils;
 import org.mastodon.util.GeometryUtil;
-import org.mastodon.views.trackscheme.ScreenEdge;
-import org.mastodon.views.trackscheme.ScreenEntities;
-import org.mastodon.views.trackscheme.ScreenVertex;
-import org.mastodon.views.trackscheme.ScreenVertex.Transition;
-import org.mastodon.views.trackscheme.ScreenVertexRange;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.views.trackscheme.graph.ScreenEdge;
+import org.mastodon.views.trackscheme.graph.ScreenEntities;
+import org.mastodon.views.trackscheme.graph.ScreenVertex;
+import org.mastodon.views.trackscheme.graph.ScreenVertexRange;
+import org.mastodon.views.trackscheme.graph.ScreenVertex.Transition;
 
 /**
  * Painting the TrackScheme graph.

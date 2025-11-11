@@ -28,7 +28,7 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.DISAPPEAR;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.DISAPPEAR;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -37,11 +37,11 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import org.mastodon.util.ColorUtils;
-import org.mastodon.views.trackscheme.ScreenEntities;
-import org.mastodon.views.trackscheme.ScreenTransform;
-import org.mastodon.views.trackscheme.ScreenVertex;
-import org.mastodon.views.trackscheme.ScreenVertex.Transition;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.views.trackscheme.graph.ScreenEntities;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
+import org.mastodon.views.trackscheme.graph.ScreenVertex;
+import org.mastodon.views.trackscheme.graph.ScreenVertex.Transition;
 
 public class PaintHierarchicalGraph extends PaintBranchGraph
 {

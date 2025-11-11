@@ -28,12 +28,12 @@
  */
 package org.mastodon.views.grapher.datagraph;
 
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.NONE;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.NONE;
 
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.PoolObjectLayout;
-import org.mastodon.views.trackscheme.ScreenVertex.Transition;
+import org.mastodon.views.trackscheme.graph.ScreenVertex.Transition;
 
 import net.imglib2.RealLocalizable;
 

@@ -31,7 +31,7 @@ package org.mastodon.views.trackscheme.wrap;
 import org.mastodon.model.HasLabel;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.views.trackscheme.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
 
 /**
  * Interface for accessing model graph properties.

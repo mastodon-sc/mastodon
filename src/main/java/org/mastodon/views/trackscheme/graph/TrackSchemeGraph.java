@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 

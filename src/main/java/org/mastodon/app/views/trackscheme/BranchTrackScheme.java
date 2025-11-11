@@ -30,15 +30,15 @@ package org.mastodon.app.views.trackscheme;
 
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
-import org.mastodon.views.trackscheme.TrackSchemeGraph;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.PaintBranchGraph;
 import org.mastodon.views.trackscheme.display.PaintDecorations;
 import org.mastodon.views.trackscheme.display.PaintHierarchicalGraph;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.views.trackscheme.display.TrackSchemeOverlay;
 import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOverlayFactory;
+import org.mastodon.views.trackscheme.graph.TrackSchemeEdge;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 
 /**
  * Utility classes to paint a branch graph in a TrackScheme.

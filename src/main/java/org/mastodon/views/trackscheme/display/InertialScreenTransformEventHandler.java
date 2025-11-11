@@ -33,13 +33,13 @@ import java.util.TimerTask;
 
 import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.views.trackscheme.LineageTreeLayout;
-import org.mastodon.views.trackscheme.LineageTreeLayout.LayoutListener;
-import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.views.trackscheme.display.animate.AbstractTransformAnimator;
 import org.mastodon.views.trackscheme.display.animate.InertialScreenTransformAnimator;
 import org.mastodon.views.trackscheme.display.animate.InterpolateScreenTransformAnimator;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayout;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayout.LayoutListener;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;

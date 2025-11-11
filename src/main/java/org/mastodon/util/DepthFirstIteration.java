@@ -35,7 +35,7 @@ import java.util.List;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.views.trackscheme.LineageTreeLayout;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayout;
 
 import net.imglib2.util.Cast;
 

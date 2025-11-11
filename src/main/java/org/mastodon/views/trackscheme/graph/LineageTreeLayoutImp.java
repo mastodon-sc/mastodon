@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,9 +42,9 @@ import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.DepthFirstIteration;
-import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
-import org.mastodon.views.trackscheme.ScreenVertex.ScreenVertexPool;
-import org.mastodon.views.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
+import org.mastodon.views.trackscheme.graph.ScreenEdge.ScreenEdgePool;
+import org.mastodon.views.trackscheme.graph.ScreenVertex.ScreenVertexPool;
+import org.mastodon.views.trackscheme.graph.ScreenVertexRange.ScreenVertexRangePool;
 import org.scijava.listeners.Listeners;
 
 import gnu.trove.iterator.TIntIterator;

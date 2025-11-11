@@ -36,8 +36,8 @@ import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.views.trackscheme.TrackSchemeGraph;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 import org.scijava.ui.behaviour.util.Actions;
 
 import net.imglib2.util.Cast;

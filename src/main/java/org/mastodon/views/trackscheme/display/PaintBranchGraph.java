@@ -29,8 +29,8 @@
 package org.mastodon.views.trackscheme.display;
 
 import org.mastodon.util.GeometryUtil;
-import org.mastodon.views.trackscheme.ScreenEdge;
-import org.mastodon.views.trackscheme.ScreenVertex;
+import org.mastodon.views.trackscheme.graph.ScreenEdge;
+import org.mastodon.views.trackscheme.graph.ScreenVertex;
 
 import java.awt.Color;
 

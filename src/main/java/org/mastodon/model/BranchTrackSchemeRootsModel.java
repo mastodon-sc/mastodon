@@ -38,8 +38,8 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.views.trackscheme.TrackSchemeGraph;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 
 import java.util.List;
 

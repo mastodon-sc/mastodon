@@ -35,8 +35,8 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.views.trackscheme.TrackSchemeGraph;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 
 import java.util.List;
 

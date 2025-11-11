@@ -28,7 +28,7 @@
  */
 package org.mastodon.views.trackscheme.display.animate;
 
-import org.mastodon.views.trackscheme.ScreenTransform;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
 
 public class InertialScreenTransformAnimator extends AbstractTransformAnimator< ScreenTransform >
 {

@@ -36,15 +36,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.mastodon.collection.RefList;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.views.trackscheme.ScreenEdge;
-import org.mastodon.views.trackscheme.ScreenEntities;
-import org.mastodon.views.trackscheme.ScreenVertex;
-import org.mastodon.views.trackscheme.ScreenVertexRange;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
-import org.mastodon.views.trackscheme.TrackSchemeGraph;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.views.trackscheme.graph.ScreenEdge;
+import org.mastodon.views.trackscheme.graph.ScreenEntities;
+import org.mastodon.views.trackscheme.graph.ScreenVertex;
+import org.mastodon.views.trackscheme.graph.ScreenVertexRange;
+import org.mastodon.views.trackscheme.graph.TrackSchemeEdge;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 
 import bdv.viewer.OverlayRenderer;
 

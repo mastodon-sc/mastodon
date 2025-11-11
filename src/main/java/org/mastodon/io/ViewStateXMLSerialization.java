@@ -72,7 +72,7 @@ import org.mastodon.app.AppModel;
 import org.mastodon.app.UIModel;
 import org.mastodon.app.views.MastodonFrameView2;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
-import org.mastodon.views.trackscheme.ScreenTransform;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
 
 import ij.WindowManager;
 import mpicbg.spim.data.XmlHelpers;

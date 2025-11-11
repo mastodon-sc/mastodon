@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractVertex;
@@ -34,7 +34,7 @@ import org.mastodon.model.HasLabel;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.views.trackscheme.TrackSchemeGraph.TrackSchemeVertexPool;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph.TrackSchemeVertexPool;
 
 /**
  * The vertex class for TrackScheme.

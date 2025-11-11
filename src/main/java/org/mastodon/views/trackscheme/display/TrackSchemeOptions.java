@@ -33,12 +33,12 @@ import java.awt.event.KeyListener;
 import org.mastodon.ui.NavigationEtiquette;
 import org.mastodon.ui.coloring.DefaultGraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGenerator;
-import org.mastodon.views.trackscheme.LineageTreeLayout.LineageTreeLayoutFactory;
-import org.mastodon.views.trackscheme.LineageTreeLayoutImp;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOverlayFactory;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayoutImp;
+import org.mastodon.views.trackscheme.graph.TrackSchemeEdge;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayout.LineageTreeLayoutFactory;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
 /**

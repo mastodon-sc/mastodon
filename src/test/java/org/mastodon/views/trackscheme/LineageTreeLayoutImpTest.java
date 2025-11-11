@@ -47,6 +47,15 @@ import org.mastodon.model.FadingModel;
 import org.mastodon.model.RootsModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayout;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayoutImp;
+import org.mastodon.views.trackscheme.graph.ScreenEdge;
+import org.mastodon.views.trackscheme.graph.ScreenEntities;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
+import org.mastodon.views.trackscheme.graph.ScreenVertex;
+import org.mastodon.views.trackscheme.graph.TrackSchemeEdge;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 
 /**
  * Tests {@link LineageTreeLayoutImp}

@@ -26,55 +26,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
-import org.mastodon.adapter.RefBimap;
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.Vertex;
-
-public class TrackSchemeEdgeBimap< V extends Vertex< E >, E extends Edge< V > >
-		implements RefBimap< E, TrackSchemeEdge >
+/**
+ * A laid out column.
+ *
+ * @author Jean-Yves Tinevez
+ */
+public class ScreenColumn
 {
-	private final GraphIdBimap< V, E > idmap;
+	/**
+	 * The label of the column.
+	 */
+	public final String label;
 
-	private final TrackSchemeGraph< V, E > tsgraph;
+	/**
+	 * The screen X coordinate of the column left border.
+	 */
+	public final int xLeft;
 
-	public TrackSchemeEdgeBimap(
-			final TrackSchemeGraph< V, E > tsgraph )
+	/**
+	 * The width of the column, in screen units.
+	 */
+	public final int width;
+
+	public ScreenColumn( final String label, final int xLeft, final int width )
 	{
-		this.idmap = tsgraph.getGraphIdBimap();
-		this.tsgraph = tsgraph;
+		this.label = label;
+		this.xLeft = xLeft;
+		this.width = width;
 	}
 
-	@Override
-	public E getLeft( final TrackSchemeEdge right )
-	{
-		return right == null ? null : idmap.getEdge( right.getModelEdgeId(), reusableLeftRef( right ) );
-	}
-
-	@Override
-	public TrackSchemeEdge getRight( final E left, final TrackSchemeEdge ref )
-	{
-		return left == null ? null : tsgraph.getTrackSchemeEdgeForModelId( idmap.getEdgeId( left ), ref );
-	}
-
-	@SuppressWarnings( "unchecked" )
-	@Override
-	public E reusableLeftRef( final TrackSchemeEdge ref )
-	{
-		return ( E ) ref.modelEdge.getReusableRef();
-	}
-
-	@Override
-	public TrackSchemeEdge reusableRightRef()
-	{
-		return tsgraph.edgeRef();
-	}
-
-	@Override
-	public void releaseRef( final TrackSchemeEdge ref )
-	{
-		tsgraph.releaseRef( ref );
-	}
 }

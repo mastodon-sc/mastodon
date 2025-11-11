@@ -26,9 +26,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.NONE;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.NONE;
 
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
@@ -41,8 +41,8 @@ import org.mastodon.pool.attributes.ByteAttribute;
 import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
-import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
-import org.mastodon.views.trackscheme.ScreenVertex.Transition;
+import org.mastodon.views.trackscheme.graph.ScreenEdge.ScreenEdgePool;
+import org.mastodon.views.trackscheme.graph.ScreenVertex.Transition;
 
 /**
  * Layouted edge.

@@ -28,10 +28,10 @@
  */
 package org.mastodon.views.grapher.display;
 
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.APPEAR;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.DISAPPEAR;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.NONE;
-import static org.mastodon.views.trackscheme.ScreenVertex.Transition.SELECTING;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.APPEAR;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.DISAPPEAR;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.NONE;
+import static org.mastodon.views.trackscheme.graph.ScreenVertex.Transition.SELECTING;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -47,7 +47,7 @@ import org.mastodon.views.grapher.datagraph.ScreenEdge;
 import org.mastodon.views.grapher.datagraph.ScreenEntities;
 import org.mastodon.views.grapher.datagraph.ScreenVertex;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
-import org.mastodon.views.trackscheme.ScreenVertex.Transition;
+import org.mastodon.views.trackscheme.graph.ScreenVertex.Transition;
 
 import net.imglib2.type.numeric.ARGBType;
 

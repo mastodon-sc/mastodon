@@ -32,10 +32,10 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
-import org.mastodon.views.trackscheme.ScreenColumn;
-import org.mastodon.views.trackscheme.ScreenEntities;
-import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.views.trackscheme.graph.ScreenColumn;
+import org.mastodon.views.trackscheme.graph.ScreenEntities;
+import org.mastodon.views.trackscheme.graph.ScreenTransform;
 
 /**
  * Painting background and headers of the TrackScheme display.

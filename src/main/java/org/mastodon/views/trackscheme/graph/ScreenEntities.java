@@ -26,16 +26,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.ref.RefArrayList;
-import org.mastodon.views.trackscheme.ScreenEdge.ScreenEdgePool;
-import org.mastodon.views.trackscheme.ScreenVertex.ScreenVertexPool;
-import org.mastodon.views.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
+import org.mastodon.views.trackscheme.graph.ScreenEdge.ScreenEdgePool;
+import org.mastodon.views.trackscheme.graph.ScreenVertex.ScreenVertexPool;
+import org.mastodon.views.trackscheme.graph.ScreenVertexRange.ScreenVertexRangePool;
 
 /**
  * A collection of layouted screen objects to paint. Comprises lists of

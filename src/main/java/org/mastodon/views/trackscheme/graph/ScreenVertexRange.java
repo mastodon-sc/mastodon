@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme;
+package org.mastodon.views.trackscheme.graph;
 
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
@@ -35,7 +35,7 @@ import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.PoolObjectLayout;
 import org.mastodon.pool.SingleArrayMemPool;
 import org.mastodon.pool.attributes.DoubleAttribute;
-import org.mastodon.views.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
+import org.mastodon.views.trackscheme.graph.ScreenVertexRange.ScreenVertexRangePool;
 
 /**
  * Layouted dense vertex area.

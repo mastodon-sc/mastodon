@@ -52,9 +52,9 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.context.ContextChooserPanel;
 import org.mastodon.views.context.ContextChooser;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
-import org.mastodon.views.trackscheme.TrackSchemeGraph;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
+import org.mastodon.views.trackscheme.graph.TrackSchemeEdge;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
+import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 
 public class TrackSchemeFrame extends ViewFrame
