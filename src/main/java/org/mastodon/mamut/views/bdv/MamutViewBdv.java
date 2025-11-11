@@ -28,12 +28,12 @@
  */
 package org.mastodon.mamut.views.bdv;
 
-import org.mastodon.app.views.bdv.MastodonViewBdv;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.views.bdv.MastodonViewBdv;
 
 /**
  * Mamut-specific BDV view.

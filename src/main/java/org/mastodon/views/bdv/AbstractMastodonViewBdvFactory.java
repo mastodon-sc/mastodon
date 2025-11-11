@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.views.bdv;
+package org.mastodon.views.bdv;
 
 import java.util.Map;
 

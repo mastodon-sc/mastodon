@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.views.bdv;
+package org.mastodon.views.bdv;
 
 import static org.mastodon.app.MastodonIcons.BDV_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder2.item;
@@ -73,7 +73,6 @@ import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.display.BdvContextProvider;
 import org.mastodon.views.bdv.display.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.display.BigDataViewerBehavioursMamut;

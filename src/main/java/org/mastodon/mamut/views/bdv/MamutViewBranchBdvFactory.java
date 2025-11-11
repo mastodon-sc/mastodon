@@ -30,10 +30,10 @@ package org.mastodon.mamut.views.bdv;
 
 import java.util.Map;
 
-import org.mastodon.app.views.bdv.AbstractMastodonViewBdvFactory;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.views.bdv.AbstractMastodonViewBdvFactory;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 

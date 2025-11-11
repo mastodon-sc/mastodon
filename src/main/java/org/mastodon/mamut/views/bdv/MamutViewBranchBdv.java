@@ -28,12 +28,12 @@
  */
 package org.mastodon.mamut.views.bdv;
 
-import org.mastodon.app.views.bdv.MastodonViewBdv;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.MastodonModel;
+import org.mastodon.views.bdv.MastodonViewBdv;
 
 /**
  * Mamut-specific BDV view for the branch graph.
