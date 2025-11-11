@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv;
+package org.mastodon.views.bdv.display;
 
 import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerPanel;

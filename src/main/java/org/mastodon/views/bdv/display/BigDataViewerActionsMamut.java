@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv;
+package org.mastodon.views.bdv.display;
 
 import static bdv.BigDataViewerActions.COLLAPSE_CARDS;
 import static bdv.BigDataViewerActions.COLLAPSE_CARDS_KEYS;

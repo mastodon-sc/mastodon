@@ -38,7 +38,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import org.mastodon.views.bdv.NavigationActionsDescriptions;
+import org.mastodon.views.bdv.display.NavigationActionsDescriptions;
 import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;

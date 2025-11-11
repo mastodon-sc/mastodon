@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv;
+package org.mastodon.views.bdv.display;
 
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeyConfigScopes;

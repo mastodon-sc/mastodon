@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv;
+package org.mastodon.views.bdv.display;
 
 import static bdv.viewer.NavigationActions.ALIGN_XY_PLANE;
 import static bdv.viewer.NavigationActions.ALIGN_XY_PLANE_KEYS;

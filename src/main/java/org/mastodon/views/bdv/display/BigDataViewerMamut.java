@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv;
+package org.mastodon.views.bdv.display;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import org.mastodon.grouping.GroupHandle;
+import org.mastodon.views.bdv.SharedBigDataViewerData;
 
 import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.ui.splitpanel.SplitPanel;

@@ -69,7 +69,7 @@ import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.DialogType;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
-import org.mastodon.views.bdv.BigDataViewerMamut;
+import org.mastodon.views.bdv.display.BigDataViewerMamut;
 import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.scijava.plugin.Plugin;
 import org.scijava.prefs.DefaultPrefService;
