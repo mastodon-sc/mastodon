@@ -6,6 +6,8 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.trackscheme.MastodonViewTrackScheme;
+import org.mastodon.views.trackscheme.display.TrackSchemeOverlay.TrackSchemeOverlayFactory;
+import org.mastodon.views.trackscheme.graph.LineageTreeLayoutImp;
 
 /**
  * Mamut app-specific TrackScheme view.
@@ -18,6 +20,12 @@ public class MamutViewTrackScheme extends MastodonViewTrackScheme< Model, ModelG
 
 	public MamutViewTrackScheme( final MamutAppModel appModel )
 	{
-		super( appModel, new MamutTrackSchemeProperties( appModel.dataModel().getGraph() ) );
+		super( appModel.dataModel(),
+				appModel.windowManager(),
+				new MamutTrackSchemeProperties( appModel.dataModel().getGraph() ),
+				new TrackSchemeOverlayFactory(),
+				LineageTreeLayoutImp::new,
+				appModel.getTimepointMin(),
+				appModel.getTimepointMax() );
 	}
 }

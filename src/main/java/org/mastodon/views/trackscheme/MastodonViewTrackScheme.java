@@ -59,7 +59,6 @@ import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.RootsModel;
-import org.mastodon.model.app.AppModel;
 import org.mastodon.model.app.WindowManager;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.ui.EditTagActions;
@@ -88,7 +87,6 @@ import org.mastodon.views.trackscheme.display.TrackSchemeZoom;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.graph.LineageTreeLayout;
-import org.mastodon.views.trackscheme.graph.LineageTreeLayoutImp;
 import org.mastodon.views.trackscheme.graph.TrackSchemeContextListener;
 import org.mastodon.views.trackscheme.graph.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
@@ -130,78 +128,6 @@ public class MastodonViewTrackScheme<
 	private final ColoringModel coloringModel;
 
 	private final ColorBarOverlay colorBarOverlay;
-
-	/**
-	 * Creates a TrackScheme view with the default overlay and layout. The
-	 * timepoint range is set to the min and max timepoints found in the app
-	 * model.
-	 *
-	 * @param appModel
-	 *            the application model.
-	 * @param modelGraphProperties
-	 *            the model graph properties.
-	 */
-	public MastodonViewTrackScheme(
-			final AppModel< ?, M, G, V, E > appModel,
-			final TrackSchemeProperties< V, E > modelGraphProperties )
-	{
-		this(
-				appModel.dataModel(),
-				appModel.windowManager(),
-				modelGraphProperties,
-				appModel.getTimepointMin(),
-				appModel.getTimepointMax());
-	}
-
-	/**
-	 * Creates a TrackScheme view with the default overlay and layout. The
-	 * timepoint range is set to the min and max timepoints found in the graph
-	 * in the specified model..
-	 *
-	 * @param dataModel
-	 *            the model containing the graph to display.
-	 * @param windowManager
-	 *            the window manager.
-	 * @param modelGraphProperties
-	 *            the model graph properties.
-	 */
-	public MastodonViewTrackScheme(
-			final M dataModel,
-			final WindowManager< ? > windowManager,
-			final TrackSchemeProperties< V, E > modelGraphProperties )
-	{
-		this( dataModel, windowManager, modelGraphProperties,
-				minTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ),
-				maxTimepoint( dataModel.getGraph().vertices(), modelGraphProperties ) );
-	}
-
-	/**
-	 * Creates a TrackScheme view with the default overlay and layout.
-	 *
-	 * @param dataModel
-	 *            the model containing the graph to display.
-	 * @param windowManager
-	 *            the window manager.
-	 * @param modelGraphProperties
-	 *            the model graph properties.
-	 * @param timepointMin
-	 *            the minimum timepoint to display.
-	 * @param timepointMax
-	 *            the maximum timepoint to display.
-	 */
-	public MastodonViewTrackScheme(
-			final M dataModel,
-			final WindowManager< ? > windowManager,
-			final TrackSchemeProperties< V, E > modelGraphProperties,
-			final int timepointMin,
-			final int timepointMax )
-	{
-		this( dataModel, windowManager, modelGraphProperties,
-				new TrackSchemeOverlayFactory(),
-				LineageTreeLayoutImp::new,
-				timepointMin,
-				timepointMax );
-	}
 
 	/**
 	 * Creates a TrackScheme view, with a custom layout and overlay.
