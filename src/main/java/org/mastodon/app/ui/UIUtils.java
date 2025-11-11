@@ -7,13 +7,13 @@ import javax.swing.JFrame;
 
 import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Edges;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.views.ViewGraph;
 
 public class UIUtils
 {

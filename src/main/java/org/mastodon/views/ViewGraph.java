@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app;
+package org.mastodon.views;
 
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
@@ -35,7 +35,8 @@ import org.mastodon.graph.Vertex;
 
 /**
  * A view {@code Graph<V, E>} is an adapter of the model {@code Graph<MV, ME>},
- * providing {@link RefBimap} mappings between the two.
+ * providing {@link RefBimap} mappings between the two. It is typically used in
+ * Mastodon views to adapt the model graph to the view graph.
  *
  * @param <MV>
  *            model vertex type

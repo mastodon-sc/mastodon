@@ -32,7 +32,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.IntRefArrayMap;
@@ -57,6 +56,7 @@ import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
 import org.mastodon.spatial.HasTimepoint;
+import org.mastodon.views.ViewGraph;
 import org.mastodon.views.trackscheme.properties.DefaultTrackSchemeProperties;
 import org.mastodon.views.trackscheme.properties.TrackSchemeProperties;
 import org.scijava.listeners.Listeners;

@@ -34,7 +34,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.util.AbstractRefPoolCollectionWrapper;
 import org.mastodon.graph.Edge;
@@ -43,6 +42,7 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.spatial.SpatioTemporalIndex;
+import org.mastodon.views.ViewGraph;
 import org.mastodon.views.bdv.overlay.OverlayGraph;
 
 /**

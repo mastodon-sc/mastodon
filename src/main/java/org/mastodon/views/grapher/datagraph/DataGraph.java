@@ -32,7 +32,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.ref.IntRefArrayMap;
 import org.mastodon.graph.Edge;
@@ -53,6 +52,7 @@ import org.mastodon.pool.SingleArrayMemPool;
 import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
+import org.mastodon.views.ViewGraph;
 import org.scijava.listeners.Listeners;
 
 /**
