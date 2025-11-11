@@ -7,9 +7,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.mastodon.app.UIModel;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.ViewFrame;
-import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
@@ -56,15 +55,15 @@ import bdv.ui.keymap.Keymap.UpdateListener;
  * @param <E>
  *            the type of edges in the view-graph.
  */
-public class AbstractMastodonFrameView2<
+public class AbstractMastodonFrameView<
 			M extends MastodonModel< ?, MV, ME >,
 			VG extends ViewGraph< MV, ME, V, E >,
 			MV extends Vertex< ME >,
 			ME extends Edge< MV >,
 			V extends Vertex< E >,
 			E extends Edge< V > >
-		extends AbstractMastodonView2< M, VG, MV, ME, V, E >
-		implements MastodonFrameView2
+		extends AbstractMastodonView< M, VG, MV, ME, V, E >
+		implements MastodonFrameView
 {
 
 	protected ViewFrame frame;
@@ -75,7 +74,7 @@ public class AbstractMastodonFrameView2<
 
 	protected Behaviours viewBehaviours;
 
-	public AbstractMastodonFrameView2(
+	public AbstractMastodonFrameView(
 			final M dataModel,
 			final UIModel< ? > uiModel,
 			final VG viewGraph,

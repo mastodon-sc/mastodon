@@ -28,8 +28,8 @@
  */
 package org.mastodon.views.trackscheme;
 
-import static org.mastodon.app.ui.ViewMenuBuilder2.item;
-import static org.mastodon.app.ui.ViewMenuBuilder2.separator;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder2.colorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder2.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
@@ -49,8 +49,8 @@ import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.TimepointAndNumberOfSpotsPanel;
-import org.mastodon.app.ui.ViewMenu2;
-import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
+import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ListenableReadOnlyGraph;
@@ -74,7 +74,7 @@ import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.views.AbstractMastodonFrameView2;
+import org.mastodon.views.AbstractMastodonFrameView;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
@@ -117,7 +117,7 @@ public class MastodonViewTrackScheme2<
 		G extends ListenableReadOnlyGraph< V, E >,
 		V extends Vertex<  E >,
 		E extends Edge< V > >
-		extends AbstractMastodonFrameView2< M, TrackSchemeGraph< V, E >, V, E, TrackSchemeVertex, TrackSchemeEdge >
+		extends AbstractMastodonFrameView< M, TrackSchemeGraph< V, E >, V, E, TrackSchemeVertex, TrackSchemeEdge >
 		implements HasContextChooser< V >, HasColorBarOverlay, HasColoringModel
 {
 
@@ -343,7 +343,7 @@ public class MastodonViewTrackScheme2<
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 
-		final ViewMenu2 menu = new ViewMenu2( this, uiModel.getKeymap(), keyConfigContexts );
+		final ViewMenu menu = new ViewMenu( this, uiModel.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		uiModel.getViewFactories().addWindowMenuTo( menu, actionMap );
 		MamutMenuBuilder2.build( menu, actionMap,

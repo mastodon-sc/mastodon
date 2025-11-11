@@ -29,8 +29,8 @@
 package org.mastodon.views.bdv;
 
 import static org.mastodon.app.MastodonIcons.BDV_VIEW_ICON;
-import static org.mastodon.app.ui.ViewMenuBuilder2.item;
-import static org.mastodon.app.ui.ViewMenuBuilder2.separator;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder2.colorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder2.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
@@ -45,8 +45,8 @@ import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.TimepointAndNumberOfSpotsPanel;
-import org.mastodon.app.ui.ViewMenu2;
-import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
+import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
@@ -72,7 +72,7 @@ import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.views.AbstractMastodonFrameView2;
+import org.mastodon.views.AbstractMastodonFrameView;
 import org.mastodon.views.bdv.display.BdvContextProvider;
 import org.mastodon.views.bdv.display.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.display.BigDataViewerBehavioursMamut;
@@ -110,7 +110,7 @@ public class MastodonViewBdv<
 			G extends ListenableReadOnlyGraph< V, E >, 
 			V extends Vertex< E >, 
 			E extends Edge< V > >
-		extends AbstractMastodonFrameView2< M, OverlayGraphWrapper< V, E >, V, E, OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
+		extends AbstractMastodonFrameView< M, OverlayGraphWrapper< V, E >, V, E, OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 		implements HasContextProvider< V >, HasColoringModel, HasColorBarOverlay
 {
 
@@ -164,7 +164,7 @@ public class MastodonViewBdv<
 		final JMenuHandle menuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
-		final ViewMenu2 menu = new ViewMenu2( this, uiModel.getKeymap(), keyConfigContexts );
+		final ViewMenu menu = new ViewMenu( this, uiModel.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		MamutMenuBuilder2.build( menu, actionMap,
 				fileMenu(),

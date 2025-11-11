@@ -34,7 +34,7 @@ import java.util.Map;
 import javax.swing.ActionMap;
 import javax.swing.JMenu;
 
-public class ViewMenuBuilder2
+public class ViewMenuBuilder
 {
 	public static Menu menu( final String name, final MenuItem... items )
 	{
@@ -61,7 +61,7 @@ public class ViewMenuBuilder2
 		void accept( MenuItemVisitor visitor );
 	}
 
-	public static void build( final ViewMenu2 viewMenu, final ActionMap actionMap, final Map< String, String > menuTexts,
+	public static void build( final ViewMenu viewMenu, final ActionMap actionMap, final Map< String, String > menuTexts,
 			final MenuItem... items )
 	{
 		final MenuItemVisitor visitor = new MenuItemVisitor( viewMenu, actionMap, menuTexts, null );
@@ -70,7 +70,7 @@ public class ViewMenuBuilder2
 
 	protected static class MenuItemVisitor
 	{
-		private final ViewMenu2 viewMenu;
+		private final ViewMenu viewMenu;
 
 		private final ActionMap actionMap;
 
@@ -78,7 +78,7 @@ public class ViewMenuBuilder2
 
 		private final String path;
 
-		public MenuItemVisitor( final ViewMenu2 viewMenu, final ActionMap actionMap,
+		public MenuItemVisitor( final ViewMenu viewMenu, final ActionMap actionMap,
 				final Map< String, String > menuTexts, final String path )
 		{
 			this.viewMenu = viewMenu;

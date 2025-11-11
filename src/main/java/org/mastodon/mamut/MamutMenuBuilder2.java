@@ -36,8 +36,8 @@ import javax.swing.ActionMap;
 
 import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
-import org.mastodon.app.ui.ViewMenu2;
-import org.mastodon.app.ui.ViewMenuBuilder2;
+import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
@@ -54,7 +54,7 @@ import bdv.BigDataViewerActions;
  * generic with a few changes. This is important, as a few core classes depend
  * on it.
  */
-public class MamutMenuBuilder2 extends ViewMenuBuilder2
+public class MamutMenuBuilder2 extends ViewMenuBuilder
 {
 	static Map< String, String > menuTexts = new HashMap<>();
 
@@ -111,7 +111,7 @@ public class MamutMenuBuilder2 extends ViewMenuBuilder2
 		menuTexts.put( TableViewActions.EXPORT_TO_CSV, "Export to CSV" );
 	}
 
-	public static void build( final ViewMenu2 viewMenu, final ActionMap actionMap, final MenuItem... items )
+	public static void build( final ViewMenu viewMenu, final ActionMap actionMap, final MenuItem... items )
 	{
 		final MenuItemVisitor visitor = new MenuItemVisitor( viewMenu, actionMap, menuTexts, null );
 		Arrays.asList( items ).forEach( item -> item.accept( visitor ) );
@@ -119,42 +119,42 @@ public class MamutMenuBuilder2 extends ViewMenuBuilder2
 
 	public static MenuItem fileMenu( final MenuItem... items )
 	{
-		return ViewMenuBuilder2.menu( "File", items );
+		return ViewMenuBuilder.menu( "File", items );
 	}
 
 	public static MenuItem viewMenu( final MenuItem... items )
 	{
-		return ViewMenuBuilder2.menu( "View", items );
+		return ViewMenuBuilder.menu( "View", items );
 	}
 
 	public static MenuItem colorMenu( final JMenuHandle handle )
 	{
-		return ViewMenuBuilder2.menu( "Coloring", handle );
+		return ViewMenuBuilder.menu( "Coloring", handle );
 	}
 
 	public static MenuItem branchColorMenu( final JMenuHandle handle )
 	{
-		return ViewMenuBuilder2.menu( "Branch coloring", handle );
+		return ViewMenuBuilder.menu( "Branch coloring", handle );
 	}
 
 	public static MenuItem tagSetMenu( final JMenuHandle handle )
 	{
-		return ViewMenuBuilder2.menu( "Tags", handle );
+		return ViewMenuBuilder.menu( "Tags", handle );
 	}
 
 	public static MenuItem colorbarMenu( final JMenuHandle handle )
 	{
-		return ViewMenuBuilder2.menu( "Colorbar", handle );
+		return ViewMenuBuilder.menu( "Colorbar", handle );
 	}
 
 	public static MenuItem editMenu( final MenuItem... items )
 	{
-		return ViewMenuBuilder2.menu( "Edit", items );
+		return ViewMenuBuilder.menu( "Edit", items );
 	}
 
 	public static MenuItem windowMenu( final MenuItem... items )
 	{
-		return ViewMenuBuilder2.menu( "Window", items );
+		return ViewMenuBuilder.menu( "Window", items );
 	}
 
 	/**

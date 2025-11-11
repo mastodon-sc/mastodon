@@ -28,8 +28,8 @@
  */
 package org.mastodon.mamut.io.importer.graphml;
 
-import static org.mastodon.app.ui.ViewMenuBuilder2.item;
-import static org.mastodon.app.ui.ViewMenuBuilder2.menu;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import org.mastodon.app.MastodonIcons;
-import org.mastodon.app.ui.ViewMenuBuilder2;
+import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.MamutMenuBuilder2;
@@ -90,7 +90,7 @@ public class GraphMLImporterPlugin implements MamutPlugin2
 	}
 
 	@Override
-	public List< ViewMenuBuilder2.MenuItem > getMenuItems()
+	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
 				MamutMenuBuilder2.fileMenu( menu( "Import", item( IMPORT_GRAPHML ) ) ) );

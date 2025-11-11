@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,40 +26,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.plugin;
+package org.mastodon.app;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
-import org.scijava.plugin.SciJavaPlugin;
-import org.scijava.ui.behaviour.util.Actions;
+import org.mastodon.adapter.RefBimap;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.Vertex;
 
 /**
- * Mother interface for Mastodon plugins.
- * <p>
- * Each concrete app should have a more specialized interface deriving from this
- * one, that specifies against what concrete {@link MastodonAppPluginModel} it
- * is built.
+ * A view {@code Graph<V, E>} is an adapter of the model {@code Graph<MV, ME>},
+ * providing {@link RefBimap} mappings between the two.
  *
- * @param <M>
- *            the type of app model this plugin will use.
+ * @param <MV>
+ *            model vertex type
+ * @param <ME>
+ *            model edge type
+ * @param <V>
+ *            view vertex type
+ * @param <E>
+ *            view edge type
  */
-public interface MastodonPlugin2< M > extends SciJavaPlugin
+public interface ViewGraph< MV extends Vertex< ME >, ME extends Edge< MV >, V extends Vertex< E >, E extends Edge< V > >
+		extends ReadOnlyGraph< V, E >
 {
-	void setAppModel( final M appPluginModel );
+	/**
+	 * Get bidirectional mapping between model vertices and view vertices.
+	 *
+	 * @return bidirectional mapping between model vertices and view vertices.
+	 */
+	public RefBimap< MV, V > getVertexMap();
 
-	default List< MenuItem > getMenuItems()
-	{
-		return Collections.emptyList();
-	}
-
-	default Map< String, String > getMenuTexts()
-	{
-		return Collections.emptyMap();
-	}
-
-	default void installGlobalActions( final Actions pluginActions )
-	{};
+	/**
+	 * Get bidirectional mapping between model edges and view edges.
+	 *
+	 * @return bidirectional mapping between model edges and view edges.
+	 */
+	public RefBimap< ME, E > getEdgeMap();
 }

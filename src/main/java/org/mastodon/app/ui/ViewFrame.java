@@ -39,7 +39,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.views.MastodonFrameView2;
+import org.mastodon.views.MastodonFrameView;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
@@ -48,7 +48,7 @@ import bdv.util.InvokeOnEDT;
 
 /**
  * A {@code JFrame} with some stuff added. Used to display
- * {@link MastodonFrameView2}.
+ * {@link MastodonFrameView}.
  *
  * @author Tobias Pietzsch
  */

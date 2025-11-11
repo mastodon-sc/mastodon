@@ -71,7 +71,7 @@ import org.jdom2.Element;
 import org.mastodon.app.AppModel;
 import org.mastodon.app.UIModel;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
-import org.mastodon.views.MastodonFrameView2;
+import org.mastodon.views.MastodonFrameView;
 import org.mastodon.views.trackscheme.graph.ScreenTransform;
 
 import ij.WindowManager;
@@ -206,7 +206,7 @@ public class ViewStateXMLSerialization
 	{
 		final UIModel< AM > uiModel = appModel.uiModel();
 		final UIModel< AM >.ViewFactories viewFactories = uiModel.getViewFactories();
-		final Collection< Class< ? extends MastodonFrameView2 > > classes = viewFactories.getKeys();
+		final Collection< Class< ? extends MastodonFrameView > > classes = viewFactories.getKeys();
 
 		final List< Element > viewEls = windowsEl.getChildren( WINDOW_TAG );
 		for ( final Element viewEl : viewEls )
@@ -215,8 +215,8 @@ public class ViewStateXMLSerialization
 			final String typeStr = ( String ) guiState.get( VIEW_TYPE_KEY );
 
 			// First check that we know of the view type in the window manager.
-			Class< ? extends MastodonFrameView2 > klass = null;
-			for ( final Class< ? extends MastodonFrameView2 > cl : classes )
+			Class< ? extends MastodonFrameView > klass = null;
+			for ( final Class< ? extends MastodonFrameView > cl : classes )
 			{
 				if ( cl.getSimpleName().equals( typeStr ) )
 				{

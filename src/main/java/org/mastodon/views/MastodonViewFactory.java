@@ -46,7 +46,7 @@ import org.scijava.plugin.SciJavaPlugin;
  * @param <T>
  *            the type of view created by this factory.
  */
-public interface MastodonViewFactory< T extends MastodonFrameView2, AM extends AppModel< AM, ?, ?, ?, ? > > extends SciJavaPlugin
+public interface MastodonViewFactory< T extends MastodonFrameView, AM extends AppModel< AM, ?, ?, ?, ? > > extends SciJavaPlugin
 {
 
 	/**

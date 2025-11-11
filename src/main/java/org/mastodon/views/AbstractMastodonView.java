@@ -9,7 +9,6 @@ import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
 import org.mastodon.app.UIModel;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
@@ -38,13 +37,13 @@ import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
  * @param <E>
  *            the type of edges in the view-graph.
  */
-public class AbstractMastodonView2<
+public class AbstractMastodonView<
 		M extends MastodonModel< ?, MV, ME >,
 		VG extends ViewGraph< MV, ME, V, E >,
 		MV extends Vertex< ME >,
 		ME extends Edge< MV >,
 		V extends Vertex< E >,
-		E extends Edge< V > > implements MastodonView2
+		E extends Edge< V > > implements MastodonView
 {
 
 	protected final M dataModel;
@@ -69,7 +68,7 @@ public class AbstractMastodonView2<
 
 	protected final ArrayList< Runnable > runOnClose;
 
-	public AbstractMastodonView2(
+	public AbstractMastodonView(
 			final M dataModel,
 			final UIModel< ? > uiModel,
 			final VG viewGraph )

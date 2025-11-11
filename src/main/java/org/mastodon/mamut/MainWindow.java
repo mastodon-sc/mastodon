@@ -37,9 +37,9 @@ import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TABLE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_ICON_MEDIUM;
-import static org.mastodon.app.ui.ViewMenuBuilder2.item;
-import static org.mastodon.app.ui.ViewMenuBuilder2.menu;
-import static org.mastodon.app.ui.ViewMenuBuilder2.separator;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.menu;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
 
 import java.awt.BorderLayout;
@@ -70,7 +70,7 @@ import javax.swing.WindowConstants;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.UIUtils;
-import org.mastodon.app.ui.ViewMenu2;
+import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.mamut.views.bdv.MamutViewBranchBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
@@ -94,7 +94,7 @@ public class MainWindow extends JFrame
 
 	protected final JMenuBar menubar;
 
-	private final ViewMenu2 menu;
+	private final ViewMenu menu;
 
 	private final MamutAppModel appModel;
 
@@ -215,7 +215,7 @@ public class MainWindow extends JFrame
 		setJMenuBar( menubar );
 
 		final Keymap keymap = appModel.uiModel().getKeymapManager().getForwardSelectedKeymap();
-		menu = new ViewMenu2( menubar, keymap, KeyConfigContexts.MASTODON );
+		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, projectActionMap );
 		appModel.uiModel().getViewFactories().addWindowMenuTo( menu, projectActionMap );
@@ -356,7 +356,7 @@ public class MainWindow extends JFrame
 		button.add( clickMe, BorderLayout.CENTER );
 	}
 
-	public static void addMenus( final ViewMenu2 menu, final ActionMap actionMap )
+	public static void addMenus( final ViewMenu menu, final ActionMap actionMap )
 	{
 		MamutMenuBuilder2.build( menu, actionMap,
 				fileMenu(

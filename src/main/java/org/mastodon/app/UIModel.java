@@ -20,9 +20,9 @@ import javax.swing.ActionMap;
 import org.mastodon.app.plugin.MastodonPlugins2;
 import org.mastodon.app.plugin.PluginUtils;
 import org.mastodon.app.ui.UIUtils;
-import org.mastodon.app.ui.ViewMenu2;
-import org.mastodon.app.ui.ViewMenuBuilder2;
-import org.mastodon.app.ui.ViewMenuBuilder2.MenuItem;
+import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
 import org.mastodon.grouping.GroupManager;
 import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.mamut.CloseListener;
@@ -37,9 +37,9 @@ import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
-import org.mastodon.views.AbstractMastodonFrameView2;
-import org.mastodon.views.AbstractMastodonView2;
-import org.mastodon.views.MastodonFrameView2;
+import org.mastodon.views.AbstractMastodonFrameView;
+import org.mastodon.views.AbstractMastodonView;
+import org.mastodon.views.MastodonFrameView;
 import org.mastodon.views.MastodonViewFactory;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
@@ -112,10 +112,10 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	private final List< Window > registeredWindows = new ArrayList<>();
 
 	/** Stores the different lists of data views currently opened. */
-	private final Map< Class< ? >, List< MastodonFrameView2 > > openedViews = new HashMap<>();
+	private final Map< Class< ? >, List< MastodonFrameView > > openedViews = new HashMap<>();
 
 	/** Listeners that are notified when a view is created. */
-	private final Map< Class< ? extends MastodonFrameView2 >, Listeners.List< ViewCreatedListener< ? extends MastodonFrameView2 > > > creationListeners = new HashMap<>();
+	private final Map< Class< ? extends MastodonFrameView >, Listeners.List< ViewCreatedListener< ? extends MastodonFrameView > > > creationListeners = new HashMap<>();
 
 	/** Manages the collections of view factories. */
 	protected final ViewFactories viewFactories;
@@ -396,7 +396,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 		registeredWindows.add( window );
 	}
 
-	< V extends MastodonFrameView2 > void registerView( final V view )
+	< V extends MastodonFrameView > void registerView( final V view )
 	{
 		openedViews.computeIfAbsent( view.getClass(), k -> new ArrayList<>() ).add( view );
 	}
@@ -433,12 +433,12 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	 * <code>null</code>.
 	 *
 	 * @param <V>
-	 *            the view type, must extend {@link AbstractMastodonView2}.
+	 *            the view type, must extend {@link AbstractMastodonView}.
 	 * @param klass
-	 *            the view class, must extend {@link AbstractMastodonView2}.
+	 *            the view class, must extend {@link AbstractMastodonView}.
 	 * @return a new, unmodified list of view of specified class.
 	 */
-	public < V extends MastodonFrameView2 > List< V > getViewList( final Class< V > klass )
+	public < V extends MastodonFrameView > List< V > getViewList( final Class< V > klass )
 	{
 		@SuppressWarnings( "unchecked" )
 		final List< V > list = ( List< V > ) openedViews.get( klass );
@@ -459,11 +459,11 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	 *            the type of the view to operate on.
 	 */
 	@SuppressWarnings( "unchecked" )
-	public < V extends MastodonFrameView2 > void forEachView( final Class< V > klass, final Consumer< V > action )
+	public < V extends MastodonFrameView > void forEachView( final Class< V > klass, final Consumer< V > action )
 	{
 		Optional.ofNullable( openedViews.get( klass ) )
 				.orElse( Collections.emptyList() )
-				.forEach( ( Consumer< ? super MastodonFrameView2 > ) action );
+				.forEach( ( Consumer< ? super MastodonFrameView > ) action );
 	}
 
 	/**
@@ -473,15 +473,15 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	 *            the action to execute.
 	 */
 	@SuppressWarnings( "unchecked" )
-	public < V extends MastodonFrameView2 > void forEachView( final Consumer< V > action )
+	public < V extends MastodonFrameView > void forEachView( final Consumer< V > action )
 	{
-		openedViews.forEach( ( k, l ) -> l.forEach( ( Consumer< ? super MastodonFrameView2 > ) action ) );
+		openedViews.forEach( ( k, l ) -> l.forEach( ( Consumer< ? super MastodonFrameView > ) action ) );
 	}
 
 	/**
 	 * Executes the specified actions for all the windows currently opened and
 	 * managed by this window manager. This includes the
-	 * {@link AbstractMastodonFrameView2} views, and the various dialogs.
+	 * {@link AbstractMastodonFrameView} views, and the various dialogs.
 	 *
 	 * @param action
 	 *            the action to execute.
@@ -489,8 +489,8 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	public void forEachWindow( final Consumer< ? super Window > action )
 	{
 		forEachView( v -> {
-			if ( v instanceof AbstractMastodonFrameView2 )
-				action.accept( ( ( AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > ) v ).getFrame() );
+			if ( v instanceof AbstractMastodonFrameView )
+				action.accept( ( ( AbstractMastodonFrameView< ?, ?, ?, ?, ?, ? > ) v ).getFrame() );
 		} );
 		registeredWindows.forEach( action );
 	}
@@ -509,7 +509,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	 *            the view class.
 	 * @return a new instance of the view, that was shown.
 	 */
-	public < T extends MastodonFrameView2 > T createView( final AM appModel, final Class< T > klass )
+	public < T extends MastodonFrameView > T createView( final AM appModel, final Class< T > klass )
 	{
 		return createView( appModel, klass, Collections.emptyMap() );
 	}
@@ -532,7 +532,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	 * @return a new instance of the view, or <code>null</code> if the view
 	 *         class is unknown to the window manager.
 	 */
-	public synchronized < T extends MastodonFrameView2 > T createView(
+	public synchronized < T extends MastodonFrameView > T createView(
 			final AM appModel,
 			final Class< T > klass,
 			final Map< String, Object > guiState )
@@ -667,7 +667,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	public class ViewFactories
 	{
 
-		private final Map< Class< ? extends MastodonFrameView2 >, MastodonViewFactory< ?, AM > > factories = new HashMap<>();
+		private final Map< Class< ? extends MastodonFrameView >, MastodonViewFactory< ?, AM > > factories = new HashMap<>();
 
 		private final ArrayList< MenuItem > menuItems;
 
@@ -684,7 +684,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 			if ( !factories.containsValue( factory ) )
 			{
 				factories.put( factory.getViewClass(), factory );
-				menuItems.add( ViewMenuBuilder2.item( factory.getCommandName() ) );
+				menuItems.add( ViewMenuBuilder.item( factory.getCommandName() ) );
 				menuTexts.put( factory.getCommandName(), factory.getCommandMenuText() );
 			}
 		}
@@ -694,7 +694,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 		 *
 		 * @return the collection of view classes.
 		 */
-		public Collection< Class< ? extends MastodonFrameView2 > > getKeys()
+		public Collection< Class< ? extends MastodonFrameView > > getKeys()
 		{
 			return Collections.unmodifiableCollection( factories.keySet() );
 		}
@@ -728,7 +728,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 			};
 		}
 
-		public void addWindowMenuTo( final ViewMenu2 menu, final ActionMap actionMap )
+		public void addWindowMenuTo( final ViewMenu menu, final ActionMap actionMap )
 		{
 			MamutMenuBuilder2.build( menu, actionMap, menuTexts, windowMenu( menuItems.toArray( new MenuItem[ 0 ] ) ) );
 		}
@@ -742,7 +742,7 @@ public class UIModel< AM extends AppModel< AM, ?, ?, ?, ? > >
 	 * @param <T>
 	 *            the class of the view to listen for the creation of.
 	 */
-	public interface ViewCreatedListener< T extends MastodonFrameView2 >
+	public interface ViewCreatedListener< T extends MastodonFrameView >
 	{
 		/**
 		 * Called when a view of the class is created, just before it is shown.

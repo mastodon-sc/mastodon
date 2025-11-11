@@ -45,18 +45,18 @@ import javax.swing.MenuElement;
 
 import org.mastodon.util.HasSelectedState;
 import org.mastodon.util.MastodonDebugSettings;
-import org.mastodon.views.MastodonFrameView2;
+import org.mastodon.views.MastodonFrameView;
 import org.scijava.ui.behaviour.InputTrigger;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
 import bdv.ui.keymap.Keymap;
 
-public class ViewMenu2
+public class ViewMenu
 {
 	private static final boolean USE_ACCELERATORS = MastodonDebugSettings.getInstance().isUseMenuAccelerators(); // TODO: remove, once Fiji ships at least jdk1.8.0_162
 
-	private MastodonFrameView2 view;
+	private MastodonFrameView view;
 
 	private final JMenuBar menubar;
 
@@ -64,7 +64,7 @@ public class ViewMenu2
 
 	private final Set< String > contexts;
 
-	public ViewMenu2( final MastodonFrameView2 view, final Keymap keymap, final String... contexts )
+	public ViewMenu( final MastodonFrameView view, final Keymap keymap, final String... contexts )
 	{
 		this( view.getFrame().getJMenuBar(), keymap, contexts );
 		this.view = view;
@@ -74,12 +74,12 @@ public class ViewMenu2
 		view.onClose( () -> keymap.updateListeners().remove( updateListener ) );
 	}
 
-	public ViewMenu2( final JMenuBar menubar, final Keymap keymap, final String... contexts )
+	public ViewMenu( final JMenuBar menubar, final Keymap keymap, final String... contexts )
 	{
 		this( menubar, keymap, new HashSet<>( Arrays.asList( contexts ) ) );
 	}
 
-	public ViewMenu2( final JMenuBar menubar, final Keymap keymap, final Set< String > contexts )
+	public ViewMenu( final JMenuBar menubar, final Keymap keymap, final Set< String > contexts )
 	{
 		this.menubar = menubar;
 		this.keymap = keymap;

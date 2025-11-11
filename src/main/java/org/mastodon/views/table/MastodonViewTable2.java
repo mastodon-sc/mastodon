@@ -29,9 +29,9 @@
 package org.mastodon.views.table;
 
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
-import static org.mastodon.app.ui.ViewMenuBuilder2.item;
-import static org.mastodon.app.ui.ViewMenuBuilder2.menu;
-import static org.mastodon.app.ui.ViewMenuBuilder2.separator;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.menu;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder2.tagSetMenu;
@@ -44,13 +44,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.app.UIModel;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.UIUtils;
 import org.mastodon.app.ui.ViewFrame;
-import org.mastodon.app.ui.ViewMenu2;
-import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
+import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
@@ -83,7 +82,8 @@ import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.views.AbstractMastodonFrameView2;
+import org.mastodon.views.AbstractMastodonFrameView;
+import org.mastodon.views.ViewGraph;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.table.display.TableViewActions;
@@ -98,7 +98,7 @@ public class MastodonViewTable2<
 			G extends ListenableReadOnlyGraph< V, E >,
 			V extends Vertex< E >,
 			E extends Edge< V > >
-		extends AbstractMastodonFrameView2< M, ViewGraph< V, E, V, E >, V, E, V, E >
+		extends AbstractMastodonFrameView< M, ViewGraph< V, E, V, E >, V, E, V, E >
 		implements HasContextChooser< V >, HasColoringModel
 {
 
@@ -207,7 +207,7 @@ public class MastodonViewTable2<
 		onClose( () -> properties.removeVertexLabelListener( labelChangedRefresher ) );
 
 		// Menus
-		final ViewMenu2 menu = new ViewMenu2( frame.getJMenuBar(), uiModel.getKeymap(), CONTEXTS );
+		final ViewMenu menu = new ViewMenu( frame.getJMenuBar(), uiModel.getKeymap(), CONTEXTS );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		final JMenuHandle colorMenuHandle = new JMenuHandle();
 		final JMenuHandle colorBranchMenuHandle = new JMenuHandle();

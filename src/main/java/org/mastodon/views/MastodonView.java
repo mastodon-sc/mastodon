@@ -8,7 +8,7 @@ import org.mastodon.model.MastodonModel;
  * derived from the model's graph.
  *
  */
-public interface MastodonView2
+public interface MastodonView
 {
 	/**
 	 * Exposes the {@link GroupHandle} of this view.

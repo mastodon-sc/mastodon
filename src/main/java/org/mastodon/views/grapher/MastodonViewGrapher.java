@@ -28,8 +28,8 @@
  */
 package org.mastodon.views.grapher;
 
-import static org.mastodon.app.ui.ViewMenuBuilder2.item;
-import static org.mastodon.app.ui.ViewMenuBuilder2.separator;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder2.colorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder2.colorbarMenu;
 import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
@@ -45,8 +45,8 @@ import javax.swing.JPanel;
 import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
-import org.mastodon.app.ui.ViewMenu2;
-import org.mastodon.app.ui.ViewMenuBuilder2.JMenuHandle;
+import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
@@ -69,7 +69,7 @@ import org.mastodon.ui.coloring.HasColoringModel;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.views.AbstractMastodonFrameView2;
+import org.mastodon.views.AbstractMastodonFrameView;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
 import org.mastodon.views.grapher.datagraph.DataContextListener;
@@ -111,7 +111,7 @@ public class MastodonViewGrapher<
 		G extends ListenableReadOnlyGraph< V, E >,
 		V extends Vertex<  E >,
 		E extends Edge< V > > 
-		extends AbstractMastodonFrameView2< M, DataGraph< V, E >, V, E, DataVertex, DataEdge >
+		extends AbstractMastodonFrameView< M, DataGraph< V, E >, V, E, DataVertex, DataEdge >
 		implements HasContextChooser< V >, HasColorBarOverlay, HasColoringModel
 
 {
@@ -246,7 +246,7 @@ public class MastodonViewGrapher<
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 
-		final ViewMenu2 viewMenu = new ViewMenu2( this, uiModel.getKeymap(), keyConfigContexts );
+		final ViewMenu viewMenu = new ViewMenu( this, uiModel.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		uiModel.getViewFactories().addWindowMenuTo( viewMenu, actionMap );
 		MainWindow.addMenus( viewMenu, actionMap );

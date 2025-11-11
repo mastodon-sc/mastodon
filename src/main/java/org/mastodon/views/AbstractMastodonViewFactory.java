@@ -50,7 +50,7 @@ import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import com.google.common.reflect.TypeToken;
 
 public abstract class AbstractMastodonViewFactory<
-		T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? >,
+		T extends AbstractMastodonFrameView< ?, ?, ?, ?, ?, ? >,
 		AM extends AppModel< AM, ?, ?, ?, ? > >
 		implements MastodonViewFactory< T, AM >
 {
@@ -130,7 +130,7 @@ public abstract class AbstractMastodonViewFactory<
 	 * @param guiState
 	 *            the map to store it to.
 	 */
-	private static < T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > > void getColoringState( final T view, final Map< String, Object > guiState )
+	private static < T extends AbstractMastodonFrameView< ?, ?, ?, ?, ?, ? > > void getColoringState( final T view, final Map< String, Object > guiState )
 	{
 		if ( !( view instanceof HasColoringModel ) )
 			return;
@@ -160,7 +160,7 @@ public abstract class AbstractMastodonViewFactory<
 				guiState.put( FEATURE_COLOR_MODE_KEY, coloringModel.getFeatureColorMode().getName() );
 	}
 
-	private static < T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > > void getColorBarOverlayState( final T view, final Map< String, Object > guiState )
+	private static < T extends AbstractMastodonFrameView< ?, ?, ?, ?, ?, ? > > void getColorBarOverlayState( final T view, final Map< String, Object > guiState )
 	{
 		if ( !( view instanceof HasColorBarOverlay ) )
 			return;
@@ -174,7 +174,7 @@ public abstract class AbstractMastodonViewFactory<
 	 * Restore GUI state utilities.
 	 */
 
-	private static < T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > > void restoreColoringModel( final T viewraw, final Map< String, Object > guiState )
+	private static < T extends AbstractMastodonFrameView< ?, ?, ?, ?, ?, ? > > void restoreColoringModel( final T viewraw, final Map< String, Object > guiState )
 	{
 		if ( guiState == null || ( !( viewraw instanceof HasColoringModel ) ) )
 			return;
@@ -227,7 +227,7 @@ public abstract class AbstractMastodonViewFactory<
 		}
 	}
 
-	private static < T extends AbstractMastodonFrameView2< ?, ?, ?, ?, ?, ? > > void restoreColorbarState( final T view, final Map< String, Object > guiState )
+	private static < T extends AbstractMastodonFrameView< ?, ?, ?, ?, ?, ? > > void restoreColorbarState( final T view, final Map< String, Object > guiState )
 	{
 		if ( !( view instanceof HasColorBarOverlay ) )
 			return;

@@ -33,9 +33,9 @@ import java.util.HashMap;
 
 import javax.swing.ActionMap;
 
-import org.mastodon.app.ui.ViewMenu2;
-import org.mastodon.app.ui.ViewMenuBuilder2;
-import org.mastodon.app.ui.ViewMenuBuilder2.MenuItem;
+import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -80,14 +80,14 @@ public class MastodonPlugins2< PL extends MastodonPlugin2< M >, M >
 		}
 	}
 
-	public void addMenus( final ViewMenu2 menu )
+	public void addMenus( final ViewMenu menu )
 	{
 		addMenus( menu, pluginActions.getActionMap() );
 	}
 
-	public void addMenus( final ViewMenu2 menu, final ActionMap actionMap )
+	public void addMenus( final ViewMenu menu, final ActionMap actionMap )
 	{
-		ViewMenuBuilder2.build( menu, actionMap, menuTexts, menuItems.toArray( new MenuItem[ 0 ] ) );
+		ViewMenuBuilder.build( menu, actionMap, menuTexts, menuItems.toArray( new MenuItem[ 0 ] ) );
 	}
 
 	public Actions getPluginActions()
