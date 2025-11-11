@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.views.trackscheme;
+package org.mastodon.views.trackscheme;
 
 import static org.mastodon.app.ui.ViewMenuBuilder2.item;
 import static org.mastodon.app.ui.ViewMenuBuilder2.separator;

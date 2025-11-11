@@ -1,4 +1,4 @@
-package org.mastodon.app.views.trackscheme;
+package org.mastodon.views.trackscheme;
 
 import java.util.Map;
 

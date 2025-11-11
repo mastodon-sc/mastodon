@@ -53,9 +53,9 @@ import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABL
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_ELEMENT;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_NAME;
 import static org.mastodon.app.views.table.AbstractMastodonViewTableFactory.TABLE_VISIBLE_POS;
-import static org.mastodon.app.views.trackscheme.AbstractMastodonViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
+import static org.mastodon.views.trackscheme.AbstractMastodonViewTrackSchemeFactory.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;

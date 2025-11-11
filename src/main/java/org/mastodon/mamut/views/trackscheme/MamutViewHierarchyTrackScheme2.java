@@ -1,13 +1,13 @@
 package org.mastodon.mamut.views.trackscheme;
 
-import org.mastodon.app.views.trackscheme.BranchTrackScheme.HierarchyTrackSchemeOverlayFactory;
-import org.mastodon.app.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.graph.algorithm.util.Graphs;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.MastodonModel;
+import org.mastodon.views.trackscheme.MastodonViewTrackScheme2;
+import org.mastodon.views.trackscheme.BranchTrackScheme.HierarchyTrackSchemeOverlayFactory;
 import org.mastodon.views.trackscheme.graph.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.properties.MastodonHierarchyTrackSchemeProperties;
 

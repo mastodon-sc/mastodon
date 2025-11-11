@@ -1,11 +1,11 @@
 package org.mastodon.mamut.views.trackscheme;
 
-import org.mastodon.app.views.trackscheme.MastodonViewTrackScheme2;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.views.trackscheme.MastodonViewTrackScheme2;
 
 /**
  * Mamut app-specific TrackScheme view.

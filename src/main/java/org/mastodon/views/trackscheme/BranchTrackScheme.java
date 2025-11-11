@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.views.trackscheme;
+package org.mastodon.views.trackscheme;
 
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
