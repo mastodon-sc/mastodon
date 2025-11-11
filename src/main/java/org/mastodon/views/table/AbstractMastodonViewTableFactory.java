@@ -39,10 +39,10 @@ import java.util.Map;
 import javax.swing.JViewport;
 
 import org.mastodon.app.AppModel;
-import org.mastodon.app.views.AbstractMastodonViewFactory;
-import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.ui.coloring.ColoringModel;
+import org.mastodon.views.AbstractMastodonViewFactory;
+import org.mastodon.views.MastodonViewFactory;
 import org.mastodon.views.table.display.FeatureTagTablePanel;
 import org.mastodon.views.table.display.TableViewFrameBuilder.MyTableViewFrame;
 

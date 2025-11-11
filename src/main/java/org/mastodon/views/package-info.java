@@ -1,32 +1,18 @@
-/*-
- * #%L
- * Mastodon
- * %%
- * Copyright (C) 2014 - 2025 Tobias Pietzsch, Jean-Yves Tinevez
- * %%
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * #L%
- */
 /**
- * Core classes for the Mastodon views.
+ * Package containing generic classes used to build Mastodon views.
+ * <p>
+ * Mastodon views are {@link org.mastodon.views.MastodonFrameView2} that can
+ * display the content of a {@link org.mastodon.app.AppModel}. They are
+ * interactive, depending on the concrete AppModel capabilities.
+ * <p>
+ * These classes are independent from any particular Mastodon application, and
+ * use the generic Mastodon classes, as well as the view components in the
+ * package {@link org.mastodon.views}.
+ * <p>
+ * The package also contains the {@link org.mastodon.app.MastodonViewFactory}
+ * hierarchy. The concrete implementations are used to create these views. The
+ * factories know how to create a view, and how to de/serialize its GUI state.
+ * The abstract classes there need to be subclassed for a particular app, typed
+ * against a concrete AppModel.
  */
 package org.mastodon.views;

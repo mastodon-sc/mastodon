@@ -39,7 +39,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.app.views.MastodonFrameView2;
+import org.mastodon.views.MastodonFrameView2;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 

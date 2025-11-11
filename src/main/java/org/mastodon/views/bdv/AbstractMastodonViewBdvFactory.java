@@ -32,10 +32,10 @@ import java.util.Map;
 
 import org.jdom2.Element;
 import org.mastodon.app.AppModel;
-import org.mastodon.app.views.AbstractMastodonViewFactory;
-import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
+import org.mastodon.views.AbstractMastodonViewFactory;
+import org.mastodon.views.MastodonViewFactory;
 import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
 
 import bdv.tools.InitializeViewerState;

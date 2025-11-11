@@ -28,19 +28,19 @@
  */
 package org.mastodon.io;
 
-import static org.mastodon.app.views.MastodonViewFactory.BRANCH_GRAPH;
-import static org.mastodon.app.views.MastodonViewFactory.COLORBAR_POSITION_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.COLORBAR_VISIBLE_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.FEATURE_COLOR_MODE_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.FRAME_POSITION_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.GROUP_HANDLE_ID_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.NO_COLORING_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.SETTINGS_PANEL_VISIBLE_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.TAG_SET_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.TRACK_COLORING_KEY;
-import static org.mastodon.app.views.MastodonViewFactory.VIEW_TYPE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
 import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
+import static org.mastodon.views.MastodonViewFactory.BRANCH_GRAPH;
+import static org.mastodon.views.MastodonViewFactory.COLORBAR_POSITION_KEY;
+import static org.mastodon.views.MastodonViewFactory.COLORBAR_VISIBLE_KEY;
+import static org.mastodon.views.MastodonViewFactory.FEATURE_COLOR_MODE_KEY;
+import static org.mastodon.views.MastodonViewFactory.FRAME_POSITION_KEY;
+import static org.mastodon.views.MastodonViewFactory.GROUP_HANDLE_ID_KEY;
+import static org.mastodon.views.MastodonViewFactory.NO_COLORING_KEY;
+import static org.mastodon.views.MastodonViewFactory.SETTINGS_PANEL_VISIBLE_KEY;
+import static org.mastodon.views.MastodonViewFactory.TAG_SET_KEY;
+import static org.mastodon.views.MastodonViewFactory.TRACK_COLORING_KEY;
+import static org.mastodon.views.MastodonViewFactory.VIEW_TYPE_KEY;
 import static org.mastodon.views.grapher.GrapherGuiState.GRAPHER_SHOW_EDGES_KEY;
 import static org.mastodon.views.grapher.GrapherGuiState.GRAPHER_TRANSFORM_KEY;
 import static org.mastodon.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY;
@@ -70,8 +70,8 @@ import java.util.Map.Entry;
 import org.jdom2.Element;
 import org.mastodon.app.AppModel;
 import org.mastodon.app.UIModel;
-import org.mastodon.app.views.MastodonFrameView2;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
+import org.mastodon.views.MastodonFrameView2;
 import org.mastodon.views.trackscheme.graph.ScreenTransform;
 
 import ij.WindowManager;

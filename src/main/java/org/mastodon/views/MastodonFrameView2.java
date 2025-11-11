@@ -1,4 +1,4 @@
-package org.mastodon.app.views;
+package org.mastodon.views;
 
 import org.mastodon.app.ui.HasFrame;
 

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.views;
+package org.mastodon.views;
 
 import java.awt.Rectangle;
 import java.awt.Window;

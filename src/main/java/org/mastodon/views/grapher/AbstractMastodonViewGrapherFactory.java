@@ -3,10 +3,10 @@ package org.mastodon.views.grapher;
 import java.util.Map;
 
 import org.mastodon.app.AppModel;
-import org.mastodon.app.views.AbstractMastodonViewFactory;
-import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
+import org.mastodon.views.AbstractMastodonViewFactory;
+import org.mastodon.views.MastodonViewFactory;
 import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.mastodon.views.trackscheme.graph.ScreenTransform;
 

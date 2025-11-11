@@ -1,4 +1,4 @@
-package org.mastodon.app.views;
+package org.mastodon.views;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
