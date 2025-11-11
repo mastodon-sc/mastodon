@@ -86,10 +86,10 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.HasContextChooser;
-import org.mastodon.views.table.TableViewActions;
-import org.mastodon.views.table.TableViewFrameBuilder;
-import org.mastodon.views.table.TableViewFrameBuilder.GraphTableBuilder;
-import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
+import org.mastodon.views.table.display.TableViewActions;
+import org.mastodon.views.table.display.TableViewFrameBuilder;
+import org.mastodon.views.table.display.TableViewFrameBuilder.GraphTableBuilder;
+import org.mastodon.views.table.display.TableViewFrameBuilder.MyTableViewFrame;
 
 import bdv.BigDataViewerActions;
 

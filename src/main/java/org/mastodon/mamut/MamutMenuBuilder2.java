@@ -42,7 +42,7 @@ import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
 import org.mastodon.views.bdv.export.RecordMovieDialog;
-import org.mastodon.views.table.TableViewActions;
+import org.mastodon.views.table.display.TableViewActions;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.views.trackscheme.display.ShowSelectedTracksActions;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;

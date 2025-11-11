@@ -43,8 +43,8 @@ import org.mastodon.app.views.AbstractMastodonViewFactory;
 import org.mastodon.app.views.MastodonViewFactory;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.ui.coloring.ColoringModel;
-import org.mastodon.views.table.FeatureTagTablePanel;
-import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
+import org.mastodon.views.table.display.FeatureTagTablePanel;
+import org.mastodon.views.table.display.TableViewFrameBuilder.MyTableViewFrame;
 
 /**
  * Factory to create and display Tables.

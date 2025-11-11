@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.table;
+package org.mastodon.views.table.display;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;

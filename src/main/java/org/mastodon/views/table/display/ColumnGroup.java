@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.table;
+package org.mastodon.views.table.display;
 
 import java.awt.Component;
 import java.awt.Dimension;

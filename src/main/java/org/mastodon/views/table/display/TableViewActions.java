@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.table;
+package org.mastodon.views.table.display;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -39,7 +39,7 @@ import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
-import org.mastodon.views.table.TableViewFrameBuilder.MyTableViewFrame;
+import org.mastodon.views.table.display.TableViewFrameBuilder.MyTableViewFrame;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
