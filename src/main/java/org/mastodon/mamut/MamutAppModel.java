@@ -14,16 +14,16 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.plugin.MamutPlugins;
-import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.mastodon.mamut.views.bdv.MamutViewBranchBdv;
 import org.mastodon.mamut.views.grapher.MamutViewBranchGrapher;
 import org.mastodon.mamut.views.grapher.MamutViewGrapher;
-import org.mastodon.mamut.views.table.MamutViewSelectionTable2;
-import org.mastodon.mamut.views.table.MamutViewTable2;
-import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackScheme2;
-import org.mastodon.mamut.views.trackscheme.MamutViewHierarchyTrackScheme2;
-import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme2;
+import org.mastodon.mamut.views.table.MamutViewSelectionTable;
+import org.mastodon.mamut.views.table.MamutViewTable;
+import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackScheme;
+import org.mastodon.mamut.views.trackscheme.MamutViewHierarchyTrackScheme;
+import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme;
 import org.mastodon.model.app.BdvAppModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.MastodonKeymapManager;
@@ -72,7 +72,7 @@ public class MamutAppModel extends BdvAppModel<
 				context,
 				model,
 				sharedBdvData,
-				MamutViewFactory2.class,
+				MamutViewFactory.class,
 				new KeyPressedManager(),
 				new MastodonKeymapManager( true ),
 				new MamutPlugins( keymapManager.getForwardSelectedKeymap() ),
@@ -94,29 +94,29 @@ public class MamutAppModel extends BdvAppModel<
 		return windowManager.createView( this, MamutViewBranchBdv.class );
 	}
 
-	public MamutViewTrackScheme2 createTrackScheme()
+	public MamutViewTrackScheme createTrackScheme()
 	{
-		return windowManager.createView( this, MamutViewTrackScheme2.class );
+		return windowManager.createView( this, MamutViewTrackScheme.class );
 	}
 
-	public MamutViewBranchTrackScheme2 createBranchTrackScheme()
+	public MamutViewBranchTrackScheme createBranchTrackScheme()
 	{
-		return windowManager.createView( this, MamutViewBranchTrackScheme2.class );
+		return windowManager.createView( this, MamutViewBranchTrackScheme.class );
 	}
 
-	public MamutViewHierarchyTrackScheme2 createHierarchyTrackScheme()
+	public MamutViewHierarchyTrackScheme createHierarchyTrackScheme()
 	{
-		return windowManager.createView( this, MamutViewHierarchyTrackScheme2.class );
+		return windowManager.createView( this, MamutViewHierarchyTrackScheme.class );
 	}
 
-	public MamutViewTable2 createTable()
+	public MamutViewTable createTable()
 	{
-		return windowManager.createView( this, MamutViewTable2.class );
+		return windowManager.createView( this, MamutViewTable.class );
 	}
 
-	public MamutViewSelectionTable2 createSelectionTable()
+	public MamutViewSelectionTable createSelectionTable()
 	{
-		return windowManager.createView( this, MamutViewSelectionTable2.class );
+		return windowManager.createView( this, MamutViewSelectionTable.class );
 	}
 
 	public MamutViewGrapher createGrapher()

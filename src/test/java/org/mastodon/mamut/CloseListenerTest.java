@@ -35,7 +35,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mastodon.mamut.io.ProjectLoader2;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.scijava.Context;
@@ -71,7 +71,7 @@ public class CloseListenerTest
 	{
 		final String tinyProjectFile = CloseListenerTest.class.getResource( "/org/mastodon/mamut/examples/tiny/tiny-project.mastodon" ).getFile();
 		final MamutProject project = MamutProjectIO.load( tinyProjectFile );
-		final MamutAppModel appModel = ProjectLoader2.open( project, context );
+		final MamutAppModel appModel = ProjectLoader.open( project, context );
 		return appModel;
 	}
 }

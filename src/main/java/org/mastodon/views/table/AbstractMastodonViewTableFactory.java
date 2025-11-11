@@ -73,7 +73,7 @@ import org.mastodon.views.table.display.TableViewFrameBuilder.MyTableViewFrame;
  * </ul>
  */
 public abstract class AbstractMastodonViewTableFactory<
-			T extends MastodonViewTable2< ?, ?, ?, ? >,
+			T extends MastodonViewTable< ?, ?, ?, ? >,
 			G extends ListenableReadOnlyGraph< ?, ? >,
 			AM extends AppModel< AM, ?, G, ?, ? > >
 		extends AbstractMastodonViewFactory< T, AM >
@@ -135,7 +135,7 @@ public abstract class AbstractMastodonViewTableFactory<
 		return guiState;
 	}
 
-	static < T extends MastodonViewTable2< ?, ?, ?, ? > > void getGuiStateTable( final T view, final Map< String, Object > guiState )
+	static < T extends MastodonViewTable< ?, ?, ?, ? > > void getGuiStateTable( final T view, final Map< String, Object > guiState )
 	{
 		// Currently displayed table.
 		final FeatureTagTablePanel< ? > currentlyDisplayedTable = view.getFrame().getCurrentlyDisplayedTable();
@@ -185,7 +185,7 @@ public abstract class AbstractMastodonViewTableFactory<
 		restoreGuiStateTable( view, guiState );
 	}
 
-	static final < T extends MastodonViewTable2< ?, ?, ?, ? > > void restoreGuiStateTable( final T view, final Map< String, Object > guiState )
+	static final < T extends MastodonViewTable< ?, ?, ?, ? > > void restoreGuiStateTable( final T view, final Map< String, Object > guiState )
 	{
 		// Restore branch-graph coloring.
 		@SuppressWarnings( "unchecked" )

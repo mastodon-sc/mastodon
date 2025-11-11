@@ -31,12 +31,12 @@ package org.mastodon.views.bdv;
 import static org.mastodon.app.MastodonIcons.BDV_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder2.colorMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.colorbarMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.tagSetMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.viewMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
@@ -50,7 +50,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutMenuBuilder2;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.UndoActions;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.FocusModel;
@@ -166,7 +166,7 @@ public class MastodonViewBdv<
 		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 		final ViewMenu menu = new ViewMenu( this, windowManager.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
-		MamutMenuBuilder2.build( menu, actionMap,
+		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(),
 				viewMenu(
 						colorMenu( menuHandle ),
@@ -292,7 +292,7 @@ public class MastodonViewBdv<
 
 		MainWindow.addMenus( menu, actionMap );
 		windowManager.getViewFactories().addWindowMenuTo( menu, actionMap );
-		MamutMenuBuilder2.build( menu, actionMap,
+		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),
 						item( BigDataViewerActions.LOAD_SETTINGS ),

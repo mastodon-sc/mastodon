@@ -26,41 +26,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.views.table;
+package org.mastodon.mamut.managers;
 
-import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.views.MamutViewFactory2;
-import org.mastodon.views.table.AbstractMastodonViewTableFactory;
-import org.mastodon.views.table.TableModelGraphProperties;
+import org.mastodon.model.app.WindowManager;
+import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
+import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
-public class MamutViewTableFactory2
-		extends AbstractMastodonViewTableFactory< MamutViewTable2, ModelGraph, MamutAppModel >
-		implements MamutViewFactory2< MamutViewTable2 >
+import bdv.ui.settings.SettingsPage;
+
+@Plugin( type = StyleManagerFactory.class, priority = Priority.NORMAL - 1 )
+public class TrackSchemeStyleManagerFactory implements StyleManagerFactory< TrackSchemeStyleManager >
 {
 
-	public static final String NEW_TABLE_VIEW = "new full table view";
-
 	@Override
-	protected TableModelGraphProperties< Spot > getModelGraphProperties( final ModelGraph graph )
+	public TrackSchemeStyleManager create( final WindowManager< ? > wm )
 	{
-		return new MamutTableProperties( graph );
+		return new TrackSchemeStyleManager();
 	}
 
 	@Override
-	public MamutViewTable2 create( final MamutAppModel appModel )
+	public boolean hasSettingsPage()
 	{
-		final TableModelGraphProperties< Spot > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
-		return new MamutViewTable2( appModel.dataModel(), appModel.windowManager(), modelGraphProperties );
+		return true;
 	}
 
 	@Override
-	public String getCommandName()
+	public SettingsPage createSettingsPage( final TrackSchemeStyleManager manager )
 	{
-		return NEW_TABLE_VIEW;
+		return new TrackSchemeStyleSettingsPage( "Settings > TrackScheme Styles", manager );
+	}
+
+	@Override
+	public Class< TrackSchemeStyleManager > getManagerClass()
+	{
+		return TrackSchemeStyleManager.class;
 	}
 }

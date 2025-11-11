@@ -41,7 +41,7 @@ import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.ui.keymap.Keymap;
 
-public class MastodonPlugins2< PL extends MastodonPlugin2< M >, M >
+public class MastodonPlugins< PL extends MastodonPlugin< M >, M >
 {
 	private final ArrayList< PL > plugins = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public class MastodonPlugins2< PL extends MastodonPlugin2< M >, M >
 
 	private final HashMap< String, String > menuTexts;
 
-	public MastodonPlugins2( final Keymap keymap )
+	public MastodonPlugins( final Keymap keymap )
 	{
 		pluginActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON, KeyConfigContexts.BIGDATAVIEWER,
 				KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.TABLE );

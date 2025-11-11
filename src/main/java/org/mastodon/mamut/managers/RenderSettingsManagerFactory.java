@@ -36,8 +36,8 @@ import org.scijava.plugin.Plugin;
 
 import bdv.ui.settings.SettingsPage;
 
-@Plugin( type = StyleManagerFactory2.class, priority = Priority.NORMAL )
-public class RenderSettingsManagerFactory implements StyleManagerFactory2< RenderSettingsManager >
+@Plugin( type = StyleManagerFactory.class, priority = Priority.NORMAL )
+public class RenderSettingsManagerFactory implements StyleManagerFactory< RenderSettingsManager >
 {
 
 	@Override

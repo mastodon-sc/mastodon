@@ -46,8 +46,8 @@ import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.MamutMenuBuilder2;
-import org.mastodon.mamut.app.MamutPlugin2;
+import org.mastodon.mamut.MamutMenuBuilder;
+import org.mastodon.mamut.app.MamutPlugin;
 import org.mastodon.mamut.io.importer.trackmate.MamutExporter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.util.FileChooser;
@@ -59,7 +59,7 @@ import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
-public class MamutExporterPlugin implements MamutPlugin2
+public class MamutExporterPlugin implements MamutPlugin
 {
 
 	private static final String EXPORT_MAMUT = "export mamut";
@@ -93,7 +93,7 @@ public class MamutExporterPlugin implements MamutPlugin2
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				MamutMenuBuilder2.fileMenu( menu( "Export", item( EXPORT_MAMUT ) ) ) );
+				MamutMenuBuilder.fileMenu( menu( "Export", item( EXPORT_MAMUT ) ) ) );
 	}
 
 	@Override

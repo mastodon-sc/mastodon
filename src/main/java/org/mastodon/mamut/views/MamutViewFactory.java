@@ -10,6 +10,6 @@ import org.scijava.plugin.SciJavaPlugin;
  *
  * @author Jean-Yves Tinevez
  */
-public interface MamutViewFactory2< T extends MastodonFrameView >
+public interface MamutViewFactory< T extends MastodonFrameView >
 		extends MastodonViewFactory< T, MamutAppModel >, SciJavaPlugin
 {}

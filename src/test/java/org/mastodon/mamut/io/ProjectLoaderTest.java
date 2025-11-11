@@ -130,7 +130,7 @@ public class ProjectLoaderTest
 	{
 		try (Context context = new Context())
 		{
-			final MamutAppModel projectModel = ProjectLoader2.open( mastodonFile.getAbsolutePath(), context, false, true );
+			final MamutAppModel projectModel = ProjectLoader.open( mastodonFile.getAbsolutePath(), context, false, true );
 			projectModel.close();
 		}
 	}
@@ -146,6 +146,6 @@ public class ProjectLoaderTest
 			throws IOException, SpimDataException
 	{
 		ProjectSaver.saveProject( mastodonFile, projectModel );
-		return ProjectLoader2.open( mastodonFile.getAbsolutePath(), context, false, true );
+		return ProjectLoader.open( mastodonFile.getAbsolutePath(), context, false, true );
 	}
 }

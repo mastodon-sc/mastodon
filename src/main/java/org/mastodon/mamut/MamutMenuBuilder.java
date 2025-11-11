@@ -54,7 +54,7 @@ import bdv.BigDataViewerActions;
  * generic with a few changes. This is important, as a few core classes depend
  * on it.
  */
-public class MamutMenuBuilder2 extends ViewMenuBuilder
+public class MamutMenuBuilder extends ViewMenuBuilder
 {
 	static Map< String, String > menuTexts = new HashMap<>();
 
@@ -172,10 +172,10 @@ public class MamutMenuBuilder2 extends ViewMenuBuilder
 	 */
 	public static final MenuItem makeFullMenuItem( final String itemName, final String... menuPath )
 	{
-		final MenuItem item = MamutMenuBuilder2.item( itemName );
+		final MenuItem item = MamutMenuBuilder.item( itemName );
 		MenuItem menuPathItem = item;
 		for ( int i = menuPath.length - 1; i >= 0; i-- )
-			menuPathItem = MamutMenuBuilder2.menu( menuPath[ i ], menuPathItem );
+			menuPathItem = MamutMenuBuilder.menu( menuPath[ i ], menuPathItem );
 		return menuPathItem;
 	}
 }

@@ -26,41 +26,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.managers;
+package org.mastodon.app.plugin;
 
-import org.mastodon.model.app.WindowManager;
-import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
-import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
-import org.scijava.Priority;
-import org.scijava.plugin.Plugin;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import bdv.ui.settings.SettingsPage;
+import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
+import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.ui.behaviour.util.Actions;
 
-@Plugin( type = StyleManagerFactory2.class, priority = Priority.NORMAL - 1 )
-public class TrackSchemeStyleManagerFactory2 implements StyleManagerFactory2< TrackSchemeStyleManager >
+/**
+ * Mother interface for Mastodon plugins.
+ * <p>
+ * Each concrete app should have a more specialized interface deriving from this
+ * one, that specifies against what concrete {@link MastodonAppPluginModel} it
+ * is built.
+ *
+ * @param <M>
+ *            the type of app model this plugin will use.
+ */
+public interface MastodonPlugin< M > extends SciJavaPlugin
 {
+	void setAppModel( final M appPluginModel );
 
-	@Override
-	public TrackSchemeStyleManager create( final WindowManager< ? > wm )
+	default List< MenuItem > getMenuItems()
 	{
-		return new TrackSchemeStyleManager();
+		return Collections.emptyList();
 	}
 
-	@Override
-	public boolean hasSettingsPage()
+	default Map< String, String > getMenuTexts()
 	{
-		return true;
+		return Collections.emptyMap();
 	}
 
-	@Override
-	public SettingsPage createSettingsPage( final TrackSchemeStyleManager manager )
-	{
-		return new TrackSchemeStyleSettingsPage( "Settings > TrackScheme Styles", manager );
-	}
-
-	@Override
-	public Class< TrackSchemeStyleManager > getManagerClass()
-	{
-		return TrackSchemeStyleManager.class;
-	}
+	default void installGlobalActions( final Actions pluginActions )
+	{};
 }

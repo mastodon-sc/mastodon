@@ -30,7 +30,7 @@ package org.mastodon.mamut.views.bdv;
 
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.views.bdv.AbstractMastodonViewBdvFactory;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -38,10 +38,10 @@ import org.scijava.plugin.Plugin;
 /**
  * Factory to create and display a BDV views for the Mamut app.
  */
-@Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL )
+@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL )
 public class MamutViewBdvFactory
 		extends AbstractMastodonViewBdvFactory< MamutViewBdv, ModelGraph, MamutAppModel >
-		implements MamutViewFactory2< MamutViewBdv >
+		implements MamutViewFactory< MamutViewBdv >
 {
 
 	@Override

@@ -36,8 +36,8 @@ import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
-import org.mastodon.mamut.io.ProjectLoader2;
+import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
@@ -77,7 +77,7 @@ public class MastodonUtils
 				{
 					final RawGraphIO.FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
 					// Load features.
-					MamutRawFeatureModelIO2.deserialize( context, model, idmap, reader );
+					MamutRawFeatureModelIO.deserialize( context, model, idmap, reader );
 				}
 				catch ( final ClassNotFoundException e )
 				{
@@ -96,7 +96,7 @@ public class MastodonUtils
 	{
 		try
 		{
-			final MamutAppModel appModel = ProjectLoader2.open( MamutProjectIO.load( projectPath ), new Context() );
+			final MamutAppModel appModel = ProjectLoader.open( MamutProjectIO.load( projectPath ), new Context() );
 			final MainWindow mainWindow = new MainWindow( appModel );
 			mainWindow.setVisible( true );
 			mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );

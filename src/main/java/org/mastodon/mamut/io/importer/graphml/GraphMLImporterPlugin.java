@@ -44,8 +44,8 @@ import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.MamutMenuBuilder2;
-import org.mastodon.mamut.app.MamutPlugin2;
+import org.mastodon.mamut.MamutMenuBuilder;
+import org.mastodon.mamut.app.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
@@ -55,8 +55,8 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 
 import bdv.viewer.SourceAndConverter;
 
-@Plugin( type = MamutPlugin2.class )
-public class GraphMLImporterPlugin implements MamutPlugin2
+@Plugin( type = MamutPlugin.class )
+public class GraphMLImporterPlugin implements MamutPlugin
 {
 
 	private static final String IMPORT_GRAPHML = "import graphml";
@@ -93,7 +93,7 @@ public class GraphMLImporterPlugin implements MamutPlugin2
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				MamutMenuBuilder2.fileMenu( menu( "Import", item( IMPORT_GRAPHML ) ) ) );
+				MamutMenuBuilder.fileMenu( menu( "Import", item( IMPORT_GRAPHML ) ) ) );
 	}
 
 	@Override

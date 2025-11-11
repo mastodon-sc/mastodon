@@ -30,12 +30,12 @@ package org.mastodon.views.grapher;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder2.colorMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.colorbarMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.tagSetMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.viewMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import java.awt.Component;
 
@@ -51,7 +51,7 @@ import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.MainWindow;
-import org.mastodon.mamut.MamutMenuBuilder2;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.UndoActions;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.MastodonModel;
@@ -250,7 +250,7 @@ public class MastodonViewGrapher<
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		windowManager.getViewFactories().addWindowMenuTo( viewMenu, actionMap );
 		MainWindow.addMenus( viewMenu, actionMap );
-		MamutMenuBuilder2.build( viewMenu, actionMap,
+		MamutMenuBuilder.build( viewMenu, actionMap,
 				fileMenu(
 						separator(),
 						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),

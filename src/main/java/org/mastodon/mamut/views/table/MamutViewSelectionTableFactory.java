@@ -26,40 +26,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app.plugin;
+package org.mastodon.mamut.views.table;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.MamutViewFactory;
+import org.mastodon.views.table.AbstractMastodonViewTableFactory;
+import org.mastodon.views.table.TableModelGraphProperties;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
-import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
-import org.scijava.plugin.SciJavaPlugin;
-import org.scijava.ui.behaviour.util.Actions;
-
-/**
- * Mother interface for Mastodon plugins.
- * <p>
- * Each concrete app should have a more specialized interface deriving from this
- * one, that specifies against what concrete {@link MastodonAppPluginModel} it
- * is built.
- *
- * @param <M>
- *            the type of app model this plugin will use.
- */
-public interface MastodonPlugin2< M > extends SciJavaPlugin
+@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 1 )
+public class MamutViewSelectionTableFactory
+		extends AbstractMastodonViewTableFactory< MamutViewSelectionTable, ModelGraph, MamutAppModel >
+		implements MamutViewFactory< MamutViewSelectionTable >
 {
-	void setAppModel( final M appPluginModel );
 
-	default List< MenuItem > getMenuItems()
+	public static final String NEW_SELECTION_TABLE_VIEW = "new selection table view";
+
+	@Override
+	protected TableModelGraphProperties< Spot > getModelGraphProperties( final ModelGraph graph )
 	{
-		return Collections.emptyList();
+		return new MamutTableProperties( graph );
 	}
 
-	default Map< String, String > getMenuTexts()
+	@Override
+	public MamutViewSelectionTable create( final MamutAppModel appModel )
 	{
-		return Collections.emptyMap();
+		final TableModelGraphProperties< Spot > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
+		return new MamutViewSelectionTable( appModel.dataModel(), appModel.windowManager(), modelGraphProperties );
 	}
 
-	default void installGlobalActions( final Actions pluginActions )
-	{};
+	@Override
+	public String getCommandName()
+	{
+		return NEW_SELECTION_TABLE_VIEW;
+	}
 }

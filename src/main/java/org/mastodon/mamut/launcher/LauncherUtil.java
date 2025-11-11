@@ -63,7 +63,7 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.io.ProjectLoader2;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.ui.util.EverythingDisablerAndReenabler;
@@ -329,7 +329,7 @@ public class LauncherUtil
 	{
 		try
 		{
-			return ProjectLoader2.open( project, context, true, false );
+			return ProjectLoader.open( project, context, true, false );
 		}
 		catch ( final SpimDataException | IOException | RuntimeException e )
 		{
@@ -337,7 +337,7 @@ public class LauncherUtil
 			{
 				try
 				{
-					return ProjectLoader2.open( project, context, true, true );
+					return ProjectLoader.open( project, context, true, true );
 				}
 				catch ( final Exception e1 )
 				{

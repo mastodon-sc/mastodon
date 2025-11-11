@@ -15,7 +15,7 @@ import org.mastodon.views.trackscheme.graph.ScreenTransform;
  * class is specific to a view (TrackScheme) and to a model type.
  * <p>
  * The factory has still a generic type for the view it creates, that must
- * extends {@link MastodonViewTrackScheme2}. This is required to have
+ * extends {@link MastodonViewTrackScheme}. This is required to have
  * app-specific factories, discoverable separately.
  * <p>
  * The GUI state is specified as a map of strings to objects. The accepted key
@@ -47,7 +47,7 @@ import org.mastodon.views.trackscheme.graph.ScreenTransform;
  *
  */
 public abstract class AbstractMastodonViewTrackSchemeFactory<
-		T extends MastodonViewTrackScheme2< ?, ?, ?, ? >,
+		T extends MastodonViewTrackScheme< ?, ?, ?, ? >,
 		G extends ListenableReadOnlyGraph< ?, ? >,
 		AM extends AppModel< AM, ?, G, ?, ? > >
 		extends AbstractMastodonViewFactory< T, AM >

@@ -43,8 +43,8 @@ import org.mastodon.mamut.feature.branch.BranchDisplacementDurationFeature;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackScheme2;
-import org.mastodon.mamut.views.trackscheme.MamutViewHierarchyTrackScheme2;
+import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackScheme;
+import org.mastodon.mamut.views.trackscheme.MamutViewHierarchyTrackScheme;
 import org.scijava.Context;
 
 import net.imglib2.img.Img;
@@ -69,11 +69,11 @@ public class MamutBranchViewTrackSchemeTest
 					FeatureComputerTestUtils.getFeatureProjection( context, model, BranchDisplacementDurationFeature.SPEC,
 							BranchDisplacementDurationFeature.DURATION_PROJECTION_SPEC );
 			double duration = durationProjection.value( graph.branchSpotA );
-			new MamutViewBranchTrackScheme2( projectModel );
+			new MamutViewBranchTrackScheme( projectModel );
 			Thread.sleep( 1_000 );
 			double durationAfterCreatingTrackSchemeBranch = durationProjection.value( graph.branchSpotA );
 			assertEquals( duration, durationAfterCreatingTrackSchemeBranch, 0 );
-			new MamutViewHierarchyTrackScheme2( projectModel );
+			new MamutViewHierarchyTrackScheme( projectModel );
 			Thread.sleep( 1_000 );
 			double durationAfterCreatingTrackSchemeHierarchyBranch = durationProjection.value( graph.branchSpotA );
 			assertEquals( duration, durationAfterCreatingTrackSchemeHierarchyBranch, 0 );

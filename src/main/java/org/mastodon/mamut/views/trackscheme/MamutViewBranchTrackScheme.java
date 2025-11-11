@@ -5,7 +5,7 @@ import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.MastodonModel;
-import org.mastodon.views.trackscheme.MastodonViewTrackScheme2;
+import org.mastodon.views.trackscheme.MastodonViewTrackScheme;
 import org.mastodon.views.trackscheme.BranchTrackScheme.BranchTrackSchemeOverlayFactory;
 import org.mastodon.views.trackscheme.graph.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.properties.MastodonBranchTrackSchemeProperties;
@@ -16,14 +16,14 @@ import org.mastodon.views.trackscheme.properties.MastodonBranchTrackSchemeProper
  * @author Jean-Yves Tinevez
  *
  */
-public class MamutViewBranchTrackScheme2 extends MastodonViewTrackScheme2<
+public class MamutViewBranchTrackScheme extends MastodonViewTrackScheme<
 		MastodonModel< ModelBranchGraph, BranchSpot, BranchLink >,
 		ModelBranchGraph,
 		BranchSpot,
 		BranchLink >
 {
 
-	public MamutViewBranchTrackScheme2( final MamutAppModel appModel )
+	public MamutViewBranchTrackScheme( final MamutAppModel appModel )
 	{
 		super(
 				appModel.dataModel().branchModel(),

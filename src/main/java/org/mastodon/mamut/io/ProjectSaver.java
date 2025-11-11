@@ -29,8 +29,8 @@
 package org.mastodon.mamut.io;
 
 import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
-import static org.mastodon.mamut.io.ProjectLoader2.GUI_TAG;
-import static org.mastodon.mamut.io.ProjectLoader2.WINDOWS_TAG;
+import static org.mastodon.mamut.io.ProjectLoader.GUI_TAG;
+import static org.mastodon.mamut.io.ProjectLoader.WINDOWS_TAG;
 import static org.mastodon.mamut.io.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT;
 import static org.mastodon.mamut.io.project.MamutProjectIO.MAMUTPROJECT_VERSION_ATTRIBUTE_NAME;
 
@@ -58,7 +58,7 @@ import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.io.ViewStateXMLSerialization;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
+import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProject.ProjectWriter;
@@ -66,7 +66,7 @@ import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.mastodon.model.app.WindowManager;
 import org.mastodon.ui.util.ExtensionFileFilter;
@@ -254,7 +254,7 @@ public class ProjectSaver
 	{
 		// Current project.
 		final MamutProject project = appModel.getProject();
-		final File tmpDatasetXml = ProjectLoader2.originalOrBackupDatasetXml( project );
+		final File tmpDatasetXml = ProjectLoader.originalOrBackupDatasetXml( project );
 
 		// Possibly update project root.
 		project.setProjectRoot( saveTo );
@@ -267,7 +267,7 @@ public class ProjectSaver
 			// Save Raw Graph Model
 			final GraphToFileIdMap< Spot, Link > idmap = model.saveRaw( writer );
 			// Serialize feature model.
-			MamutRawFeatureModelIO2.serialize( appModel.windowManager().getContext(), model, idmap, writer );
+			MamutRawFeatureModelIO.serialize( appModel.windowManager().getContext(), model, idmap, writer );
 			// Serialize GUI state.
 			saveGUI( writer, appModel.windowManager() );
 			// Save a copy of the Spim Data Xml File
@@ -322,7 +322,7 @@ public class ProjectSaver
 		windowManager.forEachView( ( view ) -> {
 			@SuppressWarnings( "rawtypes" )
 			final
-			MamutViewFactory2 factory = ( MamutViewFactory2 ) viewFactories.getFactory( view.getClass() );
+			MamutViewFactory factory = ( MamutViewFactory ) viewFactories.getFactory( view.getClass() );
 			@SuppressWarnings( "unchecked" )
 			final Element element = ViewStateXMLSerialization.toXml( factory.getGuiState( view ) );
 			windows.addContent( element );

@@ -32,10 +32,10 @@ import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.tagSetMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.viewMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import java.awt.Component;
 
@@ -56,7 +56,7 @@ import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
-import org.mastodon.mamut.MamutMenuBuilder2;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.UndoActions;
 import org.mastodon.model.HasBranchModel;
 import org.mastodon.model.HasLabel;
@@ -93,7 +93,7 @@ import org.mastodon.views.table.display.TableViewFrameBuilder.MyTableViewFrame;
 
 import bdv.BigDataViewerActions;
 
-public class MastodonViewTable2<
+public class MastodonViewTable<
 			M extends MastodonModel< G, V, E >,
 			G extends ListenableReadOnlyGraph< V, E >,
 			V extends Vertex< E >,
@@ -114,7 +114,7 @@ public class MastodonViewTable2<
 
 	private final ColoringModel branchColoringModel;
 
-	public MastodonViewTable2(
+	public MastodonViewTable(
 			final M dataModel,
 			final WindowManager< ? > windowManager,
 			final TableModelGraphProperties< V > properties )
@@ -123,7 +123,7 @@ public class MastodonViewTable2<
 	}
 
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	protected MastodonViewTable2(
+	protected MastodonViewTable(
 			final M dataModel,
 			final WindowManager< ? > uiModel,
 			final TableModelGraphProperties< V > properties,
@@ -213,12 +213,12 @@ public class MastodonViewTable2<
 		final JMenuHandle colorBranchMenuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		uiModel.getViewFactories().addWindowMenuTo( menu, actionMap );
-		MamutMenuBuilder2.build( menu, actionMap,
+		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						menu( "Export",
 								item( TableViewActions.EXPORT_TO_CSV ) ) ),
 				viewMenu(
-						MamutMenuBuilder2.colorMenu( colorMenuHandle ),
+						MamutMenuBuilder.colorMenu( colorMenuHandle ),
 						menu( "Branch coloring", colorBranchMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),

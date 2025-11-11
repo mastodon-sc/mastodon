@@ -42,7 +42,7 @@ import org.jdom2.input.SAXBuilder;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.io.ViewStateXMLSerialization;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
+import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.project.MamutImagePlusProject;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -61,7 +61,7 @@ import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 /**
  * Static methods to open a Mastodon Mamut project.
  */
-public class ProjectLoader2
+public class ProjectLoader
 {
 
 
@@ -285,7 +285,7 @@ public class ProjectLoader2
 			{
 				final FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
 				// Load features.
-				MamutRawFeatureModelIO2.deserialize(
+				MamutRawFeatureModelIO.deserialize(
 						context,
 						model,
 						idmap,
@@ -439,7 +439,7 @@ public class ProjectLoader2
 
 //		final String projectPath = "samples/drosophila_crop.mastodon";
 		final String projectPath = "/Users/tinevez/Library/CloudStorage/GoogleDrive-jeanyves.tinevez@gmail.com/My Drive/Mastodon/Datasets/Remote/BDV/Tribolium/CTC_TRIF_trainingVideo02_jy-GT-done.mastodon";
-		final MamutAppModel appModel = ProjectLoader2.open( projectPath, new Context() );
+		final MamutAppModel appModel = ProjectLoader.open( projectPath, new Context() );
 		appModel.dataModel().branchGraphSync().sync();
 //		appModel.createTrackScheme();
 //		appModel.createTable();

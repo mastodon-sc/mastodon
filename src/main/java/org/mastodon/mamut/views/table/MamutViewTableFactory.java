@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,13 +26,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.app;
+package org.mastodon.mamut.views.table;
 
-import org.mastodon.app.plugin.MastodonPlugin2;
 import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.views.MamutViewFactory;
+import org.mastodon.views.table.AbstractMastodonViewTableFactory;
+import org.mastodon.views.table.TableModelGraphProperties;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
-/**
- * Interface for the plugins of the Mamut app of Mastodon.
- */
-public interface MamutPlugin2 extends MastodonPlugin2< MamutAppModel >
-{}
+@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 1 )
+public class MamutViewTableFactory
+		extends AbstractMastodonViewTableFactory< MamutViewTable, ModelGraph, MamutAppModel >
+		implements MamutViewFactory< MamutViewTable >
+{
+
+	public static final String NEW_TABLE_VIEW = "new full table view";
+
+	@Override
+	protected TableModelGraphProperties< Spot > getModelGraphProperties( final ModelGraph graph )
+	{
+		return new MamutTableProperties( graph );
+	}
+
+	@Override
+	public MamutViewTable create( final MamutAppModel appModel )
+	{
+		final TableModelGraphProperties< Spot > modelGraphProperties = getModelGraphProperties( appModel.dataModel().getGraph() );
+		return new MamutViewTable( appModel.dataModel(), appModel.windowManager(), modelGraphProperties );
+	}
+
+	@Override
+	public String getCommandName()
+	{
+		return NEW_TABLE_VIEW;
+	}
+}

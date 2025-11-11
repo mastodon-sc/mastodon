@@ -39,7 +39,7 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.io.ProjectLoader2;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Model;
@@ -59,7 +59,7 @@ public class SpotIntensityUpdateExample
 		 */
 
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final MamutAppModel appModel = ProjectLoader2.open( project, new Context() );
+		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
 		final Model model = appModel.dataModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 

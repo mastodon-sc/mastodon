@@ -40,7 +40,7 @@ import static org.mastodon.app.MastodonIcons.TRACKSCHEME_ICON_MEDIUM;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -74,10 +74,10 @@ import org.mastodon.mamut.io.ProjectActions;
 import org.mastodon.mamut.views.bdv.MamutViewBranchBdvFactory;
 import org.mastodon.mamut.views.bdv.MamutViewBdvFactory;
 import org.mastodon.mamut.views.grapher.MamutViewGrapherFactory;
-import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory2;
-import org.mastodon.mamut.views.table.MamutViewTableFactory2;
-import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackSchemeFactory2;
-import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory2;
+import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory;
+import org.mastodon.mamut.views.table.MamutViewTableFactory;
+import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackSchemeFactory;
+import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory;
 import org.mastodon.model.app.WindowManager;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
@@ -134,7 +134,7 @@ public class MainWindow extends JFrame
 		viewsLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( viewsLabel, "span, wrap" );
 
-		final JButton tableButton = new JButton( projectActionMap.get( MamutViewTableFactory2.NEW_TABLE_VIEW ) );
+		final JButton tableButton = new JButton( projectActionMap.get( MamutViewTableFactory.NEW_TABLE_VIEW ) );
 		prepareButton( tableButton, "table", TABLE_ICON_MEDIUM );
 		buttonsPanel.add( tableButton, "grow" );
 
@@ -144,13 +144,13 @@ public class MainWindow extends JFrame
 		prepareButton( bdvButton, "bdv", BDV_ICON_MEDIUM );
 		buttonsPanel.add( bdvButton, "grow, wrap" );
 
-		final JButton selectionTableButton = new JButton( projectActionMap.get( MamutViewSelectionTableFactory2.NEW_SELECTION_TABLE_VIEW ) );
+		final JButton selectionTableButton = new JButton( projectActionMap.get( MamutViewSelectionTableFactory.NEW_SELECTION_TABLE_VIEW ) );
 		prepareButton( selectionTableButton, "selection table", TABLE_ICON_MEDIUM );
 		buttonsPanel.add( selectionTableButton, "grow" );
 
-		final JButton trackschemeButton = new JButton( new RunnableActionPair( MamutViewTrackSchemeFactory2.NEW_TRACKSCHEME_VIEW,
-				() -> projectActionMap.get( MamutViewTrackSchemeFactory2.NEW_TRACKSCHEME_VIEW ).actionPerformed( null ),
-				() -> projectActionMap.get( MamutViewBranchTrackSchemeFactory2.NEW_BRANCH_TRACKSCHEME_VIEW ).actionPerformed( null ) ) );
+		final JButton trackschemeButton = new JButton( new RunnableActionPair( MamutViewTrackSchemeFactory.NEW_TRACKSCHEME_VIEW,
+				() -> projectActionMap.get( MamutViewTrackSchemeFactory.NEW_TRACKSCHEME_VIEW ).actionPerformed( null ),
+				() -> projectActionMap.get( MamutViewBranchTrackSchemeFactory.NEW_BRANCH_TRACKSCHEME_VIEW ).actionPerformed( null ) ) );
 		prepareButton( trackschemeButton, "trackscheme", TRACKSCHEME_ICON_MEDIUM );
 		buttonsPanel.add( trackschemeButton, "grow, wrap" );
 
@@ -358,7 +358,7 @@ public class MainWindow extends JFrame
 
 	public static void addMenus( final ViewMenu menu, final ActionMap actionMap )
 	{
-		MamutMenuBuilder2.build( menu, actionMap,
+		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						// item( ProjectActions.CREATE_PROJECT ),
 						// item( ProjectActions.CREATE_PROJECT_FROM_URL ),

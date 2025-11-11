@@ -1,6 +1,6 @@
 package org.mastodon.model.app;
 
-import static org.mastodon.mamut.MamutMenuBuilder2.windowMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.windowMenu;
 
 import java.awt.Window;
 import java.awt.event.WindowEvent;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 import javax.swing.ActionMap;
 
-import org.mastodon.app.plugin.MastodonPlugins2;
+import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.app.plugin.PluginUtils;
 import org.mastodon.app.ui.UIUtils;
 import org.mastodon.app.ui.ViewMenu;
@@ -27,9 +27,9 @@ import org.mastodon.grouping.GroupManager;
 import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.mamut.CloseListener;
 import org.mastodon.mamut.KeyConfigScopes;
-import org.mastodon.mamut.MamutMenuBuilder2;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.PreferencesDialog;
-import org.mastodon.mamut.managers.StyleManagerFactory2;
+import org.mastodon.mamut.managers.StyleManagerFactory;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.ForwardingNavigationHandler;
 import org.mastodon.model.ForwardingTimepointModel;
@@ -83,7 +83,7 @@ public class WindowManager< AM extends AppModel< AM, ?, ?, ?, ? > >
 
 	private final KeymapManager keymapManager;
 
-	private final MastodonPlugins2< ?, ? > plugins;
+	private final MastodonPlugins< ?, ? > plugins;
 
 	private final String[] keyConfigContexts;
 
@@ -165,7 +165,7 @@ public class WindowManager< AM extends AppModel< AM, ?, ?, ?, ? > >
 			final int numGroups,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
-			final MastodonPlugins2< ?, ? > plugins,
+			final MastodonPlugins< ?, ? > plugins,
 			final Actions globalActions,
 			final String[] keyConfigContexts,
 			final Scope scope )
@@ -224,14 +224,14 @@ public class WindowManager< AM extends AppModel< AM, ?, ?, ?, ? > >
 		 * StyleManagerFactory2, and ask callers to provide that interface.
 		 */
 		@SuppressWarnings( "rawtypes" )
-		final Consumer< StyleManagerFactory2 > registerAction = ( factory ) -> {
+		final Consumer< StyleManagerFactory > registerAction = ( factory ) -> {
 			final Object manager = factory.create( this );
 			registerInstance( manager );
 			// Settings page.
 			if ( factory.hasSettingsPage() )
 				settings.addPage( factory.createSettingsPage( manager ) );
 		};
-		PluginUtils.forEachDiscoveredPlugin( StyleManagerFactory2.class, registerAction, context );
+		PluginUtils.forEachDiscoveredPlugin( StyleManagerFactory.class, registerAction, context );
 	}
 
 	public ViewFactories getViewFactories()
@@ -303,7 +303,7 @@ public class WindowManager< AM extends AppModel< AM, ?, ?, ?, ? > >
 	 *
 	 * @return the plugins.
 	 */
-	public MastodonPlugins2< ?, ? > getPlugins()
+	public MastodonPlugins< ?, ? > getPlugins()
 	{
 		return plugins;
 	}
@@ -730,7 +730,7 @@ public class WindowManager< AM extends AppModel< AM, ?, ?, ?, ? > >
 
 		public void addWindowMenuTo( final ViewMenu menu, final ActionMap actionMap )
 		{
-			MamutMenuBuilder2.build( menu, actionMap, menuTexts, windowMenu( menuItems.toArray( new MenuItem[ 0 ] ) ) );
+			MamutMenuBuilder.build( menu, actionMap, menuTexts, windowMenu( menuItems.toArray( new MenuItem[ 0 ] ) ) );
 		}
 	}
 

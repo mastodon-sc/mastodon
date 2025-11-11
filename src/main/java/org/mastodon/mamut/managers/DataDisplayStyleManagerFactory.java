@@ -36,8 +36,8 @@ import org.scijava.plugin.Plugin;
 
 import bdv.ui.settings.SettingsPage;
 
-@Plugin( type = StyleManagerFactory2.class, priority = Priority.NORMAL - 2 )
-public class DataDisplayStyleManagerFactory implements StyleManagerFactory2< DataDisplayStyleManager >
+@Plugin( type = StyleManagerFactory.class, priority = Priority.NORMAL - 2 )
+public class DataDisplayStyleManagerFactory implements StyleManagerFactory< DataDisplayStyleManager >
 {
 
 	@Override

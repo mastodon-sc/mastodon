@@ -32,15 +32,15 @@ import java.util.Map;
 
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.views.bdv.AbstractMastodonViewBdvFactory;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 7 )
+@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 7 )
 public class MamutViewBranchBdvFactory
 		extends AbstractMastodonViewBdvFactory< MamutViewBranchBdv, ModelGraph, MamutAppModel >
-		implements MamutViewFactory2< MamutViewBranchBdv >
+		implements MamutViewFactory< MamutViewBranchBdv >
 
 {
 

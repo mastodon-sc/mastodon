@@ -30,15 +30,15 @@ package org.mastodon.mamut.views.grapher;
 
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.views.grapher.AbstractMastodonViewGrapherFactory;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
+@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 1 )
 public class MamutViewGrapherFactory
 		extends AbstractMastodonViewGrapherFactory< MamutViewGrapher, ModelGraph, MamutAppModel >
-		implements MamutViewFactory2< MamutViewGrapher >
+		implements MamutViewFactory< MamutViewGrapher >
 {
 
 	public static final String NEW_GRAPHER_VIEW = "new grapher view";

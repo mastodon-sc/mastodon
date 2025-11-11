@@ -26,33 +26,58 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.views.trackscheme;
+package org.mastodon.mamut.managers;
 
-import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.views.MamutViewFactory2;
-import org.mastodon.views.trackscheme.AbstractMastodonViewTrackSchemeFactory;
-import org.scijava.Priority;
-import org.scijava.plugin.Plugin;
+import org.mastodon.model.app.WindowManager;
+import org.scijava.plugin.SciJavaPlugin;
 
-@Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
-public class MamutViewTrackSchemeFactory2
-		extends AbstractMastodonViewTrackSchemeFactory< MamutViewTrackScheme2, ModelGraph, MamutAppModel >
-		implements MamutViewFactory2< MamutViewTrackScheme2 >
+import bdv.ui.settings.SettingsPage;
+
+/**
+ * Interface for discoverable style manager factories.
+ * <p>
+ * Such factories are meant to be automatically discovered by the window
+ * manager, and used to create style managers.
+ *
+ * @param <T>
+ *            the type of style manager created by this factory.
+ *
+ */
+public interface StyleManagerFactory< T > extends SciJavaPlugin
 {
 
-	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
+	/**
+	 * Creates a new manager instance for the specified window manager.
+	 *
+	 * @param windowManager
+	 *            the window manager.
+	 *
+	 * @return a new manager instance.
+	 */
+	public T create( final WindowManager< ? > windowManager );
 
-	@Override
-	public MamutViewTrackScheme2 create( final MamutAppModel appModel )
-	{
-		return new MamutViewTrackScheme2( appModel );
-	}
+	/**
+	 * Returns <code>true</code> if the manager handled by this factory has a
+	 * {@link SettingsPage} that can configure it.
+	 *
+	 * @return whether there is a settings page for the manager.
+	 */
+	public boolean hasSettingsPage();
 
-	@Override
-	public String getCommandName()
-	{
-		return NEW_TRACKSCHEME_VIEW;
-	}
+	/**
+	 * Creates a new settings page for the specified manager.
+	 *
+	 * @param manager
+	 *            the manager.
+	 * @return a new settings page.
+	 */
+	public SettingsPage createSettingsPage( T manager );
+
+	/**
+	 * Returns the class of the manager created by this factory.
+	 *
+	 * @return the manager class.
+	 */
+	public Class< T > getManagerClass();
 
 }

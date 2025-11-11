@@ -56,7 +56,7 @@ import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.io.ProjectCreator;
-import org.mastodon.mamut.io.ProjectLoader2;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.importer.simi.SimiImporter;
 import org.mastodon.mamut.io.importer.simi.SimiImporter.LabelFunction;
 import org.mastodon.mamut.io.importer.tgmm.TgmmImporter;
@@ -548,7 +548,7 @@ public class MastodonLauncher extends JFrame
 			{
 				final TrackMateImporter importer = new TrackMateImporter( file );
 				project = importer.createProject();
-				final MamutAppModel appModel = ProjectLoader2.open( project, context );
+				final MamutAppModel appModel = ProjectLoader.open( project, context );
 
 				final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
 				importer.readModel( appModel.dataModel(), featureSpecsService );

@@ -61,7 +61,7 @@ public class ProjectCreator
 		final MamutProject project = MamutProjectIO.fromBdvFile( file );
 		try
 		{
-			return ProjectLoader2.open( project, context );
+			return ProjectLoader.open( project, context );
 		}
 		catch ( final IOException e )
 		{
@@ -88,7 +88,7 @@ public class ProjectCreator
 		final MamutProject project = MamutProjectIO.fromImagePlus( imp );
 		try
 		{
-			return ProjectLoader2.open( project, context );
+			return ProjectLoader.open( project, context );
 		}
 		catch ( final IOException e )
 		{

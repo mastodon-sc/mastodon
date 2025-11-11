@@ -6,7 +6,7 @@ import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.MastodonModel;
-import org.mastodon.views.trackscheme.MastodonViewTrackScheme2;
+import org.mastodon.views.trackscheme.MastodonViewTrackScheme;
 import org.mastodon.views.trackscheme.BranchTrackScheme.HierarchyTrackSchemeOverlayFactory;
 import org.mastodon.views.trackscheme.graph.LongEdgesLineageTreeLayout;
 import org.mastodon.views.trackscheme.properties.MastodonHierarchyTrackSchemeProperties;
@@ -17,7 +17,7 @@ import org.mastodon.views.trackscheme.properties.MastodonHierarchyTrackSchemePro
  * @author Jean-Yves Tinevez
  *
  */
-public class MamutViewHierarchyTrackScheme2 extends MastodonViewTrackScheme2<
+public class MamutViewHierarchyTrackScheme extends MastodonViewTrackScheme<
 		MastodonModel< ModelBranchGraph, BranchSpot, BranchLink >,
 		ModelBranchGraph,
 		BranchSpot,
@@ -26,7 +26,7 @@ public class MamutViewHierarchyTrackScheme2 extends MastodonViewTrackScheme2<
 
 	private static final int MINIMUM_NUMBER_OF_HIERARCHY_LEVELS_SCROLLABLE = 30;
 
-	public MamutViewHierarchyTrackScheme2( final MamutAppModel appModel )
+	public MamutViewHierarchyTrackScheme( final MamutAppModel appModel )
 	{
 		super(
 				appModel.dataModel().branchModel(),

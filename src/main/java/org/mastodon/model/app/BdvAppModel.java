@@ -2,7 +2,7 @@ package org.mastodon.model.app;
 
 import java.io.File;
 
-import org.mastodon.app.plugin.MastodonPlugins2;
+import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.DefaultFeatureProjectionsManager;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
@@ -41,7 +41,7 @@ public class BdvAppModel<
 			@SuppressWarnings( "rawtypes" ) final Class viewFactoryType,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
-			final MastodonPlugins2< ?, ? > plugins,
+			final MastodonPlugins< ?, ? > plugins,
 			final Actions globalActions,
 			final MamutProject project,
 			final String[] keyConfigContexts,

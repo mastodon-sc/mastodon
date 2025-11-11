@@ -63,7 +63,7 @@ public class FeatureSerializerTestUtils
 			model.getFeatureModel().declareFeature( feature );
 			RawGraphIO.GraphToFileIdMap< Spot, Link > graphToFileIdMap;
 			graphToFileIdMap = model.saveRaw( writer );
-			MamutRawFeatureModelIO2.serialize( context, model, graphToFileIdMap, writer );
+			MamutRawFeatureModelIO.serialize( context, model, graphToFileIdMap, writer );
 		}
 
 		final MamutProject reloadProject = new MamutProject( projectRoot, datasetXmlFile );
@@ -73,7 +73,7 @@ public class FeatureSerializerTestUtils
 		try (MamutProject.ProjectReader reader = reloadProject.openForReading())
 		{
 			final RawGraphIO.FileIdToGraphMap< Spot, Link > fileIdToGraphMap = modelReloaded.loadRaw( reader );
-			MamutRawFeatureModelIO2.deserialize( context, modelReloaded, fileIdToGraphMap, reader );
+			MamutRawFeatureModelIO.deserialize( context, modelReloaded, fileIdToGraphMap, reader );
 		}
 		catch ( final ClassNotFoundException e )
 		{

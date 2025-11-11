@@ -60,7 +60,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.scijava.Context;
 
-public class MamutRawFeatureModelIO2
+public class MamutRawFeatureModelIO
 {
 
 	public static void serialize(

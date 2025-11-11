@@ -40,7 +40,7 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.MamutAppModel;
-import org.mastodon.mamut.io.ProjectLoader2;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -62,7 +62,7 @@ public class SerializeFeatureExample
 
 		// Load project.
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final MamutAppModel appModel = ProjectLoader2.open( project, new Context() );
+		final MamutAppModel appModel = ProjectLoader.open( project, new Context() );
 		final Model model = appModel.dataModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 
@@ -88,7 +88,7 @@ public class SerializeFeatureExample
 
 		System.out.println( "\nReloading." );
 		final MamutProject project2 = MamutProjectIO.load( targetFile.getAbsolutePath() );
-		final MamutAppModel appModel2 = ProjectLoader2.open( project2, appModel.windowManager().getContext() );
+		final MamutAppModel appModel2 = ProjectLoader.open( project2, appModel.windowManager().getContext() );
 		System.out.println( "Done." );
 
 		System.out.println( "\n" + ModelUtils.dump( appModel2.dataModel(), appModel2.dataModel().getSpaceUnits() ) );

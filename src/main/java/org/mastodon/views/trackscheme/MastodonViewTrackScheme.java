@@ -30,12 +30,12 @@ package org.mastodon.views.trackscheme;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.mamut.MamutMenuBuilder2.colorMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.colorbarMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.editMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.fileMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.tagSetMenu;
-import static org.mastodon.mamut.MamutMenuBuilder2.viewMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import java.awt.Component;
 
@@ -53,7 +53,7 @@ import org.mastodon.collection.RefCollection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.mamut.MamutMenuBuilder2;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.UndoActions;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.DefaultRootsModel;
@@ -112,7 +112,7 @@ import org.scijava.ui.behaviour.KeyPressedManager;
  * @param <E>
  *            the type of edge in the graph.
  */
-public class MastodonViewTrackScheme2<
+public class MastodonViewTrackScheme<
 		M extends MastodonModel< G, V, E >,
 		G extends ListenableReadOnlyGraph< V, E >,
 		V extends Vertex<  E >,
@@ -141,7 +141,7 @@ public class MastodonViewTrackScheme2<
 	 * @param modelGraphProperties
 	 *            the model graph properties.
 	 */
-	public MastodonViewTrackScheme2(
+	public MastodonViewTrackScheme(
 			final AppModel< ?, M, G, V, E > appModel,
 			final TrackSchemeProperties< V, E > modelGraphProperties )
 	{
@@ -165,7 +165,7 @@ public class MastodonViewTrackScheme2<
 	 * @param modelGraphProperties
 	 *            the model graph properties.
 	 */
-	public MastodonViewTrackScheme2(
+	public MastodonViewTrackScheme(
 			final M dataModel,
 			final WindowManager< ? > windowManager,
 			final TrackSchemeProperties< V, E > modelGraphProperties )
@@ -189,7 +189,7 @@ public class MastodonViewTrackScheme2<
 	 * @param timepointMax
 	 *            the maximum timepoint to display.
 	 */
-	public MastodonViewTrackScheme2(
+	public MastodonViewTrackScheme(
 			final M dataModel,
 			final WindowManager< ? > windowManager,
 			final TrackSchemeProperties< V, E > modelGraphProperties,
@@ -221,7 +221,7 @@ public class MastodonViewTrackScheme2<
 	 * @param timepointMax
 	 *            the maximum timepoint to display.
 	 */
-	public MastodonViewTrackScheme2(
+	public MastodonViewTrackScheme(
 			final M dataModel,
 			final WindowManager< ? > windowManager,
 			final TrackSchemeProperties< V, E > modelGraphProperties,
@@ -346,7 +346,7 @@ public class MastodonViewTrackScheme2<
 		final ViewMenu menu = new ViewMenu( this, windowManager.getKeymap(), keyConfigContexts );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		windowManager.getViewFactories().addWindowMenuTo( menu, actionMap );
-		MamutMenuBuilder2.build( menu, actionMap,
+		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),
 						item( ExportViewActions.EXPORT_VIEW_TO_SVG ),

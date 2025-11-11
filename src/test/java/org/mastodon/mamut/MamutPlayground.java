@@ -40,7 +40,7 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.SpotCenterIntensityFeature;
-import org.mastodon.mamut.io.ProjectLoader2;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
 import org.mastodon.mamut.model.Link;
@@ -57,7 +57,7 @@ public class MamutPlayground
 	{
 		final Context context = new Context();
 		final MamutProject project = MamutProjectIO.load( "samples/mamutproject.mastodon" );
-		final MamutAppModel appModel = ProjectLoader2.open( project, context );
+		final MamutAppModel appModel = ProjectLoader.open( project, context );
 		final Model model = appModel.dataModel();
 
 		System.out.println( "\n\n\n___________________________________\nData loaded.\n" );

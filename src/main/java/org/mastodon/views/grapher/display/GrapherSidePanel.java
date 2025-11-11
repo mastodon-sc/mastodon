@@ -59,7 +59,7 @@ import org.mastodon.feature.Multiplicity;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
-import org.mastodon.mamut.feature.MamutRawFeatureModelIO2;
+import org.mastodon.mamut.feature.MamutRawFeatureModelIO;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProject.ProjectReader;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -452,7 +452,7 @@ public class GrapherSidePanel< V extends Vertex< E >, E extends Edge< V > > exte
 
 			final FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
 			// Load features.
-			MamutRawFeatureModelIO2.deserialize(
+			MamutRawFeatureModelIO.deserialize(
 					new Context(),
 					model,
 					idmap,

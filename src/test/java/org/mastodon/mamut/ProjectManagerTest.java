@@ -40,7 +40,7 @@ import java.nio.file.Paths;
 import java.util.zip.ZipFile;
 
 import org.junit.Test;
-import org.mastodon.mamut.io.ProjectLoader2;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.io.project.MamutProjectIO;
@@ -98,7 +98,7 @@ public class ProjectManagerTest
 			throws IOException, SpimDataException
 	{
 		final MamutProject project = MamutProjectIO.load( open.toFile().getAbsolutePath() );
-		final MamutAppModel appModel = ProjectLoader2.open( project, context, false, true );
+		final MamutAppModel appModel = ProjectLoader.open( project, context, false, true );
 		ProjectSaver.saveProject( save.toFile(), appModel );
 	}
 

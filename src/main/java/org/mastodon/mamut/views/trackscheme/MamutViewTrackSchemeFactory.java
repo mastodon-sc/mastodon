@@ -30,28 +30,29 @@ package org.mastodon.mamut.views.trackscheme;
 
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.views.MamutViewFactory2;
+import org.mastodon.mamut.views.MamutViewFactory;
 import org.mastodon.views.trackscheme.AbstractMastodonViewTrackSchemeFactory;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = MamutViewFactory2.class, priority = Priority.NORMAL - 1 )
-public class MamutViewBranchTrackSchemeFactory2
-		extends AbstractMastodonViewTrackSchemeFactory< MamutViewBranchTrackScheme2, ModelGraph, MamutAppModel >
-		implements MamutViewFactory2< MamutViewBranchTrackScheme2 >
+@Plugin( type = MamutViewFactory.class, priority = Priority.NORMAL - 1 )
+public class MamutViewTrackSchemeFactory
+		extends AbstractMastodonViewTrackSchemeFactory< MamutViewTrackScheme, ModelGraph, MamutAppModel >
+		implements MamutViewFactory< MamutViewTrackScheme >
 {
 
-	public static final String NEW_BRANCH_TRACKSCHEME_VIEW = "new branch trackscheme view";
+	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 
 	@Override
-	public MamutViewBranchTrackScheme2 create( final MamutAppModel appModel )
+	public MamutViewTrackScheme create( final MamutAppModel appModel )
 	{
-		return new MamutViewBranchTrackScheme2( appModel );
+		return new MamutViewTrackScheme( appModel );
 	}
 
 	@Override
 	public String getCommandName()
 	{
-		return NEW_BRANCH_TRACKSCHEME_VIEW;
+		return NEW_TRACKSCHEME_VIEW;
 	}
+
 }
