@@ -8,7 +8,6 @@ import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
-import org.mastodon.app.UIModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.grouping.GroupHandle;
@@ -18,6 +17,7 @@ import org.mastodon.model.MastodonModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 
 /**

@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
@@ -16,6 +15,7 @@ import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.model.HasBranchModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.TagSetMenu;
 import org.mastodon.ui.coloring.ColorBarOverlay;

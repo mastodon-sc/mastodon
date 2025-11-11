@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.app.UIModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.scijava.Priority;

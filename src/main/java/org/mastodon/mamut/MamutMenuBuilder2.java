@@ -34,11 +34,11 @@ import java.util.Map;
 
 import javax.swing.ActionMap;
 
-import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.io.ProjectActions;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
 import org.mastodon.views.bdv.export.RecordMovieDialog;

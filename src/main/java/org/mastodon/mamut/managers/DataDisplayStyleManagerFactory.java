@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.managers;
 
-import org.mastodon.app.UIModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
 import org.scijava.Priority;

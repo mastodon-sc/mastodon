@@ -44,8 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.adapter.FadingModelAdapter;
-import org.mastodon.app.AppModel;
-import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.TimepointAndNumberOfSpotsPanel;
@@ -61,6 +59,8 @@ import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.DefaultRootsModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.RootsModel;
+import org.mastodon.model.app.AppModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;

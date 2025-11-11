@@ -41,7 +41,6 @@ import static org.mastodon.mamut.MamutMenuBuilder2.viewMenu;
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 
-import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.TimepointAndNumberOfSpotsPanel;
@@ -58,6 +57,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;
 import org.mastodon.ui.FocusActions;

@@ -42,7 +42,6 @@ import java.awt.Component;
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 
-import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
@@ -56,6 +55,7 @@ import org.mastodon.mamut.MamutMenuBuilder2;
 import org.mastodon.mamut.UndoActions;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.MastodonModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.ExportViewActions;

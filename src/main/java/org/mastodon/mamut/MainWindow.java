@@ -68,7 +68,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.MastodonIcons;
-import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.UIUtils;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.mamut.io.ProjectActions;
@@ -79,6 +78,7 @@ import org.mastodon.mamut.views.table.MamutViewSelectionTableFactory2;
 import org.mastodon.mamut.views.table.MamutViewTableFactory2;
 import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackSchemeFactory2;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackSchemeFactory2;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.ui.commandfinder.CommandFinder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.RunnableActionPair;

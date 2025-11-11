@@ -43,7 +43,6 @@ import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.app.UIModel;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.UIUtils;
@@ -63,6 +62,7 @@ import org.mastodon.model.HasBranchModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.model.branch.BranchGraphEdgeBimap;
 import org.mastodon.model.branch.BranchGraphNavigationHandlerAdapter;
 import org.mastodon.model.branch.BranchGraphVertexBimap;

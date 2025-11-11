@@ -38,8 +38,8 @@ import java.util.Map;
 
 import javax.swing.JViewport;
 
-import org.mastodon.app.AppModel;
 import org.mastodon.graph.ListenableReadOnlyGraph;
+import org.mastodon.model.app.AppModel;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.views.AbstractMastodonViewFactory;
 import org.mastodon.views.MastodonViewFactory;

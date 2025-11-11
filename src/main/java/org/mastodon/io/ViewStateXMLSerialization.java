@@ -68,8 +68,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.jdom2.Element;
-import org.mastodon.app.AppModel;
-import org.mastodon.app.UIModel;
+import org.mastodon.model.app.AppModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.MastodonFrameView;
 import org.mastodon.views.trackscheme.graph.ScreenTransform;

@@ -31,8 +31,8 @@ package org.mastodon.views.bdv;
 import java.util.Map;
 
 import org.jdom2.Element;
-import org.mastodon.app.AppModel;
 import org.mastodon.graph.ListenableReadOnlyGraph;
+import org.mastodon.model.app.AppModel;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.AbstractMastodonViewFactory;
 import org.mastodon.views.MastodonViewFactory;

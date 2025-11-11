@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.app;
+package org.mastodon.model.app;
 
 import static org.mastodon.app.MastodonIcons.TAGS_ICON;
 

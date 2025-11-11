@@ -30,7 +30,7 @@ package org.mastodon.views;
 
 import java.util.Map;
 
-import org.mastodon.app.AppModel;
+import org.mastodon.model.app.AppModel;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**

@@ -35,9 +35,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mastodon.app.AppModel;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
+import org.mastodon.model.app.AppModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.coloring.ColorBarOverlay;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;

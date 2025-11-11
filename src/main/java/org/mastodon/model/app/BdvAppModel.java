@@ -1,4 +1,4 @@
-package org.mastodon.app;
+package org.mastodon.model.app;
 
 import java.io.File;
 

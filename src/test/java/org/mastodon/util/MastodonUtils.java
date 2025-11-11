@@ -32,7 +32,6 @@ import java.io.IOException;
 
 import javax.swing.WindowConstants;
 
-import org.mastodon.app.UIModel;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.MainWindow;
@@ -49,6 +48,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
 import org.mastodon.model.TimepointModel;
+import org.mastodon.model.app.UIModel;
 import org.mastodon.model.tag.TagSetModel;
 import org.scijava.Context;
 

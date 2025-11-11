@@ -1,4 +1,4 @@
-package org.mastodon.app;
+package org.mastodon.model.app;
 
 import static org.mastodon.mamut.MamutMenuBuilder2.windowMenu;
 

@@ -1,13 +1,12 @@
 package org.mastodon.mamut;
 
-import static org.mastodon.app.UIModel.COMPUTE_FEATURE_DIALOG;
-import static org.mastodon.app.UIModel.OPEN_ONLINE_DOCUMENTATION;
-import static org.mastodon.app.UIModel.PREFERENCES_DIALOG;
-import static org.mastodon.app.UIModel.PREFERENCES_DIALOG_KEYS;
-import static org.mastodon.app.UIModel.TAGSETS_DIALOG;
-import static org.mastodon.app.UIModel.TAGSETS_DIALOG_KEYS;
+import static org.mastodon.model.app.UIModel.COMPUTE_FEATURE_DIALOG;
+import static org.mastodon.model.app.UIModel.OPEN_ONLINE_DOCUMENTATION;
+import static org.mastodon.model.app.UIModel.PREFERENCES_DIALOG;
+import static org.mastodon.model.app.UIModel.PREFERENCES_DIALOG_KEYS;
+import static org.mastodon.model.app.UIModel.TAGSETS_DIALOG;
+import static org.mastodon.model.app.UIModel.TAGSETS_DIALOG_KEYS;
 
-import org.mastodon.app.BdvAppModel;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.BoundingSphereRadiusStatistics;
 import org.mastodon.mamut.model.Link;
@@ -25,6 +24,7 @@ import org.mastodon.mamut.views.table.MamutViewTable2;
 import org.mastodon.mamut.views.trackscheme.MamutViewBranchTrackScheme2;
 import org.mastodon.mamut.views.trackscheme.MamutViewHierarchyTrackScheme2;
 import org.mastodon.mamut.views.trackscheme.MamutViewTrackScheme2;
+import org.mastodon.model.app.BdvAppModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.MastodonKeymapManager;
 import org.mastodon.views.bdv.SharedBigDataViewerData;

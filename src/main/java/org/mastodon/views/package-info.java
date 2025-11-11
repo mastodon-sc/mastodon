@@ -2,7 +2,7 @@
  * Package containing generic classes used to build Mastodon views.
  * <p>
  * Mastodon views are {@link org.mastodon.views.MastodonFrameView} that can
- * display the content of a {@link org.mastodon.app.AppModel}. They are
+ * display the content of a {@link org.mastodon.model.app.AppModel}. They are
  * interactive, depending on the concrete AppModel capabilities.
  * <p>
  * These classes are independent from any particular Mastodon application, and
