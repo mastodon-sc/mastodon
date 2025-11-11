@@ -26,65 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme.wrap;
+package org.mastodon.views.trackscheme.properties;
 
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
 import org.mastodon.model.HasLabel;
+import org.mastodon.model.branch.BranchVertex;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
 
 /**
- * Interface for accessing model graph properties.
- * <p>
- * To make {@link TrackSchemeGraph} adaptable to various model graph type
- * without requiring the graph to implement specific interfaces, we access
- * properties of model vertices and edges (for example the label of a vertex)
- * through {@link TrackSchemeProperties}.
- * <p>
- * For model graphs that implement the required additional interfaces (
- * {@link HasTimepoint}, {@link HasLabel}, etc),
- * {@link DefaultTrackSchemeProperties} can be used.
+ * A {@link DefaultTrackSchemeProperties} for branch graphs.
+ *
+ * @author Jean-Yves Tinevez
  *
  * @param <V>
- *            the type of vertices in the model graph (not the TrackScheme
- *            graph).
+ *            the vertex type, extending {@link BranchVertex}.
  * @param <E>
- *            the type of edges in the graph.
- *
- * @author Tobias Pietzsch
+ *            the edge type.
  */
-public interface TrackSchemeProperties< V, E >
+public class MastodonBranchTrackSchemeProperties< V extends Vertex< E > & HasTimepoint & HasLabel & BranchVertex, E extends Edge< V > > extends DefaultTrackSchemeProperties< V, E >
 {
-	public int getTimepoint( V v );
 
-	default public int getFirstTimePoint( final V v )
+	@Override
+	public int getFirstTimePoint( final V v )
 	{
-		return getTimepoint( v );
-	};
-
-	public String getLabel( V v );
-
-	public void setLabel( V v, String label );
-
-	default String getFirstLabel( final V v )
-	{
-		return getLabel( v );
+		return v.getFirstTimePoint();
 	}
 
-	public E addEdge( V source, V target, E ref );
+	@Override
+	public String getFirstLabel( final V v )
+	{
+		return v.getFirstLabel();
+	}
 
-	public E insertEdge( V source, final int sourceOutIndex, V target, final int targetInIndex, final E ref );
+	@Override
+	public void addVertexLabelListener( final PropertyChangeListener< V > listener )
+	{}
 
-	public E initEdge( E e );
-
-	public void removeEdge( E e );
-
-	public void removeVertex( V v );
-
-	public void notifyGraphChanged();
-
-	public void addVertexLabelListener( final PropertyChangeListener< V > listener );
-
-	public void removeVertexLabelListener( PropertyChangeListener< V > vertexLabelListener );
-
+	@Override
+	public void removeVertexLabelListener( final PropertyChangeListener< V > listener )
+	{}
 }

@@ -26,92 +26,65 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme.wrap;
+package org.mastodon.views.trackscheme.properties;
 
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.Vertex;
 import org.mastodon.model.HasLabel;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.HasTimepoint;
+import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
 
 /**
- * Defautl implementation of {@link TrackSchemeProperties} for graphs whose
- * vertices implement {@link HasTimepoint} and {@link HasLabel}.
+ * Interface for accessing model graph properties.
+ * <p>
+ * To make {@link TrackSchemeGraph} adaptable to various model graph type
+ * without requiring the graph to implement specific interfaces, we access
+ * properties of model vertices and edges (for example the label of a vertex)
+ * through {@link TrackSchemeProperties}.
+ * <p>
+ * For model graphs that implement the required additional interfaces (
+ * {@link HasTimepoint}, {@link HasLabel}, etc),
+ * {@link DefaultTrackSchemeProperties} can be used.
  *
  * @param <V>
  *            the type of vertices in the model graph (not the TrackScheme
  *            graph).
  * @param <E>
  *            the type of edges in the graph.
+ *
+ * @author Tobias Pietzsch
  */
-public class DefaultTrackSchemeProperties< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > >
-		implements TrackSchemeProperties< V, E >
+public interface TrackSchemeProperties< V, E >
 {
-	@Override
-	public int getTimepoint( final V v )
+	public int getTimepoint( V v );
+
+	default public int getFirstTimePoint( final V v )
 	{
-		return v.getTimepoint();
+		return getTimepoint( v );
+	};
+
+	public String getLabel( V v );
+
+	public void setLabel( V v, String label );
+
+	default String getFirstLabel( final V v )
+	{
+		return getLabel( v );
 	}
 
-	@Override
-	public String getLabel( final V v )
-	{
-		return v.getLabel();
-	}
+	public E addEdge( V source, V target, E ref );
 
-	@Override
-	public void setLabel( final V v, final String label )
-	{
-		v.setLabel( label );
-	}
+	public E insertEdge( V source, final int sourceOutIndex, V target, final int targetInIndex, final E ref );
 
-	@Override
-	public E addEdge( final V source, final V target, final E ref )
-	{
-		throw new UnsupportedOperationException();
-	}
+	public E initEdge( E e );
 
-	@Override
-	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex,
-			final E ref )
-	{
-		throw new UnsupportedOperationException();
-	}
+	public void removeEdge( E e );
 
-	@Override
-	public E initEdge( final E e )
-	{
-		throw new UnsupportedOperationException();
-	}
+	public void removeVertex( V v );
 
-	@Override
-	public void removeEdge( final E e )
-	{
-		throw new UnsupportedOperationException();
-	}
+	public void notifyGraphChanged();
 
-	@Override
-	public void removeVertex( final V v )
-	{
-		throw new UnsupportedOperationException();
-	}
+	public void addVertexLabelListener( final PropertyChangeListener< V > listener );
 
-	@Override
-	public void notifyGraphChanged()
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addVertexLabelListener( final PropertyChangeListener< V > listener )
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void removeVertexLabelListener( final PropertyChangeListener< V > listener )
-	{
-		throw new UnsupportedOperationException();
-	}
+	public void removeVertexLabelListener( PropertyChangeListener< V > vertexLabelListener );
 
 }

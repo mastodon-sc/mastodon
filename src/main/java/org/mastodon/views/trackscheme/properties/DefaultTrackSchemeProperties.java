@@ -26,45 +26,92 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme.wrap;
+package org.mastodon.views.trackscheme.properties;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.HasLabel;
-import org.mastodon.model.branch.BranchVertex;
 import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.HasTimepoint;
 
 /**
- * A {@link DefaultTrackSchemeProperties} for branch graphs.
- *
- * @author Jean-Yves Tinevez
+ * Defautl implementation of {@link TrackSchemeProperties} for graphs whose
+ * vertices implement {@link HasTimepoint} and {@link HasLabel}.
  *
  * @param <V>
- *            the vertex type, extending {@link BranchVertex}.
+ *            the type of vertices in the model graph (not the TrackScheme
+ *            graph).
  * @param <E>
- *            the edge type.
+ *            the type of edges in the graph.
  */
-public class MastodonBranchTrackSchemeProperties< V extends Vertex< E > & HasTimepoint & HasLabel & BranchVertex, E extends Edge< V > > extends DefaultTrackSchemeProperties< V, E >
+public class DefaultTrackSchemeProperties< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > >
+		implements TrackSchemeProperties< V, E >
 {
-
 	@Override
-	public int getFirstTimePoint( final V v )
+	public int getTimepoint( final V v )
 	{
-		return v.getFirstTimePoint();
+		return v.getTimepoint();
 	}
 
 	@Override
-	public String getFirstLabel( final V v )
+	public String getLabel( final V v )
 	{
-		return v.getFirstLabel();
+		return v.getLabel();
+	}
+
+	@Override
+	public void setLabel( final V v, final String label )
+	{
+		v.setLabel( label );
+	}
+
+	@Override
+	public E addEdge( final V source, final V target, final E ref )
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex,
+			final E ref )
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public E initEdge( final E e )
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeEdge( final E e )
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeVertex( final V v )
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void notifyGraphChanged()
+	{
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void addVertexLabelListener( final PropertyChangeListener< V > listener )
-	{}
+	{
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public void removeVertexLabelListener( final PropertyChangeListener< V > listener )
-	{}
+	{
+		throw new UnsupportedOperationException();
+	}
+
 }

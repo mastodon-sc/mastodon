@@ -93,7 +93,7 @@ import org.mastodon.views.trackscheme.graph.TrackSchemeContextListener;
 import org.mastodon.views.trackscheme.graph.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
-import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.TrackSchemeProperties;
 import org.scijava.Context;
 import org.scijava.ui.behaviour.KeyPressedManager;
 

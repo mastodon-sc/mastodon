@@ -32,7 +32,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.PropertyChangeListener;
-import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.DefaultTrackSchemeProperties;
 
 public class MamutTrackSchemeProperties extends DefaultTrackSchemeProperties< Spot, Link >
 {

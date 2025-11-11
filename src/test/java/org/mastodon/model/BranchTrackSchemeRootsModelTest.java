@@ -41,8 +41,8 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
-import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
-import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.DefaultTrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.TrackSchemeProperties;
 
 /**
  * Tests for {@link BranchTrackSchemeRootsModel}.

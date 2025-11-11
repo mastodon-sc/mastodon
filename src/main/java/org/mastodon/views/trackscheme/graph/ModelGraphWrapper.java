@@ -31,7 +31,7 @@ package org.mastodon.views.trackscheme.graph;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
-import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.TrackSchemeProperties;
 
 public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 {

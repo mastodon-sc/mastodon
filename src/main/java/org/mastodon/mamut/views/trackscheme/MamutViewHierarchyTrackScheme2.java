@@ -9,7 +9,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.model.MastodonModel;
 import org.mastodon.views.trackscheme.graph.LongEdgesLineageTreeLayout;
-import org.mastodon.views.trackscheme.wrap.MastodonHierarchyTrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.MastodonHierarchyTrackSchemeProperties;
 
 /**
  * Mamut app-specific TrackScheme view.

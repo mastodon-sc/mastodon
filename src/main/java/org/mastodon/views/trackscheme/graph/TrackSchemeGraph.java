@@ -57,8 +57,8 @@ import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
-import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.DefaultTrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.TrackSchemeProperties;
 import org.scijava.listeners.Listeners;
 
 /**

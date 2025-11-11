@@ -97,8 +97,8 @@ import org.mastodon.views.trackscheme.graph.TrackSchemeEdgeBimap;
 import org.mastodon.views.trackscheme.graph.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.graph.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.graph.TrackSchemeVertexBimap;
-import org.mastodon.views.trackscheme.wrap.DefaultTrackSchemeProperties;
-import org.mastodon.views.trackscheme.wrap.TrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.DefaultTrackSchemeProperties;
+import org.mastodon.views.trackscheme.properties.TrackSchemeProperties;
 
 public class TrackSchemeStyleEditorPanel extends JPanel
 {

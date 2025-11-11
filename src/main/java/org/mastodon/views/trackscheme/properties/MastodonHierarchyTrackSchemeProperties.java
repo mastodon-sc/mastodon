@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.trackscheme.wrap;
+package org.mastodon.views.trackscheme.properties;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
