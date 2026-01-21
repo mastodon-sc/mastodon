@@ -28,8 +28,6 @@
  */
 package org.mastodon.io;
 
-import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_STATE_KEY;
-import static org.mastodon.mamut.views.bdv.MamutViewBdvFactory.BDV_TRANSFORM_KEY;
 import static org.mastodon.views.MastodonViewFactory.BRANCH_GRAPH;
 import static org.mastodon.views.MastodonViewFactory.COLORBAR_POSITION_KEY;
 import static org.mastodon.views.MastodonViewFactory.COLORBAR_VISIBLE_KEY;
@@ -41,6 +39,8 @@ import static org.mastodon.views.MastodonViewFactory.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.views.MastodonViewFactory.TAG_SET_KEY;
 import static org.mastodon.views.MastodonViewFactory.TRACK_COLORING_KEY;
 import static org.mastodon.views.MastodonViewFactory.VIEW_TYPE_KEY;
+import static org.mastodon.views.bdv.AbstractMastodonViewBdvFactory.BDV_STATE_KEY;
+import static org.mastodon.views.bdv.AbstractMastodonViewBdvFactory.BDV_TRANSFORM_KEY;
 import static org.mastodon.views.grapher.GrapherGuiState.GRAPHER_SHOW_EDGES_KEY;
 import static org.mastodon.views.grapher.GrapherGuiState.GRAPHER_TRANSFORM_KEY;
 import static org.mastodon.views.grapher.GrapherGuiState.GRAPHER_X_AXIS_FEATURE_IS_EDGE_KEY;
@@ -74,7 +74,6 @@ import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.MastodonFrameView;
 import org.mastodon.views.trackscheme.graph.ScreenTransform;
 
-import ij.WindowManager;
 import mpicbg.spim.data.XmlHelpers;
 import net.imglib2.realtransform.AffineGet;
 
