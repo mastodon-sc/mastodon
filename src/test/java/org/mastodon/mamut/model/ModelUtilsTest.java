@@ -55,14 +55,14 @@ public class ModelUtilsTest
 		b.setLabel( "B" );
 		graph.addEdge( a, b ).init();
 		final String actual = ModelUtils.dump( model, model.getSpaceUnits() );
-		final String expexted = "Model " + model + "\n"
-				+ "Spots:\n"
+		final String expexted = "Graph " + graph + "\n"
+				+ "Spot:\n"
 				+ "       Id      Label   Frame          X          Y          Z    N incoming links    N outgoing links    Spot N links    Spot frame          X          Y          Z    Spot radius\n"
 				+ "                                (pixel)    (pixel)    (pixel)                                                                          (pixel)    (pixel)    (pixel)        (pixel)\n"
 				+ "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 				+ "        0          A       0        1.0        2.0        3.0                   0                   1               1             0        1.0        2.0        3.0            1.0\n"
 				+ "        1          B       1        1.0        2.0        3.2                   1                   0               1             1        1.0        2.0        3.2            1.0\n"
-				+ "Links:\n"
+				+ "Link:\n"
 				+ "       Id  Source Id  Target Id    Link delta T    Link displacement    Source spot id    Target spot id    Link velocity\n"
 				+ "                                                             (pixel)                                        (pixel/frame)\n"
 				+ "-------------------------------------------------------------------------------------------------------------------------\n"
@@ -90,13 +90,13 @@ public class ModelUtilsTest
 		tag2.tagSpot( b );
 		tag2.tagLink( edge );
 		final String actual = ModelUtils.dump( model, model.getSpaceUnits(), 1000000000, ModelUtils.DumpFlags.PRINT_TAGS );
-		final String expected = "Spots:\n"
+		final String expected = "Spot:\n"
 				+ "       Id      Label   Frame          X          Y          Z  my tag set\n"
 				+ "                                (pixel)    (pixel)    (pixel)            \n"
 				+ "-------------------------------------------------------------------------\n"
 				+ "        0          A       0        1.0        2.0        3.0        tag1\n"
 				+ "        1          B       1        1.0        2.0        3.2        tag2\n"
-				+ "Links:\n"
+				+ "Link:\n"
 				+ "       Id  Source Id  Target Id  my tag set\n"
 				+ "                                           \n"
 				+ "-------------------------------------------\n"
