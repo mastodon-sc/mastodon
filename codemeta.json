@@ -1,0 +1,75 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Mastodon",
+  "description": "Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.",
+  "url": "https://github.com/mastodon-sc/mastodon",
+  "codeRepository": "https://github.com/mastodon-sc/mastodon",
+  "version": "1.0.0-beta-36",
+  "dateCreated": "2014",
+  "programmingLanguage": "Java",
+  "license": "https://opensource.org/licenses/BSD-2-Clause",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Jean-Yves Tinevez",
+      "email": "jean-yves.tinevez@pasteur.fr",
+      "url": "https://research.pasteur.fr/en/member/jean-yves-tinevez/",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Institut Pasteur",
+        "url": "http://www.pasteur.fr/"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Tobias Pietzsch",
+      "email": "pietzsch@mpi-cbg.de",
+      "url": "https://imagej.net/User:Pietzsch",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "MPI-CBG",
+        "url": "http://www.mpi-cbg.de/"
+      }
+    }
+  ],
+  "contributor": [
+    {
+      "@type": "Person",
+      "name": "Ko Sugawara",
+      "url": "https://github.com/ksugar"
+    },
+    {
+      "@type": "Person",
+      "name": "Matthias Arzt",
+      "url": "https://github.com/maarzt"
+    },
+    {
+      "@type": "Person",
+      "name": "Vladimír Ulman",
+      "url": "https://github.com/xulman"
+    },
+    {
+      "@type": "Person",
+      "name": "Stefan Hahmann",
+      "url": "https://github.com/stefanhahmann"
+    }
+  ],
+  "issueTracker": "https://github.com/mastodon-sc/mastodon/issues",
+  "continuousIntegration": "https://github.com/mastodon-sc/mastodon/actions",
+  "developmentStatus": "active",
+  "funder": [
+    {
+      "@type": "Organization",
+      "name": "Mastodon Science"
+    }
+  ],
+  "keywords": [
+    "tracking",
+    "image-analysis",
+    "bioimaging",
+    "fiji",
+    "java"
+  ]
+}
+
