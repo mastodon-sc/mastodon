@@ -92,9 +92,7 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 		{
 			final TranslationAnimator animator = new TranslationAnimator( currentTransform, target, 300 );
 			animator.setTime( System.currentTimeMillis() );
-			panel.setTransformAnimator( animator );
 		}
-
 		panel.requestRepaint();
 	}
 

@@ -171,7 +171,7 @@ public abstract class AbstractBDVRecorder
 		final MyTarget target = new MyTarget();
 		final MultiResolutionRenderer renderer = new MultiResolutionRenderer(
 				target, () -> {}, new double[] { 1 }, 0, 1, null, false,
-				viewer.getOptionValues().getAccumulateProjectorFactory(), new CacheControl.Dummy() );
+				new CacheControl.Dummy() );
 
 		// Mastodon overlays.
 		if ( tracksOverlay != null )
@@ -314,7 +314,7 @@ public abstract class AbstractBDVRecorder
 		final MyTarget target = new MyTarget();
 		final MultiResolutionRenderer renderer = new MultiResolutionRenderer(
 				target, () -> {}, new double[] { 1 }, 0, 1, null, false,
-				viewer.getOptionValues().getAccumulateProjectorFactory(), new CacheControl.Dummy() );
+				new CacheControl.Dummy() );
 
 		// Mastodon overlays.
 		if ( tracksOverlay != null )

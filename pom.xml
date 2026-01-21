@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>40.0.0</version>
+		<version>42.0.0</version>
 	</parent>
 
 	<groupId>org.mastodon</groupId>
 	<artifactId>mastodon</artifactId>
-	<version>1.0.0-beta-35-SNAPSHOT</version>
+	<version>1.0.0-beta-36-SNAPSHOT</version>
 
 	<name>Mastodon</name>
 	<description>Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.</description>
@@ -44,10 +44,6 @@
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
-			<artifactId>bigdataviewer-vistools</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer_fiji</artifactId>
 		</dependency>
 		<dependency>
@@ -67,6 +63,10 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-cache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.imglib2</groupId>
@@ -185,6 +185,10 @@
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
 		<mastodon-graph.version>1.0.0-beta-31-SNAPSHOT</mastodon-graph.version>
+
+		<bigdataviewer-core.version>10.6.6</bigdataviewer-core.version>
+		<imglib2.version>8.0.0</imglib2.version>
+		<imglib2-cache.version>1.0.0-beta-20</imglib2-cache.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>

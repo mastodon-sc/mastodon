@@ -182,7 +182,6 @@ public class CreateLargeModelExample
 		System.out.println( String.format( "Total memory used by the model: %.1f MB",
 				( Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() ) / 1e6d ) );
 
-
 		final Context context = new Context();
 		final SharedBigDataViewerData imagedata = SharedBigDataViewerData.fromDummyFilename( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" );
 		final MamutProject project = new MamutProject( "./large_model_example.mastodon" );
