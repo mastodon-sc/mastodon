@@ -234,6 +234,10 @@ public class AppModel<
 		return windowManager;
 	}
 
+	/**
+	 * Closes the app model. All windows registered in the window manager are
+	 * closed, and all registered close listeners are notified.
+	 */
 	public void close()
 	{
 		windowManager.closeListeners().list.forEach( CloseListener::close );
