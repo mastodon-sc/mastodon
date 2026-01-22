@@ -34,7 +34,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 import org.mastodon.ui.coloring.ColorBarOverlay;
-import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 
 import bdv.cache.CacheControl;
 import bdv.export.ProgressWriter;
@@ -58,7 +58,7 @@ public abstract class AbstractBDVRecorder
 {
 	protected final ViewerPanel viewer;
 
-	protected final OverlayGraphRenderer< ?, ? > tracksOverlay;
+	protected final DefaultOverlayGraphRenderer< ?, ? > tracksOverlay;
 
 	protected final ColorBarOverlay colorBarOverlay;
 
@@ -66,7 +66,7 @@ public abstract class AbstractBDVRecorder
 
 	protected AbstractBDVRecorder(
 			final ViewerPanel viewer,
-			final OverlayGraphRenderer< ?, ? > tracksOverlay,
+			final DefaultOverlayGraphRenderer< ?, ? > tracksOverlay,
 			final ColorBarOverlay colorBarOverlay,
 			final ProgressWriter progressWriter )
 	{

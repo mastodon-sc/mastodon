@@ -97,7 +97,7 @@ import net.imglib2.util.LinAlgHelpers;
  *
  * @author Tobias Pietzsch
  */
-public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class DefaultOverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		implements OverlayRenderer, TransformListener< AffineTransform3D >, TimePointListener
 {
 	private int width;
@@ -124,7 +124,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	protected final Visibilities< V, E > visibilities;
 
-	public OverlayGraphRenderer(
+	public DefaultOverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
 			final HighlightModel< V, E > highlight,
 			final FocusModel< V > focus,

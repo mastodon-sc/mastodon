@@ -70,7 +70,7 @@ import org.mastodon.ui.util.FileChooser;
 import org.mastodon.ui.util.FileChooser.DialogType;
 import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.mastodon.views.bdv.display.BigDataViewerMamut;
-import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 import org.scijava.plugin.Plugin;
 import org.scijava.prefs.DefaultPrefService;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
@@ -139,7 +139,7 @@ public class RecordMaxProjectionMovieDialog extends bdv.tools.DelayedPackDialog 
 	public static Runnable install(
 			final Actions actions,
 			final BigDataViewerMamut bdv,
-			final OverlayGraphRenderer< ?, ? > tracksOverlay,
+			final DefaultOverlayGraphRenderer< ?, ? > tracksOverlay,
 			final ColorBarOverlay colorBarOverlay,
 			final Keymap keymap )
 	{
@@ -216,7 +216,7 @@ public class RecordMaxProjectionMovieDialog extends bdv.tools.DelayedPackDialog 
 	public RecordMaxProjectionMovieDialog(
 			final Frame owner,
 			final ViewerPanel viewer,
-			final OverlayGraphRenderer< ?, ? > tracksOverlay,
+			final DefaultOverlayGraphRenderer< ?, ? > tracksOverlay,
 			final ColorBarOverlay colorBarOverlay )
 	{
 		super( owner, "Record BDV max projection movie", false );

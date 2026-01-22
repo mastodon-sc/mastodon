@@ -34,7 +34,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.views.bdv.overlay.OverlayContext;
 import org.mastodon.views.bdv.overlay.OverlayGraph;
-import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
@@ -71,7 +71,7 @@ public class BdvContextProvider< V extends Vertex< E >, E extends Edge< V > >
 
 	public BdvContextProvider( final String name,
 			final OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > overlayGraph,
-			final OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > renderer )
+			final DefaultOverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > renderer )
 	{
 		this.name = name;
 		listeners = new Listeners.SynchronizedList<>( l -> l.contextChanged( context ) );

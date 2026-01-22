@@ -137,7 +137,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final Behaviours behaviours,
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
-			final OverlayGraphRenderer< V, E > renderer,
+			final DefaultOverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo )
@@ -155,7 +155,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final ReentrantReadWriteLock lock;
 
-	private final OverlayGraphRenderer< V, E > renderer;
+	private final DefaultOverlayGraphRenderer< V, E > renderer;
 
 	private final SelectionModel< V, E > selection;
 
@@ -166,7 +166,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 	private EditSpecialBehaviours(
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
-			final OverlayGraphRenderer< V, E > renderer,
+			final DefaultOverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo )
@@ -253,14 +253,14 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				screenVertexMath.init( vertex, transform );
 
 				final Ellipse ellipse = screenVertexMath.getProjectEllipse();
-				OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
+				DefaultOverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
 
 				// The target
 				if ( paintGhostTarget )
 				{
 					ellipse.setCenter( vTo[ 0 ], vTo[ 1 ] );
 					graphics.setStroke( EDIT_GRAPH_OVERLAY_NORMAL_STROKE );
-					OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
+					DefaultOverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
 				}
 			}
 

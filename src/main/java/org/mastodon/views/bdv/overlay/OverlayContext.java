@@ -45,13 +45,13 @@ public class OverlayContext< V extends OverlayVertex< V, ? > > implements
 
 	private final SpatioTemporalIndex< V > index;
 
-	private final OverlayGraphRenderer< V, ? > renderer;
+	private final DefaultOverlayGraphRenderer< V, ? > renderer;
 
 	private ContextListener< V > contextListener = null;
 
 	public OverlayContext(
 			final OverlayGraph< V, ? > overlayGraph,
-			final OverlayGraphRenderer< V, ? > renderer )
+			final DefaultOverlayGraphRenderer< V, ? > renderer )
 	{
 		this.graph = overlayGraph;
 		this.index = graph.getIndex();

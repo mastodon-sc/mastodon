@@ -178,7 +178,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final Behaviours behaviours,
 			final ViewerPanel viewerPanel,
 			final OverlayGraph< V, E > overlayGraph,
-			final OverlayGraphRenderer< V, E > renderer,
+			final DefaultOverlayGraphRenderer< V, E > renderer,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo,
 			final double minRadius )
@@ -200,7 +200,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final ReentrantReadWriteLock lock;
 
-	private final OverlayGraphRenderer< V, E > renderer;
+	private final DefaultOverlayGraphRenderer< V, E > renderer;
 
 	private final FocusModel< V > focus;
 
@@ -211,7 +211,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	private EditBehaviours(
 			final ViewerPanel viewerPanel,
 			final OverlayGraph< V, E > overlayGraph,
-			final OverlayGraphRenderer< V, E > renderer,
+			final DefaultOverlayGraphRenderer< V, E > renderer,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo,
 			final double normalRadiusChange,

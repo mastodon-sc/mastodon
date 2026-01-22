@@ -97,7 +97,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
 			final OverlayGraph< V, E > overlayGraph,
-			final OverlayGraphRenderer< V, E > renderer,
+			final DefaultOverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
 			final NavigationHandler< V, E > navigation )
@@ -115,7 +115,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 
 	private final ReentrantReadWriteLock lock;
 
-	private final OverlayGraphRenderer< V, E > renderer;
+	private final DefaultOverlayGraphRenderer< V, E > renderer;
 
 	private final SelectionModel< V, E > selection;
 
@@ -125,7 +125,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 
 	private BdvSelectionBehaviours(
 			final OverlayGraph< V, E > overlayGraph,
-			final OverlayGraphRenderer< V, E > renderer,
+			final DefaultOverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
 			final NavigationHandler< V, E > navigation )

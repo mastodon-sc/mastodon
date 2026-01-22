@@ -50,7 +50,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 
 public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE extends OverlayEdge< BE, BV >,
 		V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
-		extends OverlayGraphRenderer< BV, BE >
+		extends DefaultOverlayGraphRenderer< BV, BE >
 {
 
 	public OverlayBranchGraphRenderer(

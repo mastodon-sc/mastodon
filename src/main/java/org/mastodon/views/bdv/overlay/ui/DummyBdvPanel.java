@@ -70,7 +70,7 @@ import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.ui.coloring.DefaultGraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
-import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
@@ -95,7 +95,7 @@ public class DummyBdvPanel extends JPanel
 
 	private static final int HEIGHT = 400;
 
-	private final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > renderer;
+	private final DefaultOverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > renderer;
 
 	public DummyBdvPanel()
 	{
@@ -282,7 +282,7 @@ public class DummyBdvPanel extends JPanel
 		 * Model renderer.
 		 */
 
-		this.renderer = new OverlayGraphRenderer<>( viewGraph, viewHighlight, viewFocus, viewSelection, viewColoring );
+		this.renderer = new DefaultOverlayGraphRenderer<>( viewGraph, viewHighlight, viewFocus, viewSelection, viewColoring );
 		canvas.overlays().add( renderer );
 		renderer.timePointChanged( tp );
 

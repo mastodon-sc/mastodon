@@ -85,7 +85,7 @@ import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
 import org.mastodon.views.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.views.bdv.overlay.OverlayActions;
-import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.OverlayNavigation;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings.UpdateListener;
@@ -183,7 +183,7 @@ public class MastodonViewBdv<
 		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> viewer.getBackground() );
 		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> viewer.getDisplay().repaint() );
 
-		final OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > tracksOverlay = createRenderer(
+		final DefaultOverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > tracksOverlay = createRenderer(
 						viewGraph,
 						highlightModel,
 						focusModel,
@@ -321,7 +321,7 @@ public class MastodonViewBdv<
 		registerTagSetMenu( tagSetMenuHandle, () -> viewer.getDisplay().repaint() );
 	}
 
-	protected OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
+	protected DefaultOverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 			createRenderer(
 					final OverlayGraphWrapper< V, E > viewGraph,
 					final HighlightModel< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > highlightModel,
@@ -329,7 +329,7 @@ public class MastodonViewBdv<
 					final SelectionModel< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > selectionModel,
 					final GraphColorGenerator< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > coloring )
 	{
-		return new OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >(
+		return new DefaultOverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >(
 				viewGraph,
 				highlightModel,
 				focusModel,

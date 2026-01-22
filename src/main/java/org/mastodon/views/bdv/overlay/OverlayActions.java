@@ -66,7 +66,7 @@ public class OverlayActions
 	public static void install(
 			final Actions actions,
 			final ViewerPanel viewerPanel,
-			final OverlayGraphRenderer< ?, ? > renderer )
+			final DefaultOverlayGraphRenderer< ?, ? > renderer )
 	{
 		actions.runnableAction( () -> {
 			// Cycle mode.

@@ -35,7 +35,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.mastodon.ui.coloring.ColorBarOverlay;
-import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 
 import bdv.export.ProgressWriter;
 import bdv.viewer.ViewerPanel;
@@ -47,7 +47,7 @@ public class PNGFolderBDVRecorder extends AbstractBDVRecorder
 
 	protected PNGFolderBDVRecorder(
 			final ViewerPanel viewer,
-			final OverlayGraphRenderer< ?, ? > tracksOverlay,
+			final DefaultOverlayGraphRenderer< ?, ? > tracksOverlay,
 			final ColorBarOverlay colorBarOverlay,
 			final ProgressWriter progressWriter,
 			final File targetFolder )

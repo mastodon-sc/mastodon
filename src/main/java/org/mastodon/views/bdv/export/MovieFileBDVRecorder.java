@@ -32,7 +32,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import org.mastodon.ui.coloring.ColorBarOverlay;
-import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 
 import bdv.export.ProgressWriter;
 import bdv.viewer.ViewerPanel;
@@ -66,7 +66,7 @@ public class MovieFileBDVRecorder extends AbstractBDVRecorder
 
 	protected MovieFileBDVRecorder(
 			final ViewerPanel viewer,
-			final OverlayGraphRenderer< ?, ? > tracksOverlay,
+			final DefaultOverlayGraphRenderer< ?, ? > tracksOverlay,
 			final ColorBarOverlay colorBarOverlay,
 			final ProgressWriter progressWriter,
 			final String filename,
