@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,5 +37,23 @@ public class IOUtils
 	{
 		final File dir = new File( fileName ).getParentFile();
 		return dir == null ? false : dir.mkdirs();
+	}
+
+	/**
+	 * Strips the specified extension from the given filename, if it is present.
+	 *
+	 * @param fn
+	 *            the filename.
+	 * @param ext
+	 *            the extension to strip. Careful, it must NOT include the dot,
+	 *            e.g. "mastodon".
+	 * @return the filename without the extension, if it was present, or the
+	 *         original filename.
+	 */
+	public static String stripExtensionIfPresent( final String fn, final String ext )
+	{
+		return fn.endsWith( ext )
+				? fn.substring( 0, fn.length() - ext.length() - 1 )
+				: fn;
 	}
 }
