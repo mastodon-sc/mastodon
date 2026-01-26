@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay.ui;
+package org.mastodon.mamut.views.bdv.display.ui;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,7 @@ import org.yaml.snakeyaml.Yaml;
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch
  */
-public class RenderSettingsManager extends AbstractStyleManagerYaml< RenderSettingsManager, EllipsoidRenderSettings >
+public class EllipsoidRenderSettingsManager extends AbstractStyleManagerYaml< EllipsoidRenderSettingsManager, EllipsoidRenderSettings >
 {
 	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/rendersettings.yaml";
 
@@ -59,12 +59,12 @@ public class RenderSettingsManager extends AbstractStyleManagerYaml< RenderSetti
 
 	private final RenderSettings.UpdateListener updateForwardDefaultListeners;
 
-	public RenderSettingsManager()
+	public EllipsoidRenderSettingsManager()
 	{
 		this( true );
 	}
 
-	public RenderSettingsManager( final boolean loadStyles )
+	public EllipsoidRenderSettingsManager( final boolean loadStyles )
 	{
 		forwardDefaultStyle = EllipsoidRenderSettings.defaultStyle().copy();
 		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( selectedStyle );
@@ -113,6 +113,6 @@ public class RenderSettingsManager extends AbstractStyleManagerYaml< RenderSetti
 	@Override
 	protected Yaml createYaml()
 	{
-		return RenderSettingsIO.createYaml();
+		return EllipsoidRenderSettingsIO.createYaml();
 	}
 }

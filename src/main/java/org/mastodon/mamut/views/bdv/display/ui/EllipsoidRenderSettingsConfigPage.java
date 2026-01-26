@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay.ui;
+package org.mastodon.mamut.views.bdv.display.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -47,7 +47,7 @@ import bdv.ui.settings.SettingsPanel;
 import bdv.ui.settings.style.StyleProfile;
 import bdv.ui.settings.style.StyleProfileManager;
 
-public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< StyleProfile< EllipsoidRenderSettings > >
+public class EllipsoidRenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< StyleProfile< EllipsoidRenderSettings > >
 {
 	/**
 	 * Creates a new render-settings config page.
@@ -57,15 +57,15 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 	 * @param renderSettingsManager
 	 *            the render settings manager.
 	 */
-	public RenderSettingsConfigPage( final String treePath, final RenderSettingsManager renderSettingsManager )
+	public EllipsoidRenderSettingsConfigPage( final String treePath, final EllipsoidRenderSettingsManager renderSettingsManager )
 	{
 		super(
 				treePath,
-				new StyleProfileManager<>( renderSettingsManager, new RenderSettingsManager( false ) ),
-				new RenderSettingsProfileEditPanel( renderSettingsManager.getSelectedStyle() ) );
+				new StyleProfileManager<>( renderSettingsManager, new EllipsoidRenderSettingsManager( false ) ),
+				new EllipsoidRenderSettingsProfileEditPanel( renderSettingsManager.getSelectedStyle() ) );
 	}
 
-	static class RenderSettingsProfileEditPanel implements RenderSettings.UpdateListener,
+	static class EllipsoidRenderSettingsProfileEditPanel implements RenderSettings.UpdateListener,
 			SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< EllipsoidRenderSettings > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
@@ -76,12 +76,12 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 
 		private final DummyBdvPanel dummyModelCanvas;
 
-		public RenderSettingsProfileEditPanel( final EllipsoidRenderSettings initialStyle )
+		public EllipsoidRenderSettingsProfileEditPanel( final EllipsoidRenderSettings initialStyle )
 		{
 			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new JPanel();
 			styleEditorPanel.setLayout( new BorderLayout() );
-			styleEditorPanel.add( new RenderSettingsPanel( editedStyle ), BorderLayout.CENTER );
+			styleEditorPanel.add( new EllipsoidRenderSettingsPanel( editedStyle ), BorderLayout.CENTER );
 
 			this.dummyModelCanvas = new DummyBdvPanel();
 			dummyModelCanvas.setRenderSettings( initialStyle );
@@ -132,10 +132,10 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 
 	public static void main( final String[] args )
 	{
-		final RenderSettingsManager styleManager = new RenderSettingsManager();
+		final EllipsoidRenderSettingsManager styleManager = new EllipsoidRenderSettingsManager();
 
 		final SettingsPanel settings = new SettingsPanel();
-		settings.addPage( new RenderSettingsConfigPage( "Style > BDV", styleManager ) );
+		settings.addPage( new EllipsoidRenderSettingsConfigPage( "Style > BDV", styleManager ) );
 
 		final JDialog dialog = new JDialog( ( Frame ) null, "Settings" );
 		dialog.getContentPane().add( settings, BorderLayout.CENTER );

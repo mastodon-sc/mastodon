@@ -53,6 +53,7 @@ import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.UndoActions;
 import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
+import org.mastodon.mamut.views.bdv.display.ui.EllipsoidRenderSettingsManager;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
@@ -89,7 +90,6 @@ import org.mastodon.views.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.views.bdv.overlay.OverlayActions;
 import org.mastodon.views.bdv.overlay.OverlayNavigation;
 import org.mastodon.views.bdv.overlay.RenderSettings.UpdateListener;
-import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
 import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
@@ -259,7 +259,7 @@ public class MastodonViewBdv<
 
 		ExportViewActions.install( viewActions, frame.getViewerPanel().getDisplayComponent(), frame, "BDV" );
 
-		final RenderSettingsManager renderSettingsManager = windowManager.getInstance( RenderSettingsManager.class );
+		final EllipsoidRenderSettingsManager renderSettingsManager = windowManager.getInstance( EllipsoidRenderSettingsManager.class );
 		final EllipsoidRenderSettings renderSettings = renderSettingsManager.getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
 		final UpdateListener updateListener = () -> {

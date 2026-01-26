@@ -28,22 +28,22 @@
  */
 package org.mastodon.mamut.managers;
 
+import org.mastodon.mamut.views.bdv.display.ui.EllipsoidRenderSettingsConfigPage;
+import org.mastodon.mamut.views.bdv.display.ui.EllipsoidRenderSettingsManager;
 import org.mastodon.model.app.WindowManager;
-import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
-import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 import bdv.ui.settings.SettingsPage;
 
 @Plugin( type = StyleManagerFactory.class, priority = Priority.NORMAL )
-public class RenderSettingsManagerFactory implements StyleManagerFactory< RenderSettingsManager >
+public class RenderSettingsManagerFactory implements StyleManagerFactory< EllipsoidRenderSettingsManager >
 {
 
 	@Override
-	public RenderSettingsManager create( final WindowManager< ? > wm )
+	public EllipsoidRenderSettingsManager create( final WindowManager< ? > wm )
 	{
-		return new RenderSettingsManager();
+		return new EllipsoidRenderSettingsManager();
 	}
 
 	@Override
@@ -53,14 +53,14 @@ public class RenderSettingsManagerFactory implements StyleManagerFactory< Render
 	}
 
 	@Override
-	public SettingsPage createSettingsPage( final RenderSettingsManager manager )
+	public SettingsPage createSettingsPage( final EllipsoidRenderSettingsManager manager )
 	{
-		return new RenderSettingsConfigPage( "Settings > BDV Render Settings", manager );
+		return new EllipsoidRenderSettingsConfigPage( "Settings > BDV Render Settings", manager );
 	}
 
 	@Override
-	public Class< RenderSettingsManager > getManagerClass()
+	public Class< EllipsoidRenderSettingsManager > getManagerClass()
 	{
-		return RenderSettingsManager.class;
+		return EllipsoidRenderSettingsManager.class;
 	}
 }

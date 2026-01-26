@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay.ui;
+package org.mastodon.mamut.views.bdv.display.ui;
 
 import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_POINTS;
 import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
@@ -78,7 +78,7 @@ import org.yaml.snakeyaml.representer.Representer;
  * @author Jean-Yves Tinevez
  *
  */
-public class RenderSettingsIO
+public class EllipsoidRenderSettingsIO
 {
 	private static class RenderSettingsRepresenter extends WorkaroundRepresenter
 	{

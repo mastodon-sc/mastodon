@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay.ui;
+package org.mastodon.mamut.views.bdv.display.ui;
 
 import static org.mastodon.app.ui.StyleElements.booleanElement;
 import static org.mastodon.app.ui.StyleElements.colorElement;
@@ -66,7 +66,7 @@ import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import bdv.tools.brightness.SliderPanel;
 import bdv.tools.brightness.SliderPanelDouble;
 
-public class RenderSettingsPanel extends JPanel
+public class EllipsoidRenderSettingsPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
@@ -78,7 +78,7 @@ public class RenderSettingsPanel extends JPanel
 
 	private final List< StyleElement > styleElements;
 
-	public RenderSettingsPanel( final EllipsoidRenderSettings style )
+	public EllipsoidRenderSettingsPanel( final EllipsoidRenderSettings style )
 	{
 		super( new GridBagLayout() );
 		colorChooser = new JColorChooser();
