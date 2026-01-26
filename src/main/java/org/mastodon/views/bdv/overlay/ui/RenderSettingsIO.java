@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,6 +28,28 @@
  */
 package org.mastodon.views.bdv.overlay.ui;
 
+import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_POINTS;
+import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
+import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION;
+import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_SLICE_PROJECTION;
+import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH;
+import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
+import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_LIMIT_FOCUS_RANGE;
+import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_POINT_FADE_DEPTH;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_COLOR_FUTURE;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_COLOR_PAST;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_COLOR_SPOT_AND_PRESENT;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_DRAW_ARROW_HEADS;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_DRAW_LINKS;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_DRAW_LINKS_AHEAD_IN_TIME;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_DRAW_SPOTS;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_DRAW_SPOT_LABELS;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_FILL_SPOTS;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_LIMIT_TIME_RANGE;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_LINK_STROKE_WIDTH;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_SPOT_STROKE_WIDTH;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_USE_ANTI_ALIASING;
+import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_USE_GRADIENT;
 import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 
 import java.awt.BasicStroke;
@@ -40,6 +62,7 @@ import org.mastodon.io.yaml.AbstractWorkaroundConstruct;
 import org.mastodon.io.yaml.WorkaroundConstructor;
 import org.mastodon.io.yaml.WorkaroundRepresent;
 import org.mastodon.io.yaml.WorkaroundRepresenter;
+import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -174,7 +197,7 @@ public class RenderSettingsIO
 		@Override
 		public Node representData( final Object data )
 		{
-			final RenderSettings s = ( RenderSettings ) data;
+			final EllipsoidRenderSettings s = ( EllipsoidRenderSettings ) data;
 			final Map< String, Object > mapping = new LinkedHashMap<>();
 
 			mapping.put( "name", s.getName() );
@@ -221,32 +244,32 @@ public class RenderSettingsIO
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
 				final String name = ( String ) mapping.get( "name" );
-				final RenderSettings s = RenderSettings.defaultStyle().copy( name );
+				final EllipsoidRenderSettings s = EllipsoidRenderSettings.defaultStyle().copy( name );
 
 				s.setName( getStringOrDefault( mapping, "name", "CouldNotFindName" ) );
 
-				s.setUseAntialiasing( getBooleanOrDefault( mapping, "antialiasing", RenderSettings.DEFAULT_USE_ANTI_ALIASING ) );
-				s.setDrawLinks( getBooleanOrDefault( mapping, "drawLinks", RenderSettings.DEFAULT_DRAW_LINKS ) );
-				s.setDrawLinksAheadInTime( getBooleanOrDefault( mapping, "drawLinksAheadInTime", RenderSettings.DEFAULT_DRAW_LINKS_AHEAD_IN_TIME ) );
-				s.setDrawArrowHeads( getBooleanOrDefault( mapping, "drawArrowHeads", RenderSettings.DEFAULT_DRAW_ARROW_HEADS ) );
-				s.setTimeLimit( getIntOrDefault( mapping, "timeRangeForLinks", RenderSettings.DEFAULT_LIMIT_TIME_RANGE ) );
-				s.setUseGradient( getBooleanOrDefault( mapping, "gradientForLinks", RenderSettings.DEFAULT_USE_GRADIENT ) );
-				s.setDrawSpots( getBooleanOrDefault( mapping, "drawSpots", RenderSettings.DEFAULT_DRAW_SPOTS ) );
-				s.setDrawEllipsoidSliceIntersection( getBooleanOrDefault( mapping, "drawEllipsoidIntersection", RenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION ) );
-				s.setDrawEllipsoidSliceProjection( getBooleanOrDefault( mapping, "drawEllipsoidProjection", RenderSettings.DEFAULT_DRAW_SLICE_PROJECTION ) );
-				s.setDrawSpotCenters( getBooleanOrDefault( mapping, "drawSpotCenters", RenderSettings.DEFAULT_DRAW_POINTS ) );
-				s.setDrawSpotCentersForEllipses( getBooleanOrDefault( mapping, "drawSpotCentersForEllipses", RenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE ) );
-				s.setDrawSpotLabels( getBooleanOrDefault( mapping, "drawSpotLabels", RenderSettings.DEFAULT_DRAW_SPOT_LABELS ) );
-				s.setFillSpots( getBooleanOrDefault( mapping, "fillSpots", RenderSettings.DEFAULT_FILL_SPOTS ) );
-				s.setFocusLimit( getDoubleOrDefault( mapping, "focusLimit", RenderSettings.DEFAULT_LIMIT_FOCUS_RANGE ) );
-				s.setFocusLimitViewRelative( getBooleanOrDefault( mapping, "focusLimitViewRelative", RenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE ) );
-				s.setEllipsoidFadeDepth( getDoubleOrDefault( mapping, "ellipsoidFadeDepth", RenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH ) );
-				s.setPointFadeDepth( getDoubleOrDefault( mapping, "pointFadeDepth", RenderSettings.DEFAULT_POINT_FADE_DEPTH ) );
-				s.setSpotStrokeWidth( getDoubleOrDefault( mapping, "spotStrokeWidth", RenderSettings.DEFAULT_SPOT_STROKE_WIDTH ) );
-				s.setLinkStrokeWidth( getDoubleOrDefault( mapping, "linkStrokeWidth", RenderSettings.DEFAULT_LINK_STROKE_WIDTH ) );
-				s.setColorSpot( getIntOrDefault( mapping, "colorSpot", RenderSettings.DEFAULT_COLOR_SPOT_AND_PRESENT ) );
-				s.setColorPast( getIntOrDefault( mapping, "colorPast", RenderSettings.DEFAULT_COLOR_PAST ) );
-				s.setColorFuture( getIntOrDefault( mapping, "colorFuture", RenderSettings.DEFAULT_COLOR_FUTURE ) );
+				s.setUseAntialiasing( getBooleanOrDefault( mapping, "antialiasing", DEFAULT_USE_ANTI_ALIASING ) );
+				s.setDrawLinks( getBooleanOrDefault( mapping, "drawLinks", DEFAULT_DRAW_LINKS ) );
+				s.setDrawLinksAheadInTime( getBooleanOrDefault( mapping, "drawLinksAheadInTime", DEFAULT_DRAW_LINKS_AHEAD_IN_TIME ) );
+				s.setDrawArrowHeads( getBooleanOrDefault( mapping, "drawArrowHeads", DEFAULT_DRAW_ARROW_HEADS ) );
+				s.setTimeLimit( getIntOrDefault( mapping, "timeRangeForLinks", DEFAULT_LIMIT_TIME_RANGE ) );
+				s.setUseGradient( getBooleanOrDefault( mapping, "gradientForLinks", DEFAULT_USE_GRADIENT ) );
+				s.setDrawSpots( getBooleanOrDefault( mapping, "drawSpots", DEFAULT_DRAW_SPOTS ) );
+				s.setDrawEllipsoidSliceIntersection( getBooleanOrDefault( mapping, "drawEllipsoidIntersection", DEFAULT_DRAW_SLICE_INTERSECTION ) );
+				s.setDrawEllipsoidSliceProjection( getBooleanOrDefault( mapping, "drawEllipsoidProjection", DEFAULT_DRAW_SLICE_PROJECTION ) );
+				s.setDrawSpotCenters( getBooleanOrDefault( mapping, "drawSpotCenters", DEFAULT_DRAW_POINTS ) );
+				s.setDrawSpotCentersForEllipses( getBooleanOrDefault( mapping, "drawSpotCentersForEllipses", DEFAULT_DRAW_POINTS_FOR_ELLIPSE ) );
+				s.setDrawSpotLabels( getBooleanOrDefault( mapping, "drawSpotLabels", DEFAULT_DRAW_SPOT_LABELS ) );
+				s.setFillSpots( getBooleanOrDefault( mapping, "fillSpots", DEFAULT_FILL_SPOTS ) );
+				s.setFocusLimit( getDoubleOrDefault( mapping, "focusLimit", DEFAULT_LIMIT_FOCUS_RANGE ) );
+				s.setFocusLimitViewRelative( getBooleanOrDefault( mapping, "focusLimitViewRelative", DEFAULT_IS_FOCUS_LIMIT_RELATIVE ) );
+				s.setEllipsoidFadeDepth( getDoubleOrDefault( mapping, "ellipsoidFadeDepth", DEFAULT_ELLIPSOID_FADE_DEPTH ) );
+				s.setPointFadeDepth( getDoubleOrDefault( mapping, "pointFadeDepth", DEFAULT_POINT_FADE_DEPTH ) );
+				s.setSpotStrokeWidth( getDoubleOrDefault( mapping, "spotStrokeWidth", DEFAULT_SPOT_STROKE_WIDTH ) );
+				s.setLinkStrokeWidth( getDoubleOrDefault( mapping, "linkStrokeWidth", DEFAULT_LINK_STROKE_WIDTH ) );
+				s.setColorSpot( getIntOrDefault( mapping, "colorSpot", DEFAULT_COLOR_SPOT_AND_PRESENT ) );
+				s.setColorPast( getIntOrDefault( mapping, "colorPast", DEFAULT_COLOR_PAST ) );
+				s.setColorFuture( getIntOrDefault( mapping, "colorFuture", DEFAULT_COLOR_FUTURE ) );
 
 				return s;
 			}

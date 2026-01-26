@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,6 +46,7 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
+import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
@@ -120,7 +121,7 @@ public class DefaultOverlayGraphRenderer< V extends OverlayVertex< V, E >, E ext
 
 	protected final GraphColorGenerator< V, E > coloring;
 
-	protected RenderSettings settings;
+	protected EllipsoidRenderSettings settings;
 
 	protected final Visibilities< V, E > visibilities;
 
@@ -139,7 +140,7 @@ public class DefaultOverlayGraphRenderer< V extends OverlayVertex< V, E >, E ext
 		this.visibilities = new Visibilities<>( graph, selection, focus, graph.getLock() );
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
-		setRenderSettings( RenderSettings.defaultStyle() ); // default RenderSettings
+		setRenderSettings( EllipsoidRenderSettings.defaultStyle() );
 	}
 
 	@Override
@@ -164,7 +165,7 @@ public class DefaultOverlayGraphRenderer< V extends OverlayVertex< V, E >, E ext
 		renderTimepoint = timepoint;
 	}
 
-	public void setRenderSettings( final RenderSettings settings )
+	public void setRenderSettings( final EllipsoidRenderSettings settings )
 	{
 		this.settings = settings;
 	}
@@ -186,7 +187,7 @@ public class DefaultOverlayGraphRenderer< V extends OverlayVertex< V, E >, E ext
 	 * scaled by 1/cutoff. A point on the plane has d=0. A Point that is at
 	 * cutoff or farther behind the plane has d=1. A point that is at -cutoff or
 	 * more in front of the plane has d=-1.
-	 * 
+	 *
 	 * @param z
 	 *            the position of the plane.
 	 * @param cutoff
@@ -205,7 +206,7 @@ public class DefaultOverlayGraphRenderer< V extends OverlayVertex< V, E >, E ext
 	 * Return signed distance of timepoint t to t0, truncated at cutoff and
 	 * scaled by 1/cutoff. t=t0 has d=0. t&le;t0-cutoff has d=-1. t&ge;t0+cutoff
 	 * has d=1.
-	 * 
+	 *
 	 * @param t
 	 *            the timepoint.
 	 * @param t0
@@ -577,8 +578,7 @@ public class DefaultOverlayGraphRenderer< V extends OverlayVertex< V, E >, E ext
 		final Graphics2D graphics = ( Graphics2D ) g;
 		final BasicStroke defaultVertexStroke = new BasicStroke( ( float ) settings.getSpotStrokeWidth() );
 		final BasicStroke highlightedVertexStroke = new BasicStroke( 4f );
-		final BasicStroke focusedVertexStroke =
-				new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
+		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 		final BasicStroke defaultEdgeStroke = new BasicStroke( ( float ) settings.getLinkStrokeWidth() );
 		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
 

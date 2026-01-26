@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -52,6 +52,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.UndoActions;
+import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
@@ -82,17 +83,16 @@ import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
 import org.mastodon.views.bdv.export.RecordMovieDialog;
 import org.mastodon.views.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
+import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
 import org.mastodon.views.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.views.bdv.overlay.OverlayActions;
-import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.OverlayNavigation;
-import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings.UpdateListener;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
 import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
-import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.context.HasContextProvider;
@@ -105,10 +105,10 @@ import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class MastodonViewBdv< 
-			M extends MastodonModel< G, V, E >, 
-			G extends ListenableReadOnlyGraph< V, E >, 
-			V extends Vertex< E >, 
+public class MastodonViewBdv<
+			M extends MastodonModel< G, V, E >,
+			G extends ListenableReadOnlyGraph< V, E >,
+			V extends Vertex< E >,
 			E extends Edge< V > >
 		extends AbstractMastodonFrameView< M, OverlayGraphWrapper< V, E >, V, E, OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 		implements HasContextProvider< V >, HasColoringModel, HasColorBarOverlay
@@ -260,7 +260,7 @@ public class MastodonViewBdv<
 		ExportViewActions.install( viewActions, frame.getViewerPanel().getDisplayComponent(), frame, "BDV" );
 
 		final RenderSettingsManager renderSettingsManager = windowManager.getInstance( RenderSettingsManager.class );
-		final RenderSettings renderSettings = renderSettingsManager.getForwardDefaultStyle();
+		final EllipsoidRenderSettings renderSettings = renderSettingsManager.getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
 		final UpdateListener updateListener = () -> {
 			viewer.repaint();

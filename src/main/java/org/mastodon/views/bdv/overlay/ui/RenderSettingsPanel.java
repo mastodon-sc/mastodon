@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -61,7 +61,7 @@ import org.mastodon.app.ui.StyleElements.IntElement;
 import org.mastodon.app.ui.StyleElements.Separator;
 import org.mastodon.app.ui.StyleElements.StyleElement;
 import org.mastodon.app.ui.StyleElements.StyleElementVisitor;
-import org.mastodon.views.bdv.overlay.RenderSettings;
+import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 
 import bdv.tools.brightness.SliderPanel;
 import bdv.tools.brightness.SliderPanelDouble;
@@ -78,7 +78,7 @@ public class RenderSettingsPanel extends JPanel
 
 	private final List< StyleElement > styleElements;
 
-	public RenderSettingsPanel( final RenderSettings style )
+	public RenderSettingsPanel( final EllipsoidRenderSettings style )
 	{
 		super( new GridBagLayout() );
 		colorChooser = new JColorChooser();
@@ -162,7 +162,7 @@ public class RenderSettingsPanel extends JPanel
 				} ) );
 	}
 
-	private List< StyleElement > styleElements( final RenderSettings style )
+	private List< StyleElement > styleElements( final EllipsoidRenderSettings style )
 	{
 		return Arrays.asList(
 				booleanElement( "anti-aliasing", style::getUseAntialiasing, style::setUseAntialiasing ),

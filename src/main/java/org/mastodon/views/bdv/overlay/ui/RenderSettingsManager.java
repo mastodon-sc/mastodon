@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,27 +33,29 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mastodon.app.ui.AbstractStyleManagerYaml;
+import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * Manages a list of {@link RenderSettings} for multiple BDV windows. Provides
- * models based on a common list of settings than can be used in swing items.
+ * Manages a list of {@link EllipsoidRenderSettings} for multiple BDV windows.
+ * Provides models based on a common list of settings than can be used in swing
+ * items.
  *
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch
  */
-public class RenderSettingsManager extends AbstractStyleManagerYaml< RenderSettingsManager, RenderSettings >
+public class RenderSettingsManager extends AbstractStyleManagerYaml< RenderSettingsManager, EllipsoidRenderSettings >
 {
 	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/rendersettings.yaml";
 
 	/**
-	 * A {@code RenderSettings} that has the same properties as the default
-	 * RenderSettings. In contrast to defaultStyle this will always
+	 * A {@code EllipsoidRenderSettings} that has the same properties as the
+	 * default RenderSettings. In contrast to defaultStyle this will always
 	 * refer to the same object, so a consumers can just use this one
 	 * RenderSettings to listen for changes and for painting.
 	 */
-	private final RenderSettings forwardDefaultStyle;
+	private final EllipsoidRenderSettings forwardDefaultStyle;
 
 	private final RenderSettings.UpdateListener updateForwardDefaultListeners;
 
@@ -64,7 +66,7 @@ public class RenderSettingsManager extends AbstractStyleManagerYaml< RenderSetti
 
 	public RenderSettingsManager( final boolean loadStyles )
 	{
-		forwardDefaultStyle = RenderSettings.defaultStyle().copy();
+		forwardDefaultStyle = EllipsoidRenderSettings.defaultStyle().copy();
 		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( selectedStyle );
 		selectedStyle.updateListeners().add( updateForwardDefaultListeners );
 		if ( loadStyles )
@@ -72,13 +74,13 @@ public class RenderSettingsManager extends AbstractStyleManagerYaml< RenderSetti
 	}
 
 	@Override
-	protected List< RenderSettings > loadBuiltinStyles()
+	protected List< EllipsoidRenderSettings > loadBuiltinStyles()
 	{
-		return Collections.unmodifiableList( new ArrayList<>( RenderSettings.defaults ) );
+		return Collections.unmodifiableList( new ArrayList<>( EllipsoidRenderSettings.defaults ) );
 	}
 
 	@Override
-	public synchronized void setSelectedStyle( final RenderSettings renderSettings )
+	public synchronized void setSelectedStyle( final EllipsoidRenderSettings renderSettings )
 	{
 		selectedStyle.updateListeners().remove( updateForwardDefaultListeners );
 		selectedStyle = renderSettings;
@@ -87,12 +89,12 @@ public class RenderSettingsManager extends AbstractStyleManagerYaml< RenderSetti
 	}
 
 	/**
-	 * Returns a final {@link RenderSettings} instance that always has the same
-	 * properties as the default style.
+	 * Returns a final {@link EllipsoidRenderSettings} instance that always has
+	 * the same properties as the default style.
 	 *
-	 * @return the {@link RenderSettings} instance.
+	 * @return the {@link EllipsoidRenderSettings} instance.
 	 */
-	public RenderSettings getForwardDefaultStyle()
+	public EllipsoidRenderSettings getForwardDefaultStyle()
 	{
 		return forwardDefaultStyle;
 	}

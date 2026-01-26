@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,6 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.scijava.listeners.Listeners;
 
@@ -46,7 +47,7 @@ import bdv.ui.settings.SettingsPanel;
 import bdv.ui.settings.style.StyleProfile;
 import bdv.ui.settings.style.StyleProfileManager;
 
-public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< StyleProfile< RenderSettings > >
+public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< StyleProfile< EllipsoidRenderSettings > >
 {
 	/**
 	 * Creates a new render-settings config page.
@@ -65,17 +66,17 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 	}
 
 	static class RenderSettingsProfileEditPanel implements RenderSettings.UpdateListener,
-			SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< RenderSettings > >
+			SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< EllipsoidRenderSettings > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 
-		private final RenderSettings editedStyle;
+		private final EllipsoidRenderSettings editedStyle;
 
 		private final JPanel styleEditorPanel;
 
 		private final DummyBdvPanel dummyModelCanvas;
 
-		public RenderSettingsProfileEditPanel( final RenderSettings initialStyle )
+		public RenderSettingsProfileEditPanel( final EllipsoidRenderSettings initialStyle )
 		{
 			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new JPanel();
@@ -100,7 +101,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		}
 
 		@Override
-		public void loadProfile( final StyleProfile< RenderSettings > profile )
+		public void loadProfile( final StyleProfile< EllipsoidRenderSettings > profile )
 		{
 			trackModifications = false;
 			editedStyle.set( profile.getStyle() );
@@ -108,7 +109,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		}
 
 		@Override
-		public void storeProfile( final StyleProfile< RenderSettings > profile )
+		public void storeProfile( final StyleProfile< EllipsoidRenderSettings > profile )
 		{
 			trackModifications = false;
 			editedStyle.setName( profile.getStyle().getName() );
