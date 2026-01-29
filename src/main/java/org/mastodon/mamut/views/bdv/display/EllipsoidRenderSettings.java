@@ -60,14 +60,6 @@ public class EllipsoidRenderSettings extends RenderSettings< EllipsoidRenderSett
 	}
 
 	@Override
-	public EllipsoidRenderSettings copy( final String name )
-	{
-		final EllipsoidRenderSettings copy = super.copy( name );
-		copy.set( this );
-		return copy;
-	}
-
-	@Override
 	public synchronized void set( final EllipsoidRenderSettings other )
 	{
 		super.set( other );
