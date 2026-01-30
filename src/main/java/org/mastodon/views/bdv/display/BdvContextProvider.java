@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,21 +28,21 @@
  */
 package org.mastodon.views.bdv.display;
 
-import bdv.viewer.TransformListener;
-import bdv.viewer.ViewerPanel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.views.bdv.overlay.OverlayContext;
 import org.mastodon.views.bdv.overlay.OverlayGraph;
-import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
-import org.mastodon.views.bdv.overlay.wrap.OverlayContextWrapper;
-import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
-import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
+import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayContextWrapper;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayEdgeWrapper;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.listeners.Listeners;
 
+import bdv.viewer.TransformListener;
+import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
@@ -71,7 +71,7 @@ public class BdvContextProvider< V extends Vertex< E >, E extends Edge< V > >
 
 	public BdvContextProvider( final String name,
 			final OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > overlayGraph,
-			final DefaultOverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > renderer )
+			final OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E >, ? > renderer )
 	{
 		this.name = name;
 		listeners = new Listeners.SynchronizedList<>( l -> l.contextChanged( context ) );

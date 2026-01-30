@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay.wrap;
+package org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap;
 
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.collection.RefCollection;

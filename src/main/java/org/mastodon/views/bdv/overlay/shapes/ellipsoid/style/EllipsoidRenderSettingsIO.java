@@ -26,16 +26,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.views.bdv.display.ui;
+package org.mastodon.views.bdv.overlay.shapes.ellipsoid.style;
 
-import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_POINTS;
-import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
-import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION;
-import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_DRAW_SLICE_PROJECTION;
-import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH;
-import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
-import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_LIMIT_FOCUS_RANGE;
-import static org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings.DEFAULT_POINT_FADE_DEPTH;
 import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_COLOR_FUTURE;
 import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_COLOR_PAST;
 import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_COLOR_SPOT_AND_PRESENT;
@@ -50,6 +42,14 @@ import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_LINK_STROKE_
 import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_SPOT_STROKE_WIDTH;
 import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_USE_ANTI_ALIASING;
 import static org.mastodon.views.bdv.overlay.RenderSettings.DEFAULT_USE_GRADIENT;
+import static org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings.DEFAULT_DRAW_POINTS;
+import static org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
+import static org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION;
+import static org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings.DEFAULT_DRAW_SLICE_PROJECTION;
+import static org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH;
+import static org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
+import static org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings.DEFAULT_LIMIT_FOCUS_RANGE;
+import static org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings.DEFAULT_POINT_FADE_DEPTH;
 import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 
 import java.awt.BasicStroke;
@@ -62,7 +62,6 @@ import org.mastodon.io.yaml.AbstractWorkaroundConstruct;
 import org.mastodon.io.yaml.WorkaroundConstructor;
 import org.mastodon.io.yaml.WorkaroundRepresent;
 import org.mastodon.io.yaml.WorkaroundRepresenter;
-import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;

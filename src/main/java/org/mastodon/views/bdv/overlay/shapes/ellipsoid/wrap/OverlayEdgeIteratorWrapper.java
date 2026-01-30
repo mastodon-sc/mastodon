@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay.wrap;
+package org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap;
 
 import java.util.Iterator;
 
@@ -34,26 +34,26 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
 
-public class OverlayVertexIteratorWrapper< V extends Vertex< E >, E extends Edge< V > >
-		implements Iterator< OverlayVertexWrapper< V, E > >
+public class OverlayEdgeIteratorWrapper< V extends Vertex< E >, E extends Edge< V > >
+		implements Iterator< OverlayEdgeWrapper< V, E > >
 {
-	private final OverlayVertexWrapper< V, E > vertex;
+	private final OverlayEdgeWrapper< V, E > edge;
 
-	private Iterator< V > wrappedIterator;
+	private Iterator< E > wrappedIterator;
 
 	private final GraphIdBimap< V, E > idmap;
 
-	public OverlayVertexIteratorWrapper(
+	public OverlayEdgeIteratorWrapper(
 			final OverlayGraphWrapper< V, E > graph,
-			final OverlayVertexWrapper< V, E > vertex,
-			final Iterator< V > wrappedIterator )
+			final OverlayEdgeWrapper< V, E > edge,
+			final Iterator< E > wrappedIterator )
 	{
 		this.idmap = graph.idmap;
-		this.vertex = vertex;
+		this.edge = edge;
 		this.wrappedIterator = wrappedIterator;
 	}
 
-	void wrap( final Iterator< V > iterator )
+	void wrap( final Iterator< E > iterator )
 	{
 		wrappedIterator = iterator;
 	}
@@ -65,10 +65,10 @@ public class OverlayVertexIteratorWrapper< V extends Vertex< E >, E extends Edge
 	}
 
 	@Override
-	public OverlayVertexWrapper< V, E > next()
+	public OverlayEdgeWrapper< V, E > next()
 	{
-		vertex.wv = idmap.getVertex( idmap.getVertexId( wrappedIterator.next() ), vertex.ref );
-		return vertex;
+		edge.we = idmap.getEdge( idmap.getEdgeId( wrappedIterator.next() ), edge.ref );
+		return edge;
 	}
 
 	@Override

@@ -52,8 +52,6 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.UndoActions;
-import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
-import org.mastodon.mamut.views.bdv.display.ui.EllipsoidRenderSettingsManager;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
@@ -84,16 +82,18 @@ import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
 import org.mastodon.views.bdv.export.RecordMovieDialog;
 import org.mastodon.views.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
-import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
 import org.mastodon.views.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.views.bdv.overlay.OverlayActions;
 import org.mastodon.views.bdv.overlay.OverlayNavigation;
 import org.mastodon.views.bdv.overlay.RenderSettings.UpdateListener;
-import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
-import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
-import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
-import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.BdvOverlayProperties;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettingsManager;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayEdgeWrapper;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayGraphWrapper;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.context.HasContextProvider;
 
@@ -183,7 +183,7 @@ public class MastodonViewBdv<
 		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> viewer.getBackground() );
 		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> viewer.getDisplay().repaint() );
 
-		final DefaultOverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > tracksOverlay = createRenderer(
+		final OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > tracksOverlay = createRenderer(
 						viewGraph,
 						highlightModel,
 						focusModel,
@@ -321,7 +321,7 @@ public class MastodonViewBdv<
 		registerTagSetMenu( tagSetMenuHandle, () -> viewer.getDisplay().repaint() );
 	}
 
-	protected DefaultOverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
+	protected OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 			createRenderer(
 					final OverlayGraphWrapper< V, E > viewGraph,
 					final HighlightModel< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > highlightModel,
@@ -329,7 +329,7 @@ public class MastodonViewBdv<
 					final SelectionModel< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > selectionModel,
 					final GraphColorGenerator< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > coloring )
 	{
-		return new DefaultOverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >(
+		return new OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >(
 				viewGraph,
 				highlightModel,
 				focusModel,

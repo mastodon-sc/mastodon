@@ -37,8 +37,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettingsManager;
 import org.scijava.listeners.Listeners;
 
 import bdv.ui.settings.ModificationListener;

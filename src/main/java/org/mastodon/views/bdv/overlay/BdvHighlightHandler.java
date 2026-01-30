@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,13 +28,13 @@
  */
 package org.mastodon.views.bdv.overlay;
 
-import bdv.viewer.TransformListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import org.mastodon.model.HighlightModel;
 
+import bdv.viewer.TransformListener;
 import net.imglib2.realtransform.AffineTransform3D;
 
 public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
@@ -42,7 +42,7 @@ public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends Ove
 {
 	private final OverlayGraph< V, E > overlayGraph;
 
-	private final DefaultOverlayGraphRenderer< V, E > renderer;
+	private final OverlayGraphRenderer< V, E, ? > renderer;
 
 	private final HighlightModel< V, E > highlight;
 
@@ -52,7 +52,7 @@ public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends Ove
 
 	public BdvHighlightHandler(
 			final OverlayGraph< V, E > overlayGraph,
-			final DefaultOverlayGraphRenderer< V, E > renderer,
+			final OverlayGraphRenderer< V, E, ? > renderer,
 			final HighlightModel< V, E > highlight )
 	{
 		this.highlight = highlight;

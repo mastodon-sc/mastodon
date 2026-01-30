@@ -43,14 +43,16 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.GeometryUtil;
-import org.mastodon.views.bdv.overlay.ScreenVertexMath.Ellipse;
+import org.mastodon.views.bdv.overlay.OverlayGraphRenderer.EdgeOperation;
 import org.mastodon.views.bdv.overlay.Visibilities.Visibility;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath.Ellipse;
 
 import net.imglib2.realtransform.AffineTransform3D;
 
 public class OverlayBranchGraphRenderer< BV extends OverlayVertex< BV, BE >, BE extends OverlayEdge< BE, BV >,
 		V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
-		extends DefaultOverlayGraphRenderer< BV, BE >
+		extends OverlayGraphRenderer< BV, BE >
 {
 
 	public OverlayBranchGraphRenderer(

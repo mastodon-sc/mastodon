@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,8 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.views.bdv.overlay.ScreenVertexMath.Ellipse;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath.Ellipse;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
@@ -137,7 +138,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final Behaviours behaviours,
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
-			final DefaultOverlayGraphRenderer< V, E > renderer,
+			final OverlayGraphRenderer< V, E, ? > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo )
@@ -155,7 +156,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final ReentrantReadWriteLock lock;
 
-	private final DefaultOverlayGraphRenderer< V, E > renderer;
+	private final OverlayGraphRenderer< V, E, ? > renderer;
 
 	private final SelectionModel< V, E > selection;
 
@@ -166,7 +167,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 	private EditSpecialBehaviours(
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
-			final DefaultOverlayGraphRenderer< V, E > renderer,
+			final OverlayGraphRenderer< V, E, ? > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo )
@@ -253,14 +254,14 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				screenVertexMath.init( vertex, transform );
 
 				final Ellipse ellipse = screenVertexMath.getProjectEllipse();
-				DefaultOverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
+				OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
 
 				// The target
 				if ( paintGhostTarget )
 				{
 					ellipse.setCenter( vTo[ 0 ], vTo[ 1 ] );
 					graphics.setStroke( EDIT_GRAPH_OVERLAY_NORMAL_STROKE );
-					DefaultOverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
+					OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
 				}
 			}
 

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -178,7 +178,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final Behaviours behaviours,
 			final ViewerPanel viewerPanel,
 			final OverlayGraph< V, E > overlayGraph,
-			final DefaultOverlayGraphRenderer< V, E > renderer,
+			final OverlayGraphRenderer< V, E, ? > renderer,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo,
 			final double minRadius )
@@ -200,7 +200,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final ReentrantReadWriteLock lock;
 
-	private final DefaultOverlayGraphRenderer< V, E > renderer;
+	private final OverlayGraphRenderer< V, E, ? > renderer;
 
 	private final FocusModel< V > focus;
 
@@ -211,7 +211,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	private EditBehaviours(
 			final ViewerPanel viewerPanel,
 			final OverlayGraph< V, E > overlayGraph,
-			final DefaultOverlayGraphRenderer< V, E > renderer,
+			final OverlayGraphRenderer< V, E, ? > renderer,
 			final FocusModel< V > focus,
 			final UndoPointMarker undo,
 			final double normalRadiusChange,

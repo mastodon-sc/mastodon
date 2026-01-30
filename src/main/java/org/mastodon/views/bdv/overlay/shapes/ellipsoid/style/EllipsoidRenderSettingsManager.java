@@ -26,14 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.views.bdv.display.ui;
+package org.mastodon.views.bdv.overlay.shapes.ellipsoid.style;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.mastodon.app.ui.AbstractStyleManagerYaml;
-import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.Yaml;
 

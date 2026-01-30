@@ -26,51 +26,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay.wrap;
+package org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap;
 
-import org.mastodon.adapter.RefBimap;
-import org.mastodon.collection.RefCollection;
+import java.util.Iterator;
+
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
 
-public class OverlayVertexWrapperBimap< V extends Vertex< E >, E extends Edge< V > >
-		implements RefBimap< V, OverlayVertexWrapper< V, E > >
+public class OverlayVertexIteratorWrapper< V extends Vertex< E >, E extends Edge< V > >
+		implements Iterator< OverlayVertexWrapper< V, E > >
 {
-	private final RefCollection< OverlayVertexWrapper< V, E > > vertices;
+	private final OverlayVertexWrapper< V, E > vertex;
 
-	public OverlayVertexWrapperBimap( final OverlayGraphWrapper< V, E > graph )
+	private Iterator< V > wrappedIterator;
+
+	private final GraphIdBimap< V, E > idmap;
+
+	public OverlayVertexIteratorWrapper(
+			final OverlayGraphWrapper< V, E > graph,
+			final OverlayVertexWrapper< V, E > vertex,
+			final Iterator< V > wrappedIterator )
 	{
-		this.vertices = graph.vertices();
+		this.idmap = graph.idmap;
+		this.vertex = vertex;
+		this.wrappedIterator = wrappedIterator;
+	}
+
+	void wrap( final Iterator< V > iterator )
+	{
+		wrappedIterator = iterator;
 	}
 
 	@Override
-	public V getLeft( final OverlayVertexWrapper< V, E > right )
+	public boolean hasNext()
 	{
-		return right == null ? null : right.wv;
+		return wrappedIterator.hasNext();
 	}
 
 	@Override
-	public OverlayVertexWrapper< V, E > getRight( final V left, final OverlayVertexWrapper< V, E > ref )
+	public OverlayVertexWrapper< V, E > next()
 	{
-		ref.wv = left;
-		return ref.orNull();
+		vertex.wv = idmap.getVertex( idmap.getVertexId( wrappedIterator.next() ), vertex.ref );
+		return vertex;
 	}
 
 	@Override
-	public V reusableLeftRef( final OverlayVertexWrapper< V, E > right )
+	public void remove()
 	{
-		return right.ref;
-	}
-
-	@Override
-	public OverlayVertexWrapper< V, E > reusableRightRef()
-	{
-		return vertices.createRef();
-	}
-
-	@Override
-	public void releaseRef( final OverlayVertexWrapper< V, E > ref )
-	{
-		vertices.releaseRef( ref );
+		throw new UnsupportedOperationException();
 	}
 }

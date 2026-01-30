@@ -29,8 +29,8 @@
 package org.mastodon.mamut.managers;
 
 import org.mastodon.mamut.views.bdv.display.ui.EllipsoidRenderSettingsConfigPage;
-import org.mastodon.mamut.views.bdv.display.ui.EllipsoidRenderSettingsManager;
 import org.mastodon.model.app.WindowManager;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettingsManager;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 

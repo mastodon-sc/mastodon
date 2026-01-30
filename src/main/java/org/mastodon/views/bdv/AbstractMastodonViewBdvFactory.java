@@ -36,7 +36,7 @@ import org.mastodon.model.app.AppModel;
 import org.mastodon.ui.coloring.ColorBarOverlay.Position;
 import org.mastodon.views.AbstractMastodonViewFactory;
 import org.mastodon.views.MastodonViewFactory;
-import org.mastodon.views.bdv.overlay.wrap.BdvOverlayProperties;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.BdvOverlayProperties;
 
 import bdv.tools.InitializeViewerState;
 import bdv.viewer.AbstractViewerPanel;

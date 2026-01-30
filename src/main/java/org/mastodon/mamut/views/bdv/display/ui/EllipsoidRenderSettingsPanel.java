@@ -61,7 +61,7 @@ import org.mastodon.app.ui.StyleElements.IntElement;
 import org.mastodon.app.ui.StyleElements.Separator;
 import org.mastodon.app.ui.StyleElements.StyleElement;
 import org.mastodon.app.ui.StyleElements.StyleElementVisitor;
-import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings;
 
 import bdv.tools.brightness.SliderPanel;
 import bdv.tools.brightness.SliderPanelDouble;

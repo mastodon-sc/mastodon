@@ -1,4 +1,4 @@
-package org.mastodon.mamut.views.bdv.display;
+package org.mastodon.views.bdv.overlay.shapes.ellipsoid.style;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -30,6 +30,8 @@ package org.mastodon.views.bdv.overlay;
 
 import org.mastodon.model.NavigationListener;
 import org.mastodon.ui.NavigationEtiquette;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenEdgeMath;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath;
 
 import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;

@@ -61,7 +61,6 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.views.bdv.MamutBdvOverlayProperties;
-import org.mastodon.mamut.views.bdv.display.EllipsoidRenderSettings;
 import org.mastodon.model.DefaultFocusModel;
 import org.mastodon.model.DefaultHighlightModel;
 import org.mastodon.model.DefaultSelectionModel;
@@ -71,11 +70,12 @@ import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.ui.coloring.DefaultGraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
-import org.mastodon.views.bdv.overlay.DefaultOverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.RenderSettings;
-import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
-import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
-import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayEdgeWrapper;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayGraphWrapper;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayVertexWrapper;
 
 import bdv.viewer.InteractiveDisplayCanvas;
 import bdv.viewer.OverlayRenderer;
@@ -96,7 +96,7 @@ public class DummyBdvPanel extends JPanel
 
 	private static final int HEIGHT = 400;
 
-	private final DefaultOverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > renderer;
+	private final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >, EllipsoidRenderSettings > renderer;
 
 	public DummyBdvPanel()
 	{
@@ -283,7 +283,7 @@ public class DummyBdvPanel extends JPanel
 		 * Model renderer.
 		 */
 
-		this.renderer = new DefaultOverlayGraphRenderer<>( viewGraph, viewHighlight, viewFocus, viewSelection, viewColoring );
+		this.renderer = new OverlayGraphRenderer<>( viewGraph, viewHighlight, viewFocus, viewSelection, viewColoring );
 		canvas.overlays().add( renderer );
 		renderer.timePointChanged( tp );
 
