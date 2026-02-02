@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,10 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay;
+package org.mastodon.views.bdv.overlay.shapes.ellipsoid;
 
 import org.mastodon.model.NavigationListener;
 import org.mastodon.ui.NavigationEtiquette;
+import org.mastodon.views.bdv.overlay.OverlayEdge;
+import org.mastodon.views.bdv.overlay.OverlayGraph;
+import org.mastodon.views.bdv.overlay.OverlayVertex;
 import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenEdgeMath;
 import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath;
 
@@ -37,7 +40,7 @@ import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class OverlayNavigation< V extends EllipsoidOverlayVertex< V, E >, E extends EllipsoidOverlayEdge< E, V > >
 		implements NavigationListener< V, E >
 {
 	private final AbstractViewerPanel panel;

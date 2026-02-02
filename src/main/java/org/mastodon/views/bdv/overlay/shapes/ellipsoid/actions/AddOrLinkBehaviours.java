@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.views.bdv.overlay;
+package org.mastodon.views.bdv.overlay.shapes.ellipsoid.actions;
 
 import static org.mastodon.views.bdv.overlay.EditBehaviours.FOCUS_EDITED_SPOT;
 import static org.mastodon.views.bdv.overlay.EditBehaviours.POINT_SELECT_DISTANCE_TOLERANCE;
@@ -45,9 +45,15 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
+import org.mastodon.views.bdv.overlay.OverlayGraph;
+import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.EllipsoidOverlayEdge;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.EllipsoidOverlayVertex;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.EllipsoidShapeRenderer;
 import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath;
 import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath.Ellipse;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
@@ -60,20 +66,34 @@ import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 
-public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+/**
+ * Behaviours for adding spots and linking them in BDV views.
+ *
+ * @author Jean-Yves Tinevez
+ *
+ * @param <V>
+ *            the overlay vertex type.
+ * @param <E>
+ *            the overlay edge type.
+ */
+public class AddOrLinkBehaviours< V extends EllipsoidOverlayVertex< V, E >, E extends EllipsoidOverlayEdge< E, V > >
 {
 
 	private static final String ADD_OR_LINK_SPOT_FORWARD = "add or link spot";
 
 	private static final String ADD_OR_LINK_SPOT_BACKWARD = "add or link spot backward";
 
+	private static final String TOGGLE_AUTO_LINKING_MODE = "toggle auto-linking mode";
+
 	private static final String[] ADD_OR_LINK_SPOT_FORWARD_KEYS = new String[] { "A" };
 
 	private static final String[] ADD_OR_LINK_SPOT_BACKWARD_KEYS = new String[] { "C" };
 
-	/*
-	 * Command descriptions for all provided commands
-	 */
+	private static final String[] TOGGLE_AUTO_LINKING_MODE_KEYS = { "control L" };
+
+	/** Common (static) flag for the auto-linking mode. */
+	private static boolean autoLink = false;
+
 	@Plugin( type = CommandDescriptionProvider.class )
 	public static class Descriptions extends CommandDescriptionProvider
 	{
@@ -111,6 +131,11 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 							+ "If a target spot is found near  the mouse location when the key is "
 							+ "released, it is linked to the source spot. If a link already exists "
 							+ "between the two, it is removed." );
+			descriptions.add( TOGGLE_AUTO_LINKING_MODE, TOGGLE_AUTO_LINKING_MODE_KEYS,
+					"Toggle auto-linking mode. When on, "
+							+ "the next spot added will be automatically linked to the spot in the selection, "
+							+ "if there is exactly one spot selected." );
+
 		}
 	}
 
@@ -120,21 +145,19 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_BIG_STROKE = new BasicStroke( 4f );
 
-	public static final BasicStroke EDIT_GRAPH_OVERLAY_REMOVAL_STROKE = new BasicStroke( 4f,
-			BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-			0, new float[] { 6 }, 0 );
+	public static final BasicStroke EDIT_GRAPH_OVERLAY_REMOVAL_STROKE = new BasicStroke( 4f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 6 }, 0 );
 
-	public static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
-			1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-			1.0f, new float[] { 4f, 10f }, 0f );
+	public static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke( 1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f, new float[] { 4f, 10f }, 0f );
 
 	private final AddOrLinkSpot addOrLinkSpotForward;
 
 	private final AddOrLinkSpot addOrLinkSpotBackward;
 
+	private final ToggleAutoLinkingModeBehaviour toggleAutoLinkingModeBehaviour;
+
 	private final EditSpecialBehavioursOverlay overlay;
 
-	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
+	public static < V extends EllipsoidOverlayVertex< V, E >, E extends EllipsoidOverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
@@ -143,11 +166,12 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final FocusModel< V > focus,
 			final UndoPointMarker undo )
 	{
-		final EditSpecialBehaviours< V, E > eb =
-				new EditSpecialBehaviours<>( viewer, overlayGraph, renderer, selection, focus, undo );
+		final AddOrLinkBehaviours< V, E > eb =
+				new AddOrLinkBehaviours<>( viewer, overlayGraph, renderer, selection, focus, undo );
 
 		behaviours.namedBehaviour( eb.addOrLinkSpotForward, ADD_OR_LINK_SPOT_FORWARD_KEYS );
 		behaviours.namedBehaviour( eb.addOrLinkSpotBackward, ADD_OR_LINK_SPOT_BACKWARD_KEYS );
+		behaviours.namedBehaviour( eb.toggleAutoLinkingModeBehaviour, TOGGLE_AUTO_LINKING_MODE_KEYS );
 	}
 
 	private final ViewerPanel viewer;
@@ -164,7 +188,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final UndoPointMarker undo;
 
-	private EditSpecialBehaviours(
+	private AddOrLinkBehaviours(
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E, ? > renderer,
@@ -189,6 +213,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		// Behaviours.
 		addOrLinkSpotForward = new AddOrLinkSpot( ADD_OR_LINK_SPOT_FORWARD, true );
 		addOrLinkSpotBackward = new AddOrLinkSpot( ADD_OR_LINK_SPOT_BACKWARD, false );
+		toggleAutoLinkingModeBehaviour = new ToggleAutoLinkingModeBehaviour( TOGGLE_AUTO_LINKING_MODE );
 	}
 
 	private class EditSpecialBehavioursOverlay implements OverlayRenderer, TransformListener< AffineTransform3D >
@@ -254,14 +279,14 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				screenVertexMath.init( vertex, transform );
 
 				final Ellipse ellipse = screenVertexMath.getProjectEllipse();
-				OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
+				EllipsoidShapeRenderer.drawEllipse( graphics, ellipse, torig, false );
 
 				// The target
 				if ( paintGhostTarget )
 				{
 					ellipse.setCenter( vTo[ 0 ], vTo[ 1 ] );
 					graphics.setStroke( EDIT_GRAPH_OVERLAY_NORMAL_STROKE );
-					OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig, false );
+					EllipsoidShapeRenderer.drawEllipse( graphics, ellipse, torig, false );
 				}
 			}
 
@@ -364,10 +389,10 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				try
 				{
 					// Add new spot.
-					overlayGraph.addVertex( source ).init( timepoint, pos, EditBehaviours.lastRadius );
+					overlayGraph.addVertex( source ).init( timepoint, pos, ResizeEllipsoidBehaviours.lastRadius );
 
 					// Link to it if autolink mode is on.
-					if ( EditBehaviours.autoLink )
+					if ( autoLink )
 					{
 						final RefSet< V > selectedVertices = selection.getSelectedVertices();
 						if ( selectedVertices.size() == 1 )
@@ -573,6 +598,22 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				overlay.paintGhostLink = false;
 				overlay.paintGhostTarget = false;
 			}
+		}
+	}
+
+	private class ToggleAutoLinkingModeBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
+	{
+
+		public ToggleAutoLinkingModeBehaviour( final String name )
+		{
+			super( name );
+		}
+
+		@Override
+		public void click( final int x, final int y )
+		{
+			autoLink = !autoLink;
+			viewer.showMessage( "Auto-linking mode " + ( autoLink ? "on" : "off" ) );
 		}
 	}
 }

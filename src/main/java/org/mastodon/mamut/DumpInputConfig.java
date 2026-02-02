@@ -46,7 +46,7 @@ import org.mastodon.views.bdv.display.NavigationActionsDescriptions;
 import org.mastodon.views.bdv.display.TransformEventHandler3DDescriptions;
 import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
-import org.mastodon.views.bdv.overlay.EditSpecialBehaviours;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.actions.AddOrLinkBehaviours;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.views.trackscheme.display.InertialScreenTransformEventHandler;
 import org.mastodon.views.trackscheme.display.ToggleLinkBehaviour;
@@ -98,7 +98,7 @@ public class DumpInputConfig
 		builder.addManually( new NavigationActionsDescriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new BdvSelectionBehaviours.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new EditBehaviours.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
-		builder.addManually( new EditSpecialBehaviours.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
+		builder.addManually( new AddOrLinkBehaviours.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new FocusActions.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new HighlightBehaviours.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
 

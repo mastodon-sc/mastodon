@@ -228,7 +228,7 @@ public class MastodonViewBdv<
 			final UndoPointMarker undo = ( UndoPointMarker ) dataModel;
 			EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), dataModel.getTagSetModel(), dataModel.getSelectionModel(), viewGraph.getLock(), bdv.getViewer(), bdv.getViewer().getDisplay(), undo );
 			EditBehaviours.install( viewBehaviours, viewer, viewGraph, tracksOverlay, focusModel, undo, getMinRadius( sharedBdvData ) );
-			EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, selectionModel, focusModel, undo );
+			AddOrLinkBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, selectionModel, focusModel, undo );
 			HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, undo );
 		}
 
