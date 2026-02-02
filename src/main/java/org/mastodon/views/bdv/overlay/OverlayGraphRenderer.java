@@ -30,16 +30,11 @@ package org.mastodon.views.bdv.overlay;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
@@ -824,49 +819,7 @@ public class OverlayGraphRenderer<
 		graph.releaseRef( target );
 	}
 
-	static void drawEllipse( final Graphics2D graphics, final Ellipse ellipse, AffineTransform torig,
-			final boolean fillSpots )
-	{
-		if ( torig == null )
-			torig = graphics.getTransform();
 
-		final double[] tr = ellipse.getCenter();
-		final double theta = ellipse.getTheta();
-		final double w = ellipse.getHalfWidth();
-		final double h = ellipse.getHalfHeight();
-		final Ellipse2D ellipse2D = new Ellipse2D.Double( -w, -h, 2. * w, 2. * h );
-
-		graphics.translate( tr[ 0 ], tr[ 1 ] );
-		graphics.rotate( theta );
-		if ( fillSpots )
-		{
-			graphics.fill( ellipse2D );
-			final Color color = graphics.getColor();
-			graphics.setColor( Color.BLACK );
-			graphics.draw( ellipse2D );
-			graphics.setColor( color );
-		}
-		else
-		{
-			graphics.draw( ellipse2D );
-		}
-
-		graphics.setTransform( torig );
-	}
-
-	// TODO: move to RenderSettings
-	static final Font font = new Font( "SansSerif", Font.PLAIN, 9 );
-
-	static void drawEllipseLabel( final Graphics2D graphics, final Ellipse ellipse, final String label )
-	{
-		final double[] tr = ellipse.getCenter();
-		final FontRenderContext frc = graphics.getFontRenderContext();
-		final TextLayout layout = new TextLayout( label, font, frc );
-		final Rectangle2D bounds = layout.getBounds();
-		final float tx = ( float ) ( tr[ 0 ] - bounds.getCenterX() );
-		final float ty = ( float ) ( tr[ 1 ] - bounds.getCenterY() );
-		layout.draw( graphics, tx, ty );
-	}
 
 	/**
 	 * Returns the edge currently painted close to the specified location.
