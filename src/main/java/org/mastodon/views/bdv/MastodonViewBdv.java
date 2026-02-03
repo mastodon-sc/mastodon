@@ -82,13 +82,18 @@ import org.mastodon.views.bdv.export.RecordMaxProjectionMovieDialog;
 import org.mastodon.views.bdv.export.RecordMovieDialog;
 import org.mastodon.views.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
-import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
-import org.mastodon.views.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.views.bdv.overlay.OverlayActions;
-import org.mastodon.views.bdv.overlay.OverlayNavigation;
+import org.mastodon.views.bdv.overlay.OverlayEdge;
+import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.views.bdv.overlay.OverlayVertex;
+import org.mastodon.views.bdv.overlay.OverlayViewGraphFactory;
+import org.mastodon.views.bdv.overlay.RenderSettings;
 import org.mastodon.views.bdv.overlay.RenderSettings.UpdateListener;
-import org.mastodon.views.bdv.overlay.shapes.ellipsoid.BdvOverlayProperties;
+import org.mastodon.views.bdv.overlay.shapes.BdvOverlayProperties;
+import org.mastodon.views.bdv.overlay.shapes.ShapeRendererFactory;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.OverlayNavigation;
+import org.mastodon.views.bdv.overlay.shapes.ellipsoid.actions.AddOrLinkBehaviours;
 import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettings;
 import org.mastodon.views.bdv.overlay.shapes.ellipsoid.style.EllipsoidRenderSettingsManager;
 import org.mastodon.views.bdv.overlay.shapes.ellipsoid.wrap.OverlayEdgeWrapper;
@@ -105,11 +110,33 @@ import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 
+/**
+ * Base class for Mastodon BDV views. Is generic when it comes to the model and
+ * the vertex shape.
+ *
+ * @author Jean-Yves Tinevez
+ *
+ * @param <M>
+ *            the Mastodon model type.
+ * @param <G>
+ *            the model graph type.
+ * @param <V>
+ *            the model vertex type.
+ * @param <E>
+ *            the model edge type.
+ * @param <OV>
+ *            the overlay vertex type. Knows properties needed for rendering.
+ * @param <OE>
+ *            the overlay edge type.
+ * @param <RS>
+ *            the render settings type that can configure the overlay renderer.
+ */
 public class MastodonViewBdv<
 			M extends MastodonModel< G, V, E >,
-			G extends ListenableReadOnlyGraph< V, E >,
-			V extends Vertex< E >,
-			E extends Edge< V > >
+			G extends ListenableReadOnlyGraph< V, E >, V extends Vertex< E >, E extends Edge< V >,
+			OV extends OverlayVertex< OV, OE >,
+			OE extends OverlayEdge< OE, OV >,
+			RS extends RenderSettings< RS > >
 		extends AbstractMastodonFrameView< M, OverlayGraphWrapper< V, E >, V, E, OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 		implements HasContextProvider< V >, HasColoringModel, HasColorBarOverlay
 {
@@ -135,15 +162,11 @@ public class MastodonViewBdv<
 			final M dataModel,
 			final WindowManager< ? > windowManager,
 			final SharedBigDataViewerData imageData,
-			final BdvOverlayProperties< V, E > properties )
+			P properties,
+			OverlayViewGraphFactory< M, P, OV, OE, V, E > viewGraphFactory,
+			final ShapeRendererFactory shapeRendererFactory )
 	{
-		super( dataModel, windowManager,
-				new OverlayGraphWrapper< V, E >(
-						dataModel.getGraph(),
-						dataModel.getGraphIdBimap(),
-						dataModel.getSpatioTemporalIndex(),
-						properties.getLock(),
-						properties ),
+		super( dataModel, windowManager, viewGraphFactory. ,
 				new String[] { KeyConfigContexts.BIGDATAVIEWER } );
 
 		sharedBdvData = imageData;
@@ -178,17 +201,18 @@ public class MastodonViewBdv<
 
 		// we need the coloring now.
 		final GraphColorGeneratorAdapter< V, E, OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > coloring =
-						new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		coloringModel = registerColoring( coloring, menuHandle, () -> viewer.getDisplay().repaint() );
 		colorBarOverlay = new ColorBarOverlay( coloringModel, () -> viewer.getBackground() );
 		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle, () -> viewer.getDisplay().repaint() );
 
-		final OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > tracksOverlay = createRenderer(
-						viewGraph,
-						highlightModel,
-						focusModel,
-						selectionModel,
-						coloring );
+		final OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E >, RS > tracksOverlay = createRenderer(
+				shapeRendererFactory,
+				viewGraph,
+				highlightModel,
+				focusModel,
+				selectionModel,
+				coloring );
 
 		viewer.getDisplay().overlays().add( colorBarOverlay );
 		viewer.getDisplay().overlays().add( tracksOverlay );
@@ -272,7 +296,8 @@ public class MastodonViewBdv<
 		// Give focus to display so that it can receive key-presses immediately.
 		viewer.getDisplay().requestFocusInWindow();
 
-		// Notifies context provider that context changes when visibility mode changes.
+		// Notifies context provider that context changes when visibility mode
+		// changes.
 		tracksOverlay.getVisibilities().getVisibilityListeners().add( contextProvider::notifyContextChanged );
 
 		// Command finder.
@@ -321,15 +346,17 @@ public class MastodonViewBdv<
 		registerTagSetMenu( tagSetMenuHandle, () -> viewer.getDisplay().repaint() );
 	}
 
-	protected OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
+	protected OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E >, RS >
 			createRenderer(
+					final ShapeRendererFactory shapeRendererFactory,
 					final OverlayGraphWrapper< V, E > viewGraph,
 					final HighlightModel< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > highlightModel,
 					final FocusModel< OverlayVertexWrapper< V, E > > focusModel,
 					final SelectionModel< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > selectionModel,
 					final GraphColorGenerator< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > coloring )
 	{
-		return new OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >(
+		return new OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E >, RS >(
+				shapeRendererFactory,
 				viewGraph,
 				highlightModel,
 				focusModel,

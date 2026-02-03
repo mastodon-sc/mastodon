@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,10 +35,11 @@ import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
-public interface OverlayGraph< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
-		extends Graph< V, E >, GraphChangeNotifier
+public interface OverlayGraph<
+		OV extends OverlayVertex< OV, OE >, OE extends OverlayEdge< OE, OV > >
+		extends Graph< OV, OE >, GraphChangeNotifier
 {
-	public SpatioTemporalIndex< V > getIndex();
+	public SpatioTemporalIndex< OV > getIndex();
 
 	public double getMaxBoundingSphereRadiusSquared( final int timepoint );
 
