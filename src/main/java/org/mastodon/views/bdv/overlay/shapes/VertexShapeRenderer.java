@@ -31,10 +31,12 @@ package org.mastodon.views.bdv.overlay.shapes;
 import java.awt.Graphics2D;
 
 import org.mastodon.collection.RefCollection;
+import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.views.bdv.overlay.OverlayEdge;
 import org.mastodon.views.bdv.overlay.OverlayVertex;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 
+import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
@@ -48,56 +50,6 @@ import net.imglib2.realtransform.AffineTransform3D;
  * <li>Provide the screen bounding box (for culling/intersection tests)</li>
  * </ul>
  *
- * <p>
- * The renderer is stateful and operates on four pieces of context:
- * <ul>
- * <li><b>View transform:</b> Converts world coordinates to screen coordinates.
- * Set via {@link #setTransform(AffineTransform3D)}. Required for all
- * operations.</li>
- * <li><b>Shape rendering settings:</b> Determines which visualization modes are
- * active (e.g., draw projection, intersection, or point for ellipsoids). Set
- * via {@link #setShapeSettings(ShapeRenderSettings)}. Required for all
- * operations.</li>
- * <li><b>Current timepoint:</b> Used to compute time-based fading and coloring.
- * Set via {@link #setCurrentTimepoint(int)}. Required for all operations.</li>
- * </ul>
- *
- * <p>
- * <b>Usage Pattern:</b>
- *
- * <pre>
- * // Setup phase (once per render/pick pass)
- * renderer.setTransform(viewTransform);
- * renderer.setShapeSettings(ellipsoidSettings);
- * renderer.setCurrentTimepoint(currentTimepoint);
- *
- * // Drawing phase
- * for (V vertex : visibleVertices) {
- *     renderer.drawVertex(graphics, vertex);
- * }
- *
- * // Hit-testing phase (reuses same renderer state)
- * if (renderer.containsScreenPoint(vertex, clickX, clickY, tolerance)) {
- *     // Vertex was hit
- * }
- * </pre>
- *
- * <p>
- * The renderer uses the constructor-injected models (coloring, selection,
- * highlight, focus) to compute final display colors, taking into account:
- * <ul>
- * <li>Base color from the graph coloring scheme</li>
- * <li>Selection/highlight/focus state</li>
- * <li>Fading based on distance from view plane and time distance</li>
- * </ul>
- *
- * The shape settings fundamentally determine both what gets rendered and how
- * hit-testing is performed. For example, an ellipsoid renderer with
- * {@code drawProjection=true, drawIntersection=false} will:
- * <ul>
- * <li>Render only the projection of the ellipsoid onto the view plane</li>
- * <li>Test hits only against the projection (not the intersection)</li>
- * </ul>
  *
  * @param <V>
  *            the vertex type
@@ -114,7 +66,7 @@ public interface VertexShapeRenderer< V extends OverlayVertex< V, E >, E extends
 	 * <p>
 	 * This must be called at least once before any drawing or hit-testing
 	 * operations. Typically called once per render pass and once per hit-test
-	 * pass, before calling {@link #drawVertex(Graphics2D, OverlayVertex)} or
+	 * pass, before calling {@link #drawVertices(Graphics2D, OverlayVertex)} or
 	 * {@link #containsScreenPoint(OverlayVertex, int, int, double)} multiple
 	 * times.
 	 *
@@ -149,110 +101,80 @@ public interface VertexShapeRenderer< V extends OverlayVertex< V, E >, E extends
 	void setShapeSettings( R renderSettings );
 
 	/**
-	 * Sets the current timepoint. Used to compute time-based fading and
-	 * coloring.
+	 * Draw vertices with their shape.
 	 *
 	 * <p>
-	 * Vertices at different timepoints than the current one are faded based on
-	 * the time distance.
-	 *
-	 * <p>
-	 * This must be called at least once before any drawing or hit-testing
-	 * operations.
-	 *
-	 * @param timepoint
-	 *            the current timepoint.
-	 */
-	void setCurrentTimepoint( int timepoint );
-
-	/**
-	 * Draw a single vertex with its shape at its current screen position.
-	 *
-	 * <p>
-	 * The Graphics2D context is already configured by the caller with:
-	 * <ul>
-	 * <li>Color (stroke and fill)</li>
-	 * <li>Stroke style (width, dashing if needed)</li>
-	 * <li>Rendering hints (antialiasing, etc.)</li>
-	 * </ul>
+	 * The Graphics2D context is already configured by the caller with rendering
+	 * hints (antialiasing, etc.).
 	 *
 	 * <p>
 	 * The renderer's responsibility is to draw its shape using this graphics
 	 * context. It reads shape-specific data from the vertex and uses the shape
 	 * settings (previously set via
 	 * {@link #setShapeSettings(ShapeRenderSettings)}) to decide which
-	 * visualization modes to apply.
-	 *
-	 * <p>
-	 * The vertex position is computed internally from the vertex and the
-	 * current transform (previously set via
-	 * {@link #setTransform(AffineTransform3D)}).
-	 *
-	 * <p>
-	 * The renderer internally computes the final color based on:
-	 * <ul>
-	 * <li>Base color from the graph coloring scheme</li>
-	 * <li>Selection/highlight/focus state of the vertex</li>
-	 * <li>Fading based on depth and time distance</li>
-	 * <li>Fade parameters from the shape settings</li>
-	 * </ul>
-	 *
-	 * The Graphics2D color parameter is used as the stroke/fill color, but the
-	 * renderer may compute a modified color (with fading/transparency) for
-	 * drawing.
+	 * visualization modes to apply. A render settings may specify that some
+	 * vertices that are passed to this method should not be drawn at all.
 	 *
 	 * @param graphics2D
 	 *            the graphics context, already configured with stroke style and
 	 *            rendering hints.
-	 * @param vertex
-	 *            the vertex to draw.
+	 * @param vertices
+	 *            the vertices to draw.
 	 */
-	void drawVertex( Graphics2D graphics2D, V vertex );
+	void drawVertices( Graphics2D graphics2D, Iterable< V > vertices );
 
 	/**
-	 * Determine if a screen point is inside (or very close to) the drawn shape
-	 * of this vertex.
-	 *
+	 * Filters the specified vertices and return only those that would be
+	 * visible with the current display settings and the specified
+	 * {@code transform} and {@code timepoint}.
 	 * <p>
-	 * Used for picking/selection: when the user clicks at (screenX, screenY),
-	 * which vertices did they click on?
+	 * This method is meant to be called from the OverlayGraphRenderer, which
+	 * can return the vertices in the current view.
 	 *
-	 * <p>
-	 * The hit-test algorithm depends on the shape settings (set via
-	 * {@link #setShapeSettings(ShapeRenderSettings)}). For example, an
-	 * ellipsoid renderer will test against the projection, intersection, or
-	 * point center depending on which modes are enabled in the settings.
-	 *
-	 * <p>
-	 * The tolerance parameter allows for "fuzzy" clicking (e.g., click within 5
-	 * pixels of the shape edge).
-	 *
-	 * @param vertex
-	 *            the vertex to test.
-	 * @param screenX
-	 *            X coordinate of the click in viewer (screen) space.
-	 * @param screenY
-	 *            Y coordinate of the click in viewer (screen) space.
-	 * @param tolerance
-	 *            how far from the shape boundary to still count as a hit, in
-	 *            pixels.
-	 * @return {@code true} if the point (screenX, screenY) is inside the
-	 *         vertex's drawn shape (± tolerance), considering the current shape
-	 *         settings.
-	 */
-	boolean containsScreenPoint( V vertex, int screenX, int screenY, double tolerance );
-
-	/**
-	 * Get all vertices that would be visible with the current display settings
-	 * and the specified {@code transform} and {@code timepoint}.
-	 *
+	 * @param in
+	 *            the vertices to filter.
 	 * @param transform
 	 *            the current view transform.
 	 * @param timepoint
 	 *            the current timepoint.
+	 * @param width
+	 *            the width of the overlay panel.
+	 * @param height
+	 *            the height of the overlay panel.
 	 * @return vertices that would be visible with the current display settings
 	 *         and the specified {@code transform} and {@code timepoint}.
 	 */
-	RefCollection< V > getVisibleVertices( final AffineTransform3D transform, final int timepoint );
+	RefCollection< V > filterVisibleVertices(
+			Iterable< V > in,
+			final AffineTransform3D transform,
+			final int timepoint,
+			final int width,
+			final int height );
+
+	/**
+	 * Returns the vertex currently painted close to the specified location.
+	 * <p>
+	 * This must be used only by the OverlayGraphRenderer, which is in charge of
+	 * preparing the argument used here. The spatial index will be properly
+	 * locked and unlocked there.
+	 *
+	 * @param x
+	 *            the x coordinate in screen space.
+	 * @param y
+	 *            the y coordinate in screen space.
+	 * @param tolerance
+	 *            the tolerance in pixels for picking objects when they are
+	 *            drawn as points.
+	 * @param si
+	 *            the spatial index of the current timepoint to search in.
+	 * @param polytope
+	 *            the polytope representing the current view frustum in global
+	 *            coordinates
+	 * @param maxRadiusSquared
+	 *            the maximum radius of an object in the current view, squared.
+	 *            This is used to limit the search for intersection hits.
+	 * @return the vertex at the given position, or null if none found.
+	 */
+	V getVertexAt( int x, int y, double tolerance, SpatialIndex< V > si, ConvexPolytope polytope, double maxRadiusSquared, V ref );
 
 }

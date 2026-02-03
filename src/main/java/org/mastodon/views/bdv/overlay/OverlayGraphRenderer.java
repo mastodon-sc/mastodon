@@ -34,13 +34,11 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
-import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
@@ -50,21 +48,17 @@ import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.GeometryUtil;
 import org.mastodon.views.bdv.overlay.Visibilities.Visibility;
 import org.mastodon.views.bdv.overlay.Visibilities.VisibilityMode;
+import org.mastodon.views.bdv.overlay.shapes.ShapeRendererFactory;
 import org.mastodon.views.bdv.overlay.shapes.VertexShapeRenderer;
-import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath;
-import org.mastodon.views.bdv.overlay.shapes.ellipsoid.render.ScreenVertexMath.Ellipse;
 import org.mastodon.views.bdv.overlay.util.BdvRendererUtil;
 
 import bdv.util.Affine3DHelpers;
 import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
-import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
-import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.util.LinAlgHelpers;
 
 /**
  * Renderer for a time-resliced graph overlay on a BDV.
@@ -94,10 +88,7 @@ import net.imglib2.util.LinAlgHelpers;
  *
  * @author Tobias Pietzsch
  */
-public class OverlayGraphRenderer<
-			V extends OverlayVertex< V, E >,
-			E extends OverlayEdge< E, V >,
-			R extends RenderSettings< R > >
+public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V >, R extends RenderSettings< R > >
 		implements OverlayRenderer, TransformListener< AffineTransform3D >, TimePointListener
 {
 
@@ -128,14 +119,13 @@ public class OverlayGraphRenderer<
 	private final VertexShapeRenderer< V, E, R > vertexShapeRenderer;
 
 	public OverlayGraphRenderer(
-			final VertexShapeRenderer< V, E, R > vertexShapeRenderer,
+			final ShapeRendererFactory shapeRendererFactory,
 			final OverlayGraph< V, E > graph,
 			final HighlightModel< V, E > highlight,
 			final FocusModel< V > focus,
 			final SelectionModel< V, E > selection,
 			final GraphColorGenerator< V, E > coloring )
 	{
-		this.vertexShapeRenderer = vertexShapeRenderer;
 		this.graph = graph;
 		this.highlight = highlight;
 		this.focus = focus;
@@ -144,6 +134,7 @@ public class OverlayGraphRenderer<
 		this.visibilities = new Visibilities<>( graph, selection, focus, graph.getLock() );
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
+		vertexShapeRenderer = shapeRendererFactory.createRenderer( graph, highlight, focus, selection, coloring, visibilities );
 	}
 
 	@Override
@@ -182,28 +173,6 @@ public class OverlayGraphRenderer<
 	public Visibilities< V, E > getVisibilities()
 	{
 		return visibilities;
-	}
-
-	public static final double pointRadius = 2.5;
-
-	/**
-	 * Return signed distance of p to a plane along Z, truncated at cutoff and
-	 * scaled by 1/cutoff. A point on the plane has d=0. A Point that is at
-	 * cutoff or farther behind the plane has d=1. A point that is at -cutoff or
-	 * more in front of the plane has d=-1.
-	 *
-	 * @param z
-	 *            the position of the plane.
-	 * @param cutoff
-	 *            the cutoff.
-	 * @return the signed distance.
-	 */
-	protected static double sliceDistance( final double z, final double cutoff )
-	{
-		if ( z > 0 )
-			return Math.min( z, cutoff ) / cutoff;
-		else
-			return Math.max( z, -cutoff ) / cutoff;
 	}
 
 	/**
@@ -294,8 +263,8 @@ public class OverlayGraphRenderer<
 			final int color )
 	{
 		/*
-		 * |sf| = {                  0  for  |sd| <= sdFade,
-		 *          linear from 0 to 1  for  |sd| = sdFade to |sd| = 1 }
+		 * |sf| = { 0 for |sd| <= sdFade, linear from 0 to 1 for |sd| = sdFade
+		 * to |sd| = 1 }
 		 *
 		 * sgn(sf) = sgn(sd)
 		 */
@@ -397,7 +366,7 @@ public class OverlayGraphRenderer<
 			final AffineTransform3D transform,
 			final int timepoint )
 	{
-		final double maxDepth = getMaxDepth( transform );
+		final double maxDepth = getMaxDepth( transform, settings );
 		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
 		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
 		return BdvRendererUtil.getPolytopeGlobal( transform,
@@ -462,46 +431,6 @@ public class OverlayGraphRenderer<
 		return getOverlappingPolytopeGlobal( x, x, y, y, transform, timepoint );
 	}
 
-	/**
-	 * Points (ellipsoid centers) are always drawn if
-	 * <ul>
-	 * <li>point drawing is enabled ({@code drawPoints}),</li>
-	 * </ul>
-	 * and either
-	 * <ul>
-	 * <li>either points shall be drawn for visible ellipses too
-	 * ({@code drawPointsForEllipses}),</li>
-	 * <li>or no ellipses are visible anyways
-	 * ({@code !drawEllipsoidSliceIntersection} and
-	 * {@code !drawEllipsoidSliceProjection}).</li>
-	 * </ul>
-	 *
-	 * @return whether to draw points always
-	 */
-	protected boolean drawPointsAlways()
-	{
-		return settings.getDrawSpotCenters()
-				&& ( ( !settings.getDrawEllipsoidSliceIntersection() && !settings.getDrawEllipsoidSliceProjection() )
-						|| settings.getDrawSpotCentersForEllipses() );
-	}
-
-	/**
-	 * Points (ellipsoid centers) are possibly drawn if
-	 * <ul>
-	 *   <li>point drawing is enabled ({@code drawPoints}), and</li>
-	 *   <li>{@code !drawEllipsoidSliceProjection} (otherwise would draw an ellipse instead), and</li>
-	 *   <li>({@code drawEllipsoidSliceIntersection} (drawing ellipses but possibly they are not intersection the view plane).</li>
-	 * </ul>
-	 * (or of course if {@code drawPointsAlways()==true}).
-	 *
-	 * @return whether to draw points depending on ellipse intersection with view plane.
-	 */
-	protected boolean drawPointsMaybe()
-	{
-		return settings.getDrawSpotCenters()
-				&& !settings.getDrawEllipsoidSliceProjection() && settings.getDrawEllipsoidSliceIntersection();
-	}
-
 	protected interface EdgeOperation< E >
 	{
 		void apply( final E edge, final double td0, final double td1, final double sd0, final double sd1, final int x0,
@@ -518,7 +447,7 @@ public class OverlayGraphRenderer<
 
 		final Visibility< V, E > visibility = visibilities.getVisibility();
 		final boolean drawLinksAheadInTime = settings.getDrawLinksAheadInTime();
-		final double maxDepth = getMaxDepth( transform );
+		final double maxDepth = getMaxDepth( transform, settings );
 
 		final V ref = graph.vertexRef();
 		final double[] gPos = new double[ 3 ];
@@ -569,7 +498,6 @@ public class OverlayGraphRenderer<
 				}
 			}
 		}
-
 		graph.releaseRef( ref );
 	}
 
@@ -580,34 +508,27 @@ public class OverlayGraphRenderer<
 			return;
 
 		final Graphics2D graphics = ( Graphics2D ) g;
-		final BasicStroke defaultVertexStroke = new BasicStroke( ( float ) settings.getSpotStrokeWidth() );
-		final BasicStroke highlightedVertexStroke = new BasicStroke( 4f );
-		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 		final BasicStroke defaultEdgeStroke = new BasicStroke( ( float ) settings.getLinkStrokeWidth() );
 		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
 
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
 
-		final double maxDepth = getMaxDepth( transform );
-
 		final Object antialiasing = settings.getUseAntialiasing()
 				? RenderingHints.VALUE_ANTIALIAS_ON
 				: RenderingHints.VALUE_ANTIALIAS_OFF;
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
-		final V ref1 = graph.vertexRef();
-		final V ref2 = graph.vertexRef();
 		final E ref3 = graph.edgeRef();
 		final V source = graph.vertexRef();
 		final V target = graph.vertexRef();
 
-		final double sliceDistanceFade = settings.getEllipsoidFadeDepth();
 		final double timepointDistanceFade = 0.5;
+		// If we are 3D, also fade in Z.
+		final double sliceDistanceFade = ( settings instanceof RenderSettings3D< ? > )
+				? ( ( RenderSettings3D< ? > ) settings ).getEllipsoidFadeDepth()
+				: 0.;
 
-		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
-		final boolean drawPointsAlways = drawPointsAlways();
-		final boolean drawPointsMaybe = drawPointsMaybe();
 		final boolean useGradient = settings.getUseGradient();
 		final boolean drawArrowHeads = settings.getDrawArrowHeads();
 		final int colorSpot = settings.getColorSpot();
@@ -618,6 +539,9 @@ public class OverlayGraphRenderer<
 		index.readLock().lock();
 		try
 		{
+			/*
+			 * Paint edges
+			 */
 			if ( settings.getDrawLinks() )
 			{
 				final E highlighted = highlight.getHighlightedEdge( ref3 );
@@ -683,128 +607,16 @@ public class OverlayGraphRenderer<
 				} );
 			}
 
+			/*
+			 * Paint vertices -> delegate to vertex shape renderer.
+			 */
 			if ( settings.getDrawSpots() )
 			{
-				final double ellipsoidFadeDepth = settings.getEllipsoidFadeDepth();
-				final boolean drawSpotLabels = settings.getDrawSpotLabels();
-				final boolean drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
-				final boolean drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
-				final double pointFadeDepth = settings.getPointFadeDepth();
-				final boolean fillSpots = settings.getFillSpots();
-				final Visibility< V, E > visibility = visibilities.getVisibility();
-
-				final V highlighted = highlight.getHighlightedVertex( ref1 );
-				final V focused = focus.getFocusedVertex( ref2 );
-
-				graphics.setStroke( defaultVertexStroke );
-				final AffineTransform torig = graphics.getTransform();
-
 				final ConvexPolytope cropPolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 				final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
 				ccp.clip( cropPolytopeGlobal );
-				for ( final V vertex : ccp.getInsideValues() )
-				{
-					if ( !visibility.isVisible( vertex ) )
-						continue;
-
-					final int color = coloring.color( vertex );
-					final boolean isHighlighted = vertex.equals( highlighted );
-					final boolean isFocused = vertex.equals( focused );
-
-					screenVertexMath.init( vertex, transform );
-
-					final double x = screenVertexMath.getViewPos()[ 0 ];
-					final double y = screenVertexMath.getViewPos()[ 1 ];
-					final double z = screenVertexMath.getViewPos()[ 2 ];
-					final double sd = sliceDistance( z, maxDepth );
-
-					if ( drawEllipsoidSliceIntersection )
-					{
-						if ( screenVertexMath.intersectsViewPlane() )
-						{
-							final Ellipse ellipse = screenVertexMath.getIntersectEllipse();
-
-							graphics.setColor( getColor(
-									0,
-									0,
-									ellipsoidFadeDepth,
-									timepointDistanceFade,
-									selection.isSelected( vertex ),
-									isHighlighted,
-									colorSpot,
-									colorPast,
-									colorFuture,
-									color ) );
-							if ( isHighlighted )
-								graphics.setStroke( highlightedVertexStroke );
-							else if ( isFocused )
-								graphics.setStroke( focusedVertexStroke );
-							drawEllipse( graphics, ellipse, torig, fillSpots );
-							if ( isHighlighted || isFocused )
-								graphics.setStroke( defaultVertexStroke );
-
-							if ( !drawEllipsoidSliceProjection && drawSpotLabels )
-								drawEllipseLabel( graphics, ellipse, vertex.getLabel() );
-						}
-					}
-
-					if ( sd > -1 && sd < 1 )
-					{
-						if ( drawEllipsoidSliceProjection )
-						{
-							final Ellipse ellipse = screenVertexMath.getProjectEllipse();
-
-							graphics.setColor( getColor(
-									sd,
-									0,
-									ellipsoidFadeDepth,
-									timepointDistanceFade,
-									selection.isSelected( vertex ),
-									isHighlighted,
-									colorSpot,
-									colorPast,
-									colorFuture,
-									color ) );
-							if ( isHighlighted )
-								graphics.setStroke( highlightedVertexStroke );
-							else if ( isFocused )
-								graphics.setStroke( focusedVertexStroke );
-							drawEllipse( graphics, ellipse, torig, fillSpots );
-							if ( isHighlighted || isFocused )
-								graphics.setStroke( defaultVertexStroke );
-
-							if ( drawSpotLabels )
-								drawEllipseLabel( graphics, ellipse, vertex.getLabel() );
-
-							graphics.setTransform( torig );
-						}
-
-						if ( drawPointsAlways || ( drawPointsMaybe && !screenVertexMath.intersectsViewPlane() ) )
-						{
-							graphics.setColor( getColor(
-									sd,
-									0,
-									pointFadeDepth,
-									timepointDistanceFade,
-									selection.isSelected( vertex ),
-									isHighlighted,
-									colorSpot,
-									colorPast,
-									colorFuture,
-									color ) );
-							double radius = pointRadius;
-							if ( isHighlighted || isFocused )
-								radius *= 2;
-							final int ox = ( int ) ( x - radius );
-							final int oy = ( int ) ( y - radius );
-							final int ow = ( int ) ( 2 * radius );
-							if ( isFocused )
-								graphics.fillRect( ox, oy, ow, ow );
-							else
-								graphics.fillOval( ox, oy, ow, ow );
-						}
-					}
-				}
+				final Iterable< V > vertices = ccp.getInsideValues();
+				vertexShapeRenderer.drawVertices( graphics, vertices );
 			}
 		}
 		finally
@@ -812,14 +624,10 @@ public class OverlayGraphRenderer<
 			graph.getLock().readLock().unlock();
 			index.readLock().unlock();
 		}
-		graph.releaseRef( ref1 );
-		graph.releaseRef( ref2 );
 		graph.releaseRef( ref3 );
 		graph.releaseRef( source );
 		graph.releaseRef( target );
 	}
-
-
 
 	/**
 	 * Returns the edge currently painted close to the specified location.
@@ -979,103 +787,18 @@ public class OverlayGraphRenderer<
 			return null;
 
 		final AffineTransform3D transform = getRenderTransformCopy();
-		final double maxDepth = getMaxDepth( transform );
 		final int currentTimepoint = renderTimepoint;
-		final Visibility< V, E > visibility = visibilities.getVisibility();
-
-		final double[] lPos = new double[] { x, y, 0 };
-		final double[] gPos = new double[ 3 ];
-		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
-		transform.applyInverse( gPos, lPos );
-
-		boolean found = false;
-
+		final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
+		final SpatialIndex< V > si = index.getSpatialIndex( currentTimepoint );
 		index.readLock().lock();
-
-		// TODO: cache searches? --> take into account that indexdata might change
-
-		if ( settings.getDrawEllipsoidSliceProjection() )
+		try
 		{
-			final double[] xy = new double[] { x, y };
-			final double[] vPos = new double[ 3 ];
-			double minDist = Double.MAX_VALUE;
-
-			final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
-			final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
-			ccp.clip( cropPolytopeGlobal );
-			for ( final V vertex : ccp.getInsideValues() )
-			{
-				if ( !visibility.isVisible( vertex ) )
-					continue;
-
-				screenVertexMath.init( vertex, transform );
-				final double z = screenVertexMath.getViewPos()[ 2 ];
-				final double sd = sliceDistance( z, maxDepth );
-				if ( sd > -1 && sd < 1 && screenVertexMath.projectionContainsView( xy ) )
-				{
-					found = true;
-					vertex.localize( vPos );
-					final double d = LinAlgHelpers.squareDistance( vPos, gPos );
-					if ( d < minDist )
-					{
-						minDist = d;
-						ref.refTo( vertex );
-					}
-				}
-			}
+			return vertexShapeRenderer.getVertexAt( x, y, tolerance, si, cropPolytopeGlobal, x, ref );
 		}
-
-		if ( !found && settings.getDrawEllipsoidSliceIntersection() )
+		finally
 		{
-			final IncrementalNearestNeighborSearch< V > inns =
-					index.getSpatialIndex( currentTimepoint ).getIncrementalNearestNeighborSearch();
-			final double maxSquDist = graph.getMaxBoundingSphereRadiusSquared( currentTimepoint );
-			inns.search( RealPoint.wrap( gPos ) );
-			while ( inns.hasNext() )
-			{
-				final V vertex = inns.next();
-				if ( !visibility.isVisible( vertex ) )
-					continue;
-
-				if ( inns.getSquareDistance() > maxSquDist )
-					break;
-				screenVertexMath.init( vertex, transform );
-				if ( screenVertexMath.containsGlobal( gPos ) )
-				{
-					found = true;
-					ref.refTo( vertex );
-					break;
-				}
-			}
+			index.readLock().unlock();
 		}
-
-		if ( !found && settings.getDrawSpotCenters() )
-		{
-			final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
-			nns.search( RealPoint.wrap( gPos ) );
-			final V vertex = nns.getSampler().get();
-			if ( vertex != null && visibility.isVisible( vertex ) )
-			{
-				screenVertexMath.init( vertex, transform );
-				final double z = screenVertexMath.getViewPos()[ 2 ];
-				final double sd = sliceDistance( z, maxDepth );
-				if ( sd > -1 && sd < 1 )
-				{
-					final double[] p = screenVertexMath.getViewPos();
-					final double dx = p[ 0 ] - x;
-					final double dy = p[ 1 ] - y;
-					final double dr = pointRadius + tolerance;
-					if ( dx * dx + dy * dy <= dr * dr )
-					{
-						found = true;
-						ref.refTo( vertex );
-					}
-				}
-			}
-		}
-
-		index.readLock().unlock();
-		return found ? ref : null;
 	}
 
 	/**
@@ -1091,7 +814,9 @@ public class OverlayGraphRenderer<
 	 * practice.
 	 *
 	 * @param transform
+	 *            the transform to use for visibility determination.
 	 * @param timepoint
+	 *            the current timepoint to use for visibility determination.
 	 * @return vertices that would be visible with the current display settings
 	 *         and the specified {@code transform} and {@code timepoint}.
 	 */
@@ -1101,73 +826,46 @@ public class OverlayGraphRenderer<
 		if ( visibilities.getMode() == VisibilityMode.NONE )
 			return contextList;
 
-		final double maxDepth = getMaxDepth( transform );
-		final boolean drawPointsAlways = drawPointsAlways();
-		final boolean drawPointsMaybe = drawPointsMaybe();
-		final boolean drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
-		final boolean drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
-		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
-		final Visibility< V, E > visibility = visibilities.getVisibility();
-
+		// Get all vertices inside the view frustum.
 		final ConvexPolytope cropPolytopeGlobal = getVisiblePolytopeGlobal( transform, timepoint );
 		final ClipConvexPolytope< V > ccp = index.getSpatialIndex( timepoint ).getClipConvexPolytope();
 		ccp.clip( cropPolytopeGlobal );
-		for ( final V vertex : ccp.getInsideValues() )
-		{
-			if ( !visibility.isVisible( vertex ) )
-				continue;
+		final Iterable< V > in = ccp.getInsideValues();
 
-			screenVertexMath.init( vertex, transform );
-
-			if ( drawEllipsoidSliceIntersection )
-			{
-				if ( screenVertexMath.intersectsViewPlane()
-						&& screenVertexMath.intersectionIntersectsViewInterval( 0, width, 0, height ) )
-				{
-					contextList.add( vertex );
-					continue;
-				}
-			}
-
-			final double z = screenVertexMath.getViewPos()[ 2 ];
-			final double sd = sliceDistance( z, maxDepth );
-			if ( -1 < sd && sd < 1 )
-			{
-				if ( drawEllipsoidSliceProjection
-						&& screenVertexMath.projectionIntersectsViewInterval( 0, width, 0, height ) )
-				{
-					contextList.add( vertex );
-					continue;
-				}
-
-				if ( drawPointsAlways || ( drawPointsMaybe && !screenVertexMath.intersectsViewPlane() ) )
-				{
-					final double x = screenVertexMath.getViewPos()[ 0 ];
-					final double y = screenVertexMath.getViewPos()[ 1 ];
-					if ( 0 <= x && x <= width && 0 <= y && y <= height )
-						contextList.add( vertex );
-				}
-			}
-		}
-
-		return contextList;
+		// Filter them according to visibility settings.
+		return vertexShapeRenderer.filterVisibleVertices( in, transform, timepoint, width, height );
 	}
 
 	/**
-	 * Get the maximum distance from view plane up to which to draw spots,
-	 * measured in view coordinates (pixel widths).
+	 * Utility method that returns the signed distance of p to a plane along Z,
+	 * truncated at cutoff and scaled by 1/cutoff. A point on the plane has d=0.
+	 * A point that is at cutoff or farther behind the plane has d=1. A point
+	 * that is at -cutoff or more in front of the plane has d=-1.
 	 *
-	 * @param transform
-	 *            may be needed to convert global {@code focusLimit} to view
-	 *            coordinates.
-	 *
-	 * @return maximum distance from view plane up to which to draw spots.
+	 * @param z
+	 *            the position of the plane.
+	 * @param cutoff
+	 *            the cutoff.
+	 * @return the signed distance.
 	 */
-	protected double getMaxDepth( final AffineTransform3D transform )
+	public static double sliceDistance( final double z, final double cutoff )
 	{
-		final double focusLimit = settings.getFocusLimit();
-		return settings.getFocusLimitViewRelative()
-				? focusLimit
-				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+		if ( z > 0 )
+			return Math.min( z, cutoff ) / cutoff;
+		else
+			return Math.max( z, -cutoff ) / cutoff;
+	}
+
+	public static double getMaxDepth( final AffineTransform3D transform, final RenderSettings< ? > settings )
+	{
+		if ( settings instanceof RenderSettings3D< ? > )
+		{
+			final RenderSettings3D< ? > rs3 = ( RenderSettings3D< ? > ) settings;
+			final double focusLimit = rs3.getFocusLimit();
+			return rs3.getFocusLimitViewRelative()
+					? focusLimit
+					: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+		}
+		return 0.;
 	}
 }
