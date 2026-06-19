@@ -30,6 +30,13 @@
 
 	<dependencies>
 		
+		<!-- Geff dependencies -->
+		<dependency>
+			<groupId>org.litt</groupId>
+			<artifactId>geff</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		
 		<!-- Mastodon dependencies -->
 		<dependency>
 			<groupId>org.mastodon</groupId>
