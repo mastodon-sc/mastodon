@@ -66,6 +66,36 @@ Mastodon is a Java software that relies on several technologies to achieve these
 
 ## Usage.
 
+### Geff exporter CLI.
+
+A standalone command-line tool is provided to export a Mastodon project to the [Geff](https://github.com/litt-lab/geff) Zarr format.
+
+#### Build
+
+```bash
+mvn package -P geff-cli -DskipTests
+```
+
+This produces `target/geff-exporter-cli-<version>.jar`.
+
+#### Run
+
+```bash
+java -jar target/geff-exporter-cli-<version>.jar <input.mastodon> <output.geff>
+```
+
+**Example:**
+
+```bash
+java -jar target/geff-exporter-cli-1.0.0-beta-36-SNAPSHOT.jar /path/to/project.mastodon /path/to/output.geff
+```
+
+> **Note:** The following warnings are expected and harmless:
+> - `SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder"` — no logging backend is bundled; output is suppressed.
+> - `WARNING: Blosc compression is unavailable` — install [c-blosc](https://github.com/Blosc/c-blosc) to enable compressed Zarr output; the export still succeeds using raw (uncompressed) chunks.
+
+---
+
 ### Actions and keyboard shortcuts.
 
 The keyboard shortcuts listed below are valid for the _default_ key-map.

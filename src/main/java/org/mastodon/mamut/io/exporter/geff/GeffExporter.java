@@ -71,7 +71,8 @@ public class GeffExporter
 		final Map< Spot, Integer > spotToGeffId = new HashMap<>();
 		int geffId = 0;
 		final double[][] cov = new double[ 3 ][ 3 ];
-		final Spot vRef = graph.vertexRef();
+		final Spot srcRef = graph.vertexRef();
+		final Spot tgtRef = graph.vertexRef();
 		try
 		{
 			for ( final Spot spot : graph.vertices() )
@@ -99,15 +100,20 @@ public class GeffExporter
 			int edgeId = 0;
 			for ( final Link link : graph.edges() )
 			{
-				final Integer srcId = spotToGeffId.get( link.getSource( vRef ) );
-				final Integer tgtId = spotToGeffId.get( link.getTarget( vRef ) );
+				link.getSource( srcRef );
+				link.getTarget( tgtRef );
+				final Integer srcId = spotToGeffId.get( srcRef );
+				final Integer tgtId = spotToGeffId.get( tgtRef );
 				if ( srcId == null || tgtId == null )
 					continue;
 
+				// Geff convention: source is the earlier spot (smaller timepoint).
+				// Swap if mastodon stored the link in reverse temporal order.
+				final boolean swap = srcRef.getTimepoint() > tgtRef.getTimepoint();
 				final GeffEdge edge = new GeffEdge.Builder()
 						.setId( edgeId++ )
-						.setSourceNodeId( srcId )
-						.setTargetNodeId( tgtId )
+						.setSourceNodeId( swap ? tgtId : srcId )
+						.setTargetNodeId( swap ? srcId : tgtId )
 						.build();
 				edges.add( edge );
 			}
@@ -125,7 +131,8 @@ public class GeffExporter
 			// Release all copied spot refs used as map keys
 			for ( final Spot s : spotToGeffId.keySet() )
 				graph.releaseRef( s );
-			graph.releaseRef( vRef );
+			graph.releaseRef( srcRef );
+			graph.releaseRef( tgtRef );
 		}
 	}
 
@@ -133,9 +140,44 @@ public class GeffExporter
 	{
 		return Arrays.asList(
 				GeffAxis.createTimeAxis( GeffAxis.NAME_TIME, timeUnit, null, null ),
-				GeffAxis.createSpaceAxis( GeffAxis.NAME_SPACE_X, spaceUnit, null, null ),
-				GeffAxis.createSpaceAxis( GeffAxis.NAME_SPACE_Y, spaceUnit, null, null ),
-				GeffAxis.createSpaceAxis( GeffAxis.NAME_SPACE_Z, spaceUnit, null, null ) );
+				GeffAxis.createSpaceAxis( GeffAxis.NAME_SPACE_X, normalizeSpaceUnit( spaceUnit ), null, null ),
+				GeffAxis.createSpaceAxis( GeffAxis.NAME_SPACE_Y, normalizeSpaceUnit( spaceUnit ), null, null ),
+				GeffAxis.createSpaceAxis( GeffAxis.NAME_SPACE_Z, normalizeSpaceUnit( spaceUnit ), null, null ) );
+	}
+
+	/**
+	 * Maps common unit abbreviations to OME-Zarr compliant names.
+	 * See https://ngff.openmicroscopy.org/latest/#axes-md for the valid set.
+	 */
+	static String normalizeSpaceUnit( final String unit )
+	{
+		if ( unit == null || unit.isEmpty() )
+			return "pixel";
+		switch ( unit.trim() )
+		{
+		case "um":
+		case "µm":
+		case "μm":
+		case "micron":
+		case "microns":
+			return "micrometer";
+		case "nm":
+			return "nanometer";
+		case "mm":
+			return "millimeter";
+		case "cm":
+			return "centimeter";
+		case "m":
+			return "meter";
+		case "km":
+			return "kilometer";
+		case "pm":
+			return "picometer";
+		case "Å":
+			return "angstrom";
+		default:
+			return unit;
+		}
 	}
 
 	/**
