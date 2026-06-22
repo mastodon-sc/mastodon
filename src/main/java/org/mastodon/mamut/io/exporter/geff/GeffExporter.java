@@ -45,7 +45,6 @@ import org.mastodon.geff.GeffAxis;
 import org.mastodon.geff.GeffEdge;
 import org.mastodon.geff.GeffMetadata;
 import org.mastodon.geff.GeffNode;
-import org.mastodon.geff.GeffUtils;
 
 public class GeffExporter
 {
@@ -123,7 +122,7 @@ public class GeffExporter
 			final GeffMetadata metadata = new GeffMetadata( "1.0.0", true, axes );
 
 			GeffNode.writeToZarr( nodes, zarrPath, metadata );
-			GeffEdge.writeToZarr( edges, zarrPath, GeffUtils.DEFAULT_CHUNK_SIZE, metadata );
+			GeffEdge.writeToZarr( edges, zarrPath, metadata );
 			GeffMetadata.writeToZarr( metadata, zarrPath );
 		}
 		finally
