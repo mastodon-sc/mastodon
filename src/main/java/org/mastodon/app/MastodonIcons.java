@@ -252,4 +252,10 @@ public class MastodonIcons
 
 	public static final ImageIcon BIN_ICON = new ImageIcon( FeatureComputationPanel.class.getResource( "bin_closed.png" ) );
 
+	/*
+	 * IO
+	 */
+
+	public static final ImageIcon GEFF_ICON = new ImageIcon( MastodonIcons.class.getResource( "GEFF_Icon_RGB.png" ) );
+
 }
