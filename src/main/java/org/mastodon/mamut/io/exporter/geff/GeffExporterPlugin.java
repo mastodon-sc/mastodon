@@ -28,9 +28,12 @@
  */
 package org.mastodon.mamut.io.exporter.geff;
 
+import static org.mastodon.app.MastodonIcons.GEFF_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
+import java.awt.Component;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -38,8 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
@@ -47,11 +50,16 @@ import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.util.FileChooser;
+import org.mastodon.ui.util.FileChooser.DialogType;
+import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
+
+import loci.formats.gui.ExtensionFileFilter;
 
 @Plugin( type = MamutPlugin.class )
 public class GeffExporterPlugin implements MamutPlugin
@@ -80,7 +88,7 @@ public class GeffExporterPlugin implements MamutPlugin
 	public Map< String, String > getMenuTexts()
 	{
 		final Map< String, String > menuTexts = new HashMap<>();
-		menuTexts.put( EXPORT_GEFF, "Export to Geff" );
+		menuTexts.put( EXPORT_GEFF, "Export to GEFF" );
 		return menuTexts;
 	}
 
@@ -111,20 +119,33 @@ public class GeffExporterPlugin implements MamutPlugin
 			descriptions.add(
 					EXPORT_GEFF,
 					EXPORT_GEFF_KEYS,
-					"Export the current tracking data to a Geff Zarr directory." );
+					"Export the current tracking data to a GEFF Zarr directory." );
 		}
 	}
 
 	private void exportGeff()
 	{
-		final JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
-		chooser.setSelectedFile( new File( projectModel.getProjectName() + ".zarr" ) );
-		chooser.setDialogTitle( "Export to Geff Zarr directory" );
-		if ( chooser.showSaveDialog( null ) != JFileChooser.APPROVE_OPTION )
+		final String selectedFile = new File( projectModel.getProject().getProjectRoot(), projectModel.getProjectName() + ".geff" ).getAbsolutePath();
+		final FileFilter fileFilter = new ExtensionFileFilter( ".geff", "GEFF files" );
+		final DialogType dialogType = DialogType.SAVE;
+		final SelectionMode selectionMode = SelectionMode.DIRECTORIES_ONLY;
+		final Image image = GEFF_ICON.getImage().getScaledInstance( 128, 128, Image.SCALE_SMOOTH );
+		final Component parent = null;
+
+		final File file = FileChooser.chooseFile(
+				FileChooser.useJFileChooser,
+				parent,
+				selectedFile,
+				fileFilter,
+				"Export to GEFF",
+				dialogType,
+				selectionMode,
+				image );
+		
+		if ( file == null )
 			return;
 
-		final String zarrPath = chooser.getSelectedFile().getAbsolutePath();
+		final String zarrPath = file.getAbsolutePath();
 		try
 		{
 			GeffExporter.exportGeff( projectModel, zarrPath );
@@ -133,9 +154,10 @@ public class GeffExporterPlugin implements MamutPlugin
 		{
 			JOptionPane.showMessageDialog(
 					null,
-					"Problem exporting to Geff at " + zarrPath + "\n" + e.getMessage(),
-					"Geff exporter",
+					"Problem exporting to GEFF at " + zarrPath + "\n" + e.getMessage(),
+					"GEFF exporter",
 					JOptionPane.ERROR_MESSAGE );
+			e.printStackTrace();
 		}
 	}
 }
