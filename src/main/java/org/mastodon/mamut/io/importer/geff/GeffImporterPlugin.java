@@ -28,17 +28,21 @@
  */
 package org.mastodon.mamut.io.importer.geff;
 
+import static org.mastodon.app.MastodonIcons.GEFF_ICON;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
+import java.awt.Component;
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.ViewMenuBuilder;
@@ -47,11 +51,16 @@ import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.util.FileChooser;
+import org.mastodon.ui.util.FileChooser.DialogType;
+import org.mastodon.ui.util.FileChooser.SelectionMode;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
+
+import loci.formats.gui.ExtensionFileFilter;
 
 @Plugin( type = MamutPlugin.class )
 public class GeffImporterPlugin implements MamutPlugin
@@ -80,7 +89,7 @@ public class GeffImporterPlugin implements MamutPlugin
 	public Map< String, String > getMenuTexts()
 	{
 		final Map< String, String > menuTexts = new HashMap<>();
-		menuTexts.put( IMPORT_GEFF, "Import Geff" );
+		menuTexts.put( IMPORT_GEFF, "Import GEFF" );
 		return menuTexts;
 	}
 
@@ -111,19 +120,33 @@ public class GeffImporterPlugin implements MamutPlugin
 			descriptions.add(
 					IMPORT_GEFF,
 					IMPORT_GEFF_KEYS,
-					"Import a Geff Zarr directory into the current model." );
+					"Import a GEFF Zarr directory into the current model." );
 		}
 	}
 
 	private void importGeff()
 	{
-		final JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
-		chooser.setDialogTitle( "Select Geff Zarr directory" );
-		if ( chooser.showOpenDialog( null ) != JFileChooser.APPROVE_OPTION )
+		final String selectedFile = new File( projectModel.getProject().getProjectRoot(), projectModel.getProjectName() + ".geff" ).getAbsolutePath();
+		final FileFilter fileFilter = new ExtensionFileFilter( ".geff", "GEFF files" );
+		final DialogType dialogType = DialogType.LOAD;
+		final SelectionMode selectionMode = SelectionMode.DIRECTORIES_ONLY;
+		final Image image = GEFF_ICON.getImage().getScaledInstance( 128, 128, Image.SCALE_SMOOTH );
+		final Component parent = null;
+
+		final File file = FileChooser.chooseFile(
+				FileChooser.useJFileChooser,
+				parent,
+				selectedFile,
+				fileFilter,
+				"Export to GEFF",
+				dialogType,
+				selectionMode,
+				image );
+
+		if ( null == file )
 			return;
 
-		final String zarrPath = chooser.getSelectedFile().getAbsolutePath();
+		final String zarrPath = file.getAbsolutePath();
 		try
 		{
 			GeffImporter.importGeff( zarrPath, projectModel );
@@ -132,10 +155,11 @@ public class GeffImporterPlugin implements MamutPlugin
 		{
 			JOptionPane.showMessageDialog(
 					null,
-					"Problem importing Geff from " + zarrPath + "\n" + e.getMessage(),
-					"Geff importer",
+					"Problem importing GEFF from " + zarrPath + "\n" + e.getMessage(),
+					"GEFF importer",
 					JOptionPane.ERROR_MESSAGE,
 					MastodonIcons.MASTODON_ICON_MEDIUM );
+			e.printStackTrace();
 		}
 	}
 }
