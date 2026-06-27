@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>org.litt</groupId>
 			<artifactId>geff</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- Mastodon dependencies -->
@@ -143,7 +143,6 @@
 			<artifactId>MaMuT</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 	<build>
