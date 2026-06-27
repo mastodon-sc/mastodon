@@ -35,6 +35,9 @@ import java.util.Map;
 
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.geff.GeffEdge;
+import org.mastodon.geff.GeffMetadata;
+import org.mastodon.geff.GeffNode;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.ModelImporter;
 import org.mastodon.mamut.model.Link;
@@ -43,10 +46,6 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
-
-import org.mastodon.geff.GeffEdge;
-import org.mastodon.geff.GeffMetadata;
-import org.mastodon.geff.GeffNode;
 
 public class GeffImporter extends ModelImporter
 {
@@ -91,6 +90,14 @@ public class GeffImporter extends ModelImporter
 			final GeffMetadata metadata = GeffMetadata.readFromZarr( zarrPath );
 			final List< GeffNode > nodes = GeffNode.readFromZarr( zarrPath, metadata );
 			final List< GeffEdge > edges = GeffEdge.readFromZarr( zarrPath, metadata.getGeffVersion() );
+
+			// Missing axes generate NaNs -> replace with 0
+			for ( final GeffNode node : nodes )
+			{
+				node.setX( Double.isNaN( node.getX() ) ? 0 : node.getX() );
+				node.setY( Double.isNaN( node.getY() ) ? 0 : node.getY() );
+				node.setZ( Double.isNaN( node.getZ() ) ? 0 : node.getZ() );
+			}
 
 			// Feature storage
 			final GeffImportedSpotFeatures spotFeatures = new GeffImportedSpotFeatures();
@@ -177,6 +184,7 @@ public class GeffImporter extends ModelImporter
 	/**
 	 * Converts a flat 6-element upper-triangular covariance vector
 	 * {@code [c0,c1,c2,c3,c4,c5]} (row-major) to a symmetric 3×3 matrix:
+	 * 
 	 * <pre>
 	 * [[c0, c1, c2],
 	 *  [c1, c3, c4],
