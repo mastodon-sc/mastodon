@@ -38,6 +38,7 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
 
+@SuppressWarnings( "unused" )
 public class CreateLargeModelExample
 {
 	private static final int N_STARTING_CELLS = 10;
