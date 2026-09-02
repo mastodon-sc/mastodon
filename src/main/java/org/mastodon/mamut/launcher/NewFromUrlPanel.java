@@ -47,6 +47,8 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 import javax.swing.JButton;
@@ -57,7 +59,6 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.janelia.saalfeldlab.n5.N5Exception;
 import org.janelia.saalfeldlab.n5.N5Reader;
 import org.janelia.saalfeldlab.n5.N5URI;
 import org.janelia.saalfeldlab.n5.bdv.N5ViewerCreator;
@@ -66,17 +67,20 @@ import org.janelia.saalfeldlab.n5.ij.N5Importer;
 import org.janelia.saalfeldlab.n5.metadata.N5ViewerMultichannelMetadata;
 import org.janelia.saalfeldlab.n5.ui.DatasetSelectorDialog;
 import org.janelia.saalfeldlab.n5.universe.N5Factory;
+import org.janelia.saalfeldlab.n5.universe.N5TreeNode;
 import org.janelia.saalfeldlab.n5.universe.StorageFormat;
 import org.janelia.saalfeldlab.n5.universe.metadata.MultiscaleMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.N5Metadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.N5SingleScaleMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.axes.AxisUtils;
 import org.janelia.saalfeldlab.n5.universe.metadata.axes.DefaultAxisMetadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.NgffSingleScaleAxesMetadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.NgffSingleScaleAxesMetadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.OmeNgffMetadata;
+import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.OmeNgffMetadataParser;
 import org.mastodon.mamut.io.loader.N5UniverseImgLoader;
 import org.mastodon.mamut.io.loader.util.credentials.AWSCredentialsManager;
 import org.mastodon.mamut.io.loader.util.credentials.AWSCredentialsTools;
+import org.mastodon.mamut.io.loader.util.credentials.S3Configurations;
 import org.mastodon.ui.util.EverythingDisablerAndReenabler;
 
 import bdv.spimdata.SequenceDescriptionMinimal;
@@ -96,6 +100,9 @@ import net.imglib2.Dimensions;
 import net.imglib2.FinalDimensions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Pair;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.exception.SdkClientException;
 
 class NewFromUrlPanel extends JPanel
 {
@@ -105,6 +112,21 @@ class NewFromUrlPanel extends JPanel
 	private static final String DOCUMENTATION_STR = "Information on NGFF and remote imports";
 
 	private static final String DOCUMENTATION_URL = "https://github.com/saalfeldlab/n5-ij?tab=readme-ov-file#open-hdf5n5zarrome-ngff";
+
+	private static final int HTTP_UNAUTHORIZED = 401;
+
+	private static final int HTTP_FORBIDDEN = 403;
+
+	/** Guards against cyclic exception chains. */
+	private static final int MAX_CAUSE_DEPTH = 32;
+
+	/**
+	 * The HTTP backend of n5 does not carry the status code in a field, only at
+	 * the end of the exception message, as in {@code "…( Forbidden)(403)"}.
+	 */
+	private static final Pattern HTTP_STATUS_SUFFIX = Pattern.compile( "\\((\\d{3})\\)\\s*$" );
+
+	private static final String UNABLE_TO_LOAD_CREDENTIALS = "Unable to load credentials";
 
 	private static final String N5_DOCUMENTATION_LINK =
 			"<html><a href='" + DOCUMENTATION_URL + "'>" + DOCUMENTATION_STR + "</html>";
@@ -241,7 +263,11 @@ class NewFromUrlPanel extends JPanel
 			final EverythingDisablerAndReenabler disabler = new EverythingDisablerAndReenabler( SwingUtilities.getWindowAncestor( dialog.getJTree() ), null );
 			disabler.disable();
 
-			final N5Metadata metadata = selection.metadata.get( 0 );
+			// The scale levels of an OME-NGFF multiscale appear in the tree
+			// under the group they belong to and carry the same names, so
+			// picking one instead of the group is an easy mistake to make.
+			// Resolve it to the group rather than refusing it.
+			final N5Metadata metadata = resolveMultiscaleGroup( selection.n5, selection.metadata.get( 0 ) );
 			long[] dimensions = null;
 			double[] scales = null;
 			String[] axisLabels = null;
@@ -284,7 +310,8 @@ class NewFromUrlPanel extends JPanel
 			}
 			else
 			{
-				messenger.accept( "The metadata is not supported: " + metadata.getName() );
+				messenger.accept( "The metadata of '" + metadata.getPath() + "' is not supported: "
+						+ metadata.getClass().getSimpleName() );
 				return;
 			}
 			final AffineTransform3D calibFinal = calib.copy();
@@ -417,31 +444,124 @@ class NewFromUrlPanel extends JPanel
 			if ( rootPath == null )
 				rootPath = upToLastExtension( n5UriOrPath );
 
-			N5Factory factory = new N5Factory().cacheAttributes( true );
+			N5Factory factory = new N5Factory()
+					.cacheAttributes( true )
+					.s3Configuration( S3Configurations.anonymousFirst() );
 			try
 			{
 				return factory.openReader( rootPath );
 			}
 			catch ( final Exception e )
-			{}
+			{
+				if ( !isAuthenticationFailure( e ) )
+				{
+					// The container could not be opened for a reason that has
+					// nothing to do with credentials. Asking the user for S3
+					// credentials would only be misleading.
+					messenger.accept( rootCauseMessage( e ) );
+					return null;
+				}
+			}
 			// Use credentials
 			if ( AWSCredentialsManager.getInstance().getCredentials() == null )
 				AWSCredentialsManager.getInstance().setCredentials( AWSCredentialsTools.getBasicAWSCredentials() );
-			factory = factory.s3UseCredentials( AWSCredentialsManager.getInstance().getCredentials() );
+			final AwsCredentials credentials = AWSCredentialsManager.getInstance().getCredentials();
+			if ( credentials == null )
+				// The user dismissed the credentials dialog.
+				return null;
+			factory = factory.s3Configuration( S3Configurations.credentials( credentials ) );
 			try
 			{
 				return factory.openReader( rootPath );
 			}
-			catch ( final N5Exception e )
-			{
-				AWSCredentialsManager.getInstance().setCredentials( null );
-				messenger.accept( e.getMessage() );
-			}
 			catch ( final Exception e )
 			{
-				messenger.accept( e.getMessage() );
+				// Forget them whatever went wrong, so that the next attempt
+				// asks again instead of silently reusing credentials that did
+				// not work. The failure is not always an N5Exception: wrong
+				// keys surface as an S3Exception.
+				AWSCredentialsManager.getInstance().setCredentials( null );
+				messenger.accept( rootCauseMessage( e ) );
 			}
 			return null;
+		}
+
+		/**
+		 * Returns whether the container could not be opened because it requires
+		 * authentication. Only then does it make sense to ask the user for S3
+		 * credentials; every other failure is reported as it is.
+		 *
+		 * @param t
+		 *            the failure raised when opening the container.
+		 * @return {@code true} if credentials could make a difference.
+		 */
+		private static boolean isAuthenticationFailure( final Throwable t )
+		{
+			int depth = 0;
+			for ( Throwable c = t; c != null && depth++ < MAX_CAUSE_DEPTH; c = c.getCause() )
+			{
+				if ( c instanceof AwsServiceException && isUnauthorized( ( ( AwsServiceException ) c ).statusCode() ) )
+					return true;
+				final String message = c.getMessage();
+				if ( message == null )
+					continue;
+				// Raised when the container cannot be read anonymously and the
+				// machine has no credentials to fall back on.
+				if ( c instanceof SdkClientException && message.contains( UNABLE_TO_LOAD_CREDENTIALS ) )
+					return true;
+				// The HTTP backend of n5 reports the status only in the message,
+				// as a trailing "(403)".
+				final Matcher matcher = HTTP_STATUS_SUFFIX.matcher( message );
+				if ( matcher.find() && isUnauthorized( Integer.parseInt( matcher.group( 1 ) ) ) )
+					return true;
+			}
+			return false;
+		}
+
+		private static boolean isUnauthorized( final int status )
+		{
+			return status == HTTP_UNAUTHORIZED || status == HTTP_FORBIDDEN;
+		}
+
+		private static String rootCauseMessage( final Throwable t )
+		{
+			Throwable c = t;
+			for ( int depth = 0; c.getCause() != null && depth < MAX_CAUSE_DEPTH; depth++ )
+				c = c.getCause();
+			return c.getMessage() == null ? c.toString() : c.getMessage();
+		}
+	}
+
+	/**
+	 * If the specified metadata describes a single scale level of an OME-NGFF
+	 * multiscale, returns the metadata of the multiscale group it belongs to.
+	 * Otherwise returns the metadata unchanged.
+	 *
+	 * @param n5
+	 *            the reader for the container.
+	 * @param metadata
+	 *            the metadata of the node the user selected.
+	 * @return the metadata to build the image loader from.
+	 */
+	private static N5Metadata resolveMultiscaleGroup( final N5Reader n5, final N5Metadata metadata )
+	{
+		if ( !( metadata instanceof NgffSingleScaleAxesMetadata ) )
+			return metadata;
+		final String path = metadata.getPath();
+		final int i = path.lastIndexOf( '/' );
+		if ( i < 0 )
+			return metadata;
+		final String groupPath = path.substring( 0, i );
+		try
+		{
+			return new OmeNgffMetadataParser()
+					.parseMetadata( n5, new N5TreeNode( groupPath ) )
+					.map( N5Metadata.class::cast )
+					.orElse( metadata );
+		}
+		catch ( final Exception e )
+		{
+			return metadata;
 		}
 	}
 

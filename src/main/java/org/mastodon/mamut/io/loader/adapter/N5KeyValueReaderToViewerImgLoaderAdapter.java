@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -133,7 +134,9 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
     public int[] getCellDimensions( int setupId, int timepointId, int level )
     {
         final DatasetAttributes attributes = setupToAttributesList.get( setupId ).get( level );
-        return attributes.getBlockSize();
+        // getChunkSize, not getBlockSize: for a sharded dataset the latter is
+        // the size of the shard, which is far too large for a viewer cell.
+        return attributes.getChunkSize();
     }
 
     @Override
@@ -181,9 +184,13 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
     private static N5ViewerMultichannelMetadata getMetadata( final N5Reader n5 )
     {
         N5TreeNode node = null;
+        // The discoverer submits one task per group to this executor. An
+        // unbounded pool spawns a thread per group, which a large remote
+        // container will not survive.
+        final ExecutorService executor = Executors.newFixedThreadPool( Math.max( 1, Runtime.getRuntime().availableProcessors() ) );
         final N5DatasetDiscoverer discoverer = new N5DatasetDiscoverer(
                 n5,
-                Executors.newCachedThreadPool(),
+                executor,
                 Arrays.asList( N5ViewerCreator.n5vParsers ),
                 Arrays.asList( N5ViewerCreator.n5vGroupParsers )
         );
@@ -193,6 +200,10 @@ public class N5KeyValueReaderToViewerImgLoaderAdapter implements N5ReaderToViewe
         }
         catch ( final IOException e )
         {}
+        finally
+        {
+            executor.shutdown();
+        }
         if ( node == null )
             return null;
         N5Metadata meta = getMetadataRecursively( node );

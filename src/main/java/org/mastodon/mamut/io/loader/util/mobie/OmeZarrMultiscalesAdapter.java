@@ -56,7 +56,10 @@ public class OmeZarrMultiscalesAdapter implements JsonDeserializer< OmeZarrMulti
         final Type datasetsType = new TypeToken< Dataset[] >()
         {}.getType();
         final Dataset[] datasets = context.deserialize( jsonObject.get( "datasets" ), datasetsType );
-        final String version = jsonObject.get( "version" ).getAsString();
+        // OME-NGFF 0.5 moved 'version' out of the individual multiscales and up
+        // to the 'ome' object holding them, so it may be absent here.
+        final JsonElement versionElement = jsonObject.get( "version" );
+        final String version = versionElement == null ? null : versionElement.getAsString();
         final OmeZarrMultiscales multiscales = new OmeZarrMultiscales();
         multiscales.axes = axes;
         multiscales.zarrAxisList = zarrAxisList;

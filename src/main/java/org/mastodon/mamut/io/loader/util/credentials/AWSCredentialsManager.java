@@ -28,25 +28,25 @@
  */
 package org.mastodon.mamut.io.loader.util.credentials;
 
-import com.amazonaws.auth.AWSCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
 
 public enum AWSCredentialsManager
 {
     INSTANCE;
 
-    private AWSCredentials credentials;
+    private AwsCredentials credentials;
 
     public static AWSCredentialsManager getInstance()
     {
         return INSTANCE;
     }
 
-    public void setCredentials( final AWSCredentials credentials )
+    public void setCredentials( final AwsCredentials credentials )
     {
         this.credentials = credentials;
     }
 
-    public AWSCredentials getCredentials()
+    public AwsCredentials getCredentials()
     {
         return credentials;
     }
