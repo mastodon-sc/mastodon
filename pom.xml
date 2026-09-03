@@ -172,9 +172,11 @@
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<additionalparam>-Xdoclint:none</additionalparam>
-							<excludeDependencySources>true</excludeDependencySources>
-							<excludeArtifactIds>turbojpeg</excludeArtifactIds>
+							<doclint>none</doclint>
+							<nohelp>true</nohelp>
+							<quiet>true</quiet>
+							<show>protected</show>
+							<excludePackageNames>org.mastodon:ome.turbojpeg</excludePackageNames>
 						</configuration>
 					</execution>
 				</executions>
