@@ -26,45 +26,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.loader.util.credentials;
+package org.mastodon.mamut.io.loader.adapter;
 
-import java.util.Arrays;
+import static org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales.MULTI_SCALE_KEY;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import org.janelia.saalfeldlab.n5.zarr.v3.ZarrV3KeyValueReader;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-
-public class AWSCredentialsTools
+/**
+ * Adapter for OME-NGFF containers backed by Zarr v3, where the metadata is
+ * nested under an {@code ome} key in the group attributes. This is the layout
+ * introduced by OME-NGFF version 0.5.
+ */
+public class ZarrV3KeyValueReaderToViewerImgLoaderAdapter extends AbstractOmeZarrToViewerImgLoaderAdapter< ZarrV3KeyValueReader >
 {
-    public static AwsBasicCredentials getBasicAWSCredentials()
+
+    /**
+     * Key under which OME-NGFF 0.5 nests its metadata in the group attributes.
+     */
+    private static final String OME_KEY = "ome";
+
+    public ZarrV3KeyValueReaderToViewerImgLoaderAdapter( final ZarrV3KeyValueReader n5, final String dataset )
     {
-        final JLabel lblUsername = new JLabel( "Username" );
-        final JTextField textFieldUsername = new JTextField();
-        final JLabel lblPassword = new JLabel( "Password" );
-        final JPasswordField passwordField = new JPasswordField();
-        final Object[] ob = { lblUsername, textFieldUsername, lblPassword, passwordField };
-        final int result = JOptionPane.showConfirmDialog( null, ob, "Please input credentials", JOptionPane.OK_CANCEL_OPTION );
-
-        if ( result == JOptionPane.OK_OPTION )
-        {
-            final String username = textFieldUsername.getText();
-            final char[] password = passwordField.getPassword();
-            try
-            {
-                return AwsBasicCredentials.create( username, String.valueOf( password ) );
-            }
-            finally
-            {
-                Arrays.fill( password, '0' );
-            }
-        }
-        else
-        {
-            return null;
-        }
+        super( n5, dataset, OME_KEY + "/" + MULTI_SCALE_KEY );
     }
-
 }

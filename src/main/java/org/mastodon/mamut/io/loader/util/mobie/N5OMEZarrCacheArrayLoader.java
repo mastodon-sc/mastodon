@@ -36,7 +36,7 @@ import org.janelia.saalfeldlab.n5.DataType;
 import org.janelia.saalfeldlab.n5.DatasetAttributes;
 import org.janelia.saalfeldlab.n5.N5Reader;
 
-import com.amazonaws.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkClientException;
 
 import bdv.img.cache.SimpleCacheArrayLoader;
 import net.imglib2.img.basictypeaccess.DataAccess;
@@ -80,7 +80,9 @@ public class N5OMEZarrCacheArrayLoader< A extends DataAccess > implements Simple
 
         try
         {
-            block = n5.readBlock( pathName, attributes, dataBlockIndices );
+            // readChunk, not readBlock: for a sharded Zarr v3 dataset
+            // readBlock fetches the whole shard.
+            block = n5.readChunk( pathName, attributes, dataBlockIndices );
         }
         catch ( final SdkClientException e )
         {

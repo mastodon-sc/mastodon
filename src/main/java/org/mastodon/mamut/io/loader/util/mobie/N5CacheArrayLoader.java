@@ -85,7 +85,9 @@ public class N5CacheArrayLoader< T, A extends DataAccess > implements MastodonSi
         final DataBlock< T > dataBlock;
         try
         {
-            dataBlock = Cast.unchecked( n5.readBlock( pathName, attributes, gridPosition ) );
+            // readChunk, not readBlock: for a sharded dataset readBlock
+            // fetches the whole shard.
+            dataBlock = Cast.unchecked( n5.readChunk( pathName, attributes, gridPosition ) );
         }
         catch ( final N5Exception e )
         {

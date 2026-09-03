@@ -43,20 +43,24 @@ import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Reader;
 import org.janelia.saalfeldlab.n5.universe.N5Factory;
 import org.janelia.saalfeldlab.n5.zarr.ZarrCompressor;
 import org.janelia.saalfeldlab.n5.zarr.ZarrKeyValueReader;
+import org.janelia.saalfeldlab.n5.zarr.v3.ZarrV3KeyValueReader;
 import org.mastodon.mamut.io.img.cache.MastodonSimpleCacheArrayLoader;
 import org.mastodon.mamut.io.img.cache.MastodonVolatileGlobalCellCache;
 import org.mastodon.mamut.io.loader.adapter.N5HDF5ReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.N5KeyValueReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.N5ReaderToViewerImgLoaderAdapter;
 import org.mastodon.mamut.io.loader.adapter.ZarrKeyValueReaderToViewerImgLoaderAdapter;
+import org.mastodon.mamut.io.loader.adapter.ZarrV3KeyValueReaderToViewerImgLoaderAdapter;
+import org.mastodon.mamut.io.loader.util.credentials.S3Configurations;
 import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscales;
 import org.mastodon.mamut.io.loader.util.mobie.OmeZarrMultiscalesAdapter;
 import org.mastodon.mamut.io.loader.util.mobie.ZarrAxes;
 import org.mastodon.mamut.io.loader.util.mobie.ZarrAxesAdapter;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.google.gson.GsonBuilder;
+
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 
 import bdv.AbstractViewerSetupImgLoader;
 import bdv.ViewerImgLoader;
@@ -128,20 +132,15 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
      * @param uri
      * @param dataset
      * @param sequenceDescription
-     * @param s3Credentials use the {@link DefaultAWSCredentialsProviderChain} if null
+     * @param s3Credentials use the {@link DefaultCredentialsProvider} if null
      */
     public N5UniverseImgLoader( final String uri, final String dataset, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
-            final AWSCredentials s3Credentials )
+            final AwsCredentials s3Credentials )
     {
         this( uri, dataset, sequenceDescription );
-        if ( s3Credentials == null )
-        {
-            this.factory = this.factory.s3UseCredentials();
-        }
-        else
-        {
-            this.factory = this.factory.s3UseCredentials( s3Credentials );
-        }
+        this.factory = this.factory.s3Configuration( s3Credentials == null
+                ? S3Configurations.defaultCredentials()
+                : S3Configurations.credentials( s3Credentials ) );
     }
 
     public N5UniverseImgLoader( final String uri, final String dataset, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription )
@@ -155,7 +154,8 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
                 .hdf5DefaultBlockSize( 64 )
                 .zarrDimensionSeparator( "/" )
                 .zarrMapN5Attributes( true )
-                .gsonBuilder( gsonBuilder );
+                .gsonBuilder( gsonBuilder )
+                .s3Configuration( S3Configurations.anonymousFirst() );
         this.url = uri;
         this.dataset = dataset.endsWith( "/" ) ? dataset : dataset + "/";
         this.seq = sequenceDescription;
@@ -198,6 +198,12 @@ public class N5UniverseImgLoader implements ViewerImgLoader, MultiResolutionImgL
         else if ( n5 instanceof ZarrKeyValueReader )
         {
             return new ZarrKeyValueReaderToViewerImgLoaderAdapter( ( ZarrKeyValueReader ) n5, dataset );
+        }
+        // ZarrV3KeyValueReader extends N5KeyValueReader, so it has to be tested
+        // for before it.
+        else if ( n5 instanceof ZarrV3KeyValueReader )
+        {
+            return new ZarrV3KeyValueReaderToViewerImgLoaderAdapter( ( ZarrV3KeyValueReader ) n5, dataset );
         }
         else if ( n5 instanceof N5KeyValueReader )
         {
