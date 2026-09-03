@@ -183,7 +183,7 @@
 										<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 											<mainClass>org.mastodon.mamut.io.exporter.geff.GeffExporterCLI</mainClass>
 										</transformer>
-										<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+										<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 										<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 											<resource>META-INF/json/org.scijava.plugin.Plugin</resource>
 										</transformer>
@@ -302,19 +302,6 @@
 		<repository>
 			<id>scijava.public</id>
 			<url>https://maven.scijava.org/content/groups/public</url>
-		</repository>
-		<!--
-			Temporary. Since some time between June and September 2026,
-			maven.scijava.org serves the POMs of ome:formats-gpl and
-			ome:turbojpeg but not their JARs (its ome-releases repository
-			answers 403), which breaks dependency resolution for every version
-			of them. Both come in through bigdataviewer_fiji ->
-			SPIM_Registration. Remove this repository once scijava.public
-			serves them again.
-		-->
-		<repository>
-			<id>ome</id>
-			<url>https://artifacts.openmicroscopy.org/artifactory/maven/</url>
 		</repository>
 	</repositories>
 </project>
