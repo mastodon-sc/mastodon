@@ -176,7 +176,12 @@
 							<nohelp>true</nohelp>
 							<quiet>true</quiet>
 							<show>protected</show>
-							<excludePackageNames>org.mastodon:ome.turbojpeg</excludePackageNames>
+							<excludeArtifactIds>turbojpeg</excludeArtifactIds>
+							<excludeDependencySources>true</excludeDependencySources>
+							<additionalOptions>
+								<additionalOption>-Xdoclint:none</additionalOption>
+								<additionalOption>-XDignore.symbol.file</additionalOption>
+							</additionalOptions>
 						</configuration>
 					</execution>
 				</executions>
