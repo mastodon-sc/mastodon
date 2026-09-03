@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,12 +27,12 @@
  * #L%
  */
 /**
- * <h1>Mastodon class hierarchy</h1>
+ * <h2>Mastodon class hierarchy</h2>
  *
  * In this repository, we distinguish <b>two levels</b> for the class hierarchy:
  *
  *
- * <h2>1. Mastodon base classes.</h2>
+ * <h3>1. Mastodon base classes.</h3>
  *
  * The base classes and interfaces to derive and implement to create an
  * application (or 'app') specific to a topic. What we call 'topic' could be
@@ -49,7 +49,7 @@
  *
  *
  *
- * <h2>2. The MaMuT application.</h2>
+ * <h3>2. The MaMuT application.</h3>
  *
  * The classes of an app, whose topic is 'tracking and lineaging cells, with
  * cells represented as ellipsoids'.
