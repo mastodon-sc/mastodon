@@ -52,6 +52,12 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer_fiji</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>ome</groupId>
+					<artifactId>turbojpeg</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
@@ -159,34 +165,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.6.3</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<doclint>none</doclint>
-							<nohelp>true</nohelp>
-							<quiet>true</quiet>
-							<show>protected</show>
-							<excludeArtifactIds>turbojpeg</excludeArtifactIds>
-							<excludeDependencySources>true</excludeDependencySources>
-							<additionalOptions>
-								<additionalOption>-Xdoclint:none</additionalOption>
-								<additionalOption>-XDignore.symbol.file</additionalOption>
-							</additionalOptions>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
 	</build>
 
 	<profiles>
