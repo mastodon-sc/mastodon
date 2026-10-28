@@ -48,11 +48,25 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
+			<!-- Temporary: remove once bigdataviewer-core itself depends on janelia-jhdf5.
+			     It pulls in cisd:jhdf5, which would shadow janelia-jhdf5 (same packages). -->
+			<exclusions>
+				<exclusion>
+					<groupId>cisd</groupId>
+					<artifactId>jhdf5</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer_fiji</artifactId>
 			<exclusions>
+				<!-- Temporary: remove once ome:formats-bsd (via SPIM_Registration) depends on janelia-jhdf5.
+				     It pulls in cisd:jhdf5, which would shadow janelia-jhdf5 (same packages). -->
+				<exclusion>
+					<groupId>cisd</groupId>
+					<artifactId>jhdf5</artifactId>
+				</exclusion>
 				<exclusion>
 					<groupId>ome</groupId>
 					<artifactId>turbojpeg</artifactId>
@@ -64,8 +78,10 @@
 			<artifactId>spim_data</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>cisd</groupId>
-			<artifactId>jhdf5</artifactId>
+			<groupId>org.janelia</groupId>
+			<artifactId>janelia-jhdf5</artifactId>
+			<!-- Temporary: remove the version once janelia-jhdf5 is released and managed by pom-scijava. -->
+			<version>${janelia-jhdf5.version}</version>
 		</dependency>
 
 		<!-- ImgLib2 dependencies -->
@@ -90,6 +106,14 @@
 		<dependency>
 			<groupId>org.janelia.saalfeldlab</groupId>
 			<artifactId>n5-universe</artifactId>
+			<!-- Temporary: remove once n5-hdf5 (via n5-universe) depends on janelia-jhdf5.
+			     It pulls in cisd:jhdf5, which would shadow janelia-jhdf5 (same packages). -->
+			<exclusions>
+				<exclusion>
+					<groupId>cisd</groupId>
+					<artifactId>jhdf5</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.janelia.saalfeldlab</groupId>
@@ -265,6 +289,13 @@
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
+
+		<!-- Temporary: remove once janelia-jhdf5 is released (then let pom-scijava manage the version). -->
+		<janelia-jhdf5.version>26.10.0-SNAPSHOT</janelia-jhdf5.version>
+		<!-- Temporary: remove once janelia-jhdf5 is released.
+		     pom-scijava manages older bytedeco versions; match what janelia-jhdf5 is built against. -->
+		<javacpp.version>1.5.15-SNAPSHOT</javacpp.version>
+		<hdf5.version>2.2.0-${javacpp.version}</hdf5.version>
 	</properties>
 
 	<developers>
@@ -322,6 +353,14 @@
 		<repository>
 			<id>scijava.public</id>
 			<url>https://maven.scijava.org/content/groups/public</url>
+		</repository>
+		<!-- Temporary: remove once janelia-jhdf5 is released.
+		     org.bytedeco snapshots (javacpp, hdf5) needed by janelia-jhdf5 until they are released. -->
+		<repository>
+			<id>central-portal-snapshots</id>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+			<releases><enabled>false</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
 		</repository>
 	</repositories>
 </project>

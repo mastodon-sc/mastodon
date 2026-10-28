@@ -18,7 +18,22 @@ jobs:
           java-version: '8'
           distribution: 'zulu'
           cache: 'maven'
+      # Temporary: janelia-jhdf5 26.10.0-SNAPSHOT is not published anywhere, so build and
+      # install it into ~/.m2 first. Remove once janelia-jhdf5 is released.
+      - name: Check out janelia-jhdf5
+        uses: actions/checkout@v4
+        with:
+          repository: JaneliaSciComp/janelia-jhdf5
+          ref: main
+          path: janelia-jhdf5
+      - name: Install janelia-jhdf5 snapshot
+        working-directory: janelia-jhdf5
+        run: mvn -B -U install -DskipTests -Djacoco.skip=true -Djavacpp.platform=linux-x86_64
+        shell: bash
       - name: Set up CI environment
         run: .github/setup.sh
       - name: Execute the build
         run: .github/build.sh
+        env:
+          # Temporary: pom-scijava's enforcer rejects SNAPSHOT dependencies. Remove with the janelia-jhdf5 snapshot.
+          MAVEN_ARGS: -Denforcer.skip=true
